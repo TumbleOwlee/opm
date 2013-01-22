@@ -29,7 +29,7 @@ setMethod("update_settings_list", "list", function(x) {
     x[[VERSION]] <- version <- if (software == opm_string())
       opm_string(version = TRUE)[2L]
     else
-      "0.0-0"
+      UNKNOWN_VERSION
     warning(sprintf("inserting '%s' as '%s' entry", version, VERSION))
   }
   if (m <- match(PROGRAM, names(x), nomatch = 0L)) {

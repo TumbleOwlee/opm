@@ -906,6 +906,12 @@ html_args <- function(
 #' # if mean+/-sd does not overlap, the character is uninformative; otherwise
 #' # is is constant
 #'
+#' # this can also be used for formats other than HTML (but not all make sense)
+#' echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
+#'   join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
+#'   discrete.args = NULL))
+#' stopifnot(is.character(yy), length(yy) > 10)
+#'
 setGeneric("phylo_data", function(object, ...) standardGeneric("phylo_data"))
 
 setMethod("phylo_data", "matrix", function(object,

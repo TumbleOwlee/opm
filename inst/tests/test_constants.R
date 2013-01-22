@@ -101,6 +101,10 @@ test_that("the internally used parameter names are OK", {
 ## UNTESTED
 
 
+## UNKNOWN_VERSION
+## UNTESTED
+
+
 ## PROGRAM
 ## UNTESTED
 
@@ -123,6 +127,10 @@ test_that("the known method names are OK", {
 
 
 ## W3C_COLORS
+## UNTESTED
+
+
+## MEMOIZED
 ## UNTESTED
 
 

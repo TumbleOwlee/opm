@@ -280,6 +280,12 @@ stopifnot(is_html(yy), length(yy) == length(y) - 1) # no symbols list
 # if mean+/-2*sd does not overlap, the character is informative; else
 # if mean+/-sd does not overlap, the character is uninformative; otherwise
 # is is constant
+
+# this can also be used for formats other than HTML (but not all make sense)
+echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
+  join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
+  discrete.args = NULL))
+stopifnot(is.character(yy), length(yy) > 10)
 }
 \references{
   Berger, S. A., Stamatakis, A. 2010 Accuracy of

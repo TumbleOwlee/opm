@@ -82,6 +82,7 @@ CURVE_PARAMS <- c("mu", "lambda", "A", "AUC")
 #
 SOFTWARE <- "software"
 VERSION <- "version"
+UNKNOWN_VERSION <- "0.0.0"
 PROGRAM <- "program" # from the old style, synonym of METHOD in new style
 METHOD <- "method"
 OPTIONS <- "options"
@@ -138,6 +139,15 @@ W3C_COLORS <- structure(
     "white"
   )
 )
+
+
+################################################################################
+################################################################################
+#
+# Storage of precomputed values
+#
+
+MEMOIZED <- new.env(parent = emptyenv())
 
 
 ################################################################################
