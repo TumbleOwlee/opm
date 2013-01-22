@@ -521,9 +521,8 @@ setAs(from = "list", to = OPMD, function(from) {
 #'   plate.
 #'
 #' @note As a rule, OPMS has the same methods as the \code{\link{OPM}} class,
-#'   but adapted to a collection of more than one \code{\link{OPM}} object. Only
-#'   the additional ones and those with special arguments and/or behaviours are
-#'   documented in detail. Also, OPMS can hold \code{\link{OPMA}} as well as
+#'   but adapted to a collection of more than one \code{\link{OPM}} object.
+#'   Also, OPMS can hold \code{\link{OPMD}} and \code{\link{OPMA}} as well as
 #'   \code{\link{OPM}} objects, even though this is not indicated for all its
 #'   methods in this manual.
 #'

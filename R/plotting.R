@@ -138,6 +138,10 @@ setMethod("ranging", MOA, function(object, ...) {
   map_values(object = object, mapping = ranging, ...)
 }, sealed = SEALED)
 
+setMethod("ranging", "list", function(object, ...) {
+  relist(ranging(unlist(as.relistable(object)), ...))
+}, sealed = SEALED)
+
 
 ################################################################################
 

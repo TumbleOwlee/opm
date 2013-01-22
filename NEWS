@@ -21,7 +21,9 @@ Significant user-visible changes:
 - opm_opt() is more restrictive regarding the data type of its labels
 
 - extract_columns() and extract() are more restrictive regarding their
-  'as.labels' and 'as.groups' arguments (as a rule: use a list)
+  'as.labels' and 'as.groups' arguments; this effects all methods that are 
+  based on them, such as xy_plot(); as a rule: use a list as 'include', 
+  'as.labels' or 'as.groups' argument
   
 - the meaning of the 'prefer.char' argument to phylo_data() has been changed
 

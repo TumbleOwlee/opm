@@ -229,13 +229,8 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
     # functions needed for floating-point data
     format_float <- function(x) sprintf(number.format, x)
     formatted.0 <- format_float(0)
-    check_hennig86_float <- function(x) {
-      if (isTRUE(any(x < 0)) || isTRUE(any(x > 65)))
-        stop("values in 'x' not within range from 0 to 65 (inclusively)")
-      x
-    }
     join_floats_for_hennig86 <- function(x) {
-      x <- check_hennig86_float(x[!is.na(x)])
+      x <- x[!is.na(x)]
       case(length(x), MISSING_CHAR, format_float(x), {
         sd.x <- format_float(sd(x))
         if (sd.x == formatted.0) # i.e., standard deviation practically zero
@@ -315,7 +310,10 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
           },
           double = {
             case(how,
-              hennig = x[] <- lapply(x, join_floats_for_hennig86),
+              hennig = {
+                x[] <- ranging(c(x), fac = 65)
+                x[] <- lapply(x, join_floats_for_hennig86)
+              },
               html = {
                 variability <- ifelse(is_constant(x, digits = digits,
                   strict = FALSE), ifelse(is_constant(x, digits = digits,
@@ -341,7 +339,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
       double = {
         from.integer <- FALSE
         switch(how,
-          hennig = check_hennig86_float(x),
+          hennig = x <- ranging(x, fac = 65),
           html = {
             variability <- is_constant(x, strict = TRUE, digits = digits)
             variability <- ifelse(variability, "constant", "informative")
@@ -927,7 +925,6 @@ setMethod("phylo_data", "matrix", function(object,
     object[] <- lapply(object, reduce_to_mode, cutoff = cutoff, use.na = FALSE)
   switch(delete, none = NULL,
     object <- update(object, how = sprintf("delete.%s", delete)))
-  # TODO: add ranging of Hennig86 characters
   result <- format(x = object, how = format, enclose = enclose, digits = digits,
     indent = indent, paup.block = paup.block, comments = comments,
     html.args = html.args, ...)
