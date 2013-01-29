@@ -342,7 +342,7 @@ setMethod("run_kmeans", c("matrix", "numeric"), function(object, k,
     run_kmeans(as.vector(object), k)
   else
     structure(sapply(prepare_k(k), function(centers) {
-      kmeans(x = x, centers = centers, nstart = nstart, ...)
+      kmeans(x = object, centers = centers, nstart = nstart, ...)
     }, simplify = FALSE), class = "kmeanss")
   attr(result, "input") <- object
   result
