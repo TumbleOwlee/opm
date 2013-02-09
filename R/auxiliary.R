@@ -715,7 +715,7 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
 #'   \code{NULL} if it cannot be found.
 #' @keywords internal
 #'
-setGeneric("tidy",  function(object, ...) standardGeneric("tidy"))
+setGeneric("tidy", function(object, ...) standardGeneric("tidy"))
 
 setMethod("tidy", "missing", function() {
   if (nzchar(result <- Sys.which("tidy")))

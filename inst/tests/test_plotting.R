@@ -15,6 +15,30 @@ rand_range <- function(n, minstart = 0, maxstart = 100, maxrange = 100) {
 }
 
 
+# Test whether or not object 'x' could be submitted to ci_plot.
+#
+is_ci_plottable <- function(x) {
+  param_column_ok <- function(x) {
+    pat <- sprintf("^(%s)", paste(param_names(), collapse = "|"))
+    x <- sub(pat, "", x, perl = TRUE)
+    y <- c("", " CI95 low", " CI95 high")
+    !(length(x) %% length(y)) && all(x == y)
+  }
+  data_columns_ok <- function(x) {
+    rest <- seq.int(nrow(x)) %% 3L
+    all(x[rest == 1L, , drop = FALSE] >= x[rest == 2L, , drop = FALSE]) &&
+      all(x[rest == 1L, , drop = FALSE] <= x[rest == 0L, , drop = FALSE])
+  }
+  is.data.frame(x) && !is.na(pos <- match("Parameter", colnames(x))) &&
+    param_column_ok(x[, pos]) &&
+    data_columns_ok(x[, (pos + 1L):ncol(x), drop = FALSE])
+}
+
+
+A_VALUES <- extract(c(THIN.AGG, THIN.AGG), as.labels = list("organism", "run"),
+  subset = "A", dataframe = TRUE)
+
+
 ################################################################################
 
 
@@ -254,5 +278,138 @@ test_that("a radial plot can be drawn", {
     names = c("Bacillus simplex 4", "Bacillus simplex 3"))
   expect_equal(got, expected)
 })
+
+
+
+################################################################################
+#
+# WORK IN PROGRESS BY LAIV: group_CI()
+#
+
+
+## group_CI
+test_that("group_CI works without grouping and without normalisation", {
+  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "raw",
+    grouping = FALSE)
+  expect_is(x, "data.frame")
+  expect_false(is_ci_plottable(x))
+  expect_equal(x, A_VALUES)
+  expect_error(ci_plot(x)) # no CI were computed
+})
+
+
+## group_CI
+test_that("group_CI works with grouping and without normalisation", {
+  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "raw",
+    grouping = TRUE)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  ##expect_is(ci_plot(x[, 1L:9L], legend.field = c(2L, 2L)), "character")
+})
+
+
+## group_CI
+test_that("group_CI works with grouping and 'plate.sub' normalisation", {
+  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "plate.sub",
+    grouping = TRUE)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  ##expect_is(ci_plot(x[, 1L:9L], legend.field = c(2L, 2L)), "character")
+})
+
+
+## group_CI
+test_that("one cannot pass too many 'Parameter' columns to group_ci()", {
+  Parameter <- rep("A", length(A_VALUES[, 1]))
+  xy <- cbind(A_VALUES, Parameter)
+  expect_error(x <- group_CI(object = xy, what = colnames(xy[, c(1:3, 102)]),
+    norm.method = "well.sub", grouping = TRUE))
+})
+
+
+
+if (FALSE) {
+
+## group_CI
+test_that("group_CI works with grouping and 'plate.rat' normalisation", {
+  # 'what' given as character-string of the column-names
+  x <- group_CI(object = A_VALUES, what = colnames(A_VALUES[, 1L:3L]),
+    norm.method = "plate.rat", x = 10L, grouping = TRUE)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(12L, 100L))
+  expect_true(is_ci_plottable(x))
+  #good
+  message("plot #3")
+  ci_plot(x[, 1L:10L]) # good
+  # note: the first four columns are factors, thus only six plots
+})
+
+
+## group_CI
+test_that("group_CI works with grouping and 'well.rat' normalisation", {
+  # what given directly as character-string
+  x <- group_CI(object = A_VALUES, what = c("Strain", "Slot"),
+    norm.method = "well.rat", grouping = TRUE)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(12L, 99L))
+  expect_true(is_ci_plottable(x))
+  # good as well:
+  message("plot #4")
+  ci_plot(x[, 1L:5L])
+  # note: the first three columns are factors, thus only seven plots
+})
+
+
+## group_CI
+test_that("group_CI works with grouping and 'well.sub' normalisation", {
+  # only one column in what
+  x <- group_CI(object = A_VALUES, what = c("Strain"),
+    norm.method = "well.sub", grouping = TRUE)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 98L))
+  expect_true(is_ci_plottable(x))
+  message("plot #5")
+  ci_plot(x[, 1L:5L])
+  # good :)
+  # note: the first two columns are factors, thus only eight plots
+})
+
+
+## group_CI
+test_that("first test that Lea still must christen", {
+  # wrong columns in 'what'-argument
+  expect_error(x <- group_CI(object = A_VALUES,
+    what = c("Strain", "Experiment", "Slot", "Species",
+      "H06 (Acetoacetic Acid)"),
+    norm.method = "well.sub", grouping = TRUE), silent = TRUE)
+
+  # ok. error occurs
+  # Error in group_CI(object = A_VALUES, what = c("Strain", "Experiment",  :
+  #   cannot find column name: H06 (Acetoacetic Acid)
+})
+
+
+## group_CI
+test_that("second test that Lea still must christen", {
+  x <- group_CI(object = A_VALUES,
+    what = c("Strain", "Experiment", "Slot", "Slot", "Species"),
+    norm.method = "well.sub", grouping = TRUE)
+  expect_true(is_ci_plottable(x))
+  # ok.
+  # Warning message:
+  # In group_CI(object = A_VALUES, what = c("Strain", "Experiment",  :
+  #   grouping variable(s) are not unique
+})
+
+
+
+}
+
+
+################################################################################
+
+
 
 
