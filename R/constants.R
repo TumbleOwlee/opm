@@ -194,5 +194,10 @@ GREEK_LETTERS <- c("alpha", "beta", "gamma", "delta", "epsilon")
 names(GREEK_LETTERS) <- substring(GREEK_LETTERS, 1L, 1L)
 GREEK_LETTERS <- cbind(plain = GREEK_LETTERS,
   html = sprintf("&%s;", GREEK_LETTERS))
+GREEK_LETTERS <- rbind(GREEK_LETTERS, GREEK_LETTERS)
+rownames(GREEK_LETTERS)[seq.int(nrow(GREEK_LETTERS) / 2L)] <- GREEK_LETTERS[
+  seq.int(nrow(GREEK_LETTERS) / 2L), "plain"]
+
+
 
 

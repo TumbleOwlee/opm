@@ -106,25 +106,32 @@ map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
 #' Create a textual (listing-like) description.
 #'
 #' @param x Logical vector.
+#' @param html Logical scalar.
+#' @param ... Optional arguments passed to and from other methods.
 #' @return Character vector, one element per sentence.
 #' @keywords internal
 #'
-to_sentence <- function(x) UseMethod("to_sentence")
+to_sentence <- function(x, ...) UseMethod("to_sentence")
 
 #' @rdname to_sentence
 #' @method to_sentence logical
 #'
-to_sentence.logical <- function(x) {
+to_sentence.logical <- function(x, html, ...) {
   sentence <- function(x, what) {
-    if (length(x))
+    if (length(x)) {
+      if (html)
+        x <- substrate_info(x, "html")
       sprintf("%s for %s.", what, listing(x, style = "sentence"))
-    else
+    } else
       ""
   }
+  LL(html)
   isna <- is.na(x)
   n <- c("Positive", "Negative", "Ambiguous")
   result <- c(sentence(names(x)[x & !isna], n[1L]),
     sentence(names(x)[!x & !isna], n[2L]), sentence(names(x)[isna], n[3L]))
+  if (html)
+    result <- sprintf("<div>%s</div>", result)
   names(result) <- n
   result
 }
@@ -153,6 +160,8 @@ to_sentence.logical <- function(x) {
 #'   (if any).
 #' @param exact Logical scalar passed to \code{\link{metadata}}.
 #' @param strict Logical scalar also passed to \code{\link{metadata}}.
+#' @param html Logical scalar. Convert to \acronym{HTML}? This involves Greek
+#'   letters and paragraph tags.
 #' @param ... Optional arguments passed between the methods or to
 #'   \code{\link{wells}}.
 #' @return Character vector or matrix. See the examples for details.
@@ -168,6 +177,10 @@ to_sentence.logical <- function(x) {
 #' # this yields one sentence for each kind of reaction:
 #' (x <- listing(vaas_1))
 #' stopifnot(is.character(x), length(x) == 3, !is.null(names(x)))
+#'
+#' # including HTML tags
+#' (y <- listing(vaas_1, html = TRUE))
+#' stopifnot(nchar(y) > nchar(x))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
@@ -190,19 +203,19 @@ to_sentence.logical <- function(x) {
 setGeneric("listing")
 
 setMethod("listing", OPMD, function(x, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, ...) {
+    in.parens = FALSE, html = FALSE, ...) {
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
-  to_sentence(res)
+  to_sentence(res, html)
 }, sealed = SEALED)
 
 setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
     exact = TRUE, strict = TRUE, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, ...) {
+    in.parens = FALSE, html = FALSE, ...) {
   LL(cutoff, sep)
   if (!length(as.groups))
-    return(do.call(rbind, lapply(X = x@plates, FUN = listing,
+    return(do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
       downcase = downcase, full = full, in.parens = in.parens, ...)))
   disc <- extract(object = x, subset = "disc", as.groups = as.groups,
     sep = sep, exact = exact, strict = strict, downcase = downcase,
@@ -212,7 +225,7 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
   t(vapply(levels(groups), function(group) {
     y <- disc[groups == group, , drop = FALSE]
     y <- apply(y, 2L, reduce_to_mode, cutoff = cutoff, use.na = TRUE)
-    to_sentence(y)
+    to_sentence(y, html)
   }, character(3L)))
 }, sealed = SEALED)
 
@@ -399,12 +412,12 @@ setMethod("find_positions", "list", function(object) {
 #' \code{\link{find_substrate}}. Alternatively, this functions converts the
 #' substrate names to lower case, protecting one-letter specifiers, acronyms and
 #' chemical symbols, and translating relevant characters from the Greek
-#' alphabet.
+#' alphabet, or only translates to Greek letters, optionally in \acronym{HTML}.
 #'
 #' @param object Query character vector or query list.
 #' @param what Character scalar indicating which kind of information to output.
 #'   See the references for the background of each possible value.
-#'   \sQuote{downcase} is special; see above.
+#'   \sQuote{downcase}, \sQuote{greek} and \sQuote{html} are special; see above.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @return The character method returns a character vector with \code{object}
@@ -445,7 +458,12 @@ setGeneric("substrate_info",
   function(object, ...) standardGeneric("substrate_info"))
 
 setMethod("substrate_info", "character", function(object,
-    what = c("cas", "kegg", "metacyc", "mesh", "downcase")) {
+    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html")) {
+  convert_greek <- function(x, how) {
+    x <- strsplit(x, sep <- "-", fixed = TRUE)
+    x <- map_values(x, GREEK_LETTERS[, how])
+    vapply(x, paste, character(1L), collapse = sep)
+  }
   safe_downcase <- function(x) {
     good_case <- function(x) {
       bad <- nchar(x) > 1L # avoid changing acronyms and chemical elements
@@ -464,10 +482,15 @@ setMethod("substrate_info", "character", function(object,
     x <- map_values(x, GREEK_LETTERS[, "plain"])
     mapply(paste, y, x, MoreArgs = list(sep = "", collapse = ""))
   }
-  structure(.Data = case(what <- match.arg(what),
-    downcase = safe_downcase(object), kegg =, metacyc =, mesh =,
+  result <- case(what <- match.arg(what),
+    downcase = safe_downcase(object),
+    greek = convert_greek(object, "plain"),
+    html = convert_greek(object, "html"),
+    kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
-  ), .Names = object)
+  )
+  names(result) <- object
+  result
 }, sealed = SEALED)
 
 setMethod("substrate_info", "list", function(object, ...) {

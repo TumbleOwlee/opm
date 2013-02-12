@@ -400,12 +400,6 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
   #
   make_html <- function(x, title, html.args, ...) {
 
-    convert_greek <- function(x) {
-      x <- strsplit(x, sep <- "-", fixed = TRUE)
-      x <- map_values(x, GREEK_LETTERS[, "html"])
-      vapply(x, paste, character(1L), collapse = sep)
-    }
-
     html_head <- function(title, css, meta) {
       if (length(title)) { # Tidy accepts only a single title entry
         from.opm <- attr(title, opm_string())
@@ -426,7 +420,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
       generator <- single_tag("meta", name = "generator",
         content = paste(opm_string(version = TRUE), collapse = " version "))
       # see http://www.w3.org/TR/NOTE-datetime
-      # but %s appears to by affected by a bug in R 2.15.2
+      # but %s appears to be affected by a bug in R 2.15.2
       time <- format(Sys.time(), "%Y-%M-%dT%H:%M:%S%z")
       time <- single_tag("meta", name = "date", content = time)
       if (length(meta)) {
@@ -504,7 +498,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
         stop(BUG_MSG)
       colnames(x) <- unhtml(colnames(x))
       if (L(html.args$greek.letters))
-        colnames(x) <- convert_greek(colnames(x))
+        colnames(x) <- substrate_info(colnames(x), "html")
       colnames(x) <- div_class(colnames(x), variability)
       colnames(x) <- div_class(colnames(x), "character-name")
       x[] <- t(apply(x, 1L, div_class, variability))

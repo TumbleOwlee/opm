@@ -33,6 +33,9 @@
   \item{strict}{Logical scalar also passed to
   \code{\link{metadata}}.}
 
+  \item{html}{Logical scalar. Convert to \acronym{HTML}?
+  This involves Greek letters and paragraph tags.}
+
   \item{...}{Optional arguments passed between the methods
   or to \code{\link{wells}}.}
 }
@@ -56,6 +59,10 @@ data(vaas_1)
 # this yields one sentence for each kind of reaction:
 (x <- listing(vaas_1))
 stopifnot(is.character(x), length(x) == 3, !is.null(names(x)))
+
+# including HTML tags
+(y <- listing(vaas_1, html = TRUE))
+stopifnot(nchar(y) > nchar(x))
 
 # 'OPMS' method
 data(vaas_4)
@@ -90,10 +97,10 @@ stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 \alias{listing,OPMS-method}
 \usage{
   \S4method{listing}{OPMD}(x, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, ...) 
+    in.parens = FALSE, html = FALSE, ...) 
 
   \S4method{listing}{OPMS}(x, as.groups, cutoff = 0.5, sep = " ",
     exact = TRUE, strict = TRUE, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, ...) 
+    in.parens = FALSE, html = FALSE, ...) 
 
 }

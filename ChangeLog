@@ -1,5 +1,10 @@
 
 
+
+- substrate_info() gets new 'greek' and 'html' arguments
+- listing() gets 'html' argument
+
+
 ################################################################################
 
 

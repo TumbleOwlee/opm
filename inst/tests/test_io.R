@@ -40,7 +40,7 @@ expect_path_equivalent <- function(actual, expected) {
 # in the path separators (Windows vs. UNIX style).
 #
 expect_path_equal <- function(actual, expected) {
-  clean <- function(x) chartr("\\", "/", x)
+  clean <- function(x) chartr("\\", '/', x)
   expect_equal(clean(actual), clean(expected))
 }
 

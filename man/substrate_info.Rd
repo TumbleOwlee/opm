@@ -6,8 +6,8 @@
 
   \item{what}{Character scalar indicating which kind of
   information to output.  See the references for the
-  background of each possible value.  \sQuote{downcase} is
-  special; see above.}
+  background of each possible value.  \sQuote{downcase},
+  \sQuote{greek} and \sQuote{html} are special; see above.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -28,7 +28,8 @@
   functions converts the substrate names to lower case,
   protecting one-letter specifiers, acronyms and chemical
   symbols, and translating relevant characters from the
-  Greek alphabet.
+  Greek alphabet, or only translates to Greek letters,
+  optionally in \acronym{HTML}.
 }
 \note{
   Currently the information is incomplete, particularly for
@@ -79,7 +80,7 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 \alias{substrate_info,factor-method}
 \usage{
   \S4method{substrate_info}{character}(object,
-    what = c("cas", "kegg", "metacyc", "mesh", "downcase")) 
+    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html")) 
 
   \S4method{substrate_info}{list}(object, ...) 
 
