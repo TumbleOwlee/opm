@@ -135,11 +135,11 @@ test_that("positions within PM plates can be found", {
 
 ## substrate_info
 test_that("greek letters can be expanded", {
-  x <- c("a-D-Fructose", "Penicillin G", "b-L-Glucose")
-  wanted <- c("alpha-D-Fructose", "Penicillin G", "beta-L-Glucose")
+  x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose")
+  wanted <- c("A01 (alpha-D-Fructose)", "Penicillin G", "beta-L-Glucose")
   got <- substrate_info(x, "greek")
   expect_equivalent(got, wanted)
-  wanted <- c("&alpha;-D-Fructose", "Penicillin G", "&beta;-L-Glucose")
+  wanted <- c("A01 (&alpha;-D-Fructose)", "Penicillin G", "&beta;-L-Glucose")
   got <- substrate_info(x, "html")
   expect_equivalent(got, wanted)
 })

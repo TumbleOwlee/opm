@@ -161,7 +161,7 @@ to_sentence.logical <- function(x, html, ...) {
 #' @param exact Logical scalar passed to \code{\link{metadata}}.
 #' @param strict Logical scalar also passed to \code{\link{metadata}}.
 #' @param html Logical scalar. Convert to \acronym{HTML}? This involves Greek
-#'   letters and paragraph tags.
+#'   letters and paragraph (\sQuote{div}) tags.
 #' @param ... Optional arguments passed between the methods or to
 #'   \code{\link{wells}}.
 #' @return Character vector or matrix. See the examples for details.
@@ -459,10 +459,18 @@ setGeneric("substrate_info",
 
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html")) {
+  map_words <- function(x, fun, ...) {
+    y <- strsplit(x, "\\w+", perl = TRUE)
+    x <- strsplit(x, "\\W+", perl = TRUE)
+    bad <- !vapply(x, function(value) nzchar(value[1L]), logical(1L))
+    x[bad] <- lapply(x[bad], `[`, i = -1L)
+    bad <- vapply(x, length, integer(1L)) < vapply(y, length, integer(1L))
+    x[bad] <- lapply(x[bad], function(value) c(value, ""))
+    x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
+    mapply(paste, y, x, MoreArgs = list(sep = "", collapse = ""))
+  }
   convert_greek <- function(x, how) {
-    x <- strsplit(x, sep <- "-", fixed = TRUE)
-    x <- map_values(x, GREEK_LETTERS[, how])
-    vapply(x, paste, character(1L), collapse = sep)
+    map_words(x, fun = map_values, mapping = GREEK_LETTERS[, how])
   }
   safe_downcase <- function(x) {
     good_case <- function(x) {
@@ -472,15 +480,7 @@ setMethod("substrate_info", "character", function(object,
       x[bad] <- tolower(x[bad])
       x
     }
-    y <- strsplit(x, "\\w+", perl = TRUE)
-    x <- strsplit(x, "\\W+", perl = TRUE)
-    bad <- !vapply(x, function(value) nzchar(value[1L]), logical(1L))
-    x[bad] <- lapply(x[bad], `[`, i = -1L)
-    bad <- vapply(x, length, integer(1L)) < vapply(y, length, integer(1L))
-    x[bad] <- lapply(x[bad], function(value) c(value, ""))
-    x <- lapply(x, good_case)
-    x <- map_values(x, GREEK_LETTERS[, "plain"])
-    mapply(paste, y, x, MoreArgs = list(sep = "", collapse = ""))
+    map_words(x, function(y) map_values(good_case(y), GREEK_LETTERS[, "plain"]))
   }
   result <- case(what <- match.arg(what),
     downcase = safe_downcase(object),

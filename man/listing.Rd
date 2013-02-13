@@ -34,7 +34,8 @@
   \code{\link{metadata}}.}
 
   \item{html}{Logical scalar. Convert to \acronym{HTML}?
-  This involves Greek letters and paragraph tags.}
+  This involves Greek letters and paragraph (\sQuote{div})
+  tags.}
 
   \item{...}{Optional arguments passed between the methods
   or to \code{\link{wells}}.}
