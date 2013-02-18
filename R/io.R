@@ -22,7 +22,7 @@
 #'   vectors with more than a single element.
 #' @export
 #' @return Character scalar, holding a regular expression.
-#' @family IO-functions
+#' @family io-functions
 #' @keywords utilities
 #' @seealso tools::file_ext
 #' @examples
@@ -314,7 +314,7 @@ read_microstation_opm <- function(filename) {
 #' @return \code{\link{OPM}} object. In the case of \acronym{YAML} input, this
 #'   might also be an \code{\link{OPMA}} object or a list of such objects, but
 #'   \strong{not} an \code{\link{OPMS}} object.
-#' @family IO-functions
+#' @family io-functions
 #' @note \itemize{
 #'   \item The expected \acronym{CSV} format is what is output by the
 #'     OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
@@ -424,7 +424,7 @@ read_single_opm <- function(filename) {
 #'
 #' @export
 #' @seealso base::list.files base::Sys.glob
-#' @family IO-functions
+#' @family io-functions
 #' @keywords IO character
 #' @examples
 #'
@@ -508,7 +508,7 @@ explode_dir <- function(names,
 #' @export
 #' @return Character vector of filenames.
 #' @note This might fail with unusual installations of the \pkg{opm} package.
-#' @family IO-functions
+#' @family io-functions
 #' @seealso pkgutils::pkg_files
 #' @keywords utilities
 #' @examples
@@ -589,7 +589,7 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary")) {
 #'   consider the plate-type selection options of \code{\link{opms}}.
 #'
 #' @export
-#' @family IO-functions
+#' @family io-functions
 #' @references \url{http://www.yaml.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv yaml::yaml.load_file
@@ -685,7 +685,7 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #'   \code{as.data.frame}.
 #' @export
 #' @return Dataframe.
-#' @family IO-functions
+#' @family io-functions
 #' @keywords IO manip
 #' @seealso base::default.stringsAsFactors utils::read.delim base::as.data.frame
 #' @examples
@@ -747,7 +747,7 @@ setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
 #' @param use.names Logical scalar. Should \code{names} be used for naming the
 #'   elements of the result?
 #' @export
-#' @family IO-functions
+#' @family io-functions
 #' @return List, potentially simplified to a vector, depending on the output of
 #'   \code{fun} and the value of \code{simplify}. See also \code{demo}.
 #' @keywords IO
@@ -834,7 +834,7 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #' @note Regarding the \acronym{CSV} format, see the remark to
 #'   \code{\link{read_single_opm}}.
 #' @seealso utils::edit utils::read.delim
-#' @family IO-functions
+#' @family io-functions
 #' @references \url{http://www.biolog.com/}
 #' @keywords IO attribute
 #' @examples
@@ -1070,7 +1070,7 @@ process_io <- function(files, io.fun, fun.args = list(),
 #'   successful and a message describing the problems otherwise. For the results
 #'   of the \code{demo} mode see above.
 #' @keywords IO
-#' @family IO-functions
+#' @family io-functions
 #' @examples
 #' # Read the first line from each of the OPM test dataset files and store it
 #' # in temporary files
@@ -1176,7 +1176,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #' }
 #' @return The function invisibly returns a matrix which describes each
 #'   attempted file conversion. See \code{\link{batch_process}} for details.
-#' @family IO-functions
+#' @family io-functions
 #' @references \url{http://www.yaml.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv yaml::yaml.load_file
@@ -1364,7 +1364,7 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   newly generated files. The names of the list are the input filenames. The
 #'   list is returned invisibly.
 #'
-#' @family IO-functions
+#' @family io-functions
 #' @seealso base::split base::strsplit
 #' @keywords utilities
 #' @examples
@@ -1460,7 +1460,7 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 #' @export
 #' @return Character vector, its names corresponding to the renamed old files,
 #'   values corresponding to the novel names, returned invisibly.
-#' @family IO-functions
+#' @family io-functions
 #' @keywords utilities
 #' @seealso base::file.rename
 #' @examples

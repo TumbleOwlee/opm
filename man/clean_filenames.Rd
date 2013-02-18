@@ -54,7 +54,7 @@ unlink(y) # tidy up
 \seealso{
   base::file.rename
 
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{collect_template}},

@@ -91,7 +91,7 @@ if (length(infiles) > 0) {
 }
 }
 \seealso{
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_opm_to_yaml}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},

@@ -63,7 +63,7 @@ if (length(test.files) > 0) { # if the folder is found
 \seealso{
   utils::read.csv
 
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},

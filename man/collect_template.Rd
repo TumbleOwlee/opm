@@ -127,7 +127,7 @@ stopifnot(identical(dim(x), c(4L, 5L)))
 \seealso{
   utils::edit utils::read.delim
 
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}}, \code{\link{explode_dir}},

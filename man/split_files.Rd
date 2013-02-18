@@ -101,7 +101,7 @@ if (length(x) > 0) {
 \seealso{
   base::split base::strsplit
 
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},

@@ -35,15 +35,15 @@ NULL
 #'
 NULL
 
-#'@importFrom lattice levelplot
+#' @importFrom lattice levelplot
 #'
 NULL
 
-#'@importFrom plotrix radial.plot
+#' @importFrom plotrix radial.plot
 #'
 NULL
 
-#'@importFrom yaml as.yaml yaml.load yaml.load_file
+#' @importFrom yaml as.yaml yaml.load yaml.load_file
 #'
 NULL
 

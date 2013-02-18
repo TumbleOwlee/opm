@@ -166,7 +166,7 @@ if (length(test.files) > 0) {
 \seealso{
   utils::read.csv yaml::yaml.load_file
 
-  Other IO-functions: \code{\link{batch_collect}},
+  Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
