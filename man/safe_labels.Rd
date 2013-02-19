@@ -2,7 +2,8 @@
 \alias{safe_labels}
 \title{Safe labels}
 \usage{
-  safe_labels(x, format, enclose = TRUE, pad = FALSE)
+  safe_labels(x, format, enclose = TRUE, pad = FALSE,
+    comment = FALSE)
 }
 \arguments{
   \item{x}{Character vector or convertible to such.}
@@ -11,11 +12,20 @@
   \code{\link{phylo_data}}.}
 
   \item{enclose}{Logical scalar. See
-  \code{\link{phylo_data}}.}
+  \code{\link{phylo_data}} and the description of
+  \code{comment}.}
 
   \item{pad}{Logical scalar. Bring labels to the same
   number of characters by appending spaces? Has no effect
   for \sQuote{phylip} and \sQuote{html} output format.}
+
+  \item{comment}{Logical scalar. If \code{TRUE}, comments
+  as used in the respective format will be produced.
+  \sQuote{phylip} and \sQuote{epf} do not accept comments
+  and will yield an error. If \code{enclose} is
+  \code{TRUE}, the comment-enclosing characters are
+  appended prepended to the vector, otherwise to each
+  string seperately.}
 }
 \value{
   Character vector.

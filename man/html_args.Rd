@@ -86,6 +86,11 @@
   for the easy fine-tuning of the generated \acronym{HTML}
   output.
 }
+\note{
+  The \code{\link{phylo_data}} methods for
+  \sQuote{OPMD_Listing} and \sQuote{OPMS_Listing} objects
+  do not support all \acronym{HTML} formatting options.
+}
 \examples{
 # see phylo_data()
 }

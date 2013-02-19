@@ -318,6 +318,22 @@ test_that("annotations can be added with word-wise abbreviation", {
 })
 
 
+## list2html
+test_that("HTML can be recursively generated", {
+  x <- list(a = 63, c = list(b = letters, structure(LETTERS, .Names = letters)))
+  got <- list2html(x)
+  expect_is(got, "character")
+  expect_equal(length(got), 1L)
+  got <- strsplit(got, "\\s*<[^>]+>\\s*", perl = TRUE)[[1]]
+  expect_true(setequal(got[nzchar(got)],
+    c(63, LETTERS, paste(letters, collapse = " "))))
+})
+
+
+## html_head
+## UNTESTED
+
+
 ## tidy
 ## UNTESTED
 

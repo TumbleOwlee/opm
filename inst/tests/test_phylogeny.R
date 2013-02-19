@@ -43,19 +43,6 @@ test_that("cleaning names correctly converts string starts and ends", {
 })
 
 
-
-## list2html
-test_that("HTML can be recursively generated", {
-  x <- list(a = 63, c = list(b = letters, structure(LETTERS, .Names = letters)))
-  got <- list2html(x)
-  expect_is(got, "character")
-  expect_equal(length(got), 1L)
-  got <- strsplit(got, "\\s*<[^>]+>\\s*", perl = TRUE)[[1]]
-  expect_true(setequal(got[nzchar(got)],
-    c(63, LETTERS, paste(letters, collapse = " "))))
-})
-
-
 ## format
 ## UNTESTED
 

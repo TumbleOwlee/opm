@@ -1,6 +1,12 @@
 
 
+################################################################################
 
+
+- listing() methods return S3 objects with adapted print() and phylo_data()
+  methods
+- safe_labels gets a 'comment' argument
+- improved print() methods for OPM(S/D)_Summary objects
 - substrate_info() gets new 'greek' and 'html' arguments
 - listing() gets 'html' argument
 

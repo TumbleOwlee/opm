@@ -41,7 +41,9 @@
   or to \code{\link{wells}}.}
 }
 \value{
-  Character vector or matrix. See the examples for details.
+  Character vector or matrix with additional class atribute
+  \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the
+  examples for details.
 }
 \description{
   This creates a textual listing of the discretized values.
@@ -59,28 +61,30 @@ data(vaas_1)
 
 # this yields one sentence for each kind of reaction:
 (x <- listing(vaas_1))
-stopifnot(is.character(x), length(x) == 3, !is.null(names(x)))
+stopifnot(inherits(x, "OPMD_Listing"), is.character(x), length(x) == 3,
+  !is.null(names(x)))
 
 # including HTML tags
 (y <- listing(vaas_1, html = TRUE))
-stopifnot(nchar(y) > nchar(x))
+stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
+  !is.null(names(x)))
 
 # 'OPMS' method
 data(vaas_4)
 
-# no grouping, no names
+# no grouping, no names (numbering used instead for row names)
 (y <- listing(vaas_4, as.groups = NULL))
-stopifnot(is.matrix(y), dim(y) == c(4, 3))
-stopifnot(is.null(rownames(y)), !is.null(colnames(y)))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 
 # in effect no grouping, but names
 (y <- listing(vaas_4, as.groups = list("Species", "Strain")))
-stopifnot(is.matrix(y), dim(y) == c(4, 3))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
 stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 
 # two groups
 (y <- listing(vaas_4, as.groups = list("Species")))
-stopifnot(is.matrix(y), dim(y) == c(2, 3))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 }
 \seealso{

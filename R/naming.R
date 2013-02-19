@@ -164,7 +164,9 @@ to_sentence.logical <- function(x, html, ...) {
 #'   letters and paragraph (\sQuote{div}) tags.
 #' @param ... Optional arguments passed between the methods or to
 #'   \code{\link{wells}}.
-#' @return Character vector or matrix. See the examples for details.
+#' @return Character vector or matrix with additional class atribute
+#'   \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the examples for
+#'   details.
 #' @export
 #' @family naming-functions
 #' @keywords character category
@@ -176,28 +178,30 @@ to_sentence.logical <- function(x, html, ...) {
 #'
 #' # this yields one sentence for each kind of reaction:
 #' (x <- listing(vaas_1))
-#' stopifnot(is.character(x), length(x) == 3, !is.null(names(x)))
+#' stopifnot(inherits(x, "OPMD_Listing"), is.character(x), length(x) == 3,
+#'   !is.null(names(x)))
 #'
 #' # including HTML tags
 #' (y <- listing(vaas_1, html = TRUE))
-#' stopifnot(nchar(y) > nchar(x))
+#' stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
+#'   !is.null(names(x)))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
 #'
-#' # no grouping, no names
+#' # no grouping, no names (numbering used instead for row names)
 #' (y <- listing(vaas_4, as.groups = NULL))
-#' stopifnot(is.matrix(y), dim(y) == c(4, 3))
-#' stopifnot(is.null(rownames(y)), !is.null(colnames(y)))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+#' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 #'
 #' # in effect no grouping, but names
 #' (y <- listing(vaas_4, as.groups = list("Species", "Strain")))
-#' stopifnot(is.matrix(y), dim(y) == c(4, 3))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
 #' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 #'
 #' # two groups
 #' (y <- listing(vaas_4, as.groups = list("Species")))
-#' stopifnot(is.matrix(y), dim(y) == c(2, 3))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 #' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 #'
 setGeneric("listing")
@@ -207,26 +211,37 @@ setMethod("listing", OPMD, function(x, downcase = TRUE, full = TRUE,
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
-  to_sentence(res, html)
+  res <- to_sentence(res, html)
+  class(res) <- "OPMD_Listing"
+  attr(res, "html") <- html
+  res
 }, sealed = SEALED)
 
 setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
     exact = TRUE, strict = TRUE, downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, ...) {
+  add_stuff <- function(x, html) {
+    class(x) <- "OPMS_Listing"
+    attr(x, "html") <- html
+    x
+  }
   LL(cutoff, sep)
-  if (!length(as.groups))
-    return(do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
-      downcase = downcase, full = full, in.parens = in.parens, ...)))
+  if (!length(as.groups)) {
+    res <- do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
+      downcase = downcase, full = full, in.parens = in.parens, ...))
+    rownames(res) <- seq.int(nrow(res))
+    return(add_stuff(res, html))
+  }
   disc <- extract(object = x, subset = "disc", as.groups = as.groups,
     sep = sep, exact = exact, strict = strict, downcase = downcase,
     full = full, in.parens = in.parens, dataframe = FALSE, as.labels = NULL,
     ...)
   groups <- attr(disc, "row.groups")
-  t(vapply(levels(groups), function(group) {
-    y <- disc[groups == group, , drop = FALSE]
-    y <- apply(y, 2L, reduce_to_mode, cutoff = cutoff, use.na = TRUE)
-    to_sentence(y, html)
-  }, character(3L)))
+  add_stuff(t(vapply(levels(groups), function(group) {
+      y <- disc[groups == group, , drop = FALSE]
+      y <- apply(y, 2L, reduce_to_mode, cutoff = cutoff, use.na = TRUE)
+      to_sentence(y, html)
+    }, character(3L))), html)
 }, sealed = SEALED)
 
 

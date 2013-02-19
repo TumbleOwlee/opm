@@ -126,6 +126,10 @@ test_that("the known method names are OK", {
 })
 
 
+## HTML_DOCTYPE
+## UNTESTED
+
+
 ## W3C_COLORS
 ## UNTESTED
 

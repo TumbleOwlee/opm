@@ -58,11 +58,33 @@ setMethod("show", CMAT, function(object) {
 NULL
 
 #' @rdname print
+#' @method print OPMD_Listing
+#' @export
+#'
+print.OPMD_Listing <- function(x, ...) {
+  cat(formatDL(x = x, ...), sep = "\n")
+  invisible(x)
+}
+
+#' @rdname print
+#' @method print OPMS_Listing
+#' @export
+#'
+print.OPMS_Listing <- function(x, ...) {
+  for (name in rownames(x)) {
+    cat(name, gsub(".", "-", name, perl = TRUE), sep = "\n")
+    cat(formatDL(x = x[name, ], ...), sep = "\n")
+    cat("\n")
+  }
+  invisible(x)
+}
+
+#' @rdname print
 #' @method print OPM_Summary
 #' @export
 #'
 print.OPM_Summary <- function(x, ...) {
-  lapply(formatDL(x = names(x), y = unlist(x), ...), FUN = message)
+  lapply(formatDL(x = names(x), y = unlist(x), ...), FUN = cat, sep = "\n")
   invisible(x)
 }
 
@@ -72,14 +94,15 @@ print.OPM_Summary <- function(x, ...) {
 #'
 print.OPMS_Summary <- function(x, ...) {
   for (i in seq_along(x)) {
-    message(i)
+    cat(i, sep = "\n")
     print(x[[i]])
+    cat("\n")
   }
-  tmpl <- "\n=> %s object with %i plates (%i aggregated, %i discretized)"
+  tmpl <- "=> %s object with %i plates (%i aggregated, %i discretized)"
   tmpl <- paste(tmpl, "of type '%s', %i well(s) and about %i time point(s).")
   y <- attr(x, "overall")
-  message(sprintf(tmpl, OPMS, y$dimensions[1L], y$aggregated, y$discretized,
-    y$plate.type, y$dimensions[3L], y$dimensions[2L]))
+  cat(sprintf(tmpl, OPMS, y$dimensions[1L], y$aggregated, y$discretized,
+    y$plate.type, y$dimensions[3L], y$dimensions[2L]), sep = "\n")
   invisible(x)
 }
 

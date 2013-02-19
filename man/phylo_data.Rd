@@ -7,7 +7,10 @@
   \sQuote{integer}, \sQuote{logical}, \sQuote{double} and
   \sQuote{character} matrix content is supported. The
   data-frame and \sQuote{OPMS} methods first call
-  \code{\link{extract}} and then the matrix method.}
+  \code{\link{extract}} and then the matrix method. The
+  methods for \sQuote{OPMD_Listing} and
+  \sQuote{OPMS_Listing} objects can be applied to the
+  results of \code{\link{listing}}.}
 
   \item{format}{Character scalar, either \sQuote{epf}
   (Extended Phylip Format), \sQuote{nexus},
@@ -127,9 +130,9 @@
   Create entire character matrix (include header and
   footer) in a file format suitable for exporting
   phylogenetic data. Return it or write it to a file. This
-  function can also produce \acronym{HTML} tables suitable
-  for displaying PM data in taxonomic journals such as
-  \acronym{IJSEM}.
+  function can also produce \acronym{HTML} tables and text
+  paragraphs suitable for displaying \acronym{PM} data in
+  taxonomic journals such as \acronym{IJSEM}.
 }
 \details{
   \itemize{ \item Exporting PM data in such formats allows
@@ -173,7 +176,7 @@ is_html <- function(x) is.character(x) &&
 longer <- function(x, y) any(nchar(x) > nchar(y)) &&
   !any(nchar(x) < nchar(y))
 
-# dummy data set
+## examples with a dummy data set
 x <- matrix(c(0:9, letters[1:22]), nrow = 2)
 colnames(x) <- LETTERS[1:16]
 rownames(x) <- c("Ahoernchen", "Behoernchen") # Chip and Dale in German
@@ -212,7 +215,7 @@ comment(x) <- NULL
 echo(y.hennig <- phylo_data(x, format = "hennig"))
 stopifnot(identical(length(y.hennig), hennig.len.1 - 1L))
 
-# examples with real data and HTML
+## examples with real data and HTML
 data(vaas_4)
 
 # setting the CSS file that comes with opm as default
@@ -286,6 +289,18 @@ echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
   join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
   discrete.args = NULL))
 stopifnot(is.character(yy), length(yy) > 10)
+
+## 'OPMD_listing' method
+(x <- phylo_data(listing(vaas_1)))
+stopifnot(is.character(x), length(x) == 1)
+(x <- phylo_data(listing(vaas_1, html = TRUE)))
+stopifnot(is.character(x), length(x) > 1)
+
+## 'OPMS_listing' method
+(x <- phylo_data(listing(vaas_4, as.groups = "Species")))
+stopifnot(is.character(x), length(x) == 2, !is.null(names(x)))
+(x <- phylo_data(listing(vaas_4, as.groups = "Species", html = TRUE)))
+stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
 }
 \references{
   Berger, S. A., Stamatakis, A. 2010 Accuracy of
@@ -342,6 +357,8 @@ stopifnot(is.character(yy), length(yy) > 10)
 \alias{phylo_data,matrix-method}
 \alias{phylo_data,data.frame-method}
 \alias{phylo_data,OPMS-method}
+\alias{phylo_data,OPMD_Listing-method}
+\alias{phylo_data,OPMS_Listing-method}
 \usage{
   \S4method{phylo_data}{matrix}(object,
     format = opm_opt("phylo.fmt"), outfile = "", enclose = TRUE, indent = 3L,
@@ -356,5 +373,11 @@ stopifnot(is.character(yy), length(yy) > 10)
   \S4method{phylo_data}{OPMS}(object, as.labels, subset = "disc",
     sep = " ", extract.args = list(), join = TRUE,
     discrete.args = list(range = TRUE, gap = TRUE), ...) 
+
+  \S4method{phylo_data}{OPMD_Listing}(object,
+    html.args = html_args(), run.tidy = FALSE) 
+
+  \S4method{phylo_data}{OPMS_Listing}(object,
+    html.args = html_args(), run.tidy = FALSE) 
 
 }

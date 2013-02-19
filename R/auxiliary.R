@@ -697,6 +697,113 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
 ################################################################################
 
 
+#' Convert recursively to HTML
+#'
+#' This is the helper function used by \code{\link{format}} for converting
+#' user-defined additions to \acronym{HTML}.
+#'
+#' @param x List or other vector.
+#' @param level Integer scalar defining the starting level for indentation and
+#'   naming of unnamed sections.
+#' @param fmt Character scalar used for transforming \code{level} into section
+#'   \sQuote{class} and \sQuote{title} attributes.
+#' @param fac Integer scalar for inferring the number of spaces used for
+#'   indentation from the current \code{level} (recursively incremented).
+#' @return Character scalar.
+#' @details  If applied to lists, this functions works recursively, generating
+#'   \sQuote{div} elements from each list. Names are used as \sQuote{class} and
+#'   \sQuote{title} attributes. Where names are missing, \code{level} is used in
+#'   conjunction with \code{fmt}. Non-list vectors are converted using
+#'   \sQuote{span} tags if names are present, simply joined otherwise.
+#' @keywords internal
+#'
+list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
+  indent <- paste(rep.int(" ", fac * (level - 1L)), collapse = "")
+  if (is.list(x)) {
+    if (is.null(n <- names(x)))
+      n <- sprintf(fmt, level)
+    else
+      n[!nzchar(n)] <- sprintf(fmt, level)
+    n <- ifelse(nzchar(n), safe_labels(n, "html"), NA_character_)
+    x <- vapply(x, list2html, character(1L), level = level + 1L, fmt = fmt)
+    x <- paste(x, indent, sep = "")
+    x <- hmakeTag("div", x, class = n, title = n, newline = TRUE)
+    paste(indent, x, sep = "", collapse = "")
+  } else {
+    if (is.character(x) && !inherits(x, "AsIs"))
+      x <- safe_labels(x, "html")
+    if (!is.null(n <- names(x))) {
+      n <- ifelse(nzchar(n), safe_labels(n, "html"), NA_character_)
+      x <- hmakeTag("span", x, class = n, title = n)
+    }
+    paste(indent, paste(x, collapse = " "), "\n", sep = "")
+  }
+}
+
+
+################################################################################
+
+
+#' Create HTML head
+#'
+#' This is the helper function used by \code{\link{format}} and other functions
+#' to create the \sQuote{head} antry of an \acronym{HTML} strings.
+#'
+#' @param title Character scalar defining the title of the \acronym{HTML}
+#'   document. Must contain an attribute called as returned by
+#'   \code{\link{opm_string}}.
+#' @param css Character vector containing the names of \acronym{CSS} files to
+#'   link.
+#' @param meta Character vector defining additional meta tags.
+#' @return Character vector.
+#' @keywords internal
+#'
+html_head <- function(title, css, meta) {
+  single_tag <- function(x, ...) {
+    listing(list(...), c("<", x), ">", style = " %s=\"%s\"", collapse = "")
+  }
+  html_comment <- function(x) {
+    safe_labels(x, "html", comment = TRUE, enclose = FALSE)
+  }
+  if (length(title)) {
+    from.opm <- attr(title, opm_string())
+    # Tidy accepts only a single title entry
+    title <- hmakeTag("title", data = safe_labels(title[1L], format = "html"))
+    if (!from.opm)
+      title <- c(html_comment("user-defined title"), title)
+  } else
+    title <- NULL
+  if (length(css <- css[nzchar(css)])) {
+    is.abs.path <- grepl("^(/|[a-zA-Z]:)", css, perl = TRUE)
+    css[is.abs.path] <- sprintf("file://%s", css[is.abs.path])
+    css <- vapply(css, function(y) {
+      single_tag("link", rel = "stylesheet", type = "text/css", href = y)
+    }, character(1L))
+    css <- c(html_comment("user-defined CSS file(s)"), unname(css))
+  } else
+    css <- NULL
+  generator <- single_tag("meta", name = "generator",
+    content = paste(opm_string(version = TRUE), collapse = " version "))
+  # see http://www.w3.org/TR/NOTE-datetime
+  # but %s appears to be affected by a bug in R 2.15.2
+  time <- format(Sys.time(), "%Y-%M-%dT%H:%M:%S%z")
+  time <- single_tag("meta", name = "date", content = time)
+  if (length(meta)) {
+    meta <- vapply(meta, function(y) {
+      if (is.null(names(y)))
+        stop("HTML meta entry without names")
+      do.call(single_tag, c(list(x = "meta"), as.list(y)))
+    }, character(1L))
+    meta <- c(html_comment("user-defined metadata"), unname(meta))
+  } else
+    meta <- NULL
+  c("<head>", title, generator, time, meta, css, "</head>")
+}
+
+
+################################################################################
+
+
 #' Check HTML using the Tidy program
 #'
 #' Run the Tidy program for check or converting \acronym{HTML} character
