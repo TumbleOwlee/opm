@@ -216,7 +216,7 @@ option.parser <- OptionParser(option_list = list(
   make_option(c("-z", "--discretize"), action = "store_true", default = FALSE,
     help = "Discretize after estimating curve parameters [default: %default]")
 
-))
+), usage = "%prog [options] [directories/files]")
 
 
 opt <- parse_args(option.parser, positional_arguments = TRUE)
@@ -232,10 +232,10 @@ if (is.null(opt$include))
 #
 
 
-if (length(input) == 0L) {
+if (!length(input)) {
   print_help(option.parser)
-  message(listing(RESULT, header = "The output modes are:", footer = "",
-    prepend = 5L, indent = 10L))
+  cat(listing(RESULT, header = "The output modes are:", footer = "",
+    prepend = 5L, indent = 10L), sep = "\n")
   quit(status = 1L)
 }
 
