@@ -1487,12 +1487,109 @@ setMethod("radial_plot", OPMS, function(object, as.labels,
 ################################################################################
 
 
-# CURRENTLY UNUSED -- WORK IN PROGRESS BY LAIV
-#
-group_CI <- function(object, grouping = TRUE, what,
-    norm.method = c("plate.sub", "plate.rat", "well.sub", "well.rat", "raw"),
-    x) {
+#' Computation of Normalisation and CI for group-means
+#'
+#' Executes normalisation and/or computes normalized point-estimates and
+#' respective confidence intervals for user-defined experimental groups.
+#'
+#' @param object object Data frame, numeric matrix or \sQuote{OPMS} object (with
+#'   aggregated values)
+#'
+#' @param grouping logical. If data should be grouped according metadata-columns
+#'   given in \code{as.labels}
+#'
+#' @param as.labels \code{NULL} or character vector specifying the
+#'   factor-variables which should be used for grouping. If \code{NULL} and
+#'   \code{grouping = TRUE}, all available factor-varialbes are used.
+#'
+#' @param norm.method character scalar to state the method for normalization.
+#'   See Details.
+#'
+#' @param x numerical vector for determining, which well(s)-means should be used
+#'   as denominator for normalisation with \code{norm.method = plate.rat}.
+#'
+#' @return
+#'   An object of class \code{data.frame} with columns for metadata specified in
+#'   \code{as.labels}, one column \code{Parameter} and the numerical part of 96
+#'   columns. If point estimators and the limits of corresponding confidence-
+#'   intervals were computed, the \code{Parameter}-column harbours repetitively
+#'   the specifier "A", "A CI95 low" and "A CI95 high". Accordingly, in each
+#'   column of the numerical part each point-estimator for a group mean is
+#'   followed by its conficence-interval limits.
+#'
+#~ @keywords htest
+#' @keywords internal
+#'
+#' @seealso boot::norm
+#'
+#' @details The function gives option to correct aggregated parameters
+#'   \itemize{
+#'   \item \code{raw} applies no normalisations.
+#'   \item \code{plate.sub} substracts the mean of the complete plate(s) from
+#'     each single value
+#'   \item \code{plate.rat} divides each value by the value from one or more
+#'     wells, given by \code{x}.
+#'   \item \code{well.sub} substracts the mean of wells and \code{well.rat} each
+#'     value by well means.
+#'   }
+#'   The returned object is of class \code{data.frame} and if grouping was
+#'   executed, it can be visualized using \code{ci_plot()} (see examples).
+#'
+#'
+#' @examples
+#'
+#' data preparation
+#'
+#' require(opmdata)
+#' data(vaas_et_al)
+#'
+#' # select only the first replicate of the E.coli strains
+#' vaas.test <- subset(vaas_et_al,
+#'   query = list(Experiment = "First replicate", Species = "Escherichia coli"))
+#' # extract parameter A with strain, experiment, slot and species as metadata
+#' vaas.test.A <- extract(vaas.test,
+#'   as.labels = list("Strain", "Experiment", "Slot", "Species"),
+#'   subset = "A", dataframe = TRUE)
+#' stopifnot(dim(vaas.test.A) == c(20L, 101L))
+#'
+#' # simplest version:
+#' # no 'as.labels' specified, no grouping, no normalisation
+#' x <- group_CI(vaas.test.A, grouping = FALSE, norm.method = NULL)
+#' stopifnot(is.data.frame(x), identical(dim(x), c(20L, 101L)))
+#'
+#' # grouping according all available metadata-columns, no normalisation
+#' x <- group_CI(vaas.test.A, grouping = TRUE, as.labels = NULL,
+#'   norm.method = NULL)
+#' stopifnot(is.data.frame(x), identical(dim(x), c(12L, 101L)))
+#' stopifnot(is_ci_plottable(x))
+#'
+#' # visualisation using ci_plot
+#' message("plot #1")
+#' ci_plot(x[, 1L:10L], legend.field = c(3L, 2L))
+#' # note: the first five columns are factors, thus only four wells plotted
+#'
+#' # with specified columns ('as.labels' given as character-string of the
+#' # column-names) for grouping (TRUE), normalisation by division ("plate.rat")
+#' # using well A10-values (positive control)
+#' x <- group_CI(object = vaas.test.A, grouping = TRUE,
+#'   as.labels = colnames(vaas.test.A[, 1L:3L]), norm.method = "plate.rat",
+#'   x = 10 )
+#' stopifnot(is.data.frame(x), identical(dim(x), c(12L, 100L)))
+#' stopifnot(is_ci_plottable(x))
+#'
+#' # visualisation using ci_plot
+#' message("plot #2")
+#' ci_plot(x[, 4L:14L], vline = 1) # good
+#' # note: the first four columns are factors, thus only six plots
+#' # A10 all point-estimator have value 1, since the values of this well are
+#' # divided by themselves
+#'
 
+group_CI <- function(object, grouping = TRUE, as.labels = NULL,
+      norm.method = c("plate.sub", "plate.rat", "well.sub", "well.rat", "raw"),
+      x) {
+
+  as.labels = as.labels
   # preparation:
   # state the position of the 'Parameter'-column
   dim.start <- dim(object)
@@ -1549,22 +1646,22 @@ group_CI <- function(object, grouping = TRUE, what,
   if (!grouping)
     return(object)
 
-  # check, if 'what' is specified; if not give warning and use all factorial
-  # variables for grouping
-  if (length(what)) {
+  # check, if 'as.labels' is specified; if not give warning and use all
+  # factorial variables for grouping
+  if (!is.null(as.labels)) {
     # give warning, if columns for grouping were stated double
-    if (anyDuplicated(what))
+    if (anyDuplicated(as.labels))
       warning("grouping variables are not unique")
     # check, if the entries for 'what' exist in the data frame
-    bad <- which(!what %in% colnames(object)[1L:param.pos])
+    bad <- which(!as.labels %in% colnames(object)[1L:param.pos])
     if (length(bad))
-      stop("cannot find column name: ", what[bad[1L]])
+      stop("cannot find column name: ", as.labels[bad[1L]])
   } else
-    what <- colnames(object)[1L:param.pos]
+    as.labels <- colnames(object)[1L:param.pos]
 
   # make list from the factorial column-names
   # + length of the list
-  gl <- length(group.facs <- lapply(what, function(i) object[[i]]))
+  gl <- length(group.facs <- lapply(as.labels, function(i) object[[i]]))
 
   # compute the means and variances concerning the stated grouping
   aggr.mean <- aggregate(
@@ -1585,10 +1682,10 @@ group_CI <- function(object, grouping = TRUE, what,
 
   # triple each row of the factors
   faccols <- as.data.frame(sapply(aggr.mean[, 1L:gl, drop = FALSE],
-                                  rep, each = 3L))
+    rep, each = 3L))
 
   # add the column-names
-  colnames(faccols) <- colnames(object[, what, drop = FALSE])
+  colnames(faccols) <- colnames(object[, as.labels, drop = FALSE])
 
   # add the new 'Parameter'-column required for the ci_plot()-function
   faccols$Parameter <- paste(object[1L, param.pos],
@@ -1603,8 +1700,7 @@ group_CI <- function(object, grouping = TRUE, what,
     drop = FALSE])
 
   # prepare the matrix for numerical results
-  outnum <- matrix(ncol = 3L * nrow(aggr.mean.num),
-    nrow = ncol(aggr.mean.num))
+  outnum <- matrix(ncol = 3L * nrow(aggr.mean.num), nrow = ncol(aggr.mean.num))
 
   # fill the matrix
   for (i in 1L:nrow(aggr.mean))
