@@ -1487,7 +1487,7 @@ setMethod("radial_plot", OPMS, function(object, as.labels,
 ################################################################################
 
 
-#' Computation of Normalisation and CI for group-means
+#' Computation of normalisation and CI for group-means
 #'
 #' Executes normalisation and/or computes normalized point-estimates and
 #' respective confidence intervals for user-defined experimental groups.
@@ -1538,8 +1538,9 @@ setMethod("radial_plot", OPMS, function(object, as.labels,
 #'
 #' @examples
 #'
-#' data preparation
+#' \dontrun{
 #'
+#' # data preparation
 #' require(opmdata)
 #' data(vaas_et_al)
 #'
@@ -1584,7 +1585,8 @@ setMethod("radial_plot", OPMS, function(object, as.labels,
 #' # A10 all point-estimator have value 1, since the values of this well are
 #' # divided by themselves
 #'
-
+#' }
+#'
 group_CI <- function(object, grouping = TRUE, as.labels = NULL,
       norm.method = c("plate.sub", "plate.rat", "well.sub", "well.rat", "raw"),
       x) {

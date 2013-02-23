@@ -289,7 +289,7 @@ test_that("a radial plot can be drawn", {
 
 ## group_CI
 test_that("group_CI works without grouping and without normalisation", {
-  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "raw",
+  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "raw",
     grouping = FALSE)
   expect_is(x, "data.frame")
   expect_false(is_ci_plottable(x))
@@ -300,7 +300,7 @@ test_that("group_CI works without grouping and without normalisation", {
 
 ## group_CI
 test_that("group_CI works with grouping and without normalisation", {
-  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "raw",
+  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "raw",
     grouping = TRUE)
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(6L, 99L))
@@ -311,7 +311,7 @@ test_that("group_CI works with grouping and without normalisation", {
 
 ## group_CI
 test_that("group_CI works with grouping and 'plate.sub' normalisation", {
-  x <- group_CI(object = A_VALUES, what = NULL, norm.method = "plate.sub",
+  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "plate.sub",
     grouping = TRUE)
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(6L, 99L))
@@ -324,7 +324,8 @@ test_that("group_CI works with grouping and 'plate.sub' normalisation", {
 test_that("one cannot pass too many 'Parameter' columns to group_ci()", {
   Parameter <- rep("A", length(A_VALUES[, 1]))
   xy <- cbind(A_VALUES, Parameter)
-  expect_error(x <- group_CI(object = xy, what = colnames(xy[, c(1:3, 102)]),
+  expect_error(x <- group_CI(object = xy,
+    as.labels = colnames(xy[, c(1:3, 102)]),
     norm.method = "well.sub", grouping = TRUE))
 })
 
@@ -334,8 +335,8 @@ if (FALSE) {
 
 ## group_CI
 test_that("group_CI works with grouping and 'plate.rat' normalisation", {
-  # 'what' given as character-string of the column-names
-  x <- group_CI(object = A_VALUES, what = colnames(A_VALUES[, 1L:3L]),
+  # 'as.labels' given as character-string of the column-names
+  x <- group_CI(object = A_VALUES, as.labels = colnames(A_VALUES[, 1L:3L]),
     norm.method = "plate.rat", x = 10L, grouping = TRUE)
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(12L, 100L))
@@ -349,8 +350,8 @@ test_that("group_CI works with grouping and 'plate.rat' normalisation", {
 
 ## group_CI
 test_that("group_CI works with grouping and 'well.rat' normalisation", {
-  # what given directly as character-string
-  x <- group_CI(object = A_VALUES, what = c("Strain", "Slot"),
+  # as.labels given directly as character-string
+  x <- group_CI(object = A_VALUES, as.labels = c("Strain", "Slot"),
     norm.method = "well.rat", grouping = TRUE)
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(12L, 99L))
@@ -364,8 +365,8 @@ test_that("group_CI works with grouping and 'well.rat' normalisation", {
 
 ## group_CI
 test_that("group_CI works with grouping and 'well.sub' normalisation", {
-  # only one column in what
-  x <- group_CI(object = A_VALUES, what = c("Strain"),
+  # only one column in as.labels
+  x <- group_CI(object = A_VALUES, as.labels = c("Strain"),
     norm.method = "well.sub", grouping = TRUE)
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(6L, 98L))
@@ -379,14 +380,15 @@ test_that("group_CI works with grouping and 'well.sub' normalisation", {
 
 ## group_CI
 test_that("first test that Lea still must christen", {
-  # wrong columns in 'what'-argument
+  # wrong columns in 'as.labels'-argument
   expect_error(x <- group_CI(object = A_VALUES,
-    what = c("Strain", "Experiment", "Slot", "Species",
+    as.labels = c("Strain", "Experiment", "Slot", "Species",
       "H06 (Acetoacetic Acid)"),
     norm.method = "well.sub", grouping = TRUE), silent = TRUE)
 
   # ok. error occurs
-  # Error in group_CI(object = A_VALUES, what = c("Strain", "Experiment",  :
+  # Error in group_CI(object = A_VALUES,
+  # as.labels = c("Strain", "Experiment",  :
   #   cannot find column name: H06 (Acetoacetic Acid)
 })
 
@@ -394,7 +396,7 @@ test_that("first test that Lea still must christen", {
 ## group_CI
 test_that("second test that Lea still must christen", {
   x <- group_CI(object = A_VALUES,
-    what = c("Strain", "Experiment", "Slot", "Slot", "Species"),
+    as.labels = c("Strain", "Experiment", "Slot", "Slot", "Species"),
     norm.method = "well.sub", grouping = TRUE)
   expect_true(is_ci_plottable(x))
   # ok.
