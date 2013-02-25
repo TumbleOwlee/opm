@@ -138,9 +138,10 @@ param_names <- function() {
 #'     yield two of the four parameters, the area under the curve and the
 #'     maximum height. The area under the curve is estimated as the sum of the
 #'     areas given by the trapezoids defined by each pair of adjacent time
-#'     points. The maximum height is just the result of \code{max}. By default,
-#'     however, the median bootstrap value is preferred as point estimate over
-#'     the real point estimate.}
+#'     points. The maximum height is just the result of \code{max}. By default
+#'     the median of the bootstrap values is used as point estimate. For details
+#'     see the argument \code{as.pe} of the function
+#'     \code{\link{fast_estimate}}.}
 #'   }
 #' @param program Deprecated. Use \sQuote{method} instead. If provided,
 #'   \sQuote{program} has precedence over \sQuote{method}, but \sQuote{program}
@@ -228,9 +229,7 @@ param_names <- function() {
 #' plot(auc.grofit, auc.fast)
 #' stopifnot(cor.test(auc.fast, auc.grofit)$estimate > 0.999)
 #'
-#' \dontrun{
-#'
-#'   # Without confidence interval (CI) estimation
+#' \dontrun{ # Without confidence interval (CI) estimation
 #'   x <- do_aggr(vaas_1, boot = 0, verbose = TRUE)
 #'   aggr_settings(x)
 #'   aggregated(x)
@@ -282,6 +281,15 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
       ec50 = FALSE, control = control))
   }
 
+  run_mgcv <- function(x, y, data, ...) {
+    mod <- fit_spline(y = y, x = x, data = data, type = "tp", ...)
+    mu <- NA
+    lambda <- NA
+    A <- max(fitted(mod))
+    AUC <- AUC(get_data(mod)[, 1], fitted(mod))
+    c(mu = mu, lambda = lambda, A = A, AUC = AUC)
+  }
+
   copy_A_param <- function(x) {
     map <- unlist(map_grofit_names(opm.fast = TRUE))
     result <- matrix(data = NA_real_, nrow = length(map), ncol = length(x),
@@ -310,8 +318,8 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
             run_grofit(grofit.time[row, , drop = FALSE],
               grofit.data[row, , drop = FALSE], control)
           }, cores = cores)
-          result <- do.call(cbind, result)
-          attr(result, OPTIONS) <- unclass(control)
+        result <- do.call(cbind, result)
+        attr(result, OPTIONS) <- unclass(control)
       },
       `opm-fast` = {
         options <- insert(as.list(options), boot = boot, .force = FALSE)
@@ -329,6 +337,26 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         result <- result[names(map), , drop = FALSE]
         rownames(result) <- as.character(map)
         attr(result, OPTIONS) <- options
+      },
+      spline.fit = {
+        options <- insert(as.list(options), boot = boot)
+        ## extract data
+        data <- as.data.frame(measurements(object))
+        ## get well names
+        wells <- wells(object)
+        indx <- as.list(seq.int(length(wells)))
+        result <- traverse(indx,
+          fun = function(i) {
+            run_mgcv(x = HOUR, y = wells[i], data = data)
+          }, cores = cores)
+        result <- do.call(cbind, result)
+        result <- rbind(result,
+          matrix(NA, nrow = 8L, ncol = ncol(result)))
+        ## dirty hack:
+        map <- map_grofit_names(opm.fast = TRUE)
+        rownames(result) <- as.character(map)
+        colnames(result) <- wells
+        attr(result, OPTIONS) <- unclass(options)
       }
     )
     attr(result, METHOD) <- method
@@ -428,7 +456,7 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #' Fast curve-parameter estimation
 #'
 #' Quickly estimate the curve parameters AUC (area under the curve) or A
-#' (maximum height). This is not normally directly called by an \pkg{opm} user
+#' (maximum height). This is normally not directly called by an \pkg{opm} user
 #' but via \code{\link{do_aggr}}.
 #'
 #' @param x Matrix as output by \code{\link{measurements}}, i.e. with the time
@@ -445,8 +473,10 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #' @param as.pe Character scalar determining what to output as the point
 #'   estimate. Either \sQuote{median}, \sQuote{mean} or \sQuote{pe}; the first
 #'   two calculate the point estimate from the bootstrapping replicates, the
-#'   third one use the real point estimate. If \code{boot} is 0, \code{as.pe} is
-#'   reset to \sQuote{pe}, if necessary, and a warning is issued.
+#'   third one use the point estimate from the raw data. If \code{boot} is 0,
+#'   \code{as.pe} is reset to \sQuote{pe}, if necessary, and a warning is
+#'   issued.
+#'
 #' @param ci.type Character scalar determining the way the confidence intervals
 #'   are calculated. Either \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
 #'   \code{boot.ci} from the \pkg{boot} package for details.
@@ -483,13 +513,14 @@ setMethod("fast_estimate", "matrix", function(x, what = c("AUC", "A"),
   y <- x[, time.pos]
   x <- x[, -time.pos, drop = FALSE]
   x.colnames <- colnames(x)
+  ## i arguments are required by boot
   case(what <- match.arg(what),
-    A = boot_fun <- function(x, w) apply(x[w, ], 2L, max),
+    A = boot_fun <- function(x, i) apply(x[i, ], 2L, max),
     AUC = {
       n.obs <- nrow(x)
       y <- y[-1L] - y[-n.obs]
       x <- 0.5 * (x[-1L, , drop = FALSE] + x[-n.obs, , drop = FALSE])
-      boot_fun <- function(x, w) colSums(x[w, , drop = FALSE] * y[w])
+      boot_fun <- function(x, i) colSums(x[i, , drop = FALSE] * y[i])
     }
   )
   result <- boot(data = x, statistic = boot_fun, R = boot, ...)
