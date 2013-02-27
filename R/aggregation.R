@@ -59,58 +59,26 @@ setMethod("to_grofit_data", OPM, function(object) {
 
 ## NOTE: Not an S4 method because 'grofit' is an S3 class
 
-#' Parameter extraction
+#' Grofit extraction
 #'
 #' Extract and rename estimated curve parameters.
 #'
-#' @param x Object of class \sQuote{grofit} or \sQuote{opm_model}.
-#' @param ... Additional arguments.
+#' @param x Object of class \sQuote{grofit}.
 #' @return Matrix.
 #' @keywords internal
 #'
-extract_curve_params <- function(x, ...) UseMethod("extract_curve_params")
+extract_curve_params <- function(x) UseMethod("extract_curve_params")
 
 #' @rdname extract_curve_params
 #' @method extract_curve_params grofit
 #'
-extract_curve_params.grofit <- function(x, ...) {
+extract_curve_params.grofit <- function(x) {
   settings <- c(x$control)
   x <- summary(x$gcFit)
   map <- map_grofit_names()
   structure(.Data = t(as.matrix(x[, names(map)])),
     dimnames = list(map, x[, "TestId"]), settings = settings)
 }
-
-#' @rdname extract_curve_params
-#' @param all Logic. Should
-#' @method extract_curve_params opm_model
-#'
-extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
-  pred <- fitted(x)
-  x <- get_data(x)[, 1]
-  ## quick and dirty
-  deriv <- diff(pred) / diff(x)
-  slope <- max(deriv)
-  ## index of max. slope
-  idx <- which.max(deriv):(which.max(deriv) + 1)
-  ## x-value of max. slope
-  x_ms <- mean(x[idx])
-  ## y-value of max. slope
-  y_ms <- mean(pred[idx])
-  ## intercept
-  intercept <- y_ms - slope * x_ms
-  ## lag
-  lag <- - (intercept / slope)
-  ## maximum
-  maximum <- max(pred)
-  ## AUC
-  AUC <- AUC(x, pred)
-  if (all)
-      return(list(mu = slope, lambda = lag, A = maximum, AUC = AUC,
-        derivative = deriv, intercept = intercept))
-  return(c(mu = slope, lambda = lag, A = maximum, AUC = AUC))
-}
-
 
 
 ################################################################################
@@ -161,8 +129,6 @@ param_names <- function() {
 #'   \code{verbose} settings, as the most important ones, are added separately
 #'   (see above). The verbose mode is not very useful in parallel processing.
 #'   For its use in \sQuote{opm-fast} mode, see \code{\link{fast_estimate}}.
-#'   With \code{method} \dQuote{spline.fit}, options can be specified using the
-#'   function \code{\link{set_spline_options}}.
 #' @param method Character scalar. The aggregation method to use. Currently
 #'   only the following methods are supported:
 #'   \describe{
@@ -315,9 +281,13 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
       ec50 = FALSE, control = control))
   }
 
-  run_mgcv <- function(x, y, data, options) {
-    mod <- fit_spline(y = y, x = x, data = data, options = options)
-    list(params = extract_curve_params(mod), model = mod)
+  run_mgcv <- function(x, y, data, ...) {
+    mod <- fit_spline(y = y, x = x, data = data, type = "tp", ...)
+    mu <- NA
+    lambda <- NA
+    A <- max(fitted(mod))
+    AUC <- AUC(get_data(mod)[, 1], fitted(mod))
+    c(mu = mu, lambda = lambda, A = A, AUC = AUC)
   }
 
   copy_A_param <- function(x) {
@@ -369,11 +339,6 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         attr(result, OPTIONS) <- options
       },
       spline.fit = {
-        ## change later:
-        if (boot != 0) {
-          boot <- 0
-          warning("boot is internally set to zero for method = spline.fit")
-        }
         options <- insert(as.list(options), boot = boot)
         ## extract data
         data <- as.data.frame(measurements(object))
@@ -382,20 +347,8 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         indx <- as.list(seq.int(length(wells)))
         result <- traverse(indx,
           fun = function(i) {
-            run_mgcv(x = HOUR, y = wells[i], data = data, options = options)
+            run_mgcv(x = HOUR, y = wells[i], data = data)
           }, cores = cores)
-
-        if (options$save.models) {
-            opm_models <- lapply(result, function(x) x$model)
-            names(opm_models) <- wells
-            if (is.null(options$filename))
-              options$filename <- paste("opm_models_",
-                format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData", sep = "")
-            save("opm_models", file = options$filename)
-            cat("Models saved as 'opm_models' on disk in file\n  ",
-              getwd(), "/", options$filename, "\n\n", sep = "")
-        }
-        result <- lapply(result, function(x) x$params)
         result <- do.call(cbind, result)
         result <- rbind(result,
           matrix(NA, nrow = 8L, ncol = ncol(result)))
@@ -523,6 +476,7 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #'   third one use the point estimate from the raw data. If \code{boot} is 0,
 #'   \code{as.pe} is reset to \sQuote{pe}, if necessary, and a warning is
 #'   issued.
+#'
 #' @param ci.type Character scalar determining the way the confidence intervals
 #'   are calculated. Either \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
 #'   \code{boot.ci} from the \pkg{boot} package for details.
