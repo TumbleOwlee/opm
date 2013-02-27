@@ -16,7 +16,7 @@
 #' @param ci Logical scalar. Also return CI names?
 #' @param plain Logical scalar. Return the plain basenames only, ignoring
 #'   \code{subset} and \code{ci}?
-#' @param opm.fast Logical scalar. Produce the mapping gfor the
+#' @param opm.fast Logical scalar. Produce the mapping for the
 #'   \sQuote{opm-fast} method instead?
 #' @return Named list with old names as keys, new ones as values.
 #' @keywords internal

@@ -87,7 +87,7 @@ PROGRAM <- "program" # from the old style, synonym of METHOD in new style
 METHOD <- "method"
 OPTIONS <- "options"
 KNOWN_METHODS <- list(
-  aggregation = c("grofit", "opm-fast", "shortcut"),
+  aggregation = c("grofit", "opm-fast", "shortcut", "spline.fit"),
   discretization = c("direct", "kmeans", "best-cutoff")
 )
 

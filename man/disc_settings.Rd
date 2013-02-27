@@ -31,8 +31,8 @@ stopifnot(is.list(x), is.null(names(x)), length(x) == length(vaas_4))
 stopifnot(duplicated(x)[-1])
 }
 \seealso{
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
+  Other getter-functions: \code{\link{aggregated}},
+  \code{\link{aggr_settings}}, \code{\link{anyDuplicated}},
   \code{\link{csv_data}}, \code{\link{dim}},
   \code{\link{discretized}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},

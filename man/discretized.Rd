@@ -33,8 +33,8 @@ stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
 }
 \seealso{
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
+  Other getter-functions: \code{\link{aggregated}},
+  \code{\link{aggr_settings}}, \code{\link{anyDuplicated}},
   \code{\link{csv_data}}, \code{\link{dim}},
   \code{\link{disc_settings}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},

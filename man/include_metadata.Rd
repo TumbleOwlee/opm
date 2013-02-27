@@ -42,8 +42,8 @@ stopifnot(identical(metadata(copy, "Location"), "Braunschweig"))
 }
 \seealso{
   Other metadata-functions: \code{\link{map_metadata}},
-  \code{\link{metadata.set}},               \code{\link{metadata_chars}}
-}
+  \code{\link{metadata_chars}}, \code{\link{metadata.set}},
+              }
 \keyword{manip}
 
 \docType{methods}

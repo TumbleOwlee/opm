@@ -186,6 +186,8 @@ In the \proglang{OPMS} class, data may have been obtained from distinct organism
 The function \code{read\_opm()} has an argument ``convert'' which controls how sets of plates with distinct types are treated; for instance, the function can return a list of  \proglang{OPMS} objects, one for each plate type encountered.
 The entire class hierarchy used by \pkg{opm} is shown in Figure~\ref{fig:class_hierarchy}.
 
+\subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
+
 To process and store huge numbers of raw data files, the function \code{batch\_opm\_to\_yaml()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} format.
 It is possible to let \pkg{opm} automatically include metadata and aggregated values (curve parameters) during this conversion.
 File selection and unselection using regular expressions or globbing patterns is integrated in the function.
@@ -303,13 +305,14 @@ Since the user is free to define which metadata or strain information are of int
 For instance, the naming scheme of the individual plates can be devised by selecting associated metadata; it is also possible to automatically construct row groups by selecting the same or other meta-information.
 \code{heat\_map()} is mainly a wrapper for the \code{heatmap()} functions from either the \pkg{stats} or the \pkg{gplots} \proglang{R} package, but contains some useful adaptations to the PM data, facilitates the selection of a clustering algorithm and the construction of row and column groups, and provides more appropriate default solutions for row and column descriptions sizes (we suppose that in most situations the pictures produced by \code{heat\_map()} should not need manual adaptation in these respects).
 
-\subsection[Discretizing and exporting the aggregated data]{Discretizing and exporting the aggregated data}\label{methods discrete}
+\subsection[Discretizing and export for phylogenetic analysis]{Discretizing the aggregated data and export for phylogenetic analysis}\label{methods discrete-multistate}
 
 Whereas the main data analysis strategies of the \pkg{opm} package are based on quantitative, continuous data (as described in the previous chapters), users may nevertheless be interested in discretizing the estimated curve parameters.
 For instance, discretizing the data is necessary for analysing the data with external programs that cannot deal with continuous characters.
 Indeed, phylogeny software such as \proglang{PAUP*} \citep{swoff} and \proglang{RAxML} \citep{stamatakis} is limited to at most 32 distinct character states (to the best of our knowledge, a maximum-parsimony algorithm applicable directly to continuous data has only been implemented in \proglang{TNT} \citep{goloboff}).
 Phylogenetic studies of PM data are of interest because such phenotypic information is frequently used for taxonomic purposes in microorganisms, and here phylogenetic inference methods might be superior to clustering algorithms \citep{felsenstein}.
 But tabular or textual descriptions of physiological reactions classified into negative, weak (ambiguous) and positive reactions (see next paragraph for details) are of even greater relevance in current microbial taxonomy \citep{tindall}.
+
 The \pkg{opm} package includes data-transformation functionality within the \code{discrete()} methods for coding continuous characters by assigning them to a given number of equal-width categories within a given range.
 For example, for the parameter A (the maximum curve height) the theoretically possible range between 0 and 400 OmniLog\textregistered \ units could be used.
 The data should then be analysed under ordered (Wagner) maximum parsimony in \proglang{PAUP*} \citep{farris} or with the options for ordered multi-state phenotypic characters in \proglang{RAxML} \citep{berger}, or corresponding settings in other programs, to minimize the loss of information caused by discretizing the values.
@@ -317,12 +320,15 @@ For this reason, this kind of unsupervised, equal-width-intervals discretization
 In this context, it also makes not much sense to let a discretization method determine the number of categories because they are not dictated by some property of the data but by the limitations of the subsequently to apply analysis software.
 The \pkg{opm} package offers appropriate functions for data export.
 
+\subsection[Determining positive and negative reactions and displaying them as text or table]{Determining positive and negative reactions and displaying them as text or table}\label{methods discrete-binary}
+
 If users were interested to discretize the parameters into ``positive'' and ``negative'' results, this would apparently make most sense for the parameter A because here it is not of interest when and how fast a reaction starts (which would be coded in $\lambda$ and $\mu$, respectively) or how much overall respiration was achieved (as coded in AUC) but whether or not a reaction takes place at all.
 Unfortunately, PM data frequently result in a continuum of A values between clearly negative and clearly positive reactions.
 For instance, the distribution of A in the example datasets distributed with the \pkg{opm} and \pkg{opmdata} packages is clearly bimodal, but contains a large number of intermediary values.
 For this reason, the \code{discrete()} methods and their more user-friendly wrapper \code{do\_disc()} offer a gap-mode discretization by interpreting a given range of values (within the overall range of observations) as ``ambiguous''.
 Values below would then be coded as negative, values above the range as positive, and values within the range as either missing information or an intermediary state, ``weak''.
 This range could be determined by some discretization approach known from the literature \citep{dougherty,ventura}.
+
 The \pkg{opm} package offers its automated determination using k-means partitioning as implemented in \pkg{Ckmeans.1d.dp} \citep{song2011}, using an exact algorithm for one-dimensional data.
 Alternatively, an algorithm implemented in \code{best\_cutoff()} is available, but it requires measurement replicates (which are highly recommended, if not mandatory, anyway) which need to be specified in the metadata.
 Both methods are accessible \textit{via} \code{do\_disc()}.
@@ -384,7 +390,7 @@ library("opm")
 Then use the built-in function \code{opm\_files()} to find the example files in your \proglang{R} installation and check whether this returns a vector of nine file names:
 <<results=hide>>=
 (files <- opm_files("testdata"))
-stopifnot(length(files) == 9) # just a check -- usually not needed
+stopifnot(length(files) == 9) # => error if there were not nine files
 @
 (It might fail in very unusual \proglang{R} installation situations; in that case, the files must be found manually.)
 One of these files contains multiple plates and acts as an example for \code{split_files()}; the other ones can be read directly.
@@ -392,10 +398,12 @@ One of these files contains multiple plates and acts as an example for \code{spl
 From the given vector of file and/or directory names, files can be easily selected and deselected using globbing or regular-expression patterns.
 For instance, for reading the three example files in ``new style'' CSV format (see Section~\ref{methods import}), use the following code.
 After performing this step, the \proglang{OPMS} object should contain three plates, as indicated by the customized \code{summary()} function:
-<<>>=
+
+<<results=hide>>=
 summary(example.opm <- read_opm(files, include = "*Example_?.csv.xz"))
-stopifnot(length(example.opm) == 3) # just a check -- usually not needed
+stopifnot(length(example.opm) == 3) # => error if there were not three plates
 @
+
 As previously addressed, instead of a single file name the user could also provide several file names to \code{read\_opm()}, or a mixture of file and directory names; if these are contained as subdirectories of the current working directory, \code{read\_opm(".")} or \code{read\_opm(getwd())} would be sufficient to input these files.
 To filter the files with patterns, the arguments \code{exclude} and \code{include} are available.
 There is also a \textit{demo} mode allowing the user to check the effect of applying these arguments before actually reading files.
@@ -404,10 +412,16 @@ Plate-type conversions to one of the ``PM'' modes are disallowed (and are, to th
 
 If more than one plate of the same plate type is read, data from all files are automatically integrated in a single \proglang{OPMS} object.
 To read plates from several types at once, have a look at the documentation of the \code{convert} argument in the manual.
+If one uses \code{read\_opm(..., convert = "grp")}, a named list is created with, as each list element, one \proglang{OPM} or \proglang{OPMS} object per plate type.
+The plate types could then easily be accessed \textit{via} the names of the list.
+
 A single plate could also be imported using, e.g.,:
 <<>>=
 example.single <- read_single_opm(files[1])
 @
+
+\subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
+
 In addition to \code{read\_opm()} and \code{read\_single\_opm()}, which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML}) to \proglang{YAML} format, optionally after aggregating the raw data by estimating curve parameters and integrating metadata, is also possible.
 Again there is a \textit{demo} mode to first investigate the attempted conversions:
 <<results=hide, width=10>>=
@@ -833,7 +847,7 @@ Shown are the results on the three wells A01 (negative control), A02 (Dextrin) a
 \end{figure}
 
 
-\subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete}
+\subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete-phylogeny}
 
 After suitable subsetting and extraction of one of the curve parameters, data can be discretized and optionally also be exported for analysis with external phylogeny software.
 In the \pkg{opm} manual, the functions relevant for either task are contained in the families ``discretization-functions'' and ``phylogeny-functions'' with according cross-references.
@@ -853,6 +867,8 @@ This works much like \code{aggregated()} and \code{aggr\_settings()} explained a
 The \code{subset()} function has a \code{positive} argument that allows one to create a subset containing only the wells that were positive in at least one plate or in all plates, as well as a \code{negative} argument.
 See the manual for details.
 
+\subsection[Discretization and export of text]{Discretization and export of text}\label{application discrete-text}
+
 The \code{listing()} methods of the \proglang{OPMD} and \proglang{OPMD} classes create textual descriptions of the discretization results suitable for the direct inclusion in scientific manuscripts.
 
 <<results=hide, width=8>>=
@@ -865,6 +881,24 @@ If this yields ambiguities (such as a negative reaction of the same well on one 
 The ``cutoff'' argument can be used to define filters, keeping only those values that occur in a specified minimum proportion of wells.
 See the manual for details.
 
+The \code{listing()} function returns a character vector or matrix with the \proglang{S3} class ``OPMD\_listing'' or ``OPMS\_listing'', allowing for a special \code{phylo\_data()} function that further formats these objects. Accordingly, the following code snippets
+
+<<results=hide, width=8>>=
+phylo_data(listing(vaas.repl, as.groups = NULL))
+phylo_data(listing(vaas.repl, as.groups = list("Species")))
+@
+
+would yield character scalars better suitable for exporting into text files using \code{write}. It is also possible to generate \proglang{HTML} output, yielding formatted text. Try
+
+<<results=hide, width=8>>=
+phylo_data(listing(vaas.repl, as.groups = NULL, html = TRUE))
+phylo_data(listing(vaas.repl, as.groups = list("Species"), html = TRUE))
+@
+
+and note that the \code{phylo\_data()} function has a ``html.args'' argument.
+Textual \proglang{HTML} output supports most of the formatting instructions  for the output of \proglang{HTML} tables described below (see \ref{application discrete-table}).
+Note particularly how formatting \textit{via} a \proglang{CSS} file works.
+
 The default settings of \code{do\_disc()} imply exact k-means partitioning into three groups (``negative'', ``ambiguous'' and ``positive''), treating all contained plates together.
 Let $A_1$ and $A_2$ be the maximum-height parameters from two curves $C_1$ and $C_2$, respectively, and let us assume that $A_1 \geq A_2$ holds.
 The algorithm then guarantees that if $C_2$ is judged as positive reaction then $C_1$ is also judged as positive; if $C_2$ is weak then $C_1$ is not negative; if $C_1$ is negative then $C_2$ is negative; and if $C_1$ is weak then $C_2$ is not positive.
@@ -873,6 +907,8 @@ Note particularly that always three clusters result by default (one can omit the
 That is, additionally checking the curve heights and particularly the ``cutoffs'' entry obtained \textit{via} \code{disc\_settings()} should be mandatory.
 
 The manual describes the other discretization approaches available in \pkg{opm}, such as using \code{best\_cutoff()} instead of k-means partitioning, and using subsets of the plates, specified using stored metainformation.
+
+\subsection[Discretization and export of tables]{Discretization and export of tables}\label{application discrete-table}
 
 The \proglang{HTML} created by \pkg{opm} deliberately contains no formatting instructions.
 Rather, it is possible (and recommended) to link it to a \proglang{CSS} file.
@@ -884,14 +920,29 @@ For the following example, we set the default \proglang{CSS} file to be linked f
 opm_opt(css.file = grep("[.]css$", opm_files("auxiliary"), value = TRUE))
 @
 
-Users who want to define their own \proglang{CSS} files can start with modifying the file shipped with \pkg{opm}.
-Microsoft Windows users should consider that the path to the file must be provided in \proglang{UNIX} style, as obtained, e.g., using \code{normalizePath(x, winslash = "/")} if \code{x} is the path to the file.
-Anyway, one could now easily create an \proglang{HTML} table from the discretized data and write it to a file:
+One could now easily create an \proglang{HTML} table from the discretized data and write it to a file:
 
 <<results=hide, width=8>>=
 vaas.html <- phylo_data(vaas.repl, format = "html",
   as.labels = list("Species", "Strain"), outfile = "vaas.html")
 @
+
+A practical problem is that the resulting \proglang{HTML} file is linked to its \proglang{CSS} file with a fixed path.
+The formatting would thus get lost once the \proglang{HTML} file was copied to another system, without a warning.
+So users might want to copy the predefined \proglang{CSS} file to the working directory and set it as default:
+
+<<results=hide, width=8>>=
+file.copy(grep("[.]css$", opm_files("auxiliary"), value = TRUE),
+  "opm_styles.css", overwrite = TRUE)
+opm_opt(css.file = "opm_styles.css")
+@
+
+The generated \proglang{HTML} would subsequently be linked to this file, and the two files could be distributed together.
+The same mechanism works for text generation using \code{listing()} (see \ref{application discrete-text}).
+
+Users who want to define their own \proglang{CSS} files can start with modifying the file shipped with \pkg{opm}.
+Microsoft Windows users should consider that the path to the file must be provided in \proglang{UNIX} style, as obtained, e.g., using \code{normalizePath(x, winslash = "/")} if \code{x} is the path to the file.
+This is according to World Wide Web standards and not determined by \pkg{opm}.
 
 By default columns with measurement repetitions as specified using \code{as.labels} are joined together.
 The \code{delete} argument specifies how to reduce the table: either not at all or keeping only the variable, parsimony-informative or non-ambiguous characters.
@@ -900,6 +951,8 @@ Users can modify the headline, add sections before the table legend, or before o
 The title and the ``meta'' entries of the resulting \proglang{HTML} can also be modified.
 The \code{phylo\_data()} methods have an auxiliary function, \code{html_args}, which assists in putting together the arguments that determine the shape and content of the \proglang{HTML} output.
 See the manual for further details.
+
+\subsection[Fine-tuning the discretization]{Fine-tuning the discretization}\label{application discrete-finetuning}
 
 One can also conduct discretization step-by-step by using the functions \code{best\_cutoff()} or \code{discrete()} after extracting matrices from the \proglang{OPMS} object.
 This offers more flexibility (such as additional discretization approaches, e.g. the creation of multiple-state characters) but is also more tedious.
@@ -912,7 +965,7 @@ vaas.repl <- extract(vaas.repl,
 @
 
 %(As above, to specify \code{opm::} is not normally necessary but clashes with a \code{select} method defined in the \pkg{MASS} package sometimes need to be avoided.)
-The A parameter can be discretized into (per default) 32 states using the theoretical range of 0 to 400 OmniLog\textregistered \ units (see Section~\ref{methods discrete}):
+The A parameter can be discretized into (per default) 32 states using the theoretical range of 0 to 400 OmniLog\textregistered \ units (see Section~\ref{methods discrete-multistate}):
 
 <<width=12>>=
 vaas.repl.disc <- discrete(vaas.repl, range = c(0, 400))

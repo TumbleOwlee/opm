@@ -1107,10 +1107,6 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
 
   trim <- match.arg(trim)
 
-  # no subset requested
-  if (is.null(subset))
-    return(trim_lambda(object@aggregated, hours(object), trim))
-
   # NULL as software entry is allowed to increase backwards compatibility
   if (is.null(software <- object@aggr_settings[[SOFTWARE]]))
     warning(sprintf("object has no '%s' entry", SOFTWARE))
@@ -1123,7 +1119,7 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
   result <- object@aggregated[wanted, , drop = FALSE]
   if (CURVE_PARAMS[2L] %in% subset)
     result <- trim_lambda(result, hours(object), trim = trim)
-  result
+  return(result)
 
 }, sealed = SEALED)
 

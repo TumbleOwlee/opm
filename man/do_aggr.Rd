@@ -25,7 +25,9 @@
   important ones, are added separately (see above). The
   verbose mode is not very useful in parallel processing.
   For its use in \sQuote{opm-fast} mode, see
-  \code{\link{fast_estimate}}.}
+  \code{\link{fast_estimate}}.  With \code{method}
+  \dQuote{spline.fit}, options can be specified using the
+  function \code{\link{set_spline_options}}.}
 
   \item{method}{Character scalar. The aggregation method to
   use. Currently only the following methods are supported:
@@ -37,9 +39,10 @@
   the curve is estimated as the sum of the areas given by
   the trapezoids defined by each pair of adjacent time
   points. The maximum height is just the result of
-  \code{max}. By default, however, the median bootstrap
-  value is preferred as point estimate over the real point
-  estimate.} }}
+  \code{max}. By default the median of the bootstrap values
+  is used as point estimate. For details see the argument
+  \code{as.pe} of the function
+  \code{\link{fast_estimate}}.} }}
 
   \item{program}{Deprecated. Use \sQuote{method} instead.
   If provided, \sQuote{program} has precedence over
@@ -136,9 +139,7 @@ auc.fast <- aggregated(copy, "AUC", ci = FALSE)
 plot(auc.grofit, auc.fast)
 stopifnot(cor.test(auc.fast, auc.grofit)$estimate > 0.999)
 
-\dontrun{
-
-  # Without confidence interval (CI) estimation
+\dontrun{ # Without confidence interval (CI) estimation
   x <- do_aggr(vaas_1, boot = 0, verbose = TRUE)
   aggr_settings(x)
   aggregated(x)

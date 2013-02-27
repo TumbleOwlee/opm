@@ -34,10 +34,10 @@ stopifnot(identical(x, c(4L, 384L, 96L)))
 \seealso{
   base::dim
 
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{disc_settings}},
-  \code{\link{discretized}}, \code{\link{duplicated}},
+  Other getter-functions: \code{\link{aggregated}},
+  \code{\link{aggr_settings}}, \code{\link{anyDuplicated}},
+  \code{\link{csv_data}}, \code{\link{discretized}},
+  \code{\link{disc_settings}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},
   \code{\link{has_disc}}, \code{\link{hours}},
   \code{\link{length}}, \code{\link{max}},

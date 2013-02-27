@@ -35,7 +35,8 @@ is_ci_plottable <- function(x) {
 }
 
 
-A_VALUES <- extract(c(THIN.AGG, THIN.AGG), as.labels = list("organism", "run"),
+A.VALUES <- extract(c(THIN.AGG, THIN.AGG, THIN.AGG),
+  as.labels = list("organism", "run"),
   subset = "A", dataframe = TRUE)
 
 
@@ -88,6 +89,7 @@ test_that("cex can be guessed", {
   expect_equal(Inf, guess_cex(0))
 })
 
+
 ## best_layout
 test_that("best layouts can be determined", {
   x <- 0:100
@@ -99,6 +101,7 @@ test_that("best layouts can be determined", {
   expect_true(all(sapply(got, function(a) a[1] >= a[2])))
   expect_error(best_layout(-1))
 })
+
 
 ## best_range
 test_that("optimal ranges can be determined", {
@@ -115,6 +118,7 @@ test_that("optimal ranges can be determined", {
   expect_equal(c(1, 10), best_range(x, target = NULL))
   expect_equal(c(0.5, 10.5), best_range(x, target = NULL, offset = 0.5))
 })
+
 
 ## best_range
 test_that("best ranges can be determined", {
@@ -138,6 +142,7 @@ test_that("best ranges can be determined", {
     expect_true(real.range[2L] < got.range[2L])
   }
 })
+
 
 ## improved_max
 test_that("the improved maximum can be calculated", {
@@ -213,7 +218,7 @@ test_that("the OPMS methpd level_plot() works", {
 
 ## ci_plot
 test_that("a tie-fighter (CI) plot can be drawn", {
-  legend <- ci_plot(THIN.AGG[, , 1:12], as.labels = list("organism", "run"),
+  legend <- ci_plot(THIN.AGG[, , 1:6], as.labels = list("organism", "run"),
     subset = "A", na.action = "ignore")
   expect_equal(c("1: Bacillus simplex 3", "2: Bacillus simplex 4"), legend)
   legend <- ci_plot(THIN.AGG[, , 1:6], as.labels = list("organism"),
@@ -283,135 +288,121 @@ test_that("a radial plot can be drawn", {
 
 ################################################################################
 #
-# WORK IN PROGRESS BY LAIV: group_CI()
+# group_CI()
 #
 
 
 ## group_CI
 test_that("group_CI works without grouping and without normalisation", {
-  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "raw",
-    grouping = FALSE)
+  x <- group_CI(object = A.VALUES, grouping = FALSE, norm.method = "none")
   expect_is(x, "data.frame")
   expect_false(is_ci_plottable(x))
-  expect_equal(x, A_VALUES)
+  expect_equal(x, A.VALUES)
   expect_error(ci_plot(x)) # no CI were computed
 })
 
 
 ## group_CI
 test_that("group_CI works with grouping and without normalisation", {
-  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "raw",
-    grouping = TRUE)
+  x <- group_CI(object = A.VALUES, grouping = TRUE, norm.method = "none")
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(6L, 99L))
   expect_true(is_ci_plottable(x))
-  ##expect_is(ci_plot(x[, 1L:9L], legend.field = c(2L, 2L)), "character")
+  got <- ci_plot(x[, 1L:9L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
 })
 
 
 ## group_CI
 test_that("group_CI works with grouping and 'plate.sub' normalisation", {
-  x <- group_CI(object = A_VALUES, as.labels = NULL, norm.method = "plate.sub",
-    grouping = TRUE)
+  x <- group_CI(object = A.VALUES, grouping = TRUE, norm.method = "plate.sub")
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(6L, 99L))
   expect_true(is_ci_plottable(x))
-  ##expect_is(ci_plot(x[, 1L:9L], legend.field = c(2L, 2L)), "character")
+  got <- ci_plot(x[, 1L:9L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
 })
 
 
 ## group_CI
 test_that("one cannot pass too many 'Parameter' columns to group_ci()", {
-  Parameter <- rep("A", length(A_VALUES[, 1]))
-  xy <- cbind(A_VALUES, Parameter)
+  Parameter <- rep("A", length(A.VALUES[, 1L]))
+  xy <- cbind(A.VALUES, Parameter)
   expect_error(x <- group_CI(object = xy,
-    as.labels = colnames(xy[, c(1:3, 102)]),
+    grouping = colnames(xy[, c(1L:3L, 102L)]),
     norm.method = "well.sub", grouping = TRUE))
 })
 
 
-
-if (FALSE) {
-
 ## group_CI
-test_that("group_CI works with grouping and 'plate.rat' normalisation", {
-  # 'as.labels' given as character-string of the column-names
-  x <- group_CI(object = A_VALUES, as.labels = colnames(A_VALUES[, 1L:3L]),
-    norm.method = "plate.rat", x = 10L, grouping = TRUE)
+test_that("group_CI works with grouping and 'plate.div' normalisation", {
+  # 'grouping' given as character-string of the column-names
+  x <- group_CI(object = A.VALUES, grouping = colnames(A.VALUES[, 1L:2L]),
+    norm.method = "plate.div", norm.by = 10L)
   expect_is(x, "data.frame")
-  expect_equal(dim(x), c(12L, 100L))
+  expect_equal(dim(x), c(6L, 99L))
   expect_true(is_ci_plottable(x))
-  #good
-  message("plot #3")
-  ci_plot(x[, 1L:10L]) # good
-  # note: the first four columns are factors, thus only six plots
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
 })
 
 
 ## group_CI
-test_that("group_CI works with grouping and 'well.rat' normalisation", {
-  # as.labels given directly as character-string
-  x <- group_CI(object = A_VALUES, as.labels = c("Strain", "Slot"),
-    norm.method = "well.rat", grouping = TRUE)
+test_that("group_CI works with grouping and 'well.div' normalisation", {
+  # grouping given directly as character-string
+  x <- group_CI(object = A.VALUES, grouping = c("organism", "run"),
+    norm.method = "well.div")
   expect_is(x, "data.frame")
-  expect_equal(dim(x), c(12L, 99L))
+  expect_equal(dim(x), c(6L, 99L))
   expect_true(is_ci_plottable(x))
-  # good as well:
-  message("plot #4")
-  ci_plot(x[, 1L:5L])
-  # note: the first three columns are factors, thus only seven plots
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
 })
 
 
 ## group_CI
 test_that("group_CI works with grouping and 'well.sub' normalisation", {
-  # only one column in as.labels
-  x <- group_CI(object = A_VALUES, as.labels = c("Strain"),
-    norm.method = "well.sub", grouping = TRUE)
+  # only one column in grouping
+  x <- group_CI(object = A.VALUES, grouping = "organism",
+    norm.method = "well.sub")
   expect_is(x, "data.frame")
-  expect_equal(dim(x), c(6L, 98L))
+  expect_equal(dim(x), c(3L, 98L))
   expect_true(is_ci_plottable(x))
-  message("plot #5")
-  ci_plot(x[, 1L:5L])
-  # good :)
-  # note: the first two columns are factors, thus only eight plots
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, "1: Bacillus simplex")
 })
 
 
 ## group_CI
-test_that("first test that Lea still must christen", {
-  # wrong columns in 'as.labels'-argument
-  expect_error(x <- group_CI(object = A_VALUES,
-    as.labels = c("Strain", "Experiment", "Slot", "Species",
-      "H06 (Acetoacetic Acid)"),
-    norm.method = "well.sub", grouping = TRUE), silent = TRUE)
-
-  # ok. error occurs
-  # Error in group_CI(object = A_VALUES,
-  # as.labels = c("Strain", "Experiment",  :
+test_that("group_CI yields error if incorrect 'grouping' is passed", {
+  # wrong columns in 'grouping'-argument
+  expect_error(x <- group_CI(object = A.VALUES,
+    grouping = c("organism", "run", "H06 (Acetoacetic Acid)"),
+    norm.method = "well.sub"))
+  # => Error in group_CI(object = A.VALUES,
+  #   grouping = c("Strain", "Experiment",  :
   #   cannot find column name: H06 (Acetoacetic Acid)
 })
 
-
+if (FALSE) {
 ## group_CI
-test_that("second test that Lea still must christen", {
-  x <- group_CI(object = A_VALUES,
-    as.labels = c("Strain", "Experiment", "Slot", "Slot", "Species"),
-    norm.method = "well.sub", grouping = TRUE)
-  expect_true(is_ci_plottable(x))
-  # ok.
-  # Warning message:
-  # In group_CI(object = A_VALUES, what = c("Strain", "Experiment",  :
+test_that("group_CI() yields a warning with duplicate column names", {
+  expect_warning(x <- group_CI(object = A.VALUES,
+    grouping = c("organism", "run", "organism"),
+    norm.method = "well.sub"))
+  # =>  Warning message:
+  # In group_CI(object = A.VALUES, grouping = c("Strain", "Experiment",  :
   #   grouping variable(s) are not unique
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 100L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:10L])
+  expect_equal(got, c("1: Bacillus simplex 3 Bacillus simplex",
+    "2: Bacillus simplex 4 Bacillus simplex")) # duplication of names
 })
-
-
-
 }
 
 
 ################################################################################
-
-
 
 

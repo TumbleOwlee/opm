@@ -895,13 +895,9 @@ setMethod("extract", OPMS, function(object, as.labels,
   # Collect parameters in a matrix
   subset <- match.arg(subset, c(unlist(map_grofit_names(plain = TRUE)), "disc"))
   if (subset == "disc") {
-    #if (!all(has_disc(object)))
-    #  stop("all plates need discretized data")
     ci <- FALSE
     result <- discretized(object)
   } else {
-    #if (!all(has_aggr(object)))
-    #  stop("all plates need aggregated data")
     result <- do.call(rbind, lapply(object@plates, FUN = aggregated,
       subset = subset, ci = ci, trim = trim))
   }

@@ -1,6 +1,6 @@
 \name{\%K\%}
-\alias{\%K\%}
 \alias{infix.largek}
+\alias{\%K\%}
 \title{Search in metadata keys}
 \arguments{
   \item{x}{Character vector, factor or list.}

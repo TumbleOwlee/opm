@@ -28,10 +28,10 @@ data(vaas_4)
 stopifnot(is.character(x), length(x) == length(vaas_4))
 }
 \seealso{
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
+  Other getter-functions: \code{\link{aggregated}},
+  \code{\link{aggr_settings}}, \code{\link{anyDuplicated}},
   \code{\link{csv_data}}, \code{\link{dim}},
-  \code{\link{disc_settings}}, \code{\link{discretized}},
+  \code{\link{discretized}}, \code{\link{disc_settings}},
   \code{\link{duplicated}}, \code{\link{filename}},
   \code{\link{has_aggr}}, \code{\link{has_disc}},
   \code{\link{hours}}, \code{\link{length}},

@@ -99,6 +99,6 @@ stopifnot(length(x) == 0L || length(x) > length(y))
   \code{\link{read_opm}}, \code{\link{read_single_opm}},
   \code{\link{split_files}}, \code{\link{to_metadata}}
 }
-\keyword{IO}
 \keyword{character}
+\keyword{IO}
 

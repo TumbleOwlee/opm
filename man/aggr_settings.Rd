@@ -30,8 +30,8 @@ stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 \seealso{
   Other getter-functions: \code{\link{aggregated}},
   \code{\link{anyDuplicated}}, \code{\link{csv_data}},
-  \code{\link{dim}}, \code{\link{disc_settings}},
-  \code{\link{discretized}}, \code{\link{duplicated}},
+  \code{\link{dim}}, \code{\link{discretized}},
+  \code{\link{disc_settings}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},
   \code{\link{has_disc}}, \code{\link{hours}},
   \code{\link{length}}, \code{\link{max}},

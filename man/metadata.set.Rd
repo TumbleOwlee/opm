@@ -1,6 +1,6 @@
 \name{metadata.set}
-\alias{metadata.set}
 \alias{metadata<-}
+\alias{metadata.set}
 \title{Replace metadata}
 \arguments{
   \item{object}{\code{\link{WMD}} or \code{\link{OPMS}}
