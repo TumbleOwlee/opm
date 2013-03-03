@@ -284,6 +284,33 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 #
 
 
+#' Create names
+#'
+#' A helper function that treats lists passed as query to
+#' \code{\link{metadata}}.
+#'
+#' @param x List of character vectors.
+#' @return List with potentially modified names.
+#' @keywords internal
+#'
+create_names <- function(x) UseMethod("create_names")
+
+#' @rdname create_names
+#' @method create_names list
+#'
+create_names.list <- function(x) {
+  join <- function(x) vapply(x, paste, character(1L), collapse = ".")
+  if (is.null(labels <- names(x)))
+    names(x) <- join(x)
+  else
+    names(x)[bad] <- join(x[bad <- !nzchar(labels) | is.na(labels)])
+  x
+}
+
+
+################################################################################
+
+
 #' Parse time strings
 #'
 #' Parse time strings by trying potentially many formats in turn. Each

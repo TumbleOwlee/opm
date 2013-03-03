@@ -1,6 +1,6 @@
 Package: opm
-Version: 0.8.16
-Date: 2013-02-27
+Version: 0.8.17
+Date: 2013-03-02
 Title: Tools for analysing OmniLog(R) Phenotype Microarray data
 Author: Markus Goeker, with contributions by Lea A.I. Vaas, Benjamin
     Hofner, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
@@ -21,6 +21,7 @@ Suggests:
     multicore,
     optparse,
     gplots,
+    multcomp,
     opmdata (>= 0.4-0),
     testthat
 Description: Tools for analysing OmniLog(R) and Microstation Phenotype
@@ -53,6 +54,7 @@ Collate:
     'plotting.R'
     'io.R'
     'phylogeny.R'
+    'multcomp.R'
     'data.R'
     'testing.R'
 LazyData: yes
