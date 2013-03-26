@@ -63,6 +63,9 @@
   \item{...}{Optional other arguments passed to
   \code{legend}, or arguments passed from the
   \code{\link{OPMS}} method to the data frame method.}
+
+  \item{split.at}{Character vector. See
+  \code{\link{extract}}.}
 }
 \value{
   Character vector describing the plot's legend, returned
@@ -119,7 +122,7 @@ stopifnot(is.character(x), identical(length(x), 4L))
   \S4method{ci_plot}{data.frame}(object, rowname.sep = " ",
     prop.offset = 0.04, align = "center", col = "blue", na.action = "warn",
     draw.legend = TRUE, legend.field = c(1, 1), x = "topleft", xpd = TRUE,
-    vline = 0, ...) 
+    vline = 0, split.at = "Parameter", ...) 
 
   \S4method{ci_plot}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), ...) 

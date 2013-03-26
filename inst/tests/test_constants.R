@@ -74,6 +74,10 @@ test_that("the so-called special plates are known plates", {
 })
 
 
+## SP_PATTERN
+## UNTESTED (see plate_type())
+
+
 ## THEOR_RANGE
 test_that("the theoretical range is OK", {
   expect_length(THEOR_RANGE, 2L)

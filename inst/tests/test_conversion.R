@@ -8,6 +8,31 @@ if (!exists("TEST.DIR"))
   attach(objects_for_testing())
 
 
+# Test whether or not object 'x' could be submitted to ci_plot.
+#
+is_ci_plottable <- function(x) {
+  param_column_ok <- function(x) {
+    pat <- sprintf("^(%s)", paste(param_names(), collapse = "|"))
+    x <- sub(pat, "", x, perl = TRUE)
+    y <- c("", " CI95 low", " CI95 high")
+    !(length(x) %% length(y)) && all(x == y)
+  }
+  data_columns_ok <- function(x) {
+    rest <- seq.int(nrow(x)) %% 3L
+    all(x[rest == 1L, , drop = FALSE] >= x[rest == 2L, , drop = FALSE]) &&
+      all(x[rest == 1L, , drop = FALSE] <= x[rest == 0L, , drop = FALSE])
+  }
+  is.data.frame(x) && !is.na(pos <- match("Parameter", colnames(x))) &&
+    param_column_ok(x[, pos]) &&
+    data_columns_ok(x[, (pos + 1L):ncol(x), drop = FALSE])
+}
+
+
+A.VALUES <- extract(c(THIN.AGG, THIN.AGG, THIN.AGG),
+  as.labels = list("organism", "run"),
+  subset = "A", dataframe = TRUE)
+
+
 ################################################################################
 
 
@@ -199,7 +224,33 @@ test_that("OPMS objects including metadata can be flattened", {
 
 
 ## extract_columns
-## UNTESTED
+test_that("extract_columns() gets nested metadat right", {
+
+  x <- SMALL.WITH.MD
+  metadata(x) <- list(A = list(B = 63, C = 64), K = "N")
+  y <- SMALL.WITH.MD
+  metadata(y) <- list(A = list(F = 63, C = 64), K = "T", O = letters)
+  x <- c(x, y)
+
+  # 1
+  got <- extract_columns(x, list(c("A", "C"), "K"))
+  expect_equal(names(got), c("A.C", "K"))
+  #print(sapply(got, class))
+  #expect_equal(got[, 1L, drop = TRUE], c(64, 64))
+
+  # 2
+  got <- extract_columns(x, list(u = c("A", "C"), v = "K"))
+  expect_equal(names(got), c("u", "v"))
+
+  # 3
+  old <- opm_opt(key.join = "~")
+  on.exit(opm_opt(old))
+  got <- extract_columns(x, list(c("A", "C"), "K"))
+  expect_equal(names(got), c("A~C", "K"))
+
+})
+
+
 
 
 ## sort
@@ -348,6 +399,115 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
   expect_equal(mat[, 1L], mat[, 101L])
   expect_equal(mat[, 2L], mat[, 100L])
 
+})
+
+
+## extract
+test_that("extract works without grouping and without normalisation", {
+  x <- extract(object = A.VALUES, as.groups = FALSE, norm.per = "none")
+  expect_is(x, "data.frame")
+  expect_false(is_ci_plottable(x))
+  expect_equal(x, A.VALUES)
+  expect_error(ci_plot(x)) # no CI were computed
+})
+
+
+## extract
+test_that("extract works with grouping and without normalisation", {
+  x <- extract(object = A.VALUES, as.groups = TRUE, norm.per = "none")
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:9L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
+})
+
+
+## extract
+test_that("extract works with grouping and 'plate.sub' normalisation", {
+  x <- extract(object = A.VALUES, as.groups = TRUE, norm.per = "row")
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:9L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
+})
+
+
+## extract
+test_that("one cannot pass too many 'Parameter' columns to group_ci()", {
+  Parameter <- rep("A", length(A.VALUES[, 1L]))
+  xy <- cbind(A.VALUES, Parameter)
+  expect_error(x <- extract(object = xy,
+    as.groups = colnames(xy[, c(1L:3L, 102L)]),
+    norm.per = "column", norm.by = TRUE))
+})
+
+
+## extract
+test_that("extract works with grouping and 'plate.div' normalisation", {
+  # 'as.groups' given as character-string of the column-names
+  x <- extract(object = A.VALUES, as.groups = colnames(A.VALUES[, 1L:2L]),
+    norm.per = "row", subtract = FALSE, norm.by = 10L)
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
+})
+
+
+## extract
+test_that("extract works with grouping and 'well.div' normalisation", {
+  # as.groups given directly as character-string
+  x <- extract(object = A.VALUES, as.groups = c("organism", "run"),
+    norm.per = "column")
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 99L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, c("1: Bacillus simplex 3", "2: Bacillus simplex 4"))
+})
+
+
+## extract
+test_that("extract works with grouping and 'well.sub' normalisation", {
+  # only one column in as.groups
+  x <- extract(object = A.VALUES, as.groups = "organism",
+    norm.per = "row")
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(3L, 98L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:6L])
+  expect_equal(got, "1: Bacillus simplex")
+})
+
+
+## extract
+test_that("extract yields error if incorrect 'as.groups' is passed", {
+  # wrong columns in 'as.groups'-argument
+  expect_error(x <- extract(object = A.VALUES,
+    as.groups = c("organism", "run", "H06 (Acetoacetic Acid)"),
+    norm.per = "column"))
+  # => Error in extract(object = A.VALUES,
+  #   as.groups = c("Strain", "Experiment",  :
+  #   cannot find column name: H06 (Acetoacetic Acid)
+})
+
+## extract
+test_that("extract() deals with duplicate column names", {
+  x <- extract(object = A.VALUES,
+    as.groups = c("organism", "run", "organism"),
+    norm.per = "column", dup = "ignore")
+  # =>  Warning message:
+  # In extract(object = A.VALUES, as.groups = c("Strain", "Experiment",  :
+  #   as.groups variable(s) are not unique
+  expect_is(x, "data.frame")
+  expect_equal(dim(x), c(6L, 100L))
+  expect_true(is_ci_plottable(x))
+  got <- ci_plot(x[, 1L:10L])
+  expect_equal(got, c("1: Bacillus simplex 3 Bacillus simplex",
+    "2: Bacillus simplex 4 Bacillus simplex")) # duplication of names
 })
 
 

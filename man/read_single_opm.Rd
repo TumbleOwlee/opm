@@ -22,7 +22,7 @@
   using \command{gzip}, \command{bzip2}, \command{lzma} or
   \command{xz} are also understood.
 }
-\note{
+\details{
   \itemize{ \item The expected \acronym{CSV} format is what
   is output by the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
@@ -38,11 +38,13 @@
   per plate, see the example under
   \code{\link{split_files}}.  \item In contrast, input
   \acronym{YAML} files can contain data from more than one
-  plate.  \item Plates run in ID mode are automatically
-  detected as such (their plate type is changed from
-  \sQuote{OTH} to the internally used spelling of
-  \sQuote{Generation III}). A generation-III plate type can
-  also be forced later on by using \code{\link{gen_iii}}. }
+  plate. The format is described in detail under
+  \code{\link{batch_opm_to_yaml}}.  \item Plates run in ID
+  mode are automatically detected as such (their plate type
+  is changed from \sQuote{OTH} to the internally used
+  spelling of \sQuote{Generation III}). A generation-III
+  plate type can also be forced later on by using
+  \code{\link{gen_iii}}. }
 }
 \examples{
 test.files <- opm_files("testdata")

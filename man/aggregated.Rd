@@ -16,15 +16,16 @@
   are sometimes biologically unreasonable because they are
   too large or too small. If \code{trim} is \sQuote{medium}
   or \sQuote{full}, lambda estimates larger than
-  \code{\link{hours}} are set to that value. Negative
-  lambda estimates smaller than \code{\link{hours}} are set
-  to this value if \code{trim} is \sQuote{medium}; this is
-  a more moderate treatment than setting all negative
-  values to zero, which is done if \code{trim} is
-  \sQuote{full}. Currently the other parameters are not
-  checked, and all \code{NA} values also remain unchanged.
-  If \code{trim} is \sQuote{no}, lambda is not modified
-  either.}
+  \code{\link{hours}(object)} (i.e.,the maximum time value
+  observed) are set to that value. Negative lambda
+  estimates smaller than \code{- hours(object)} are set to
+  this value (i.e., negative of maximum time) if
+  \code{trim} is \sQuote{medium}; this is a more moderate
+  treatment than setting all negative values to zero, which
+  is done if \code{trim} is \sQuote{full}. Currently the
+  other parameters are not checked, and all \code{NA}
+  values also remain unchanged. If \code{trim} is
+  \sQuote{no}, lambda is not modified either.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -62,8 +63,8 @@ stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
 \seealso{
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{anyDuplicated}}, \code{\link{csv_data}},
-  \code{\link{dim}}, \code{\link{discretized}},
-  \code{\link{disc_settings}}, \code{\link{duplicated}},
+  \code{\link{dim}}, \code{\link{disc_settings}},
+  \code{\link{discretized}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},
   \code{\link{has_disc}}, \code{\link{hours}},
   \code{\link{length}}, \code{\link{max}},

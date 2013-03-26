@@ -40,10 +40,10 @@ stopifnot(identical(anyDuplicated(x), 2L))
 \seealso{
   base::anyDuplicated
 
-  Other getter-functions: \code{\link{aggregated}},
-  \code{\link{aggr_settings}}, \code{\link{csv_data}},
-  \code{\link{dim}}, \code{\link{discretized}},
-  \code{\link{disc_settings}}, \code{\link{duplicated}},
+  Other getter-functions: \code{\link{aggr_settings}},
+  \code{\link{aggregated}}, \code{\link{csv_data}},
+  \code{\link{dim}}, \code{\link{disc_settings}},
+  \code{\link{discretized}}, \code{\link{duplicated}},
   \code{\link{filename}}, \code{\link{has_aggr}},
   \code{\link{has_disc}}, \code{\link{hours}},
   \code{\link{length}}, \code{\link{max}},

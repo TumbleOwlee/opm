@@ -16,10 +16,15 @@
 #' of the package.
 #'
 #' @param type Character scalar indicating the file types to be matched by
-#'   extension.
+#'   extension. Alternaticely, directly the extension or extensions, or a list
+#'   of file names (not \code{NA}).
 #' @param compressed Logical scalar. Shall compressed files also be matched?
-#' @param literally Logical scalar. Interpret \code{type} literally? Also allow
-#'   vectors with more than a single element.
+#'   This affects the returned pattern as well as the pattern used for
+#'   extracting file extensions from complete file names (if \code{literally}
+#'   is \code{TRUE}).
+#' @param literally Logical scalar. Interpret \code{type} literally? This also
+#'   allows for vectors with more than a single element, as well as the
+#'   extraction of file extensions from file names.
 #' @export
 #' @return Character scalar, holding a regular expression.
 #' @family io-functions
@@ -29,28 +34,37 @@
 #' (x <- file_pattern())
 #' (y <- file_pattern(type = "csv", compressed = FALSE))
 #' stopifnot(nchar(x) > nchar(y))
+#' # constructing pattern from existing files
+#' (files <- list.files(pattern = "[.]"))
+#' (x <- file_pattern(I(files))) # I() causes 'literally' to be TRUE
+#' stopifnot(grepl(x, files, ignore.case = TRUE))
 #'
 file_pattern <- function(type = c("both", "csv", "yaml", "any", "empty"),
-    compressed = TRUE, literally = FALSE) {
-  result <- if (L(literally)) {
-    if (any(grepl("\\W", type, perl = TRUE)))
-      stop("'type' must not contain non-word characters")
-    case(length(type),
-      stop("'type' must be non-empty"),
-      sprintf("\\.%s", type),
-      sprintf("\\.(%s)", paste(type, collapse = "|"))
-    )
+    compressed = TRUE, literally = inherits(type, "AsIs")) {
+  make_pat <- function(x, compressed, enclose = "\\.%s$") {
+    if (compressed)
+      x <- sprintf("%s(\\.(bz2|gz|lzma|xz))?", x)
+    sprintf(enclose, x)
+  }
+  LL(literally, compressed)
+  result <- if (literally) {
+    x <- make_pat("([^.]+)", compressed, "^.*?\\.%s$")
+    x <- sub(x, "\\1", type, perl = TRUE)
+    if (all(same <- x == basename(type))) { # assuming extensions
+      type <- x
+      bad <- "^\\w+$"
+    } else { # assuming file names
+      type <- x[!same]
+      bad <- "^\\w+(\\.\\w+)?$"
+    }
+    if (any(bad <- !grepl(bad, type <- unique.default(type), perl = TRUE)))
+      stop("'type' must contain word characters (only): ", type[bad][1L])
+    case(length(type), stop("'type' must be non-empty"), type,
+      sprintf("(%s)", paste(type, collapse = "|")))
   } else
-    sprintf("\\.%s", case(match.arg(type),
-      both = "(csv|ya?ml)",
-      csv = "csv",
-      yaml = "ya?ml",
-      any = "[^.]+",
-      empty = ""
-    ))
-  if (L(compressed))
-    result <- sprintf("%s(\\.(bz2|gz|lzma|xz))?", result)
-  sprintf("%s$", result)
+    case(match.arg(type), both = "(csv|ya?ml)", csv = "csv", yaml = "ya?ml",
+      any = "[^.]+", empty = "")
+  make_pat(result, compressed)
 }
 
 
@@ -315,7 +329,7 @@ read_microstation_opm <- function(filename) {
 #'   might also be an \code{\link{OPMA}} object or a list of such objects, but
 #'   \strong{not} an \code{\link{OPMS}} object.
 #' @family io-functions
-#' @note \itemize{
+#' @details \itemize{
 #'   \item The expected \acronym{CSV} format is what is output by the
 #'     OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
 #'     per file. Other formats, or
@@ -328,7 +342,8 @@ read_microstation_opm <- function(filename) {
 #'     files into one file per plate, see the example under
 #'     \code{\link{split_files}}.
 #'   \item In contrast, input \acronym{YAML} files can contain data from more
-#'     than one plate.
+#'     than one plate. The format is described in detail under
+#'     \code{\link{batch_opm_to_yaml}}.
 #'   \item Plates run in ID mode are automatically detected as such (their
 #'     plate type is changed from \sQuote{OTH} to the internally used spelling
 #'     of \sQuote{Generation III}). A generation-III plate type can also be
@@ -583,10 +598,13 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary")) {
 #'   \acronym{YAML} input), or list of such objects, or \code{\link{OPMS}}
 #'   object. If \code{demo} is \code{TRUE}, a character vector instead.
 #'
-#' @note Regarding the \acronym{CSV} format, see the remark to
-#'   \code{\link{read_single_opm}}. For splitting lists of \code{\link{OPM}}
-#'   objects according to the plate type, see \code{\link{plate_type}}, and
-#'   consider the plate-type selection options of \code{\link{opms}}.
+#' @details Regarding the \acronym{CSV} format, see the remark to
+#'   \code{\link{read_single_opm}}. The \acronym{YAML} format is described in
+#'   detail under \code{\link{batch_opm_to_yaml}}.
+#'
+#' @note For splitting lists of \code{\link{OPM}} objects according to the plate
+#'   type, see \code{\link{plate_type}}, and consider the plate-type selection
+#'   options of \code{\link{opms}}.
 #'
 #' @export
 #' @family io-functions
@@ -1086,7 +1104,8 @@ process_io <- function(files, io.fun, fun.args = list(),
 #'
 batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
     outdir = NULL, overwrite = c("yes", "older", "no"), in.ext = "any",
-    compressed = TRUE, literally = FALSE, ..., verbose = TRUE, demo = FALSE) {
+    compressed = TRUE, literally = inherits(in.ext, "AsIs"), ...,
+    verbose = TRUE, demo = FALSE) {
   create_outfile_names <- function(infiles, outdir, out.ext) {
     if (length(outdir) == 0L || all(!nzchar(outdir)))
       outdir <- dirname(infiles)
@@ -1208,9 +1227,19 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'       the point estimate or the upper or lower confidence interval. The
 #'       values of these secondary mappings are floating-point numbers.}
 #'     \item{aggr_settings}{A mapping, only present if curve parameters have
-#'       been estimated. Its keys are \sQuote{program} and \sQuote{options}. The
-#'       value of the former is a character scalar. The value of the latter is
-#'       an arbitrarily nested mapping with arbitrary content.}
+#'       been estimated. Its keys are \sQuote{software}, \sQuote{version} and
+#'       \sQuote{options}. The value of the former two is a character scalar.
+#'       The value of \sQuote{options} is an arbitrarily nested mapping with
+#'       arbitrary content.}
+#'     \item{discretized}{A mapping, only present if curve parameters have been
+#'       estimated and also discretized. Its keys correspond to those of
+#'       \sQuote{measurements} with the exception of \sQuote{hours}. The values
+#'       are logical scalars.}
+#'     \item{disc_settings}{A mapping, only present if curve parameters have
+#'       been estimated and also discretized. Its keys are \sQuote{software},
+#'       \sQuote{version} and \sQuote{options}. The value of the former two is a
+#'       character scalar. The value of \sQuote{options} is an arbitrarily
+#'       nested mapping with arbitrary content.}
 #'   }
 #'   Details of the contents should be obvious from the documentation of the
 #'   classes of the objects from which the \acronym{YAML} output is generated.

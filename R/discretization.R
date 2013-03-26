@@ -350,7 +350,8 @@ setMethod("discrete", MOA, function(x, ...) {
 
 setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
     ...) {
-  discrete(extract(x, as.labels = as.labels, sep = sep, what = "numeric"), ...)
+  discrete(extract_columns(x, what = "numeric", as.labels = as.labels,
+    sep = sep, direct = FALSE), ...)
 }, sealed = SEALED)
 
 
@@ -379,6 +380,8 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'   automatically created with one plate per group.
 #' @param plain Logical scalar indicating whether or not an \code{\link{OPMD}}
 #'   or \code{\link{OPMS}} object should be created.
+#' @param subset Character scalar passed to \code{\link{extract}}. It is
+#'   recommended to use the maximum height (currently called \sQuote{A}).
 #' @param ... Optional arguments passed to \code{\link{extract}}. Only relevant
 #'   for certain settings of \code{groups}, see above.
 #'
@@ -410,14 +413,14 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' # the settings used  have been stored in the resulting object
 #' (y <- disc_settings(x))
 #' mustbe(y$method, "direct")
-#' mustbe(y$options, list(cutoffs = 100, datasets = 1L))
+#' mustbe(y$options, list(cutoffs = 100, datasets = 1L, parameter = "A"))
 #'
 #' # arbitrary thresholds, allowing intermediate ('weak') reactions
 #' summary(x <- do_disc(vaas_1, cutoff = c(75, 125)))
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_1), any(is.na(discretized(x))))
 #' (y <- disc_settings(x))
 #' mustbe(y$method, "direct")
-#' mustbe(y$options, list(cutoffs = c(75, 125), datasets = 1L))
+#' mustbe(y$options, list(cutoffs = c(75, 125), datasets = 1L, parameter = "A"))
 #'
 #' # using k-means, no ambiguity
 #' summary(x <- do_disc(vaas_1, cutoff = FALSE))
@@ -442,7 +445,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' # the settings used  have been stored in the resulting object
 #' (y <- disc_settings(x)[[1]])
 #' mustbe(y$method, "direct")
-#' mustbe(y$options, list(cutoffs = 100, datasets = 4L))
+#' mustbe(y$options, list(cutoffs = 100, datasets = 4L, parameter = "A"))
 #'
 #' # arbitrary threshold, no ambiguity, with groups, 1 plate per group
 #' summary(x <- do_disc(vaas_4, cutoff = 100, groups = TRUE))
@@ -450,7 +453,8 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' (y <- disc_settings(x)[[1]])
 #' mustbe(y$method, "direct")
 #' # here, the plate numbers yield the group names
-#' mustbe(y$options, list(cutoffs = 100, datasets = 1L, group = "1"))
+#' mustbe(y$options,
+#'   list(cutoffs = 100, datasets = 1L, group = "1", parameter = "A"))
 #'
 #' # arbitrary threshold, no ambiguity, with specified groups
 #' summary(x <- do_disc(vaas_4, cutoff = 100, groups = "Species"))
@@ -459,7 +463,8 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' mustbe(y$method, "direct")
 #' # now, groups are from the metadata (but played no role)
 #' mustbe(y$options,
-#'   list(cutoffs = 100, datasets = 2L, group = "Escherichia coli"))
+#'   list(cutoffs = 100, datasets = 2L, group = "Escherichia coli",
+#'     parameter = "A"))
 #'
 #' # using k-means, no ambiguity, with specified groups
 #' summary(x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species"))
@@ -484,16 +489,18 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'
 setGeneric("do_disc", function(object, ...) standardGeneric("do_disc"))
 
-setMethod("do_disc", OPMA, function(object, cutoff, plain = FALSE) {
+setMethod("do_disc", OPMA, function(object, cutoff, plain = FALSE,
+    subset = opm_opt("disc.param")) {
   if (!length(cutoff))
     stop("'cutoff' must be a non-empty vector if applied to OPMA objects")
-  x <- aggregated(object, subset = map_grofit_names("A", ci = FALSE)[[1L]],
+  x <- aggregated(object, subset = map_grofit_names(subset, ci = FALSE)[[1L]],
     ci = FALSE)[1L, ]
   x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")
   settings <- list(if (is.numeric(cutoff))
     "direct"
   else
-    "kmeans", list(cutoffs = attr(x, "cutoffs"), datasets = 1L))
+    "kmeans",
+    list(cutoffs = attr(x, "cutoffs"), datasets = 1L, parameter = subset))
   settings <- c(settings, as.list(opm_string(version = TRUE)))
   names(settings) <- c(METHOD, OPTIONS, SOFTWARE, VERSION)
   if (L(plain))
@@ -505,7 +512,7 @@ setMethod("do_disc", OPMA, function(object, cutoff, plain = FALSE) {
 }, sealed = SEALED)
 
 setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
-    plain = FALSE, ...) {
+    plain = FALSE, subset = opm_opt("disc.param"), ...) {
   add_disc <- function(x, discretized, disc.settings) {
     new(OPMD, measurements = measurements(x),
       metadata = metadata(x), csv_data = csv_data(x),
@@ -519,7 +526,9 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     groups <- NULL
   } else
     combined <- !length(groups)
-  x <- extract(object = object, as.labels = groups, subset = "A",
+  # extra step necessary here because extract() allows 'disc'
+  subset <- unname(match.arg(subset, unlist(map_grofit_names(plain = TRUE))))
+  x <- extract(object = object, as.labels = groups, subset = subset,
     ci = FALSE, full = FALSE, dataframe = FALSE, dups = "ignore", ...)
   if (use.best <- !length(cutoff)) {
     if (!length(groups))
@@ -555,7 +564,8 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
       for (idx in split(seq_along(grp), grp)) {
         group <- as.character(grp[idx[1L]])
         settings <- list(cutoffs = bc[group, "maximum"],
-          score = bc[group, "objective"], datasets = length(idx), group = group)
+          score = bc[group, "objective"], datasets = length(idx),
+          group = group, parameter = subset)
         for (i in idx) {
           tmp <- disc.settings[[i]]
           tmp[[OPTIONS]] <- settings
@@ -574,7 +584,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
         y <- discrete(x[idx, , drop = FALSE], range = cutoff, gap = TRUE,
           output = "integer")
         settings <- list(cutoffs = attr(y, "cutoffs"), datasets = length(idx),
-          group = as.character(grp[idx[1L]]))
+          group = as.character(grp[idx[1L]]), parameter = subset)
         for (i in idx) {
           tmp <- disc.settings[[i]]
           tmp[[OPTIONS]] <- settings
@@ -591,7 +601,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     # discrete() partitioning with the entire dataset at once
     x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")
     disc.settings[[OPTIONS]] <- list(cutoffs = attr(x, "cutoffs"),
-      datasets = length(object))
+      datasets = length(object), parameter = subset)
     disc.settings <- rep.int(list(disc.settings), length(object))
 
   } else

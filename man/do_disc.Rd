@@ -26,6 +26,10 @@
   \code{\link{OPMD}} or \code{\link{OPMS}} object should be
   created.}
 
+  \item{subset}{Character scalar passed to
+  \code{\link{extract}}. It is recommended to use the
+  maximum height (currently called \sQuote{A}).}
+
   \item{...}{Optional arguments passed to
   \code{\link{extract}}. Only relevant for certain settings
   of \code{groups}, see above.}
@@ -67,14 +71,14 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_1), !is.na(discretized(x)))
 # the settings used  have been stored in the resulting object
 (y <- disc_settings(x))
 mustbe(y$method, "direct")
-mustbe(y$options, list(cutoffs = 100, datasets = 1L))
+mustbe(y$options, list(cutoffs = 100, datasets = 1L, parameter = "A"))
 
 # arbitrary thresholds, allowing intermediate ('weak') reactions
 summary(x <- do_disc(vaas_1, cutoff = c(75, 125)))
 stopifnot(has_disc(x), dim(x) == dim(vaas_1), any(is.na(discretized(x))))
 (y <- disc_settings(x))
 mustbe(y$method, "direct")
-mustbe(y$options, list(cutoffs = c(75, 125), datasets = 1L))
+mustbe(y$options, list(cutoffs = c(75, 125), datasets = 1L, parameter = "A"))
 
 # using k-means, no ambiguity
 summary(x <- do_disc(vaas_1, cutoff = FALSE))
@@ -99,7 +103,7 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 # the settings used  have been stored in the resulting object
 (y <- disc_settings(x)[[1]])
 mustbe(y$method, "direct")
-mustbe(y$options, list(cutoffs = 100, datasets = 4L))
+mustbe(y$options, list(cutoffs = 100, datasets = 4L, parameter = "A"))
 
 # arbitrary threshold, no ambiguity, with groups, 1 plate per group
 summary(x <- do_disc(vaas_4, cutoff = 100, groups = TRUE))
@@ -107,7 +111,8 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 (y <- disc_settings(x)[[1]])
 mustbe(y$method, "direct")
 # here, the plate numbers yield the group names
-mustbe(y$options, list(cutoffs = 100, datasets = 1L, group = "1"))
+mustbe(y$options,
+  list(cutoffs = 100, datasets = 1L, group = "1", parameter = "A"))
 
 # arbitrary threshold, no ambiguity, with specified groups
 summary(x <- do_disc(vaas_4, cutoff = 100, groups = "Species"))
@@ -116,7 +121,8 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 mustbe(y$method, "direct")
 # now, groups are from the metadata (but played no role)
 mustbe(y$options,
-  list(cutoffs = 100, datasets = 2L, group = "Escherichia coli"))
+  list(cutoffs = 100, datasets = 2L, group = "Escherichia coli",
+    parameter = "A"))
 
 # using k-means, no ambiguity, with specified groups
 summary(x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species"))
@@ -151,9 +157,10 @@ stopifnot(c("cutoffs", "score") \%in\% names(y$options))
 \alias{do_disc,OPMA-method}
 \alias{do_disc,OPMS-method}
 \usage{
-  \S4method{do_disc}{OPMA}(object, cutoff, plain = FALSE) 
+  \S4method{do_disc}{OPMA}(object, cutoff, plain = FALSE,
+    subset = opm_opt("disc.param")) 
 
   \S4method{do_disc}{OPMS}(object, cutoff = TRUE, groups = FALSE,
-    plain = FALSE, ...) 
+    plain = FALSE, subset = opm_opt("disc.param"), ...) 
 
 }

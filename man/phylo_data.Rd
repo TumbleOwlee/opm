@@ -348,9 +348,9 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
   Other phylogeny-functions: \code{\link{html_args}},
   \code{\link{safe_labels}}
 }
+\keyword{IO}
 \keyword{character}
 \keyword{cluster}
-\keyword{IO}
 
 \docType{methods}
 \alias{phylo_data-methods}

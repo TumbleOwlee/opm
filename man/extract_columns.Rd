@@ -7,7 +7,9 @@
   \item{what}{List of metadata keys to consider, or single
   such key; passed to \code{\link{metadata}}. For the
   data-frame method, just the names of the columns to
-  extract, or their indices, as vector.}
+  extract, or their indices, as vector; alternatively, the
+  name of the class to extract from the data frame to form
+  the matrix values.}
 
   \item{join}{Logical scalar. Join each row together to
   yield a character vector? Otherwise it is just attempted
@@ -28,6 +30,16 @@
 
   \item{strict}{Logical scalar. Also passed to
   \code{\link{metadata}}.}
+
+  \item{as.labels}{Character vector. See
+  \code{\link{extract}}.}
+
+  \item{as.groups}{Character vector. See
+  \code{\link{extract}}.}
+
+  \item{direct}{Logical scalar. Extract column names
+  directly, or search for columns of one to several given
+  classes?}
 }
 \value{
   Data frame or character vector, depending on the
@@ -41,8 +53,10 @@
   by an \pkg{opm} user because \code{\link{extract}} is
   available, which uses this function, but can be used for
   testing the applied metadata selections beforehand. The
-  data-frame method is trivial: it extracts the selected
-  columns and joins them to form a character vector.
+  data-frame method is partially trivial (extract the
+  selected columns and join them to form a character
+  vector), partially more useful (extract columns with data
+  of a specified class).
 }
 \examples{
 # 'OPMS' method
@@ -62,10 +76,15 @@ stopifnot(inherits(x, "try-error"))
   dups = "warn"), silent = TRUE))
 stopifnot(is.character(x), length(x) == 4L)
 
-# data-frame method
+# data-frame method, 'direct' running mode
 x <- data.frame(a = 1:26, b = letters, c = LETTERS)
-(y <- extract_columns(x, c("a", "b"), sep = "-"))
+(y <- extract_columns(x, I(c("a", "b")), sep = "-"))
 stopifnot(grepl("^\\\s*\\\d+-[a-z]$", y))
+
+# data-frame method, using class name
+(y <- extract_columns(x, as.labels = "b", what = "integer", as.groups = "c"))
+stopifnot(is.matrix(y), dim(y) == c(26, 1), rownames(y) == x$b)
+stopifnot(identical(attr(y, "row.groups"), x$c))
 }
 \seealso{
   base::data.frame base::as.data.frame base::cbind
@@ -90,6 +109,8 @@ stopifnot(grepl("^\\\s*\\\d+-[a-z]$", y))
     sep = " ", dups = c("warn", "error", "ignore"), exact = TRUE,
     strict = TRUE) 
 
-  \S4method{extract_columns}{data.frame}(object, what, sep = " ") 
+  \S4method{extract_columns}{data.frame}(object, what,
+    as.labels = NULL, as.groups = NULL, sep = " ",
+    direct = inherits(what, "AsIs")) 
 
 }

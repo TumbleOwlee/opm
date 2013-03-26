@@ -43,8 +43,11 @@
   \code{\link{collect_template}}.}
   \item{curve.param}{Character scalar. Default
   \sQuote{subset} argument of \code{\link{extract}} and the
-  plotting functions.} \item{digits}{Integer scalar. Number
-  of digits used by some functions generating output text.}
+  plotting functions.} \item{disc.param}{Character scalar.
+  Default \sQuote{subset} argument of
+  \code{\link{do_disc}}. It is usually not advisable to
+  change it.} \item{digits}{Integer scalar. Number of
+  digits used by some functions generating output text.}
   \item{file.encoding}{Character scalar. Character encoding
   in input files as assumed by \code{\link{read_opm}}.}
   \item{gen.iii}{Character scalar indicating whether
@@ -53,8 +56,12 @@
   nothing is changed.} \item{html.attr}{Used by
   \code{\link{phylo_data}} for automatically creating
   \acronym{HTML} \sQuote{title} and \sQuote{class}
-  attributes.} \item{phylo.fmt}{Character scalar indicating
-  the default output format used by
+  attributes.} \item{key.join}{Used by
+  \code{\link{metadata}} and some other functions that must
+  be in sync with it for joining metadata keys used in
+  nested queries (because the resulting object is
+  \sQuote{flat}).} \item{phylo.fmt}{Character scalar
+  indicating the default output format used by
   \code{\link{phylo_data}}.} \item{split}{Character scalar
   indicating the default spliiting characters used by
   \code{\link{separate}}.} \item{time.zone}{Character

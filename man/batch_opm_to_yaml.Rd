@@ -112,9 +112,20 @@
   mappings are floating-point numbers.}
   \item{aggr_settings}{A mapping, only present if curve
   parameters have been estimated. Its keys are
-  \sQuote{program} and \sQuote{options}. The value of the
-  former is a character scalar. The value of the latter is
-  an arbitrarily nested mapping with arbitrary content.} }
+  \sQuote{software}, \sQuote{version} and \sQuote{options}.
+  The value of the former two is a character scalar.  The
+  value of \sQuote{options} is an arbitrarily nested
+  mapping with arbitrary content.} \item{discretized}{A
+  mapping, only present if curve parameters have been
+  estimated and also discretized. Its keys correspond to
+  those of \sQuote{measurements} with the exception of
+  \sQuote{hours}. The values are logical scalars.}
+  \item{disc_settings}{A mapping, only present if curve
+  parameters have been estimated and also discretized. Its
+  keys are \sQuote{software}, \sQuote{version} and
+  \sQuote{options}. The value of the former two is a
+  character scalar. The value of \sQuote{options} is an
+  arbitrarily nested mapping with arbitrary content.} }
   Details of the contents should be obvious from the
   documentation of the classes of the objects from which
   the \acronym{YAML} output is generated.  In the case of

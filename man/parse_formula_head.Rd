@@ -14,6 +14,8 @@
   extracted using \code{[[}, the left part can be a call, a
   name or a vector. These methods convert it to a vector,
   aiming at generating a valid key for indexing a list.
+  Other classes for the left part are possible but
+  currently \strong{not} supported.
 }
 \keyword{internal}
 

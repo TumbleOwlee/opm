@@ -3,32 +3,38 @@
 \title{Multiple comparison of group means}
 \arguments{
   \item{object}{\code{\link{OPMS}} object or data frame
-  derived via \code{\link{extract}} with specified labels
-  (factor-variables) determining experimental groups for
-  multiple comparison of means.}
+  derived via \code{\link{extract}} containing factor
+  variables that determine experimental groups for multiple
+  comparison of means and can be selected using
+  \code{as.labels}.}
 
   \item{as.labels}{List or character vector specifying the
   factor variables which determine the experimental groups
   to be compared. If \code{object} is of class
   \code{\link{OPMS}}, \code{as.labels} is passed to
-  \code{\link{extract}} and must not be \code{NULL}, but
+  \code{\link{extract}} and must not be \code{NULL} but
   given as a list. If \code{object} is of class
   \code{data.frame}, \code{as.labels} can be given as a
   character vector, and by default all factor variables
-  included in \code{object} are used.}
+  included in \code{object} are used. A logical or numeric
+  vector could also be passed in that case and would be
+  used to select from the column names.}
 
-  \item{model}{A model formula or a character-vector or a
+  \item{model}{A model formula or a character vector or a
   list containing the names of factors to be included in
-  the model for fitting. The operator can be specified usin
-  \code{op}. See \code{formula} for further details (in the
-  \pkg{stats} package).}
+  the model for fitting. If a numeric or logical vector,
+  used to select the names from \code{as.labels}. The
+  operator can be specified using \code{op}. See
+  \code{formula} for further details (in the \pkg{stats}
+  package).}
 
-  \item{op}{character scalar containing "+", "*", or ":",
-  with "+" as default.  It indicates the operator(s) to
-  insert between the variables in the right part of the
-  \code{model }formula. See description of \code{formula}
-  for further details. Ignored if \code{model} is given as
-  a formula.}
+  \item{op}{character scalar containing \sQuote{+},
+  \sQuote{*}, or \sQuote{:}, with \sQuote{+} as default. It
+  indicates the operator(s) to insert between the variables
+  in the right part of the \code{model} formula. See
+  description of \code{formula} for further details (in the
+  \pkg{stats} package). \code{op} is ignored if
+  \code{model} is directly given as a formula.}
 
   \item{m.type}{Character scalar indicating which of the
   following model types to use in model fitting:
@@ -37,7 +43,7 @@
 
   \item{mcp.def}{Character scalar. A specification of the
   linear hypotheses to be tested analogously to
-  \code{linfct} in \code{glht}: Linear functions can be
+  \code{linfct} in \code{glht}. Linear functions can be
   specified by either the matrix of coefficients or by
   symbolic descriptions of one or more linear hypotheses.
   See also \code{contrMat} from the \pkg{multcomp}
@@ -53,6 +59,10 @@
   returned which contains the variables given in
   \code{as.labels} as factors and can be used for more
   complex model building by the user user.}
+
+  \item{split.at}{Character vector. See
+  \code{\link{extract}}. Cannot be set in the case of the
+  \code{\link{OPMS}} method.}
 
   \item{...}{Optional argument passed to
   \code{\link{extract}}.}
@@ -71,10 +81,10 @@
   selected.
 }
 \description{
-  This function invokes functionality from \code{glht}
-  (from package \pkg{multcomp}) and thus provides linear
-  hypothesis-testing and multiple comparisons for group
-  means of curve parameters. It is an error if this
+  This function invokes functionality coded in \code{glht}
+  (from the \pkg{multcomp} package) and thus provides
+  linear-hypothesis testing and multiple comparisons for
+  group means of curve parameters. It is an error if this
   function is called and the package \pkg{multcomp} is
   unavailable (even though it is not formally a dependency
   of \pkg{opm}).
@@ -183,13 +193,14 @@ par(op) # reset plotting settings
 \alias{opm_mcp,OPMS-method}
 \alias{opm_mcp,data.frame-method}
 \usage{
-  \S4method{opm_mcp}{OPMS}(object, as.labels, mcp.def,
-    op = "+", model = as.labels, m.type = "glm", #sub.list = NULL,
-    glht.args = list(), do.mcp = TRUE, ...) 
+  \S4method{opm_mcp}{OPMS}(object, as.labels,
+    mcp.def = c(Dunnett = 1L),
+    model = as.labels, op = "+", m.type = "glm", glht.args = list(),
+    do.mcp = TRUE, ...) 
 
-  \S4method{opm_mcp}{data.frame}(object, as.labels, mcp.def,
-    op = c("+", ":", "*"), model = as.labels, m.type = c("glm", "lm", "aov"),
-    #sub.list = NULL,
-    glht.args = list(), do.mcp = TRUE) 
+  \S4method{opm_mcp}{data.frame}(object, as.labels,
+    mcp.def = c(Dunnett = 1L),
+    model = as.labels, op = c("+", ":", "*"), m.type = c("glm", "lm", "aov"),
+    glht.args = list(), split.at = "Parameter", do.mcp = TRUE) 
 
 }

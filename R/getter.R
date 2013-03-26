@@ -168,7 +168,8 @@ setMethod("measurements", OPM, function(object, i) {
 #' }
 #' # see also oapply() for a more elegant approach
 #'
-setMethod("[", OPM, function(x, i, j, ..., drop = FALSE) {
+setMethod("[", c(OPM, "ANY", "ANY", "ANY"), function(x, i, j, ...,
+    drop = FALSE) {
   mat <- x@measurements[, -1L, drop = FALSE][i, j, ..., drop = FALSE]
   if (any(dim(mat) == 0L))
     stop("selection resulted in empty matrix")
@@ -179,7 +180,8 @@ setMethod("[", OPM, function(x, i, j, ..., drop = FALSE) {
   result
 }, sealed = SEALED)
 
-setMethod("[", OPMA, function(x, i, j, ..., drop = FALSE) {
+setMethod("[", c(OPMA, "ANY", "ANY", "ANY"), function(x, i, j, ...,
+    drop = FALSE) {
   result <- callNextMethod(x = x, i = i, j = j, ..., drop = drop)
   if (drop)
     return(as(result, OPM))
@@ -188,7 +190,8 @@ setMethod("[", OPMA, function(x, i, j, ..., drop = FALSE) {
   result
 }, sealed = SEALED)
 
-setMethod("[", OPMD, function(x, i, j, ..., drop = FALSE) {
+setMethod("[", c(OPMD, "ANY", "ANY", "ANY"), function(x, i, j, ...,
+    drop = FALSE) {
   result <- callNextMethod(x = x, i = i, j = j, ..., drop = drop)
   if (drop)
     return(result)
@@ -197,7 +200,8 @@ setMethod("[", OPMD, function(x, i, j, ..., drop = FALSE) {
   result
 }, sealed = SEALED)
 
-setMethod("[", OPMS, function(x, i, j, k, ..., drop = FALSE) {
+setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
+    drop = FALSE) {
   if (!missing(...))
     stop("incorrect number of dimensions")
   fetch <- function(obj, idx) obj[i = idx, j = k, drop = drop]
@@ -646,7 +650,7 @@ setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
 
 setMethod("csv_data", OPM, function(object, keys = character(),
     strict = TRUE) {
-  if (!length(keys) || all(!nzchar(keys)))
+  if (!length(keys) || all(is.na(keys) | !nzchar(keys)))
     return(object@csv_data)
   result <- object@csv_data[keys]
   if (any(isna <- is.na(result)))
@@ -795,21 +799,28 @@ setMethod("plate_type", OPM, function(object, full = FALSE, in.parens = TRUE,
 setMethod("plate_type", "character", function(object, subtype = FALSE) {
   normalize_pm <- function(x, subtype) {
     x <- sub("^PMM", "PM-M", x, perl = TRUE)
-    repl <- if (subtype)
+    x <- sub("^PM-MTOX", "PM-M TOX", x, perl = TRUE)
+    x <- sub("([A-Z]+)$", if (subtype)
       "-\\1"
     else
-      ""
-    x <- sub("([A-Z]+)$", repl, x, perl = TRUE)
+      "", x, perl = TRUE)
     sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, perl = TRUE)
   }
+  normalize_sf <- function(x, subtype) {
+    x <- if (subtype)
+      sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, perl = TRUE), perl = TRUE)
+    else
+      sub(SP_PATTERN, "\\1", x, perl = TRUE)
+    x <- sub("^(G|SF)([NP])", "SF-\\2", x, perl = TRUE)
+    sub("^GENIII", "Gen III", x, perl = TRUE)
+  }
+  LL(subtype)
   result <- toupper(gsub("\\W", "", object, perl = TRUE))
-  pm <- grepl("^PMM?\\d+[A-Z]*$", result, perl = TRUE)
-  result[pm] <- normalize_pm(result[pm], subtype = L(subtype))
-  result[!pm] <- sub("^G-?([NP]2)$", "SF\\1", result[!pm], perl = TRUE)
-  sf <- grepl("^SF-?[NP]2$", result, perl = TRUE)
-  result[sf] <- sub("(F)([NP])", "\\1-\\2", result[sf], perl = TRUE)
-  ok <- pm | sf | result %in% SPECIAL_PLATES[c("gen.iii", "eco")]
-  result[!ok] <- object[!ok]
+  pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, perl = TRUE)
+  result[pm] <- normalize_pm(result[pm], subtype)
+  sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], perl = TRUE)
+  result[sf] <- normalize_sf(result[sf], subtype)
+  result[bad] <- object[bad <- !(pm | sf)]
   result
 }, sealed = SEALED)
 

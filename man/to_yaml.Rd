@@ -57,8 +57,8 @@ write(to_yaml(x), "out.yml")
   \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
   \code{\link{thin_out}}, \code{\link{unique}}
 }
-\keyword{character}
 \keyword{IO}
+\keyword{character}
 
 \docType{methods}
 \alias{to_yaml-methods}

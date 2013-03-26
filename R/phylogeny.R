@@ -895,7 +895,8 @@ setMethod("phylo_data", "matrix", function(object,
 
 setMethod("phylo_data", "data.frame", function(object, as.labels = NULL,
     what = "numeric", sep = " ", ...) {
-  object <- extract(object, as.labels = as.labels, what = what, sep = sep)
+  object <- extract_columns(object, as.labels = as.labels, what = what,
+    direct = FALSE, sep = sep)
   phylo_data(object, ...)
 }, sealed = SEALED)
 

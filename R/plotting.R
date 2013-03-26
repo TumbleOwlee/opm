@@ -983,182 +983,6 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 ################################################################################
 
 
-#' Normalisation and CI for group means
-#'
-#' Executes normalisation and/or computes normalized point-estimates and
-#' respective confidence intervals for user-defined experimental groups. Helper
-#' function for \code{\link{ci_plot}}.
-#'
-#' @param object Data frame with one column \code{Parameter}, columns with
-#'   factor variables before that column and colums with numeric vectors after
-#'   that column.
-#' @param grouping Logical, character or numeric scalar indicating according to
-#'   which columns (before the \sQuote{parameter} column) the data should be
-#'   aggregated by calculating means and confidence intervals. If \code{FALSE},
-#'   such an aggregation does not take place. If \code{TRUE}, all those columns
-#'   are used for grouping.
-#' @param norm.method character scalar indicating the normalization method.
-#'   See \sQuote{Details} section below.
-#' @param norm.by Vector indicating which wells (columns) or plates (rows) are
-#'   used to calculate means used for the normalization. By default, the mean is
-#'   calculated over all rows or columns if normalization is requested using
-#'   \code{norm.method}.
-#' @param dups Character scalar defining the action to conduct if
-#'   \code{grouping} contains duplicates.
-#' @return An object of class \code{data.frame} with the same column structure
-#'   as \code{object} and, if grouping was used, a triplet structure of the
-#'   rows, as indicated in the new \sQuote{Parameter} column: group mean and
-#'   group lower and upper boundary of the group confidence interval. It could
-#'   then be visualized using \code{\link{ci_plot}}.
-#~ @keywords htest
-#' @keywords internal
-#' @seealso boot::norm
-#' @details The function gives option to correct aggregated parameters
-#'   \describe{
-#'   \item{none}{No normalisation.}
-#'   \item{plate.sub}{Substracts the mean of all or selected complete plate(s)
-#'     from each single value.}
-#'   \item{plate.div}{Divide each single value by the mean value from one or
-#'     more selected plates}.
-#'   \item{well.sub}{Substracts the mean of all or selected complete well(s)
-#'     from each single value.}
-#'   \item{well.div}{Divide each single value by the mean value from one or
-#'     more selected wells}.
-#'   }
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' # data preparation
-#' require(opmdata)
-#' data(vaas_et_al)
-#'
-#' # select only the first replicate of the E.coli strains
-#' vaas.test <- subset(vaas_et_al,
-#'   query = list(Experiment = "First replicate", Species = "Escherichia coli"))
-#' # extract parameter A with strain, experiment, slot and species as metadata
-#' vaas.test.A <- extract(vaas.test,
-#'   as.labels = list("Strain", "Experiment", "Slot", "Species"),
-#'   subset = "A", dataframe = TRUE)
-#' stopifnot(dim(vaas.test.A) == c(20L, 101L))
-#'
-#' # simplest version:
-#' # no 'as.labels' specified, no grouping, no normalisation
-#' x <- group_CI(vaas.test.A, grouping = FALSE, norm.method = NULL)
-#' stopifnot(is.data.frame(x), identical(dim(x), c(20L, 101L)))
-#'
-#' # grouping according all available metadata-columns, no normalisation
-#' x <- group_CI(vaas.test.A, grouping = TRUE, as.labels = NULL,
-#'   norm.method = NULL)
-#' stopifnot(is.data.frame(x), identical(dim(x), c(12L, 101L)))
-#' stopifnot(is_ci_plottable(x))
-#'
-#' # visualisation using ci_plot
-#' message("plot #1")
-#' ci_plot(x[, 1L:10L], legend.field = c(3L, 2L))
-#' # note: the first five columns are factors, thus only four wells plotted
-#'
-#' # with specified columns ('as.labels' given as character-string of the
-#' # column-names) for grouping (TRUE), normalisation by division ("plate.div")
-#' # using well A10-values (positive control)
-#' x <- group_CI(object = vaas.test.A, grouping = TRUE,
-#'   as.labels = colnames(vaas.test.A[, 1L:3L]), norm.method = "plate.div",
-#'   x = 10 )
-#' stopifnot(is.data.frame(x), identical(dim(x), c(12L, 100L)))
-#' stopifnot(is_ci_plottable(x))
-#'
-#' # visualisation using ci_plot
-#' message("plot #2")
-#' ci_plot(x[, 4L:14L], vline = 1) # good
-#' # note: the first four columns are factors, thus only six plots
-#' # A10 all point-estimator have value 1, since the values of this well are
-#' # divided by themselves
-#'
-#' }
-#'
-setGeneric("group_CI", function(object, ...) standardGeneric("group_CI"))
-
-setMethod("group_CI", "data.frame", function(object, grouping = TRUE,
-    norm.method = c("plate.sub", "plate.div", "well.sub", "well.div", "none"),
-    norm.by = TRUE, dups = c("warn", "error", "ignore")) {
-
-  do_norm <- function(x, norm.method, norm.by) {
-    case(norm.method,
-      plate.sub = sweep(x, 1L, rowMeans(x[, norm.by, drop = FALSE]), "-"),
-      plate.div = sweep(x, 1L, rowMeans(x[, norm.by, drop = FALSE]), "/"),
-      well.sub = sweep(x, 2L, colMeans(x[norm.by, , drop = FALSE]), "-"),
-      well.div = sweep(x, 2L, colMeans(x[norm.by, , drop = FALSE]), "/"),
-      none = x
-    )
-  }
-
-  param.pos <- which(colnames(object) == "Parameter")
-  if (length(param.pos) != 1L)
-    stop("need data frame with exactly one column called 'Parameter'")
-  if (param.pos == ncol(object))
-    stop("no numerical data or 'Parameter' column at wrong position")
-
-  # compute the normalisation
-  num.pos <- seq.int(param.pos + 1L, ncol(object))
-  object[, num.pos] <- do_norm(object[, num.pos, drop = FALSE],
-    match.arg(norm.method), norm.by)
-
-  if (!length(grouping) || identical(grouping, FALSE))
-    return(object)
-
-  if (!is.logical(grouping) && anyDuplicated(grouping))
-    case(match.arg(dups),
-      ignore = NULL,
-      warn = warning("duplicated grouping values"),
-      error = warning("duplicated grouping values")
-    )
-
-  # make list from the factorial column names and note its length
-  group.facs <- object[, seq.int(param.pos - 1L), drop = FALSE]
-  gl <- length(group.facs <- unclass(group.facs[, grouping, drop = FALSE]))
-
-  # compute the means and CIs with respect to the stated grouping
-  aggr.mean <- aggregate(object[, num.pos, drop = FALSE], by = group.facs,
-    FUN = mean)
-  aggr.CI <- aggregate(object[, num.pos, drop = FALSE], by = group.facs,
-    FUN = var) # first the variances
-
-  # The output has to be organized in a certain structure, three rows per group:
-  # first the mean, second the lower CI limit third the upper CI limit. This
-  # step creates the factor-data part up to the 'Parameter' column.
-  result <- as.data.frame(sapply(aggr.mean[, seq.int(gl), drop = FALSE],
-    rep, each = 3L))
-  colnames(result) <- names(group.facs)
-  result$Parameter <- as.factor(unlist(map_grofit_names(
-    subset = as.character(object[1L, param.pos]), ci = TRUE)))
-
-  # Reduce to numeric part and get CIs from means and variances.
-  aggr.mean <- as.matrix(aggr.mean[, seq.int(gl + 1L, ncol(aggr.mean)),
-    drop = FALSE])
-  aggr.CI <- norm.ci(t0 = aggr.mean,
-    var.t0 = aggr.CI[, seq.int(gl + 1L, ncol(aggr.CI)), drop = FALSE])
-  aggr.CI <- as.matrix(aggr.CI[, -1L, drop = FALSE]) # remove the 'conf' column
-
-  # Prepare the numerical part of the results.
-  output <- matrix(ncol = 3L * nrow(aggr.mean), nrow = ncol(aggr.mean))
-  pos.1 <- ncol(aggr.CI)
-  pos.2 <- seq.int(pos.1 / 2L + 1L, pos.1)
-  pos.1 <- seq.int(pos.1 / 2L)
-  for (i in seq.int(nrow(aggr.mean)))
-    output[, seq.int(i * 3L - 2L, 3L * i)] <- c(aggr.mean[i, , drop = TRUE],
-      aggr.CI[i, pos.1, drop = TRUE], aggr.CI[i, pos.2, drop = TRUE])
-  output <- t(output)
-  colnames(output) <- colnames(aggr.mean)
-
-  # Done.
-  cbind(result, output)
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 #' Plot point estimates with CIs
 #'
 #' Draw point estimates with their confidence intervals. The data frame method
@@ -1212,6 +1036,7 @@ setMethod("group_CI", "data.frame", function(object, grouping = TRUE,
 #' @param ... Optional other arguments passed to \code{legend}, or arguments
 #'   passed from the \code{\link{OPMS}} method to the data frame method.
 #'
+#' @param split.at Character vector. See \code{\link{extract}}.
 #'
 #' @note \itemize{
 #'   \item The default placement of the legend is currently not necessarily
@@ -1247,7 +1072,7 @@ setGeneric("ci_plot", function(object, ...) standardGeneric("ci_plot"))
 setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     prop.offset = 0.04, align = "center", col = "blue", na.action = "warn",
     draw.legend = TRUE, legend.field = c(1, 1), x = "topleft", xpd = TRUE,
-    vline = 0, ...) {
+    vline = 0, split.at = "Parameter", ...) {
 
   single_plot <- function(col.pos) {
     plot(x = NULL, y = NULL, xlim = ranges[, col.pos], ylim = ylim,
@@ -1263,19 +1088,15 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     }, numeric(4L))
   }
 
+  # Determine the position used for splitting the data frame
+  param.pos <- assert_splittable_matrix(object, split.at)
+
   # Check the triplet structure and determine all triplet start positions
   if (nrow(object) %% 3L != 0L)
     stop("need data frame with 3 * n rows")
   chunk.pos <- seq.int(nrow(object))
   chunk.pos <- chunk.pos[chunk.pos %% 3L == 1L]
   row.names <- as.character(seq_along(chunk.pos))
-
-  # Determine the 'Parameter' position, used for splitting the data frame
-  param.pos <- which(colnames(object) == "Parameter")
-  if (length(param.pos) != 1L)
-    stop("need data frame with one column called 'Parameter'")
-  if (param.pos == ncol(object))
-    stop("the data columns are missing")
 
   # Reorder the matrix and construct the legend if necessary
   if (param.pos > 1L) {
@@ -1319,7 +1140,7 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
 setMethod("ci_plot", OPMS, function(object, as.labels,
     subset = opm_opt("curve.param"), ...) {
   ci_plot(extract(object, as.labels = as.labels, subset = subset,
-    dataframe = TRUE, ci = TRUE), ...)
+    dataframe = TRUE, ci = TRUE), split.at = "Parameter", ...)
 }, sealed = SEALED)
 
 
@@ -1528,8 +1349,8 @@ setMethod("heat_map", "matrix", function(object,
 
 setMethod("heat_map", "data.frame", function(object, as.labels,
     as.groups = NULL, sep = " ", ...) {
-  invisible(heat_map(extract(object, as.labels = as.labels,
-    as.groups = as.groups, sep = sep), ...))
+  invisible(heat_map(extract_columns(object, what = "numeric", direct = FALSE,
+    as.labels = as.labels, as.groups = as.groups, sep = sep), ...))
 }, sealed = SEALED)
 
 setMethod("heat_map", OPMS, function(object, as.labels,
@@ -1648,7 +1469,8 @@ setMethod("radial_plot", "matrix", function(object, rp.type = "p",
 
 setMethod("radial_plot", "data.frame", function(object, as.labels, sep = " ",
     ...) {
-  invisible(radial_plot(extract(object, as.labels = as.labels, sep = sep), ...))
+  invisible(radial_plot(extract_columns(object, what = "numeric",
+    direct = FALSE, as.labels = as.labels, sep = sep), ...))
 }, sealed = SEALED)
 
 setMethod("radial_plot", OPMS, function(object, as.labels,

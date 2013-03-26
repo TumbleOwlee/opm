@@ -100,7 +100,7 @@
   Other phylogeny-functions: \code{\link{phylo_data}},
   \code{\link{safe_labels}}
 }
+\keyword{IO}
 \keyword{character}
 \keyword{cluster}
-\keyword{IO}
 

@@ -135,8 +135,8 @@ stopifnot(identical(dim(x), c(4L, 5L)))
   \code{\link{read_opm}}, \code{\link{read_single_opm}},
   \code{\link{split_files}}, \code{\link{to_metadata}}
 }
-\keyword{attribute}
 \keyword{IO}
+\keyword{attribute}
 
 \docType{methods}
 \alias{collect_template-methods}

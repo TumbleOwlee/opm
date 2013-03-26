@@ -59,20 +59,21 @@ setMethod("to_grofit_data", OPM, function(object) {
 
 ## NOTE: Not an S4 method because 'grofit' is an S3 class
 
-#' Grofit extraction
+#' Parameter extraction
 #'
 #' Extract and rename estimated curve parameters.
 #'
-#' @param x Object of class \sQuote{grofit}.
+#' @param x Object of class \sQuote{grofit} or \sQuote{opm_model}.
+#' @param ... Additional arguments.
 #' @return Matrix.
 #' @keywords internal
 #'
-extract_curve_params <- function(x) UseMethod("extract_curve_params")
+extract_curve_params <- function(x, ...) UseMethod("extract_curve_params")
 
 #' @rdname extract_curve_params
 #' @method extract_curve_params grofit
 #'
-extract_curve_params.grofit <- function(x) {
+extract_curve_params.grofit <- function(x, ...) {
   settings <- c(x$control)
   x <- summary(x$gcFit)
   map <- map_grofit_names()
@@ -80,6 +81,79 @@ extract_curve_params.grofit <- function(x) {
     dimnames = list(map, x[, "TestId"]), settings = settings)
 }
 
+#' @rdname extract_curve_params
+#' @param all Logic. Should
+#' @method extract_curve_params opm_model
+#'
+extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
+  pred <- fitted(x)
+  x <- get_data(x)[, 1]
+  ## quick and dirty
+  deriv <- diff(pred) / diff(x)
+  slope <- max(deriv)
+  ## index of max. slope
+  idx <- which.max(deriv):(which.max(deriv) + 1)
+  ## x-value of max. slope
+  x_ms <- mean(x[idx])
+  ## y-value of max. slope
+  y_ms <- mean(pred[idx])
+  ## intercept
+  intercept <- y_ms - slope * x_ms
+  ## lag
+  lag <- - (intercept / slope)
+  ## maximum
+  maximum <- max(pred)
+  ## AUC
+  AUC <- AUC(x, pred)
+  if (all)
+      return(list(mu = slope, lambda = lag, A = maximum, AUC = AUC,
+        derivative = deriv, intercept = intercept))
+  return(data.frame(mu = slope, lambda = lag, A = maximum, AUC = AUC))
+}
+
+################################################################################
+
+## NOTE: Not an S4 method
+
+#' Summary method for bootstraped splines
+#'
+#' Function for internal use; Creates confidence intervalls based on bootstrap
+#' replicates.
+#'
+#' @param object An object of class \code{splines_bootstrap}.
+#' @param ... Further arguments. Currently not used.
+#' @return vector of bootstrap confidence intervals
+#' @author Benjamin Hofner
+#' @keywords internal
+summary.splines_bootstrap <- function (object, ...) {
+
+    cnames <- c("mu", "lambda", "A", "AUC",
+      "mu CI95 low", "lambda CI95 low", "A CI95 low", "AUC CI95 low",
+      "mu CI95 high", "lambda CI95 high", "A CI95 high", "AUC CI95 high")
+
+    res <- data.frame(t(sapply(object, extract_curve_params.opm_model)))
+    res$mu <- unlist(res$mu)
+    res$lambda <- unlist(res$lambda)
+    res$A <- unlist(res$A)
+    res$AUC <- unlist(res$AUC)
+
+    mu <- mean(res$mu, na.rm = TRUE)
+    lambda <- mean(res$lambda, na.rm = TRUE)
+    A <- mean(res$A, na.rm = TRUE)
+    AUC <- mean(res$AUC, na.rm = TRUE)
+    mu.sd <- sd(res$mu, na.rm = TRUE)
+    lambda.sd <- sd(res$lambda, na.rm = TRUE)
+    A.sd <- sd(res$A, na.rm = TRUE)
+    AUC.sd <- sd(res$AUC, na.rm = TRUE)
+    table <- c(mu, lambda, A, AUC,
+      mu - qnorm(0.975) * mu.sd, mu + qnorm(0.975) * mu.sd,
+      lambda - qnorm(0.975) * lambda.sd, lambda + qnorm(0.975) * lambda.sd,
+      A - qnorm(0.975) * A.sd, A + qnorm(0.975) * A.sd,
+      AUC - qnorm(0.975) * AUC.sd, AUC + qnorm(0.975) * AUC.sd)
+    table <- data.frame(t(table))
+    colnames(table) <- cnames
+    return(table)
+}
 
 ################################################################################
 
@@ -129,6 +203,8 @@ param_names <- function() {
 #'   \code{verbose} settings, as the most important ones, are added separately
 #'   (see above). The verbose mode is not very useful in parallel processing.
 #'   For its use in \sQuote{opm-fast} mode, see \code{\link{fast_estimate}}.
+#'   With \code{method} \dQuote{spline.fit}, options can be specified using the
+#'   function \code{\link{set_spline_options}}.
 #' @param method Character scalar. The aggregation method to use. Currently
 #'   only the following methods are supported:
 #'   \describe{
@@ -142,6 +218,8 @@ param_names <- function() {
 #'     the median of the bootstrap values is used as point estimate. For details
 #'     see the argument \code{as.pe} of the function
 #'     \code{\link{fast_estimate}}.}
+#'     \item{splines}{Fit various splines (smoothing splines and P-splines from
+#'     \pkg{mgcv} and smoothing splines via \code{smooth.spline}) to opm data.}
 #'   }
 #' @param program Deprecated. Use \sQuote{method} instead. If provided,
 #'   \sQuote{program} has precedence over \sQuote{method}, but \sQuote{program}
@@ -281,13 +359,21 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
       ec50 = FALSE, control = control))
   }
 
-  run_mgcv <- function(x, y, data, ...) {
-    mod <- fit_spline(y = y, x = x, data = data, type = "tp", ...)
-    mu <- NA
-    lambda <- NA
-    A <- max(fitted(mod))
-    AUC <- AUC(get_data(mod)[, 1], fitted(mod))
-    c(mu = mu, lambda = lambda, A = A, AUC = AUC)
+  run_mgcv <- function(x, y, data, options, boot) {
+    mod <- fit_spline(y = y, x = x, data = data, options = options)
+    if (boot > 0) {
+      ## draw bootstrap sample
+      folds <- rmultinom(boot, nrow(data), rep(1 / nrow(data), nrow(data)))
+      res <- lapply(1:boot,
+        function(i) {
+          fit_spline(y = y, x = x, data = data, options = options,
+            weights = folds[, i])
+      })
+      class(res) <- "splines_bootstrap"
+      params <- as.vector(summary(res))
+      return(list(params = params, model = mod))
+    }
+    list(params = extract_curve_params(mod), model = mod)
   }
 
   copy_A_param <- function(x) {
@@ -338,8 +424,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         rownames(result) <- as.character(map)
         attr(result, OPTIONS) <- options
       },
-      spline.fit = {
-        options <- insert(as.list(options), boot = boot)
+      splines = {
         ## extract data
         data <- as.data.frame(measurements(object))
         ## get well names
@@ -347,11 +432,30 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         indx <- as.list(seq.int(length(wells)))
         result <- traverse(indx,
           fun = function(i) {
-            run_mgcv(x = HOUR, y = wells[i], data = data)
+            run_mgcv(x = HOUR, y = wells[i], data = data, options = options,
+              boot = boot)
           }, cores = cores)
-        result <- do.call(cbind, result)
-        result <- rbind(result,
-          matrix(NA, nrow = 8L, ncol = ncol(result)))
+        options <- insert(as.list(options), boot = boot)
+
+        if (options$save.models) {
+            opm_models <- lapply(result, function(x) x$model)
+            names(opm_models) <- wells
+            if (is.null(options$filename))
+              options$filename <- paste("opm_models_",
+                format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData", sep = "")
+            save("opm_models", file = options$filename)
+            cat("Models saved as 'opm_models' on disk in file\n  ",
+              getwd(), "/", options$filename, "\n\n", sep = "")
+        }
+        result <- sapply(result, function(x) x$params)
+        rn <- rownames(result)
+        result <- matrix(unlist(result),
+          ncol = ncol(result), nrow = nrow(result))
+        rownames(result) <- rn
+        ## attach bootstrap CIs if necessary
+        if (boot <= 0)
+          result <- rbind(result,
+            matrix(NA, nrow = 8L, ncol = ncol(result)))
         ## dirty hack:
         map <- map_grofit_names(opm.fast = TRUE)
         rownames(result) <- as.character(map)
@@ -476,7 +580,6 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #'   third one use the point estimate from the raw data. If \code{boot} is 0,
 #'   \code{as.pe} is reset to \sQuote{pe}, if necessary, and a warning is
 #'   issued.
-#'
 #' @param ci.type Character scalar determining the way the confidence intervals
 #'   are calculated. Either \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
 #'   \code{boot.ci} from the \pkg{boot} package for details.

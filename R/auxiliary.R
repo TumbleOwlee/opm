@@ -141,7 +141,7 @@ setGeneric("is_constant", function(x, ...) standardGeneric("is_constant"))
 setMethod("is_constant", "vector", function(x, na.rm = TRUE) {
   if (na.rm)
     x <- x[!is.na(x)]
-  length(x) < 2L || all(duplicated(x)[-1L])
+  length(x) < 2L || all(duplicated.default(x)[-1L])
 }, sealed = SEALED)
 
 setMethod("is_constant", "list", function(x, na.rm = TRUE) {
@@ -149,7 +149,7 @@ setMethod("is_constant", "list", function(x, na.rm = TRUE) {
     return(TRUE)
   if (na.rm)
     x <- lapply(x, na.exclude)
-  all(duplicated(x)[-1L])
+  all(duplicated.default(x)[-1L])
 }, sealed = SEALED)
 
 setMethod("is_constant", MOA, function(x, margin = 1L, na.rm = TRUE) {
@@ -224,7 +224,8 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
 #' If a formula has length 3, the second element represents the left part (the
 #' first element is the tilde). Once extracted using \code{[[}, the left part
 #' can be a call, a name or a vector. These methods convert it to a vector,
-#' aiming at generating a valid key for indexing a list.
+#' aiming at generating a valid key for indexing a list. Other classes for the
+#' left part are possible but currently \strong{not} supported.
 #'
 #' @param object An object of class \sQuote{call}, \sQuote{name} or
 #'   \sQuote{vector} (S4-based).
@@ -277,6 +278,28 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 }, sealed = SEALED)
 
 
+#' Check presence of split column
+#'
+#' Check whether a certain column is present and not at the end of a data frame
+#' or matrix.
+#'
+#' @param x Data frame, matrix or array.
+#' @param split.at Names of columns at which \code{x} should be split.
+#' @return Integer scalar indicating the split position. An error is raised
+#'   if this is missing or non-unique.
+#' @keywords internal
+#'
+assert_splittable_matrix <- function(x, split.at) {
+  pos <- which(colnames(x) == split.at)
+  LL(pos, .msg = listing(sprintf("'%s'", split.at), style = "sentence",
+    prepend = FALSE, header = "need exactly one column name present among: ",
+    last.sep = "comma"))
+  if (pos == ncol(x))
+    stop("column given by 'split.at' must not be the last one")
+  pos
+}
+
+
 ################################################################################
 ################################################################################
 #
@@ -287,7 +310,7 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 #' Create names
 #'
 #' A helper function that treats lists passed as query to
-#' \code{\link{metadata}}.
+#' \code{\link{metadata}}. Other objects are returned unchanged.
 #'
 #' @param x List of character vectors.
 #' @return List with potentially modified names.
@@ -296,10 +319,16 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 create_names <- function(x) UseMethod("create_names")
 
 #' @rdname create_names
+#' @method create_names default
+#'
+create_names.default <- function(x) x
+
+#' @rdname create_names
 #' @method create_names list
 #'
 create_names.list <- function(x) {
-  join <- function(x) vapply(x, paste, character(1L), collapse = ".")
+  join <- function(x) vapply(x, paste, character(1L),
+    collapse = OPM_OPTIONS$key.join)
   if (is.null(labels <- names(x)))
     names(x) <- join(x)
   else
@@ -948,20 +977,22 @@ setAs(from = "ANY", to = "ordered", function(from) as.ordered(from))
 #' \sQuote{character}. Reduce it to \sQuote{ANY} if \sQuote{ANY} is contained.
 #' See \code{\link{map_values}} for a use.
 #'
-#' @param object Character vector.
+#' @param x Character vector.
 #' @return Character vector.
 #' @keywords internal
 #'
-setGeneric("prepare_class_names",
-  function(object) standardGeneric("prepare_class_names"))
+prepare_class_names <- function(x) UseMethod("prepare_class_names")
 
-setMethod("prepare_class_names", "character", function(object) {
-  object <- unique(c("character", object))
-  if ("ANY" %in% object)
+#' @rdname prepare_class_names
+#' @method prepare_class_names character
+#'
+prepare_class_names.character <- function(x) {
+  x <- unique.default(c("character", x))
+  if ("ANY" %in% x)
     "ANY"
   else
-    object
-}, sealed = SEALED)
+    x
+}
 
 
 ################################################################################
@@ -1772,6 +1803,8 @@ setMethod("contains", c(OPMS, OPM), function(object, other, ...) {
 #'       extracted by \code{\link{collect_template}}.}
 #'     \item{curve.param}{Character scalar. Default \sQuote{subset} argument of
 #'       \code{\link{extract}} and the plotting functions.}
+#'     \item{disc.param}{Character scalar. Default \sQuote{subset} argument of
+#'       \code{\link{do_disc}}. It is usually not advisable to  change it.}
 #'     \item{digits}{Integer scalar. Number of digits used by some functions
 #'       generating output text.}
 #'     \item{file.encoding}{Character scalar. Character encoding in input files
@@ -1781,6 +1814,9 @@ setMethod("contains", c(OPMS, OPM), function(object, other, ...) {
 #'       type. If empty, nothing is changed.}
 #'     \item{html.attr}{Used by \code{\link{phylo_data}} for automatically
 #'       creating \acronym{HTML} \sQuote{title} and \sQuote{class} attributes.}
+#'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
+#'       that must be in sync with it for joining metadata keys used in nested
+#'       queries (because the resulting object is \sQuote{flat}).}
 #'     \item{phylo.fmt}{Character scalar indicating the default output format
 #'       used by \code{\link{phylo_data}}.}
 #'     \item{split}{Character scalar indicating the default spliiting characters
@@ -1825,10 +1861,11 @@ setMethod("contains", c(OPMS, OPM), function(object, other, ...) {
 setGeneric("opm_opt", function(x, ...) standardGeneric("opm_opt"))
 
 setMethod("opm_opt", "list", function(x) {
-  old <- mget(keys <- names(x), envir = OPM_OPTIONS)
+  old <- mget(names(x), envir = OPM_OPTIONS)
   for (i in seq_along(x))
-    if (!all(inherits(x[[i]], class(old[[i]]))))
-      stop("new and old value have conflicting class(es) for key ", keys[[i]])
+    if (!all(inherits(x[[i]], class(old[[i]]), which = TRUE)))
+      stop(sprintf("new and old value have conflicting class(es) for key '%s'",
+        names(x)[i]))
   list2env(x, envir = OPM_OPTIONS)
   invisible(old)
 }, sealed = SEALED)

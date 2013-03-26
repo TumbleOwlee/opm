@@ -5,7 +5,8 @@
   batch_process(names, out.ext, io.fun, fun.args = list(),
     proc = 1L, outdir = NULL,
     overwrite = c("yes", "older", "no"), in.ext = "any",
-    compressed = TRUE, literally = FALSE, ...,
+    compressed = TRUE,
+    literally = inherits(in.ext, "AsIs"), ...,
     verbose = TRUE, demo = FALSE)
 }
 \arguments{

@@ -19,6 +19,10 @@ NULL
 #'
 NULL
 
+#' @importFrom stats lm glm aov
+#'
+NULL
+
 #' @importFrom boot boot boot.ci norm.ci
 #'
 NULL

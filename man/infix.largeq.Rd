@@ -1,6 +1,6 @@
 \name{\%Q\%}
-\alias{infix.largeq}
 \alias{\%Q\%}
+\alias{infix.largeq}
 \title{Query metadata (strict version)}
 \arguments{
   \item{x}{Character vector, factor or list used as query.

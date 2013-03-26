@@ -128,21 +128,25 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 
 \docType{methods}
 \alias{bracket-methods}
-\alias{bracket,OPM-method}
-\alias{[,OPM-method}
-\alias{bracket,OPMA-method}
-\alias{[,OPMA-method}
-\alias{bracket,OPMD-method}
-\alias{[,OPMD-method}
-\alias{bracket,OPMS-method}
-\alias{[,OPMS-method}
+\alias{bracket,OPM,ANY,ANY,ANY-method}
+\alias{[,OPM,ANY,ANY,ANY-method}
+\alias{bracket,OPMA,ANY,ANY,ANY-method}
+\alias{[,OPMA,ANY,ANY,ANY-method}
+\alias{bracket,OPMD,ANY,ANY,ANY-method}
+\alias{[,OPMD,ANY,ANY,ANY-method}
+\alias{bracket,OPMS,ANY,ANY,ANY-method}
+\alias{[,OPMS,ANY,ANY,ANY-method}
 \usage{
-  \S4method{[}{OPM}(x, i, j, ..., drop = FALSE) 
+  \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
+    drop = FALSE) 
 
-  \S4method{[}{OPMA}(x, i, j, ..., drop = FALSE) 
+  \S4method{[}{OPMA,ANY,ANY,ANY}(x, i, j, ...,
+    drop = FALSE) 
 
-  \S4method{[}{OPMD}(x, i, j, ..., drop = FALSE) 
+  \S4method{[}{OPMD,ANY,ANY,ANY}(x, i, j, ...,
+    drop = FALSE) 
 
-  \S4method{[}{OPMS}(x, i, j, k, ..., drop = FALSE) 
+  \S4method{[}{OPMS,ANY,ANY,ANY}(x, i, j, k, ...,
+    drop = FALSE) 
 
 }
