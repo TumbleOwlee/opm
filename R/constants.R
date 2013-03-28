@@ -85,6 +85,13 @@ THEOR_RANGE <- c(0, 400)
 CURVE_PARAMS <- c("mu", "lambda", "A", "AUC")
 
 
+# Reserved metadata names (they CAN be used by in the metadata but might yield
+# problems).
+#
+RESERVED_NAMES <- c("Plate", "Well", "Time", "Value")
+names(RESERVED_NAMES) <- tolower(RESERVED_NAMES)
+
+
 # Names used in aggregation/discretization settings
 #
 SOFTWARE <- "software"

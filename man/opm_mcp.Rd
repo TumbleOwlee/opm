@@ -8,33 +8,18 @@
   comparison of means and can be selected using
   \code{as.labels}.}
 
-  \item{as.labels}{List or character vector specifying the
-  factor variables which determine the experimental groups
-  to be compared. If \code{object} is of class
-  \code{\link{OPMS}}, \code{as.labels} is passed to
-  \code{\link{extract}} and must not be \code{NULL} but
-  given as a list. If \code{object} is of class
-  \code{data.frame}, \code{as.labels} can be given as a
-  character vector, and by default all factor variables
-  included in \code{object} are used. A logical or numeric
-  vector could also be passed in that case and would be
-  used to select from the column names.}
-
   \item{model}{A model formula or a character vector or a
   list containing the names of factors to be included in
-  the model for fitting. If a numeric or logical vector,
-  used to select the names from \code{as.labels}. The
-  operator can be specified using \code{op}. See
+  the model for fitting. If \code{object} is of class
+  \code{\link{OPMS}}, \code{model} is passed to
+  \code{\link{extract}} after removal of the reserved names
+  (see \code{\link{param_names}}, which can nevertheless be
+  included in the model formula as they always contained in
+  the resulting data frame. If \code{model} is a list or
+  vector, it is then automatically converted to a formula,
+  using operator(s) as specified with \code{ops}. See
   \code{formula} for further details (in the \pkg{stats}
   package).}
-
-  \item{op}{character scalar containing \sQuote{+},
-  \sQuote{*}, or \sQuote{:}, with \sQuote{+} as default. It
-  indicates the operator(s) to insert between the variables
-  in the right part of the \code{model} formula. See
-  description of \code{formula} for further details (in the
-  \pkg{stats} package). \code{op} is ignored if
-  \code{model} is directly given as a formula.}
 
   \item{m.type}{Character scalar indicating which of the
   following model types to use in model fitting:
@@ -63,6 +48,15 @@
   \item{split.at}{Character vector. See
   \code{\link{extract}}. Cannot be set in the case of the
   \code{\link{OPMS}} method.}
+
+  \item{ops}{character vector containing \sQuote{+},
+  \sQuote{*}, or \sQuote{:}, as elements (with \sQuote{+}
+  as default). It indicates the operator(s) to insert
+  between the variables in the right part of the
+  \code{model} formula.  See description of \code{formula}
+  for further details (in the \pkg{stats} package).
+  \code{ops} is ignored if \code{model} is directly given
+  as a formula.}
 
   \item{...}{Optional argument passed to
   \code{\link{extract}}.}
@@ -116,13 +110,13 @@
 data(vaas_4)
 
 # without computation of multiple comparisons of means
-summary(x <- opm_mcp(vaas_4, as.labels = list("Species", "Strain"),
+summary(x <- opm_mcp(vaas_4, model = list("Species", "Strain"),
   do.mcp = FALSE))
 stopifnot(is.data.frame(x), dim(x) == c(384L, 6L))
 
 # comparison using specified model comparing 'Species' pooled over
 # complete plates
-(x <- opm_mcp(vaas_4, as.labels = list("Species"), m.type = "lm",
+(x <- opm_mcp(vaas_4, model = list("Species"), m.type = "lm",
   mcp.def = mcp(Species = "Dunnett")))
 stopifnot(inherits(x, "glht"), length(coef(x)) == 1)
 # creating an informative plot
@@ -133,7 +127,7 @@ par(op) # reset plotting settings
 
 # comparison of only A01 - A04 against each other
 # note that the left side of the model is set automatically
-(x <- opm_mcp(vaas_4[, , 1:4], as.labels = list("Species", "Strain"),
+(x <- opm_mcp(vaas_4[, , 1:4],
   model = ~ Well + Species, m.type = "lm",
   mcp.def = mcp(Well = "Tukey")))
 stopifnot(inherits(x, "glht"), length(coef(x)) == 6)
@@ -145,8 +139,8 @@ par(op) # reset plotting settings
 
 # user-defined contrast matrix
 a <- mcp(Well = "Dunnett")
-(x <- opm_mcp(vaas_4[, , 1:4], as.labels = list("Species", "Strain"),
-  m.type = "lm", mcp.def = a, model = Value ~ Well))
+(x <- opm_mcp(vaas_4[, , 1:4], model = Value ~ Well,
+  m.type = "lm", mcp.def = a))
 stopifnot(inherits(x, "glht"), length(coef(x)) == 3)
 # creating an informative plot
 op <- par(no.readonly = TRUE) # default plotting settings
@@ -154,17 +148,30 @@ par(mar = c(3, 20, 3, 2))
 plot(x)
 par(op) # reset plotting settings
 
+# manually defined contrast matrix
+contr <- rbind(
+  "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
+  "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
+  "A01 (Negative Control) - A04 (D-Trehalose)" = c(-1, 0, 0, -1),
+  "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
+x <- opm_mcp(vaas_4[, , 1:4],
+  model = ~ Well, m.type = "lm", mcp.def = contr)
+# creating an informative plot
+op <- par(no.readonly = TRUE) # default plotting settings
+par(mar = c(3, 20, 3, 2))
+plot(x)
+par(op) # reset plotting settings
 
 ## data-frame method
 x <- extract(vaas_4, as.labels = list("Species", "Strain"), subset = "A",
   dataframe = TRUE)
 
 # without performing the MCP
-(y <- opm_mcp(x, do.mcp = FALSE, as.labels = list("Species", "Strain")))
+(y <- opm_mcp(x, do.mcp = FALSE, model = list("Species", "Strain")))
 stopifnot(is.data.frame(y), dim(y) == c(384L, 6L))
 
 # now with conducting the test
-(y <- opm_mcp(x, as.labels = "Species", m.type = "lm",
+(y <- opm_mcp(x, model = "Species", m.type = "lm",
   mcp.def = mcp(Species = "Dunnett")))
 stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
 # creating an informative plot
@@ -175,7 +182,7 @@ par(op) # reset plotting settings
 
 # testing for subsets of object
 (y <- opm_mcp(subset(x, x$Species == "Escherichia coli"),
-  mcp.def = mcp(Strain = "Dunnett"), as.labels = "Strain", m.type = "lm"))
+  mcp.def = mcp(Strain = "Dunnett"), model = "Strain", m.type = "lm"))
 stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
 # creating an informative plot
 op <- par(no.readonly = TRUE) # default plotting settings
@@ -193,14 +200,11 @@ par(op) # reset plotting settings
 \alias{opm_mcp,OPMS-method}
 \alias{opm_mcp,data.frame-method}
 \usage{
-  \S4method{opm_mcp}{OPMS}(object, as.labels,
-    mcp.def = c(Dunnett = 1L),
-    model = as.labels, op = "+", m.type = "glm", glht.args = list(),
-    do.mcp = TRUE, ...) 
+  \S4method{opm_mcp}{OPMS}(object, model, mcp.def = c(Dunnett = 1L),
+    m.type = "glm", glht.args = list(), ops = "+", do.mcp = TRUE, ...) 
 
-  \S4method{opm_mcp}{data.frame}(object, as.labels,
-    mcp.def = c(Dunnett = 1L),
-    model = as.labels, op = c("+", ":", "*"), m.type = c("glm", "lm", "aov"),
+  \S4method{opm_mcp}{data.frame}(object, model,
+    mcp.def = c(Dunnett = 1L), ops = "+", m.type = c("glm", "lm", "aov"),
     glht.args = list(), split.at = "Parameter", do.mcp = TRUE) 
 
 }

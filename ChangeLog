@@ -5,11 +5,13 @@
 
 - fixed bug in aggregated()
 
+- metadata() and the functions depending on it can now use formuals for querying
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets
   new arguments accordingly
 - do_disc() gets a 'subset' argument, disc_settings() is accordingly 
   expanded, and opm_opt() gets a 'disc.param' entry
+- param_names() gets a 'what' argument
 - added support (substrate name and other information) for plates PM21 to PM25
   and plate PM-M TOX01, and adapted plate_type() accordingly
 - opm_opt() gets a 'key.join' entry (and better error messages)

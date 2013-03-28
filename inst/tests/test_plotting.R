@@ -171,7 +171,7 @@ test_that("predefined color sets can be obtained", {
 
 
 ## xy_plot
-test_that("the OPMS methpd xy_plot() works", {
+test_that("the OPMS method xy_plot() works", {
   opms.input <- OPMS.INPUT[, 1L:10L]
   expect_is(opms.input, "OPMS")
   got <- xy_plot(opms.input)

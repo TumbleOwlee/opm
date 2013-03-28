@@ -118,6 +118,10 @@ opm_opt("curve.param")
 # Matrix (containing the parameter given above)
 (x <- extract(vaas_4, as.labels = list("Species", "Strain")))
 stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.numeric(x))
+# Using a formula also works
+(y <- extract(vaas_4, as.labels = ~ Species + Strain))
+stopifnot(identical(x, y))
+
 # Data frame
 (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
   dataframe = TRUE))

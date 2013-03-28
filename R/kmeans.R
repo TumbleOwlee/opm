@@ -235,7 +235,8 @@ hist.kmeans <- function(x, y, col = "black", lwd = 1L, lty = 1L, main = NULL,
     xlab = "Clustered values", ...) {
   b <- borders(x, y)
   result <- hist(y, main = main, xlab = xlab, ...)
-  lapply(b, function(num) abline(v = num, col = col, lwd = lwd, lty = lty))
+  mapply(abline, v = b, col = col, lwd = lwd, lty = lty, SIMPLIFY = FALSE,
+    USE.NAMES = FALSE)
   invisible(result)
 }
 
@@ -258,14 +259,11 @@ hist.kmeanss <- function(x, k = NULL, col = "black", lwd = 1L, lty = 1L,
     case(length(y), integer(), min(y))
   }
   result <- hist(y <- attr(x, "input"), main = main, xlab = xlab, ...)
-  if (length(k) == 0L && length(k <- smallest_k(x)) == 0L)
+  if (!length(k) && !length(k <- smallest_k(x)))
     return(invisible(result))
-  mapply(function(k.val, col.val, lwd.val, lty.val) {
-    b <- borders(x[[as.character(k.val)]], y)
-    lapply(b, function(num) {
-      abline(v = num, col = col.val, lwd = lwd.val, lty = lty.val)
-    })
-  }, k, col, lwd, lty, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  b <- lapply(as.character(k), function(key) borders(x[[key]], y))
+  mapply(abline, v = b, col = col, lwd = lwd, lty = lty, SIMPLIFY = FALSE,
+    USE.NAMES = FALSE)
   invisible(result)
 }
 

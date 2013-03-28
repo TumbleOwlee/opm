@@ -97,6 +97,15 @@ test_that("the internally used parameter names are OK", {
 })
 
 
+## RESERVED_NAMES
+test_that("the internally used reserved metadata names are OK", {
+  # this strange test is intended to ensure that one thinks twice before
+  # changing the constant
+  wanted <- c("plate", "well", "time", "value")
+  expect_equal(names(RESERVED_NAMES), wanted)
+})
+
+
 ## SOFTWARE
 ## UNTESTED
 

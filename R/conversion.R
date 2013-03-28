@@ -331,7 +331,7 @@ lapply(c(
 #' column (suitable, e.g., for \pkg{lattice}).
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object or list.
-#' @param include \code{NULL}, character vector or list. If not \code{NULL},
+#' @param include \code{NULL}, character vector, list or formula. If not empty,
 #'   include this meta-information in the data frame, replicated in each row.
 #'   Otherwise it converted to a list and passed to \code{\link{metadata}}. See
 #'   there for details.
@@ -346,10 +346,11 @@ lapply(c(
 #'   the \code{\link{OPMS}} to the \code{\link{OPM}} method.
 #' @export
 #' @return Dataframe. Column names are unchecked (not converted to variable
-#'   names). The three last columns are: \sQuote{Time}, \sQuote{Well},
-#'   \sQuote{Value}, with the obvious meanings. The \code{\link{OPMS}} method
-#'   yields an additional column named \sQuote{Plate}, which contains each
-#'   plate's number within \code{object}.
+#'   names). The three last columns are coding for time, well and value, with
+#'   the exact spelling given by \code{\link{param_names}}. The
+#'   \code{\link{OPMS}} method yields an additional column for the plate, its
+#'   exact spelling also being available via \code{\link{param_names}}, which
+#'   contains each plate's number within \code{object}.
 #' @family conversion-functions
 #' @keywords manip dplot
 #' @seealso stats::reshape
@@ -370,7 +371,7 @@ lapply(c(
 #' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
 #' head(x <- flatten(vaas_4, fixed = "TEST"))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 5L)))
-#' head(x <- flatten(vaas_4, fixed = "TEST", include = "Strain"))
+#' head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
 #'
 setGeneric("flatten")
@@ -391,9 +392,10 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
   times <- hours(object, "all")
   rep.times <- rep.int(times, length(well.names))
   rep.wells <- rep(well.names, each = length(times))
-  result <- data.frame(Time = rep.times, Well = rep.wells,
-    Value = as.vector(object@measurements[, -1L]), check.names = FALSE,
+  result <- data.frame(time = rep.times, well = rep.wells,
+    value = as.vector(object@measurements[, -1L]), check.names = FALSE,
     stringsAsFactors = factors)
+  colnames(result) <- RESERVED_NAMES[colnames(result)]
 
   # Include fixed stuff
   if (length(fixed))
@@ -401,10 +403,9 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
       result)
 
   # Pick metadata and include them in the data frame
-  if (length(include)) {
+  if (length(include))
     result <- cbind(as.data.frame(metadata(object, include,
       exact = exact, strict = strict), stringsAsFactors = factors), result)
-  }
 
   result
 
@@ -412,11 +413,11 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
 
 setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
     ...) {
-  plate.nums <- paste("Plate", seq_along(object@plates))
-  do.call(rbind, mapply(FUN = function(plate, plate.num) {
-    flatten(plate, include = include,
-      fixed = c(list(Plate = plate.num), fixed), ...)
-  }, object@plates, plate.nums, SIMPLIFY = FALSE))
+  nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
+  nums <- lapply(as.list(nums), `names<-`, value = RESERVED_NAMES[["plate"]])
+  nums <- lapply(nums, c, fixed, recursive = FALSE)
+  do.call(rbind, mapply(flatten, object = object@plates, fixed = nums,
+    MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
 }, sealed = SEALED)
 
 
@@ -439,11 +440,11 @@ setGeneric("flattened_to_factor",
   function(object, ...) standardGeneric("flattened_to_factor"))
 
 setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
-  LL(plate.pos <- which(colnames(object) == "Plate"), sep)
+  LL(plate.pos <- which(colnames(object) == RESERVED_NAMES[["plate"]]), sep)
   if (plate.pos == 1L)
-    return(unique(object$Plate))
+    return(unique(object[, plate.pos]))
   result <- aggregate(object[, seq.int(1L, plate.pos)],
-    by = list(object$Plate), FUN = `[[`, i = 1L)
+    by = list(object[, plate.pos]), FUN = `[[`, i = 1L)
   result <- as.list(result[, seq.int(2L, ncol(result) - 1L), drop = FALSE])
   as.factor(do.call(paste, c(result, sep = sep)))
 }, sealed = SEALED)
@@ -465,9 +466,10 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #'
 #' @param object \code{\link{OPMS}} object or data frame.
 #' @param what List of metadata keys to consider, or single such key; passed to
-#'   \code{\link{metadata}}. For the data-frame method, just the names of the
-#'   columns to extract, or their indices, as vector; alternatively, the name
-#'   of the class to extract from the data frame to form the matrix values.
+#'   \code{\link{metadata}}. A formula is also possible; see there fpr details.
+#'   For the data-frame method, just the names of the columns to extract, or
+#'   their indices, as vector; alternatively, the name of the class to extract
+#'   from the data frame to form the matrix values.
 #' @param join Logical scalar. Join each row together to yield a character
 #'   vector? Otherwise it is just attempted to construct a data frame.
 #' @param sep Character scalar. Used as separator between the distinct metadata
@@ -496,6 +498,8 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' # Create data frame
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(4L, 2L)))
+#' (y <- extract_columns(vaas_4, what = ~ Species + Strain))
+#' stopifnot(identical(x, y)) # using a formula
 #'
 #' # Create a character vector
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
@@ -548,6 +552,7 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
 setMethod("extract_columns", "data.frame", function(object, what,
     as.labels = NULL, as.groups = NULL, sep = " ",
     direct = inherits(what, "AsIs")) {
+  ## TODO: mabye enabling a formula here, too?
   join <- function(x, what, sep) {
     apply(x[, what, drop = FALSE], 1L, FUN = paste, collapse = sep)
   }
@@ -935,6 +940,10 @@ setMethod("rep", OPMS, function(x, ...) {
 #' # Matrix (containing the parameter given above)
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain")))
 #' stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.numeric(x))
+#' # Using a formula also works
+#' (y <- extract(vaas_4, as.labels = ~ Species + Strain))
+#' stopifnot(identical(x, y))
+#'
 #' # Data frame
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
 #'   dataframe = TRUE))
@@ -1101,9 +1110,9 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   if (!length(as.groups) || identical(c(as.groups), FALSE))
     return(object)
 
-  # make list from the grouping columns and note its length
-  # create_names() enables lists to be passed as used for selecting metadata
-  as.groups <- create_names(as.groups)
+  # make list or vector from the grouping columns and note its length
+  # metadata_key() enables lists to be passed as used for selecting metadata
+  as.groups <- metadata_key(as.groups, FALSE)
   if (!is.logical(as.groups) && anyDuplicated(as.groups))
     case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(
       "duplicated grouping values")

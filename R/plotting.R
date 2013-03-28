@@ -696,7 +696,9 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
   # Plot
   xyplot(
     # Principally unchangeable arguments
-    Value ~ Time | Well, data = flatten(x, ...), type = "l", layout = layout,
+    create_formula("`%s` ~ `%s` | `%s`",
+      RESERVED_NAMES[c("value", "time", "well")]),
+    data = flatten(x, ...), type = "l", layout = layout,
     as.table = TRUE,
     # Curve colour and panel height
     col = col, ylim = c(0, y.max),
@@ -758,11 +760,15 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
   key.col <- col[seq_along(key.text)]
   col <- col[param]
 
+  names(data)[match(RESERVED_NAMES[["plate"]], names(data))] <- ".GROUPING"
+
   # Plot
   xyplot(
     # Principally unchangeable arguments
-    Value ~ Time | Well, data = data, type = "l", layout = layout,
-    as.table = TRUE, groups = Plate,
+    create_formula("`%s` ~ `%s` | `%s`",
+      RESERVED_NAMES[c("value", "time", "well")]),
+    data = data, type = "l", layout = layout,
+    as.table = TRUE, groups = .GROUPING,
     # Curve colours and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
@@ -947,7 +953,9 @@ setMethod("level_plot", OPM, function(x, main = list(),
   if (is.null(cex))
     cex <- guess_cex(dim(x)[2L])
   main <- main_title(x, main)
-  levelplot(Value ~ Time * Well, data = flatten(x, ...), main = main,
+  levelplot(create_formula("`%s` ~ `%s` * `%s`",
+      RESERVED_NAMES[c("value", "time", "well")]),
+    data = flatten(x, ...), main = main,
     col.regions = default_color_regions(colors, space, bias, num.colors),
     scales = list(cex = cex, lineheight = 10))
 }, sealed = SEALED)
@@ -971,8 +979,9 @@ setMethod("level_plot", OPMS, function(x, main = list(),
       factor.levels = panel.headers)
     strip.fmt <- do.call(strip.custom, strip.fmt)
   }
-  levelplot(Value ~ Time * Well | Plate, data = data,
-    main = main_title(x, main),
+  levelplot(create_formula("`%s` ~ `%s` * `%s` | `%s`",
+      RESERVED_NAMES[c("value", "time", "well", "plate")]),
+    data = data, main = main_title(x, main),
     col.regions = default_color_regions(colors, space, bias, num.colors),
     strip = strip.fmt, as.table = TRUE, layout = c(dims[1L], 1L),
     par.strip.text = as.list(striptext.fmt),

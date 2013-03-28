@@ -16,27 +16,15 @@
 #'   experimental groups for multiple comparison of means and can be selected
 #'   using \code{as.labels}.
 #'
-#' @param as.labels List or character vector specifying the factor variables
-#'   which determine the experimental groups to be compared. If \code{object} is
-#'   of class \code{\link{OPMS}}, \code{as.labels} is passed to
-#'   \code{\link{extract}} and must not be \code{NULL} but given as a list. If
-#'   \code{object} is of class \code{data.frame}, \code{as.labels} can be given
-#'   as a character vector, and by default all factor variables included in
-#'   \code{object} are used. A logical or numeric vector could also be passed in
-#'   that case and would be used to select from the column names.
-#'
 #' @param model A model formula or a character vector or a list containing the
-#'   names of factors to be included in the model for fitting. If a numeric or
-#'   logical vector, used to select the names from \code{as.labels}. The
-#'   operator can be specified using \code{op}. See \code{formula} for further
-#'   details (in the \pkg{stats} package).
-#'
-#' @param op character scalar containing \sQuote{+}, \sQuote{*}, or \sQuote{:},
-#'   with \sQuote{+} as default. It indicates the operator(s) to insert between
-#'   the variables in the right part of the \code{model} formula. See
-#'   description of \code{formula} for further details (in the \pkg{stats}
-#'   package). \code{op} is ignored if \code{model} is directly given as a
-#'   formula.
+#'   names of factors to be included in the model for fitting. If \code{object}
+#'   is of class \code{\link{OPMS}}, \code{model} is passed to
+#'   \code{\link{extract}} after removal of the reserved names (see
+#'   \code{\link{param_names}}, which can nevertheless be included in the model
+#'   formula as they always contained in the resulting data frame. If
+#'   \code{model} is a list or vector, it is then automatically converted to a
+#'   formula, using operator(s) as specified with \code{ops}. See \code{formula}
+#'   for further details (in the \pkg{stats} package).
 #'
 #' @param m.type Character scalar indicating which of the following model types
 #'   to use in model fitting: \sQuote{glm}, \sQuote{aov} or \sQuote{lm}. See
@@ -60,6 +48,13 @@
 #'
 #' @param split.at Character vector. See \code{\link{extract}}. Cannot be set in
 #'   the case of the \code{\link{OPMS}} method.
+#'
+#' @param ops character vector containing \sQuote{+}, \sQuote{*}, or \sQuote{:},
+#'   as elements (with \sQuote{+} as default). It indicates the operator(s) to
+#'   insert between the variables in the right part of the \code{model} formula.
+#'   See description of \code{formula} for further details (in the \pkg{stats}
+#'   package). \code{ops} is ignored if \code{model} is directly given as a
+#'   formula.
 #'
 #' @param ... Optional argument passed to \code{\link{extract}}.
 #'
@@ -101,13 +96,13 @@
 #' data(vaas_4)
 #'
 #' # without computation of multiple comparisons of means
-#' summary(x <- opm_mcp(vaas_4, as.labels = list("Species", "Strain"),
+#' summary(x <- opm_mcp(vaas_4, model = list("Species", "Strain"),
 #'   do.mcp = FALSE))
 #' stopifnot(is.data.frame(x), dim(x) == c(384L, 6L))
 #'
 #' # comparison using specified model comparing 'Species' pooled over
 #' # complete plates
-#' (x <- opm_mcp(vaas_4, as.labels = list("Species"), m.type = "lm",
+#' (x <- opm_mcp(vaas_4, model = list("Species"), m.type = "lm",
 #'   mcp.def = mcp(Species = "Dunnett")))
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 1)
 #' # creating an informative plot
@@ -118,7 +113,7 @@
 #'
 #' # comparison of only A01 - A04 against each other
 #' # note that the left side of the model is set automatically
-#' (x <- opm_mcp(vaas_4[, , 1:4], as.labels = list("Species", "Strain"),
+#' (x <- opm_mcp(vaas_4[, , 1:4],
 #'   model = ~ Well + Species, m.type = "lm",
 #'   mcp.def = mcp(Well = "Tukey")))
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 6)
@@ -130,8 +125,8 @@
 #'
 #' # user-defined contrast matrix
 #' a <- mcp(Well = "Dunnett")
-#' (x <- opm_mcp(vaas_4[, , 1:4], as.labels = list("Species", "Strain"),
-#'   m.type = "lm", mcp.def = a, model = Value ~ Well))
+#' (x <- opm_mcp(vaas_4[, , 1:4], model = Value ~ Well,
+#'   m.type = "lm", mcp.def = a))
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 3)
 #' # creating an informative plot
 #' op <- par(no.readonly = TRUE) # default plotting settings
@@ -139,17 +134,30 @@
 #' plot(x)
 #' par(op) # reset plotting settings
 #'
+#' # manually defined contrast matrix
+#' contr <- rbind(
+#'   "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
+#'   "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
+#'   "A01 (Negative Control) - A04 (D-Trehalose)" = c(-1, 0, 0, -1),
+#'   "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
+#' x <- opm_mcp(vaas_4[, , 1:4],
+#'   model = ~ Well, m.type = "lm", mcp.def = contr)
+#' # creating an informative plot
+#' op <- par(no.readonly = TRUE) # default plotting settings
+#' par(mar = c(3, 20, 3, 2))
+#' plot(x)
+#' par(op) # reset plotting settings
 #'
 #' ## data-frame method
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"), subset = "A",
 #'   dataframe = TRUE)
 #'
 #' # without performing the MCP
-#' (y <- opm_mcp(x, do.mcp = FALSE, as.labels = list("Species", "Strain")))
+#' (y <- opm_mcp(x, do.mcp = FALSE, model = list("Species", "Strain")))
 #' stopifnot(is.data.frame(y), dim(y) == c(384L, 6L))
 #'
 #' # now with conducting the test
-#' (y <- opm_mcp(x, as.labels = "Species", m.type = "lm",
+#' (y <- opm_mcp(x, model = "Species", m.type = "lm",
 #'   mcp.def = mcp(Species = "Dunnett")))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
 #' # creating an informative plot
@@ -160,7 +168,7 @@
 #'
 #' # testing for subsets of object
 #' (y <- opm_mcp(subset(x, x$Species == "Escherichia coli"),
-#'   mcp.def = mcp(Strain = "Dunnett"), as.labels = "Strain", m.type = "lm"))
+#'   mcp.def = mcp(Strain = "Dunnett"), model = "Strain", m.type = "lm"))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
 #' # creating an informative plot
 #' op <- par(no.readonly = TRUE) # default plotting settings
@@ -171,77 +179,81 @@
 setGeneric("opm_mcp",
   function(object, ...) standardGeneric("opm_mcp"))
 
-setMethod("opm_mcp", OPMS, function(object, as.labels,
-    mcp.def = c(Dunnett = 1L),
-    model = as.labels, op = "+", m.type = "glm", glht.args = list(),
-    do.mcp = TRUE, ...) {
-  opm_mcp(object = extract(object = object, as.labels = as.labels,
-    dataframe = TRUE, ...), as.labels = as.labels, mcp.def = mcp.def,
-    op = op, model = model, m.type = m.type, split.at = "Parameter",
-    glht.args = glht.args, do.mcp = do.mcp)
+setMethod("opm_mcp", OPMS, function(object, model, mcp.def = c(Dunnett = 1L),
+    m.type = "glm", glht.args = list(), ops = "+", do.mcp = TRUE, ...) {
+  object <- extract(object = object, dataframe = TRUE, ...,
+    ## TODO: check wether this unnecessarily removes names
+    as.labels = metadata_key(model, FALSE, ops = ops, remove = RESERVED_NAMES))
+  opm_mcp(object = object, model = model, mcp.def = mcp.def, ops = ops,
+    m.type = m.type, split.at = "Parameter", glht.args = glht.args,
+    do.mcp = do.mcp)
 }, sealed = SEALED)
 
-setMethod("opm_mcp", "data.frame", function(object, as.labels,
-    mcp.def = c(Dunnett = 1L),
-    model = as.labels, op = c("+", ":", "*"), m.type = c("glm", "lm", "aov"),
+setMethod("opm_mcp", "data.frame", function(object, model,
+    mcp.def = c(Dunnett = 1L), ops = "+", m.type = c("glm", "lm", "aov"),
     glht.args = list(), split.at = "Parameter", do.mcp = TRUE) {
 
   # helper functions and dependencies
-  convert_and_check_model <- function(model, op, as.labels) {
+  convert_and_check_model <- function(model, ops) {
     enforce_left_side <- function(f) {
       if (length(f) < 3L) # f must be a formula
         f[[3L]] <- f[[2L]]
-      f[[2L]] <- as.name("Value")
+      f[[2L]] <- as.name(RESERVED_NAMES[["value"]])
       f
     }
-    if (inherits(model, "formula")) # user-defined formula
-      return(enforce_left_side(model))
-    if (!length(model))
-      stop("'model' must not by empty")
-    if (is.list(model))
-      # convert the list to what would be expected if it had previously been
-      # passed to extract() because by default it is the same than 'as.labels';
-      model <- names(create_names(model)) # see metadata() for why this works
-    else if (is.numeric(model) || is.logical(model))
-      model <- as.labels[model]
-    else if (!is.character(model))
-      stop("'model' must either be a list, a vector or a formula")
-    # TODO: currently only the first element of 'op' is included
-    as.formula(paste("Value ~", paste(sprintf("`%s`", model), collapse = op)))
+    enforce_left_side(metadata_key(model, TRUE, ops = ops))
+#     if (inherits(model, "formula")) # user-defined formula
+#       return(enforce_left_side(model))
+#     if (!length(model))
+#       stop("'model' must not be empty")
+#     if (is.list(model))
+#       # convert the list to what would be expected if it had previously been
+#       # passed to extract() because by default it is the same than
+#       # 'as.labels';
+#       model <- names(metadata_key(model, FALSE)) # see metadata()
+#     else if (is.numeric(model) || is.logical(model))
+#       model <- as.labels[model]
+#     else if (!is.character(model))
+#       stop("'model' must either be a list, a vector or a formula")
+#     # TODO: currently only the first element of 'ops' is included
+#     as.formula(paste(RESERVED_NAMES[["value"]], "~",
+#       paste(sprintf("`%s`", model), collapse = ops)))
   }
-  convert_and_check_labels <- function(as.labels, column.names) {
-    if (is.list(as.labels))
-      # convert a list to what would be expected if it had previously been
-      # passed to extract(); see metadata() for why this works
-      as.labels <- names(create_names(as.labels))
-    if (is.character(as.labels)) {
-      if (length(bad <- which(!as.labels %in% column.names)))
-        stop("cannot find column name: ", as.labels[bad[1L]])
-    } else
-      as.labels <- column.names[as.labels]
-    if (anyDuplicated(as.labels))
-      warning("'as.labels' entries are not unique")
-    as.labels
-  }
-  convert_hypothesis_spec <- function(mcp.def, as.labels) {
+#   convert_and_check_labels <- function(as.labels, column.names) {
+#     if (is.list(as.labels))
+#       # convert a list to what would be expected if it had previously been
+#       # passed to extract(); see metadata() for why this works
+#       as.labels <- names(metadata_key(as.labels, FALSE))
+#     if (is.character(as.labels)) {
+#       if (length(bad <- which(!as.labels %in% column.names)))
+#         stop("cannot find column name: ", as.labels[bad[1L]])
+#     } else
+#       as.labels <- column.names[as.labels]
+#     if (anyDuplicated(as.labels))
+#       warning("'as.labels' entries are not unique")
+#     as.labels
+#   }
+  convert_hypothesis_spec <- function(mcp.def, model) {
     if (!length(mcp.def))
       stop("hypothesis definition 'mcp.def' must not be empty")
     # TODO Lea: the next line includes all kinds of objects that are used
     # directly; check whether these and only these make sense
-    if (inherits(mcp.def, c("mcp", "matrix", "expression")))
+    # TODO Lea: check whether 'expression' objects could be given here
+    if (inherits(mcp.def, c("mcp", "matrix")))
       return(mcp.def)
     if (inherits(mcp.def, "AsIs")) # created using I()
       return(if (is.list(mcp.def))
           do.call(mcp, mcp.def)
         else
           mcp.def)
+    mcp.def <- metadata_key(mcp.def, FALSE)
     # TODO Lea: check whether additional kinds of conversions could make sense;
     # we could also create a helper function -- the main idea is that the user
     # should calculate mcp.def easily from as.labels.
     if (is.list(mcp.def))
-      result <- mcp.def <- names(create_names(mcp.def))
+      result <- names(mcp.def)
     else if (is.numeric(mcp.def) || is.logical(mcp.def))
-      result <- as.labels[mcp.def]
+      result <- names(metadata_key(mcp.def, FALSE))[mcp.def]
     else if (is.character(mcp.def))
       result <- mcp.def
     else
@@ -251,7 +263,7 @@ setMethod("opm_mcp", "data.frame", function(object, as.labels,
       rep.int("Dunnett", length(result))
     else
       names(mcp.def)
-    do.call(mcp, result)
+    do.call(mcp, as.list(result))
   }
 #   assert_all_factors_are_variable <- function(x) {
 #     pos <- seq.int(match("Well", colnames(x)) - 2L)
@@ -267,8 +279,8 @@ setMethod("opm_mcp", "data.frame", function(object, as.labels,
 
   param.pos <- assert_splittable_matrix(object, split.at)
 
-  as.labels <- convert_and_check_labels(as.labels,
-    colnames(object)[seq.int(param.pos)])
+#   as.labels <- convert_and_check_labels(as.labels,
+#     colnames(object)[seq.int(param.pos)])
 
   # create reshaped data frame and set helper column '.ID' to avoid non-unique
   # values when setting 'row.names'; note according shift of column positions!
@@ -276,11 +288,12 @@ setMethod("opm_mcp", "data.frame", function(object, as.labels,
     direction = "long",
     idvar = c(".ID", colnames(object)[seq.int(param.pos - 1L)]),
     varying = colnames(object)[seq.int(param.pos + 1L, ncol(object))],
-    v.names = "Value",
-    timevar = "Well",
+    v.names = RESERVED_NAMES[["value"]],
+    timevar = RESERVED_NAMES[["well"]],
     times = colnames(object)[seq.int(param.pos + 1L, ncol(object))])
   rownames(object) <- NULL
-  object$Well <- as.factor(object$Well)
+  object[, RESERVED_NAMES[["well"]]] <- as.factor(
+    object[, RESERVED_NAMES[["well"]]])
 
   if (!do.mcp)
     return(object)
@@ -293,12 +306,13 @@ setMethod("opm_mcp", "data.frame", function(object, as.labels,
   #
   ##assert_all_factors_are_variable(object)
 
-  model <- convert_and_check_model(model, match.arg(op), as.labels)
-  model <- do.call(match.arg(m.type), list(formula = model, data = object))
+  model <- convert_and_check_model(model, match.arg(ops))
 
   # TODO Lea: look this function up and once finished describe the mcp.def
   # argument properly and introduce examples
-  mcp.def <- convert_hypothesis_spec(mcp.def, as.labels)
+  mcp.def <- convert_hypothesis_spec(mcp.def, model)
+
+  model <- do.call(match.arg(m.type), list(formula = model, data = object))
 
   # fitting the linear model according to 'm.type'
   glht.args <- c(list(model = model, linfct = mcp.def), as.list(glht.args))

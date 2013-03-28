@@ -5,11 +5,12 @@
   \item{object}{\code{\link{OPMS}} object or data frame.}
 
   \item{what}{List of metadata keys to consider, or single
-  such key; passed to \code{\link{metadata}}. For the
-  data-frame method, just the names of the columns to
-  extract, or their indices, as vector; alternatively, the
-  name of the class to extract from the data frame to form
-  the matrix values.}
+  such key; passed to \code{\link{metadata}}. A formula is
+  also possible; see there fpr details.  For the data-frame
+  method, just the names of the columns to extract, or
+  their indices, as vector; alternatively, the name of the
+  class to extract from the data frame to form the matrix
+  values.}
 
   \item{join}{Logical scalar. Join each row together to
   yield a character vector? Otherwise it is just attempted
@@ -65,6 +66,8 @@ data(vaas_4)
 # Create data frame
 (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
 stopifnot(is.data.frame(x), identical(dim(x), c(4L, 2L)))
+(y <- extract_columns(vaas_4, what = ~ Species + Strain))
+stopifnot(identical(x, y)) # using a formula
 
 # Create a character vector
 (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))

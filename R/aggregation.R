@@ -163,18 +163,26 @@ summary.splines_bootstrap <- function (object, ...) {
 #' Names of curve parameters
 #'
 #' Yield the names of the estimated curve parameters used internally and in the
-#' output.
+#' output. Alternatively, yield names that should not be used in metadata
+#' entries because they are used as predefined column names by functions such
+#' as \code{\link{flatten}}.
 #'
+#' @param what Character scalar. Which kind of names to obtain.
 #' @return Character vector.
 #' @export
 #' @family aggregation-functions
 #' @keywords utilities
 #' @examples
 #' (x <- param_names())
-#' stopifnot(is.character(x), length(x) == 4L, identical(unique(x), x))
+#' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
+#' (x <- param_names("reserved"))
+#' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
 #'
-param_names <- function() {
-  CURVE_PARAMS
+param_names <- function(what = c("param.names", "reserved.md.names")) {
+  case(match.arg(what),
+    param.names = CURVE_PARAMS,
+    reserved.md.names = unname(RESERVED_NAMES)
+  )
 }
 
 

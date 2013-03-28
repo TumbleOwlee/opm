@@ -5,9 +5,9 @@
   \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
   object or list.}
 
-  \item{include}{\code{NULL}, character vector or list. If
-  not \code{NULL}, include this meta-information in the
-  data frame, replicated in each row.  Otherwise it
+  \item{include}{\code{NULL}, character vector, list or
+  formula. If not empty, include this meta-information in
+  the data frame, replicated in each row.  Otherwise it
   converted to a list and passed to \code{\link{metadata}}.
   See there for details.}
 
@@ -34,11 +34,13 @@
 }
 \value{
   Dataframe. Column names are unchecked (not converted to
-  variable names). The three last columns are:
-  \sQuote{Time}, \sQuote{Well}, \sQuote{Value}, with the
-  obvious meanings. The \code{\link{OPMS}} method yields an
-  additional column named \sQuote{Plate}, which contains
-  each plate's number within \code{object}.
+  variable names). The three last columns are coding for
+  time, well and value, with the exact spelling given by
+  \code{\link{param_names}}. The \code{\link{OPMS}} method
+  yields an additional column for the plate, its exact
+  spelling also being available via
+  \code{\link{param_names}}, which contains each plate's
+  number within \code{object}.
 }
 \description{
   Convert into \sQuote{flat} data frame, including all
@@ -61,7 +63,7 @@ head(x <- flatten(vaas_4))
 stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
 head(x <- flatten(vaas_4, fixed = "TEST"))
 stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 5L)))
-head(x <- flatten(vaas_4, fixed = "TEST", include = "Strain"))
+head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
 stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
 }
 \seealso{

@@ -1254,11 +1254,14 @@ setMethod("disc_settings", OPMD, function(object) {
 #'
 #' @param object \code{\link{WMD}} object.
 #' @param key If \code{NULL} or otherwise empty, return all metadata. If a
-#'   non-empty list, treat it as list of keys and return list of corresponding
+#'   non-empty list, treated as list of keys and return list of corresponding
 #'   metadata values. Here, character vectors of length > 1 can be used to query
 #'   nested metadata lists. If neither empty nor a list (i.e. usually a
-#'   character or numeric scalar), treat \code{key} as a single list key.
-#'   Factors are converted to \sQuote{character} mode.
+#'   character or numeric vector), treat \code{key} as a single list key.
+#'   Factors are converted to \sQuote{character} mode. Formulas can also be used
+#'   and are converted to a list or character or numeric vector using the rules
+#'   described below. It is in general not recommended to use numeric vectors
+#'   as \code{key} arguments, either directly or within a list or formula.
 #' @param exact Logical scalar. Use exact or partial matching of keys? Has no
 #'   effect if \code{key} is empty.
 #' @param strict Logical scalar. Is it an error if a \code{NULL} value results
@@ -1269,17 +1272,35 @@ setMethod("disc_settings", OPMD, function(object) {
 #' @export
 #' @family getter-functions
 #' @keywords attribute
+#' @details \itemize{
+#'   \item If a named list is used as \code{key} argument, its names will be
+#'   used within the to-level of the resulting nested or non-nested list.
+#'   \item Formulas passed as \code{key} argument are treated by ignoring the
+#'   left side (if any) and converting the right side to a list or other vector.
+#'   Code enclosed in \code{I} is evaluated with a call to \code{eval}. It is up
+#'   to the user to ensure that this call succeeds and yields a character vector
+#'   or a list. Operators in all other code within the formula are used just as
+#'   separators, and all names are converted to character scalars. The \code{$}
+#'   operator binds tightly, i.e. it separates elements of a character vector
+#'   (for nested querying) in the output. The same effect have other operators
+#'   of high precedence such as \code{::} but their use is not recommended. All
+#'   operators with a lower precedence than \code{$} separate list elements.
+#'   }
 #' @examples
 #'
 #' # 'OPM' method
 #' data(vaas_1)
 #' (x <- metadata(vaas_1, "Strain"))
 #' stopifnot(identical(x, "DSM30083T"))
+#' (y <- metadata(vaas_1, ~ Strain)) # using a formula
+#' stopifnot(identical(x, y))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
 #' (x <- metadata(vaas_4, "Strain"))
 #' stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
+#' (y <- metadata(vaas_4, ~ Strain)) # using a formula
+#' stopifnot(identical(x, y))
 #'
 setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
 
@@ -1288,6 +1309,7 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
   LL(exact, strict)
   if (!length(key))
     return(object@metadata)
+  key <- metadata_key(key, FALSE)
   fetch_fun <- if (strict)
     function(key) {
       if (is.factor(key))
@@ -1300,8 +1322,8 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
   else
     function(key) object@metadata[[key, exact = exact]]
   if (is.list(key))
-    sapply(create_names(key), fetch_fun, simplify = FALSE)
-  else
+    sapply(key, fetch_fun, simplify = FALSE)
+  else # should be a character vector
     fetch_fun(key)
 }, sealed = SEALED)
 

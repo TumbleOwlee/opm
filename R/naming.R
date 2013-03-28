@@ -406,7 +406,7 @@ setMethod("find_positions", "character", function(object) {
   sapply(object, FUN = function(name) {
     result <- which(WELL_MAP == name, arr.ind = TRUE)
     matrix(c(plates[result[, 2L]], rownames(result)), ncol = 2L,
-      dimnames = list(NULL, c("Plate", "Well")))
+      dimnames = list(NULL, RESERVED_NAMES[c("plate", "well")]))
   }, simplify = FALSE)
 }, sealed = SEALED)
 
