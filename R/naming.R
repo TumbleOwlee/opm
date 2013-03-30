@@ -59,6 +59,31 @@ map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 ################################################################################
 
 
+## NOTE: not an S4 method because manual dispatch
+
+
+#' Translate well coordinates
+#'
+#' Translate well coordinates to numeric indexes
+#'
+#' @param x Vector, formula or missing. Basically any \R object.
+#' @return Either \code{x}, \code{TRUE} or (if a formula) the result of
+#'   evaluating \code{x} in the context of the known well coordinate names.
+#' @keywords internal
+#'
+well_index <- function(x) {
+  if (missing(x))
+    TRUE
+  else if (inherits(x, "formula"))
+    eval(x[[length(x)]], get("WELL.POS", MEMOIZED))
+  else
+    x
+}
+
+
+################################################################################
+
+
 ## NOTE: not an S4 method because conversion is done
 
 #' Map well names to substrates

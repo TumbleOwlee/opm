@@ -64,13 +64,25 @@
   values that do not fit to the measurements anymore.
 }
 \examples{
-# OPM(A) method
+## OPM(A) method
 data(vaas_1)
+
+# complete dataset, full 96-well plates
 (x <- dim(vaas_1))
-stopifnot(identical(x, c(384L, 96L)))
+stopifnot(x == c(384, 96))
+
+# selecting specific wells
 copy <- vaas_1[, 11:22]
 (x <- dim(copy))
-stopifnot(identical(x, c(384L, 12L)))
+stopifnot(x == c(384, 12))
+# indexing with formulas allows for sequences of well coordinates
+copy <- vaas_1[, ~ A11:B10] # "A11" is 11th, "B10" is 22th well name
+stopifnot(dim(copy) == c(384, 12)) # same result as above
+# can also be combined
+copy <- vaas_1[, ~ A11:22]
+stopifnot(dim(copy) == c(384, 12)) # same result as above
+
+# dropping aggregated data
 copy <- vaas_1[]
 stopifnot(has_aggr(copy))
 stopifnot(identical(copy, vaas_1))
@@ -78,16 +90,17 @@ copy <- vaas_1[drop = TRUE]
 stopifnot(!has_aggr(copy))
 stopifnot(!identical(copy, vaas_1))
 
-# OPMS method
+
+## OPMS method
 data(vaas_4)
 
 # Create OPMS object with fewer plates (the first two ones)
 x <- vaas_4[1:2]
-stopifnot(dim(x) == c(2, 384, 96))
+stopifnot(is(x, "OPMS"), dim(x) == c(2, 384, 96))
 
 # If only a single plate is selected, this is reduced to OPM(A)
 x <- vaas_4[3]
-stopifnot(dim(x) == c(384, 96))
+stopifnot(!is(x, "OPMS"), dim(x) == c(384, 96))
 
 # Create OPMS object with fewer time points (the first 100 in that case;
 # usually this would correspond to the first 25 hours)
@@ -99,8 +112,9 @@ x <- vaas_4[, , 1:12]
 stopifnot(dim(x) == c(4, 384, 12))
 
 # The same with well names
-x <- vaas_4[, , sprintf("A\%02i", 1:12)] # this yields A01...A12
+x <- vaas_4[, , ~ A01:A12] # these are well names 1 to 12
 stopifnot(dim(x) == c(4, 384, 12))
+# to do this with a vector, one would need sprintf("A\%02i", 1:12)
 
 # Select all plates that have aggregated values
 x <- vaas_4[has_aggr(vaas_4)]

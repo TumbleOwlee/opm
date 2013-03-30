@@ -17,8 +17,8 @@
 #' argument refers only to the remaining matrix.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param i Optional character or numeric vector with name(s) or position(s) of
-#'   well(s).
+#' @param i Optional character or numeric vector or formula with name(s) or
+#'   position(s) of well(s).
 #' @param ... Optional arguments passed between the methods.
 #' @return Numeric matrix with column names indicating the well coordinate and a
 #'   first column containing the time points.
@@ -29,12 +29,13 @@
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' x <- measurements(vaas_1)
+#' head(x <- measurements(vaas_1))
 #' stopifnot(is.matrix(x), is.numeric(x))
-#' stopifnot(identical(dim(x), c(384L, 97L)))
-#' y <- measurements(vaas_1, "B03")
-#' stopifnot(is.matrix(y), is.numeric(y))
-#' stopifnot(identical(dim(y), c(384L, 2L)))
+#' stopifnot(dim(x) == c(384, 97))
+#' head(x <- measurements(vaas_1, "B03"))
+#' stopifnot(is.matrix(x), is.numeric(x), dim(x) == c(384, 2))
+#' head(y <- measurements(vaas_1, ~B03))
+#' stopifnot(identical(y, x))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
@@ -50,7 +51,7 @@ setMethod("measurements", OPM, function(object, i) {
     object@measurements
   else
     cbind(object@measurements[, 1L, drop = FALSE],
-      object@measurements[, -1L, drop = FALSE][, i, drop = FALSE])
+      object@measurements[, -1L, drop = FALSE][, well_index(i), drop = FALSE])
 }, sealed = SEALED)
 
 
@@ -111,13 +112,25 @@ setMethod("measurements", OPM, function(object, i) {
 #'
 #' @examples
 #'
-#' # OPM(A) method
+#' ## OPM(A) method
 #' data(vaas_1)
+#'
+#' # complete dataset, full 96-well plates
 #' (x <- dim(vaas_1))
-#' stopifnot(identical(x, c(384L, 96L)))
+#' stopifnot(x == c(384, 96))
+#'
+#' # selecting specific wells
 #' copy <- vaas_1[, 11:22]
 #' (x <- dim(copy))
-#' stopifnot(identical(x, c(384L, 12L)))
+#' stopifnot(x == c(384, 12))
+#' # indexing with formulas allows for sequences of well coordinates
+#' copy <- vaas_1[, ~ A11:B10] # "A11" is 11th, "B10" is 22th well name
+#' stopifnot(dim(copy) == c(384, 12)) # same result as above
+#' # can also be combined
+#' copy <- vaas_1[, ~ A11:22]
+#' stopifnot(dim(copy) == c(384, 12)) # same result as above
+#'
+#' # dropping aggregated data
 #' copy <- vaas_1[]
 #' stopifnot(has_aggr(copy))
 #' stopifnot(identical(copy, vaas_1))
@@ -125,16 +138,17 @@ setMethod("measurements", OPM, function(object, i) {
 #' stopifnot(!has_aggr(copy))
 #' stopifnot(!identical(copy, vaas_1))
 #'
-#' # OPMS method
+#'
+#' ## OPMS method
 #' data(vaas_4)
 #'
 #' # Create OPMS object with fewer plates (the first two ones)
 #' x <- vaas_4[1:2]
-#' stopifnot(dim(x) == c(2, 384, 96))
+#' stopifnot(is(x, "OPMS"), dim(x) == c(2, 384, 96))
 #'
 #' # If only a single plate is selected, this is reduced to OPM(A)
 #' x <- vaas_4[3]
-#' stopifnot(dim(x) == c(384, 96))
+#' stopifnot(!is(x, "OPMS"), dim(x) == c(384, 96))
 #'
 #' # Create OPMS object with fewer time points (the first 100 in that case;
 #' # usually this would correspond to the first 25 hours)
@@ -146,8 +160,9 @@ setMethod("measurements", OPM, function(object, i) {
 #' stopifnot(dim(x) == c(4, 384, 12))
 #'
 #' # The same with well names
-#' x <- vaas_4[, , sprintf("A%02i", 1:12)] # this yields A01...A12
+#' x <- vaas_4[, , ~ A01:A12] # these are well names 1 to 12
 #' stopifnot(dim(x) == c(4, 384, 12))
+#' # to do this with a vector, one would need sprintf("A%02i", 1:12)
 #'
 #' # Select all plates that have aggregated values
 #' x <- vaas_4[has_aggr(vaas_4)]
@@ -170,8 +185,9 @@ setMethod("measurements", OPM, function(object, i) {
 #'
 setMethod("[", c(OPM, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  mat <- x@measurements[, -1L, drop = FALSE][i, j, ..., drop = FALSE]
-  if (any(dim(mat) == 0L))
+  mat <- x@measurements[, -1L, drop = FALSE][i, well_index(j), ...,
+    drop = FALSE]
+  if (!all(dim(mat)))
     stop("selection resulted in empty matrix")
   mat <- cbind(x@measurements[i, 1L, drop = FALSE], mat)
   names(dimnames(mat)) <- names(dimnames(x@measurements))
@@ -182,21 +198,21 @@ setMethod("[", c(OPM, "ANY", "ANY", "ANY"), function(x, i, j, ...,
 
 setMethod("[", c(OPMA, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  result <- callNextMethod(x = x, i = i, j = j, ..., drop = drop)
+  result <- callNextMethod(x, i, j, ..., drop = drop)
   if (drop)
     return(as(result, OPM))
   if (!missing(j))
-    result@aggregated <- result@aggregated[, j, ..., drop = FALSE]
+    result@aggregated <- result@aggregated[, well_index(j), ..., drop = FALSE]
   result
 }, sealed = SEALED)
 
 setMethod("[", c(OPMD, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  result <- callNextMethod(x = x, i = i, j = j, ..., drop = drop)
+  result <- callNextMethod(x, i, j, ..., drop = drop)
   if (drop)
-    return(result)
+    return(result) # ... which is an OPM object in that case
   if (!missing(j))
-    result@discretized <- result@discretized[j]
+    result@discretized <- result@discretized[well_index(j)]
   result
 }, sealed = SEALED)
 
@@ -206,8 +222,8 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     stop("incorrect number of dimensions")
   fetch <- function(obj, idx) obj[i = idx, j = k, drop = drop]
   result <- x@plates[i]
-  if (no.k <- missing(k))
-    k <- TRUE
+  no.k <- missing(k)
+  k <- well_index(k)
   if (missing(j)) {
     if (!no.k || drop)
       result <- lapply(result, fetch, idx = TRUE)
@@ -234,7 +250,8 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #' @param object \code{\link{OPM}} object.
 #' @param i Character or numeric vector with name(s) or position(s) of well(s).
 #'   Wells are originally named \sQuote{A01} to \sQuote{H12} but might have been
-#'   subset beforehand.
+#'   subset beforehand. \code{i} can also be a formula, allowing for sequences
+#'   of well coordinates. See the examples.
 #' @param drop Logical scalar. If only a single well was selected, simplify it
 #'   to a vector?
 #' @param ... Optional arguments passed between the methods.
@@ -247,20 +264,27 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- well(vaas_1, "B04"))
-#' stopifnot(is.numeric(x), length(x) == 384L)
-#' (x <- well(vaas_1, c("B08", "C07")))
-#' stopifnot(is.matrix(x), identical(dim(x), c(384L, 2L)))
+#' head(x <- well(vaas_1, "B04"))
+#' stopifnot(is.numeric(x), length(x) == 384)
+#' head(x <- well(vaas_1, c("B08", "C07")))
+#' stopifnot(is.matrix(x), dim(x) == c(384, 2))
+#' # selecting adjacent wells is easer if using a formula
+#' head(x <- well(vaas_1, c("B12", "C01", "C02")))
+#' stopifnot(is.matrix(x), dim(x) == c(384, 3))
+#' head(y <- well(vaas_1, ~ B12:C02))
+#' stopifnot(identical(x, y))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- well(vaas_4, "B04"))
+#' head(x <- well(vaas_4, "B04"))
 #' stopifnot(is.matrix(x), dim(x) == c(4, 384))
+#' head(y <- well(vaas_4, ~ B04)) # using a formula
+#' stopifnot(identical(x, y))
 #'
 setGeneric("well", function(object, ...) standardGeneric("well"))
 
 setMethod("well", OPM, function(object, i, drop = TRUE) {
-  object@measurements[, -1L, drop = FALSE][, i, drop = drop]
+  object@measurements[, -1L, drop = FALSE][, well_index(i), drop = drop]
 }, sealed = SEALED)
 
 
@@ -1274,7 +1298,16 @@ setMethod("disc_settings", OPMD, function(object) {
 #' @keywords attribute
 #' @details \itemize{
 #'   \item If a named list is used as \code{key} argument, its names will be
-#'   used within the to-level of the resulting nested or non-nested list.
+#'   used within the first level of the resulting nested or non-nested list.
+#'   That is, \code{key} can be used to translate names on the fly, and this
+#'   can be used by all functions that call \code{metadata} indirectly, usually
+#'   via an \code{as.labels} or \code{as.groups} argument.
+#'   \item Even though it is not technically impossible per se, it is usually
+#'   a bad idea to select metadata entries using numeric (positional) keys. The
+#'   problem is that, in contrast to, e.g., data frames, their is no guarantee
+#'   that metadata entries with the same name occur in the same position, even
+#'   if they belong to \code{\link{OPM}} objects within a single
+#'   \code{\link{OPMS}} object.
 #'   \item Formulas passed as \code{key} argument are treated by ignoring the
 #'   left side (if any) and converting the right side to a list or other vector.
 #'   Code enclosed in \code{I} is evaluated with a call to \code{eval}. It is up
@@ -1285,7 +1318,7 @@ setMethod("disc_settings", OPMD, function(object) {
 #'   (for nested querying) in the output. The same effect have other operators
 #'   of high precedence such as \code{::} but their use is not recommended. All
 #'   operators with a lower precedence than \code{$} separate list elements.
-#'   }
+#' }
 #' @examples
 #'
 #' # 'OPM' method
@@ -1569,7 +1602,7 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
     tp <- hours(x, what = "all")
     if (is.matrix(tp))
       tp <- lapply(seq.int(nrow(tp)), function(i) tp[i, ])
-    if (length(maxs <- unique(vapply(tp, max, numeric(1L)))) < 2L)
+    if (length(maxs <- unique.default(vapply(tp, max, numeric(1L)))) < 2L)
       return(x)
     min.max <- min(maxs)
     tp <- lapply(tp, function(x) which(x <= min.max))
@@ -1803,34 +1836,36 @@ lapply(c(
 #' # The dataset contains the metadata keys 'Species' and 'Experiment' but
 #' # neither 'Trial' nor 'Organism' nor 'Run':
 #' data(vaas_1)
+#' # In the following we use stopifnot(), which fails unless all arguments
+#' # passed are TRUE.
 #'
 #' # Character method
-#' stopifnot("Experiment" %k% vaas_1)
-#' stopifnot("Species" %k% vaas_1)
-#' stopifnot(!"Run" %k% vaas_1)
-#' stopifnot(c("Species", "Experiment") %k% vaas_1)
-#' stopifnot(!c("Species", "Trial") %k% vaas_1)
-#' stopifnot(!c("Organism", "Experiment") %k% vaas_1)
-#' stopifnot(character() %k% vaas_1)
+#' stopifnot("Experiment" %k% vaas_1) # present
+#' stopifnot("Species" %k% vaas_1) # present
+#' stopifnot(!"Run" %k% vaas_1) # missing
+#' stopifnot(c("Species", "Experiment") %k% vaas_1) # all present
+#' stopifnot(!c("Species", "Trial") %k% vaas_1) # only one present
+#' stopifnot(!c("Organism", "Experiment") %k% vaas_1) # only one present
+#' stopifnot(character() %k% vaas_1) # empty query always results
 #'
 #' # List method
-#' stopifnot(list(Experiment = "whatever") %k% vaas_1)
-#' stopifnot(list(Species = "ignored") %k% vaas_1)
+#' stopifnot(list(Experiment = "whatever") %k% vaas_1) # key present
+#' stopifnot(list(Species = "ignored") %k% vaas_1) # key present
 #'
-#' # This fails because we query with a named sublist but 'Species' is not
-#' # even a list
+#' # This fails because we query with a named sublist but the 'Species'
+#' # metadata entry is not even a list.
 #' stopifnot(!list(Species = list(Genus = "X", Epithet = "Y")) %k% vaas_1)
 #'
 #' # This is OK because we query with an unnamed sublist: it has no names that
-#' # one would fail to find
+#' # one would fail to find.
 #' stopifnot(list(Species = list("X", "Y")) %k% vaas_1)
 #'
 #' # More non-nested query examples
-#' stopifnot(!list(Run = 99) %k% vaas_1)
-#' stopifnot(list(Species = "?", Experiment = NA) %k% vaas_1)
-#' stopifnot(!list(Species = "?", Trial = NA) %k% vaas_1)
-#' stopifnot(!list(Organism = "?", Experiment = NA) %k% vaas_1)
-#' stopifnot(list() %k% vaas_1)
+#' stopifnot(!list(Run = 99) %k% vaas_1) # key not present
+#' stopifnot(list(Species = "?", Experiment = NA) %k% vaas_1) # keys present
+#' stopifnot(!list(Species = "?", Trial = NA) %k% vaas_1) # one key missing
+#' stopifnot(!list(Organism = "?", Experiment = NA) %k% vaas_1) # likewise
+#' stopifnot(list() %k% vaas_1) # empty query always results
 #'
 setGeneric("%k%", function(x, table) standardGeneric("%k%"))
 
@@ -1873,22 +1908,25 @@ setMethod("%k%", c("list", WMD), function(x, table) {
 #' # The dataset contains the metadata keys 'Species' and 'Experiment' but
 #' # neither 'Trial' nor 'Organism' nor 'Run':
 #' data(vaas_1)
+#' # In the following we use stopifnot(), which fails unless all arguments
+#' # passed are TRUE.
 #'
 #' # Character method
 #'
 #' # Single-element queries
-#' stopifnot("Experiment" %K% vaas_1)
-#' stopifnot("Species" %K% vaas_1)
-#' stopifnot(!"Run" %K% vaas_1)
-#' stopifnot(!"Trial" %K% vaas_1)
-#' stopifnot(!"Organism" %k% vaas_1)
+#' stopifnot("Experiment" %K% vaas_1) # present
+#' stopifnot("Species" %K% vaas_1)  # present
+#' stopifnot(!"Run" %K% vaas_1) # not present
+#' stopifnot(!"Trial" %K% vaas_1) # not present
+#' stopifnot(!"Organism" %k% vaas_1) # not present
 #'
 #' # Zero-element queries
-#' stopifnot(character() %K% vaas_1)
+#' stopifnot(character() %K% vaas_1) # always results
 #'
 #' # Querying with vectors of length > 1 mean nested queries; compare this to
 #' # the behavior of %k%!
 #' stopifnot(!c("Species", "Experiment") %K% vaas_1)
+#' # I.e. "Experiment" is not within "Species".
 #'
 #' # List method
 #' # See %k% -- the behavior is identical for lists.
@@ -1896,7 +1934,7 @@ setMethod("%k%", c("list", WMD), function(x, table) {
 setGeneric("%K%", function(x, table) standardGeneric("%K%"))
 
 setMethod("%K%", c("character", WMD), function(x, table) {
-  if (length(x) == 0L)
+  if (!length(x))
     return(TRUE) # for consistency with %k%
   tryCatch(!is.null(table@metadata[[x]]), error = function(e) FALSE)
 }, sealed = SEALED)
@@ -1946,25 +1984,25 @@ setMethod("%K%", c("list", WMD), function(x, table) {
 #' # Character method
 #' stopifnot(!"Experiment" %q% vaas_1) # wrong query here; compare to %k%
 #' stopifnot(!"First replicate" %q% vaas_1) # again wrong query
-#' stopifnot(c(Experiment = "First replicate") %q% vaas_1) # right query
+#' stopifnot(c(Experiment = "First replicate") %q% vaas_1) # correct query
 #'
-#' stopifnot(!"Species" %q% vaas_1)
-#' stopifnot(!"Escherichia coli" %q% vaas_1)
-#' stopifnot(c(Species = "Escherichia coli") %q% vaas_1)
+#' stopifnot(!"Species" %q% vaas_1) # wrong query
+#' stopifnot(!"Escherichia coli" %q% vaas_1) # wrong query
+#' stopifnot(c(Species = "Escherichia coli") %q% vaas_1) # correct query
 #'
 #' stopifnot(c(Species = "Escherichia coli",
-#'   Experiment = "First replicate") %q% vaas_1) # Combined query
+#'   Experiment = "First replicate") %q% vaas_1) # combined query, all TRUE
 #'
-#' stopifnot(character() %q% vaas_1) # Empty query
+#' stopifnot(character() %q% vaas_1) # empty query always results
 #'
 #' # List method
 #' stopifnot(list(Experiment = "First replicate") %q% vaas_1)
 #'
 #' # Choice among alternatives
 #' stopifnot(list(Experiment = c("First replicate",
-#'   "Second replicate")) %q% vaas_1)
+#'   "Second replicate")) %q% vaas_1) # one of them TRUE
 #' stopifnot(!list(Experiment = c("Second replicate",
-#'   "Third replicate")) %q% vaas_1)
+#'   "Third replicate")) %q% vaas_1) # none of them TRUE
 #'
 #' # Combined query together with choice among alternatives
 #' stopifnot(list(Experiment = c("First replicate", "Second replicate"),
@@ -2032,19 +2070,19 @@ setMethod("%q%", c("list", WMD), function(x, table) {
 #'
 #' # Combined query
 #' stopifnot(c(Species = "Escherichia coli",
-#'   Experiment = "First replicate") %Q% vaas_1)
+#'   Experiment = "First replicate") %Q% vaas_1) # all present
 #'
-#' stopifnot(character() %Q% vaas_1) # Empty query
+#' stopifnot(character() %Q% vaas_1) # empty query always results
 #'
 #' # List method
-#' stopifnot(list(Experiment = "First replicate") %Q% vaas_1)
+#' stopifnot(list(Experiment = "First replicate") %Q% vaas_1) # present
 #'
 #' # Choice among alternatives is not done here: this query fails unless this
 #' # two-element vector is contained. Compare to %q%.
 #' stopifnot(!list(Experiment = c("First replicate",
 #'   "Second replicate")) %Q% vaas_1)
 #'
-#' stopifnot(list() %Q% vaas_1) # Empty query
+#' stopifnot(list() %Q% vaas_1) # empty query always result
 #'
 setGeneric("%Q%", function(x, table) standardGeneric("%Q%"))
 

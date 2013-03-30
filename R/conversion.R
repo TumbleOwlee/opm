@@ -546,9 +546,10 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
       case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
     labels
   } else {
-    result <- as.data.frame(must(do.call(rbind, result)))
-    if (ncol(result) == 1L) # if 'what' was not a list
-      colnames(result) <- paste(what, collapse = OPM_OPTIONS$key.join)
+    result <- as.data.frame(must(do.call(rbind, result)), optional = TRUE)
+    if (ncol(result) > length(colnames(result)))
+      colnames(result) <- paste(metadata_key(what, FALSE),
+        collapse = OPM_OPTIONS$key.join)
     result
   }
 }, sealed = SEALED)
@@ -862,9 +863,9 @@ setMethod("rep", OPMS, function(x, ...) {
 #' \code{\link{ci_plot}}.
 #'
 #' @param object \code{\link{OPMS}} object or data frame with one column named
-#'   as indicated by \code{split.at} (\sQuote{Parameter} by default), columns
-#'   with factor variables before that column and colums with numeric vectors
-#'   after that column.
+#'   as indicated by \code{split.at} (default given by
+#'   \code{\link{param_names}("split.at")}), columns with factor variables
+#'   before that column and columns with numeric vectors after that column.
 #' @param as.labels List. Metadata to be joined and used as row names (if
 #'   \code{dataframe} is \code{FALSE}) or additional columns (if otherwise).
 #'   Ignored if \code{NULL}.
@@ -1040,13 +1041,15 @@ setMethod("extract", OPMS, function(object, as.labels,
       if (ci)
         columns <- columns[rep(seq.int(nrow(columns)), each = 3L), ,
           drop = FALSE]
-      columns <- cbind(columns, Parameter = rownames(result))
+      columns <- cbind(columns, rownames(result))
+      colnames(columns)[ncol(columns)] <- RESERVED_NAMES[["parameter"]]
       rownames(result) <- rownames(columns) # otherwise a warning is likely
       result <- cbind(columns, result)
     } else {
       params <- rownames(result)
       rownames(result) <- seq.int(nrow(result))
-      result <- cbind(Parameter = params, result)
+      result <- cbind(params, result)
+      colnames(result)[1L] <- RESERVED_NAMES[["parameter"]]
     }
     if (length(as.groups)) {
       to.add <- do_extract(as.groups, join = FALSE)
@@ -1085,7 +1088,7 @@ setMethod("extract", OPMS, function(object, as.labels,
 setMethod("extract", "data.frame", function(object, as.groups = TRUE,
     norm.per = c("row", "column", "none"), norm.by = TRUE, subtract = TRUE,
     direct = inherits(norm.by, "AsIs"), dups = c("warn", "error", "ignore"),
-    split.at = "Parameter") {
+    split.at = param_names("split.at")) {
 
   do_norm <- function(x, row, by, direct, subtract) {
     sweep(x, 2L - row, if (direct)
@@ -1132,11 +1135,11 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 
   # The output has to be organized in a certain structure, three rows per group:
   # first the mean, second the lower CI limit third the upper CI limit. This
-  # step creates the factor-data part up to the 'Parameter' column.
+  # step creates the factor-data part up to the parameter column.
   result <- as.data.frame(sapply(aggr.mean[, seq.int(gl), drop = FALSE],
     rep, each = 3L))
   colnames(result) <- names(as.groups)
-  result$Parameter <- as.factor(unlist(map_grofit_names(
+  result[, RESERVED_NAMES[["parameter"]]] <- as.factor(unlist(map_grofit_names(
     subset = as.character(object[1L, param.pos]), ci = TRUE)))
 
   # Reduce to numeric part and get CIs from means and variances.

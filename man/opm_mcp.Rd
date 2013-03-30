@@ -205,6 +205,6 @@ par(op) # reset plotting settings
 
   \S4method{opm_mcp}{data.frame}(object, model,
     mcp.def = c(Dunnett = 1L), ops = "+", m.type = c("glm", "lm", "aov"),
-    glht.args = list(), split.at = "Parameter", do.mcp = TRUE) 
+    glht.args = list(), split.at = param_names("split.at"), do.mcp = TRUE) 
 
 }

@@ -4,9 +4,9 @@
 \arguments{
   \item{object}{\code{\link{OPMS}} object or data frame
   with one column named as indicated by \code{split.at}
-  (\sQuote{Parameter} by default), columns with factor
-  variables before that column and colums with numeric
-  vectors after that column.}
+  (default given by \code{\link{param_names}("split.at")}),
+  columns with factor variables before that column and
+  columns with numeric vectors after that column.}
 
   \item{as.labels}{List. Metadata to be joined and used as
   row names (if \code{dataframe} is \code{FALSE}) or
@@ -215,6 +215,6 @@ ci_plot(x[, 4L:14L], vline = 1) # good
   \S4method{extract}{data.frame}(object, as.groups = TRUE,
     norm.per = c("row", "column", "none"), norm.by = TRUE, subtract = TRUE,
     direct = inherits(norm.by, "AsIs"), dups = c("warn", "error", "ignore"),
-    split.at = "Parameter") 
+    split.at = param_names("split.at")) 
 
 }

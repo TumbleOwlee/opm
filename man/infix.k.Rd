@@ -31,34 +31,36 @@
 # The dataset contains the metadata keys 'Species' and 'Experiment' but
 # neither 'Trial' nor 'Organism' nor 'Run':
 data(vaas_1)
+# In the following we use stopifnot(), which fails unless all arguments
+# passed are TRUE.
 
 # Character method
-stopifnot("Experiment" \%k\% vaas_1)
-stopifnot("Species" \%k\% vaas_1)
-stopifnot(!"Run" \%k\% vaas_1)
-stopifnot(c("Species", "Experiment") \%k\% vaas_1)
-stopifnot(!c("Species", "Trial") \%k\% vaas_1)
-stopifnot(!c("Organism", "Experiment") \%k\% vaas_1)
-stopifnot(character() \%k\% vaas_1)
+stopifnot("Experiment" \%k\% vaas_1) # present
+stopifnot("Species" \%k\% vaas_1) # present
+stopifnot(!"Run" \%k\% vaas_1) # missing
+stopifnot(c("Species", "Experiment") \%k\% vaas_1) # all present
+stopifnot(!c("Species", "Trial") \%k\% vaas_1) # only one present
+stopifnot(!c("Organism", "Experiment") \%k\% vaas_1) # only one present
+stopifnot(character() \%k\% vaas_1) # empty query always results
 
 # List method
-stopifnot(list(Experiment = "whatever") \%k\% vaas_1)
-stopifnot(list(Species = "ignored") \%k\% vaas_1)
+stopifnot(list(Experiment = "whatever") \%k\% vaas_1) # key present
+stopifnot(list(Species = "ignored") \%k\% vaas_1) # key present
 
-# This fails because we query with a named sublist but 'Species' is not
-# even a list
+# This fails because we query with a named sublist but the 'Species'
+# metadata entry is not even a list.
 stopifnot(!list(Species = list(Genus = "X", Epithet = "Y")) \%k\% vaas_1)
 
 # This is OK because we query with an unnamed sublist: it has no names that
-# one would fail to find
+# one would fail to find.
 stopifnot(list(Species = list("X", "Y")) \%k\% vaas_1)
 
 # More non-nested query examples
-stopifnot(!list(Run = 99) \%k\% vaas_1)
-stopifnot(list(Species = "?", Experiment = NA) \%k\% vaas_1)
-stopifnot(!list(Species = "?", Trial = NA) \%k\% vaas_1)
-stopifnot(!list(Organism = "?", Experiment = NA) \%k\% vaas_1)
-stopifnot(list() \%k\% vaas_1)
+stopifnot(!list(Run = 99) \%k\% vaas_1) # key not present
+stopifnot(list(Species = "?", Experiment = NA) \%k\% vaas_1) # keys present
+stopifnot(!list(Species = "?", Trial = NA) \%k\% vaas_1) # one key missing
+stopifnot(!list(Organism = "?", Experiment = NA) \%k\% vaas_1) # likewise
+stopifnot(list() \%k\% vaas_1) # empty query always results
 }
 \keyword{attribute}
 

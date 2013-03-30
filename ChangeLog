@@ -5,6 +5,8 @@
 
 - fixed bug in aggregated()
 
+- in `[`(), wells() and measurements(), wells can now be indexed using
+  formulas, thus allowing for sequences of well coordinates and less code
 - metadata() and the functions depending on it can now use formuals for querying
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets

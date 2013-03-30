@@ -2,7 +2,7 @@
 \alias{param_names}
 \title{Names of curve parameters}
 \usage{
-  param_names(what = c("param.names", "reserved.md.names"))
+  param_names(what = c("param.names", "reserved.md.names", "split.at"))
 }
 \arguments{
   \item{what}{Character scalar. Which kind of names to
@@ -23,6 +23,7 @@
 stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
 (x <- param_names("reserved"))
 stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
+stopifnot(param_names("split.at") \%in\% x)
 }
 \seealso{
   Other aggregation-functions: \code{\link{do_aggr}},

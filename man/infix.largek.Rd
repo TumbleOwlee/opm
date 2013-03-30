@@ -26,22 +26,25 @@
 # The dataset contains the metadata keys 'Species' and 'Experiment' but
 # neither 'Trial' nor 'Organism' nor 'Run':
 data(vaas_1)
+# In the following we use stopifnot(), which fails unless all arguments
+# passed are TRUE.
 
 # Character method
 
 # Single-element queries
-stopifnot("Experiment" \%K\% vaas_1)
-stopifnot("Species" \%K\% vaas_1)
-stopifnot(!"Run" \%K\% vaas_1)
-stopifnot(!"Trial" \%K\% vaas_1)
-stopifnot(!"Organism" \%k\% vaas_1)
+stopifnot("Experiment" \%K\% vaas_1) # present
+stopifnot("Species" \%K\% vaas_1)  # present
+stopifnot(!"Run" \%K\% vaas_1) # not present
+stopifnot(!"Trial" \%K\% vaas_1) # not present
+stopifnot(!"Organism" \%k\% vaas_1) # not present
 
 # Zero-element queries
-stopifnot(character() \%K\% vaas_1)
+stopifnot(character() \%K\% vaas_1) # always results
 
 # Querying with vectors of length > 1 mean nested queries; compare this to
 # the behavior of \%k\%!
 stopifnot(!c("Species", "Experiment") \%K\% vaas_1)
+# I.e. "Experiment" is not within "Species".
 
 # List method
 # See \%k\% -- the behavior is identical for lists.

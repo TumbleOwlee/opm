@@ -1006,10 +1006,10 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 #'   plates to at most about one dozen wells. See \code{\link{[}} for how to
 #'   achieve this. The data frame should be as exported by \code{\link{extract}}
 #'   with \code{ci} set to \code{TRUE}. There must be a column named
-#'   \sQuote{Parameter} followed by columns with only numeric values. Columns
-#'   before the \sQuote{Parameter} column, if any, are used for grouping. The
-#'   rows must entirely comprise triplets representing (i) the point estimate,
-#'   (ii) the lower and (iii) the upper confidence interval.
+#'   \code{\link{param_names}("split.at")} followed by columns with only numeric
+#'   values. Columns before that split column, if any, are used for grouping.
+#'   The rows must entirely comprise triplets representing (i) the point
+#'   estimate, (ii) the lower and (iii) the upper confidence interval.
 #'
 #' @param as.labels List. Metadata to be joined and used to draw a legend.
 #'   Ignored if \code{NULL}.
@@ -1081,7 +1081,7 @@ setGeneric("ci_plot", function(object, ...) standardGeneric("ci_plot"))
 setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     prop.offset = 0.04, align = "center", col = "blue", na.action = "warn",
     draw.legend = TRUE, legend.field = c(1, 1), x = "topleft", xpd = TRUE,
-    vline = 0, split.at = "Parameter", ...) {
+    vline = 0, split.at = param_names("split.at"), ...) {
 
   single_plot <- function(col.pos) {
     plot(x = NULL, y = NULL, xlim = ranges[, col.pos], ylim = ylim,
@@ -1149,7 +1149,7 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
 setMethod("ci_plot", OPMS, function(object, as.labels,
     subset = opm_opt("curve.param"), ...) {
   ci_plot(extract(object, as.labels = as.labels, subset = subset,
-    dataframe = TRUE, ci = TRUE), split.at = "Parameter", ...)
+    dataframe = TRUE, ci = TRUE), split.at = param_names("split.at"), ...)
 }, sealed = SEALED)
 
 

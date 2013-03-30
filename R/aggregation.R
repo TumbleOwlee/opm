@@ -177,11 +177,14 @@ summary.splines_bootstrap <- function (object, ...) {
 #' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
 #' (x <- param_names("reserved"))
 #' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
+#' stopifnot(param_names("split.at") %in% x)
 #'
-param_names <- function(what = c("param.names", "reserved.md.names")) {
+param_names <- function(
+    what = c("param.names", "reserved.md.names", "split.at")) {
   case(match.arg(what),
     param.names = CURVE_PARAMS,
-    reserved.md.names = unname(RESERVED_NAMES)
+    reserved.md.names = unname(RESERVED_NAMES),
+    split.at = RESERVED_NAMES[["parameter"]]
   )
 }
 

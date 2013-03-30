@@ -88,7 +88,7 @@ CURVE_PARAMS <- c("mu", "lambda", "A", "AUC")
 # Reserved metadata names (they CAN be used by in the metadata but might yield
 # problems).
 #
-RESERVED_NAMES <- c("Plate", "Well", "Time", "Value")
+RESERVED_NAMES <- c("Plate", "Well", "Time", "Value", "Parameter")
 names(RESERVED_NAMES) <- tolower(RESERVED_NAMES)
 
 
@@ -168,6 +168,9 @@ W3C_COLORS <- structure(
 #
 
 MEMOIZED <- new.env(parent = emptyenv())
+
+MEMOIZED$WELL.POS <- as.list(structure(.Data = seq.int(nrow(WELL_MAP)),
+  .Names = sort.int(rownames(WELL_MAP))))
 
 
 ################################################################################

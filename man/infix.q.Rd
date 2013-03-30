@@ -39,25 +39,25 @@ data(vaas_1)
 # Character method
 stopifnot(!"Experiment" \%q\% vaas_1) # wrong query here; compare to \%k\%
 stopifnot(!"First replicate" \%q\% vaas_1) # again wrong query
-stopifnot(c(Experiment = "First replicate") \%q\% vaas_1) # right query
+stopifnot(c(Experiment = "First replicate") \%q\% vaas_1) # correct query
 
-stopifnot(!"Species" \%q\% vaas_1)
-stopifnot(!"Escherichia coli" \%q\% vaas_1)
-stopifnot(c(Species = "Escherichia coli") \%q\% vaas_1)
+stopifnot(!"Species" \%q\% vaas_1) # wrong query
+stopifnot(!"Escherichia coli" \%q\% vaas_1) # wrong query
+stopifnot(c(Species = "Escherichia coli") \%q\% vaas_1) # correct query
 
 stopifnot(c(Species = "Escherichia coli",
-  Experiment = "First replicate") \%q\% vaas_1) # Combined query
+  Experiment = "First replicate") \%q\% vaas_1) # combined query, all TRUE
 
-stopifnot(character() \%q\% vaas_1) # Empty query
+stopifnot(character() \%q\% vaas_1) # empty query always results
 
 # List method
 stopifnot(list(Experiment = "First replicate") \%q\% vaas_1)
 
 # Choice among alternatives
 stopifnot(list(Experiment = c("First replicate",
-  "Second replicate")) \%q\% vaas_1)
+  "Second replicate")) \%q\% vaas_1) # one of them TRUE
 stopifnot(!list(Experiment = c("Second replicate",
-  "Third replicate")) \%q\% vaas_1)
+  "Third replicate")) \%q\% vaas_1) # none of them TRUE
 
 # Combined query together with choice among alternatives
 stopifnot(list(Experiment = c("First replicate", "Second replicate"),

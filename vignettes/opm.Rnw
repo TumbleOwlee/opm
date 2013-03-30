@@ -106,7 +106,19 @@ All functionality is exemplified using real-world data sets that are part of the
 %\newpage
 
 
-\section[Introduction]{Introduction}
+\section[Introduction]{Introduction}\label{introduction}
+
+\subsection[Preamble for impatient readers]{Preamble for impatient readers}\label{preamble}
+
+Readers who want to jump right into examples for applying \pkg{opm} to their data will find an overview of what the package can do for them in Figure~\ref{fig:work_flow}.
+Next, Figure~\ref{fig:overview} should be looked at, as it lists the names of the functions that can be used in each step of the \pkg{opm} work flow.
+Examples for each step would then be found in the according subsections of of Section~\ref{application}.
+Details on the scientific background could well be skipped during a first reading.
+The user would nevertheless find them in Section~\ref{methods}, including references for important functionality.
+
+
+\subsection[Scientific introduction]{Scientific introduction}\label{scientific introduction}
+
 The phenotype is regarded as the set of all types of traits of an organism \citep{mahner}.
 The phenotype is of high biological relevance, as it is the phenotype which is the object of selection and, hence, is the level at which evolutionary directions are governed by adaptation processes \citep{mayr}.
 It is also the phenotype which is of direct relevance to humans, for example in exploiting microorganisms for industrial purposes or in the combat of pathogenic organisms \citep{broadbent, mithani}.
@@ -169,7 +181,7 @@ For further specific graphical or statistical analysis according to the needs of
 
 The work flow described below includes (i) the input of raw kinetic data and integration of corresponding metadata, (ii) conversion into suitable storage formats, (iii) the computation of a set of four parameters sufficient for comprehensively describing the curves' shape (aggregated data), (iv) manipulating and querying the constructed objects, (v) visualizing both raw kinetics and aggregated data, (vi) statistical comparison of group means, (vii) discretization of the curve parameters and corresponding export methods and (viii) obtaining additional information the substrates.
 
-\section[Methods]{Methods}
+\section[Methods]{Methods}\label{methods}
 
 \subsection[Overview]{Overview}\label{methods overview}
 
@@ -184,10 +196,6 @@ Further it is explained how to analyse either raw data, metadata, aggregated cur
 }
 \caption{\label{fig:work_flow}
 A depiction of the possible work flow within \pkg{opm} and its potential interplay with \proglang{R} and third-party software.
-\rcsmark{
-Update needed. 
-Original graphics file should be made available to all contributors.
-}
 The work flow allows the user full flexibility with respect to the type of information added to the created \proglang{R} objects and to the order of steps in which this is achieved.
 See Figure~\ref{fig:overview} for the functions that can be used the respective step.
 }
@@ -293,24 +301,34 @@ The package is accompanied by a command-line script \code{run_opm.R}, enabling t
 \subsection[Aggregating data by estimating curve parameters]{Aggregating data by estimating curve parameters}\label{methods aggregating}
 
 
-Descriptive curve parameters from the kinetic raw data can be calculated and included in \proglang{OPM} and \proglang{OPMS} objects using the function \code{do\_aggr()} (see Figure~\ref{fig:work_flow}).
+Descriptive curve parameters from the kinetic raw data can be calculated and included in \proglang{OPM} and \proglang{OPMS} objects using the function \code{do\_aggr()}.
 Curve parameters can be extracted using a spline-based fitting procedure implemented in \pkg{opm}. Three different modelling alternatives for the splines exist:
 (low-rank) cubic smoothing splines \citep{Reinsch:1967} as implemented in \code{smooth.spline} from the  \pkg{base} package, thin plate splines \citep[a generalization of smoothing splines]{Wood2003} and P-splines \citep{eilers}.
 The latter two are implemented in the package \pkg{mgcv}.
 % mgcv seems to already be cited, as Wood2003 is lited among the package citations on CRAN
 It is also possible to access methods from the package \pkg{grofit} \citep{kahm} or to use a native  implementation which is faster but only estimates two of the four parameters.
 
-The descriptive curve parameters are the lag phase $\lambda$,  the respiration rate $\mu$ (corresponding to the steepness of the slope), the maximum cell respiration A (corresponding to the maximum value of the curve) and the area under the curve AUC.
+The descriptive curve parameters estimated by \pkg{opm} are shown in Figure~\ref{fig:parameters}.
 The parameters $\lambda$, $\mu$, and A are derived by default from spline fits, whereas AUC is estimated \textit{via} numerical integration (see Figure 2 in \cite{kahm} for details).
-\rcsmark{
-We should add own picture explaining these parameters.
-}
 %If desired, the user is free to use the parameter estimates from the provided model fits as well \citep{vaas}.
 % not sure whether this works
 In addition to the point estimates for the parameters from both model and spline, confidence limits can be calculated (for the spline-based approach \textit{via} bootstrapping), with 95\% being the default value \citep{efron}.
 But confidence intervals and according group means can also be calculated from experimental repetitions, as explained in Section~\ref{methods plotting-aggregated}.
 Attaching the aggregated data to an \proglang{OPM} object yields an object of the class \proglang{OPMA}, which can also be stored within an \proglang{OPMS} container object.
 
+
+\begin{figure}
+\scalebox{1.225}{
+\includegraphics{opm_fig_4}
+}
+\caption{\label{fig:parameters}
+A schematic depiction of a typical growth or respiration curve and the parameters estimated by \pkg{opm}.
+The descriptive curve parameters are the lag phase $\lambda$,  the respiration rate $\mu$ (corresponding to the steepness of the slope), the maximum cell respiration A (corresponding to the maximum value of the curve) and the area under the curve AUC.
+Note that many respiration curves, even if representing a clearly positive reaction, do not correspond to this idealized scheme.
+The parameters can nevertheless be robustly estimated from deviating curves, particularly \textit{via} spline fits \citep{vaas}.
+}
+\label{analysis-figure}
+\end{figure}
 
 
 \subsection[Manipulation of OPM and OPMS data]{Manipulation of \proglang{OPM} and \proglang{OPMS} data}\label{methods manipulation}
@@ -324,7 +342,7 @@ As Figure~\ref{fig:overview} illustrates, the package provides methods for (i) q
 
 \begin{figure}
 \scalebox{1.225}{
-\includegraphics{opm_fig_4}
+\includegraphics{opm_fig_5}
 }
 \caption{\label{fig:overview}
 This scheme provides an overview of the possible strategies and appropriate functions for data analysis using the \pkg{opm} package.
@@ -367,9 +385,9 @@ This plot offers a display format which is especially powerful in uncovering gen
 \subsubsection[Plotting the aggregated data]{Plotting the aggregated data}\label{methods plotting-aggregated}
 
 \rcscom{
-Lea \& Johannes, please check whether the phrasing of this subsection is OK now.
-Then remove this note.
+The phrasing of this subsection appears to be fine for Johannes now. At moment, Johannes has now own experience on normalizations using \code{extract()}. If phrasing is also ok, for Lea, she should remove this note.
 }
+
 For the graphical representation of the aggregated data, namely point estimators and corresponding confidence limits for the curve parameters, the function \code{ci\_plot()} provides a framework to plot subsets of different parameters in a convenient and easily applicable manner.
 This straightforward assembly of different curves' characteristics in a single overview facilitates the interpretation and comparison of user-defined data subsets arranged according to the technical and/or biological repetition structure or other aspects of the experimental design \citep{vaas}.
 
@@ -378,6 +396,7 @@ For a PM experiment the purpose of such a normalization is to minimize systemati
 The underlying ideas are mainly derived from DNA-microarray experiments for measuring gene-expression levels \citep{quackenbush}.
 
 With \code{extract()} the user is enabled not only to select certain aggregated or discretized values into common matrices or data frames, but also to apply normalizations before computing point estimates and their respective confidence intervals for individually defined experimental groups.
+\rcsadd{Normalization indicates here the subtraction of the mean of each plate from each of its values (over all wells of that plate), either per row or per column. Alternatively, all values can be divided by the mean of the value. The details can be set in the respective arguments of \code{extract()}.}
 Although this function is intended mainly as a helper function for \code{ci_plot()}, it can be quite useful for specific normalization purposes, for example when data were derived before and after servicing the Omnilog\textregistered \ facility, which might result in shifting the measurements by a certain amount.
 In conjunction with \code{extract()}, \code{ci_plot()} allows for visualizing point estimates and confidence intervals of groups of parameter estimates.
 For visualizing differences between groups and their confidence intervals, see \code{opm_mcp()} as described in Section~\ref{methods group-means}.
@@ -392,8 +411,7 @@ For instance, the naming scheme of the individual plates can be devised by selec
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{methods group-means}
 
 \rcscom{
-Lea \& Johannes, please check whether the phrasing of this subsection is OK now.
-Then remove this note.
+The phrasing of this subsection is fine for Johannes now. If phrasing is also ok, for Lea, she should remove this note.
 }
 Besides comparing single curves, the user may also be interested in statistically comparing the mean values of distinct groups of curves.
 For example, imagine the comparison of four different bacteria using GEN-III microplates.
@@ -422,6 +440,7 @@ The here internally employed functionality from the package \pkg{multcomp} provi
 
 \rcscom{
 Lea \& Johannes, explain the implementation of how factors are merged to produce a pseudo-one-way-layout \citep{schaarschmidt}, and/or remove this note.
+Needs to be done by Lea (I, Johannes, do not feel competent enough for that)
 }
 The function \code{opm\_mcp()} internally reshapes the data into a ``flat'' data frame containing one column for the chosen parameter value, one column for the well (substrate) name and optionally additional columns for the selected metadata.
 For performing the testing procedure, a model has to be stated that specifies the factor levels that determine the grouping \citep{searle, hothorn}.
@@ -874,7 +893,7 @@ xy_plot(vaas.1.6[, , c("A01", "G11", "H11")],
 
 \scalebox{1.225}{
 
-<<fig=TRUE, echo=FALSE, width=12, height=10>>=
+<<fig=TRUE, echo=FALSE, width=9, height=6>>=
 print(xy_plot(vaas.1.6[, , c("A01", "G11", "H11")],
   main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain")))
@@ -970,7 +989,7 @@ ci_plot.legend <- ci_plot(vaas.1.6[, , 1:3],
 
 \begin{figure}
 \scalebox{1.225}{
-<<fig=TRUE, echo=FALSE, results=hide, width=18, height=12>>=
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
 print(ci_plot(vaas.1.6[, , 1:3], as.labels = list("Species", "Strain"),
   subset = "A", legend.field = NULL, x = 150, y = 3))
 @
@@ -979,7 +998,6 @@ print(ci_plot(vaas.1.6[, , 1:3], as.labels = list("Species", "Strain"),
 \label{fig:ci_plot}
 Comparison of point estimates and their 95\% confidence intervals for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
 Shown are the results on the three wells A01 (negative control), A02 (Dextrin) and A03 (D-Maltose) as indicated by the sub-plot titles.
-\rcsmark{Lea, the font size is way too small. Revise here or suggest changes of function.}
 }
 \end{figure}
 
@@ -1000,21 +1018,19 @@ Please revise.
 Also, please consider the TODO entries in the code for opm\_mcp().
 }
 
-To demonstrate the functionality of \code{opm\_mcp()}, let  us make use of the example addressed above. 
-Imagine the comparison of four different bacteria using GEN-III microplates.
-For each bacterial strain, ten replicates have been performed.
+To demonstrate the functionality of \code{opm\_mcp()}, a comparison of four different bacteria, with each ten replicates using GEN-III microplates, will be utilized.
 Do these four bacteria differ in, e.g., the mean value of, e.g., curve parameter A of, e.g, well A1?
 Here, a statistical comparison of four groups (four organisms) of each 10 values (curve parameter A of 10 replicates of well A1) will be performed.
-Let us first subset from the data set \code{vaas\_et\_al} the ten GEN-III plates from the first technical replicates and let us also subset for the curves from well G06.
+First, from the data set \code{vaas\_et\_al}, a subset of the ten technical replicates of GEN-III plates from the first biological replicate and also for the curves from well G06 only will be made.
 <<results=hide, width=8>>=
-xyz <- subset(vaas_et_al[, , "G06"], list(Experiment = "First replicate"))
+vaas.subset.mcp <- subset(vaas_et_al[, , "G06"], 
+  list(Experiment = "First replicate"))
 @
 
-Let us plot these data (see Figure~\ref{fig:xy_plot_mcp}).
-For each of the four strains, ten curves are shown. 
+For each of the four strains, ten curves are shown (see Figure~\ref{fig:xy_plot_mcp}). 
 
 <<fig=FALSE, width=10>>=
-xy_plot(xyz, include = ~ Strain, neg.ctrl = FALSE,
+xy_plot(vaas.subset.mcp, include = ~ Strain, neg.ctrl = FALSE,
   legend.fmt = list(space = "right"))
 @
 
@@ -1023,7 +1039,7 @@ xy_plot(xyz, include = ~ Strain, neg.ctrl = FALSE,
 \scalebox{1.225}{
 
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-xy_plot(xyz, include = ~ Strain, neg.ctrl = FALSE, 
+xy_plot(vaas.subset.mcp, include = ~ Strain, neg.ctrl = FALSE, 
   legend.fmt  = list(space = "right"))
 @
 
@@ -1039,15 +1055,13 @@ The x-axes show the measurement time in hours, the y-axes the measured colour in
 \end{figure}
 
 
-The question that arises now is the following.
-Is there between any of the four strains a significant difference, based on the mean of the curve parameter A values as determined for each of the ten curves?
+The statistical question to be addressed is the following.
+Is there a significant difference between any of the four strains, based on the mean of the curve parameter A values as determined for each of the ten curves?
 Here, a multiple comparison of group means is performed using \code{opm\_mcp()}.
-The groups to be compared are defined by the argument ``model''.
-
-\rcscom{Die anderen Argumente sollten hier auch erklaert werden, oder?}
+The groups to be compared are defined by the argument ``model''. The argument ``m.type'' specifies the model types to use in model fitting, e.g., a linear model (lm), a generalized linar model (glm), or an analysis of variance (aov). The argument ``mcp.def'' basically defines the type of contrast matrix to be used for the multiple comparison. In principle, the contrast matrix defines what type of comparison should be made. Concrete, among the groups defined by the argument ``model'', which of these should actually be included in pariwise comparisons? A detailed explanation of contrast matrices is shown further below. \rcscom{Lea, is this the correct idea?}
 
 <<results=hide, width=8>>=
-(x <- opm_mcp(xyz, model = ~ Strain, m.type = "aov",
+(x <- opm_mcp(vaas.subset.mcp, model = ~ Strain, m.type = "aov",
   mcp.def = mcp(Strain = "Tukey")))
 @
 
@@ -1057,9 +1071,12 @@ The results shown below indicate that all group means are significantly differen
 summary(x)
 @
 
+\rcscom{
+Is it possible to show here at least part of the output from \code{summary(x)}? We surely do not need the long list at the beginning, but would it be possible to show the output containing the estimates, the p-values, etc?
+}
 
 The results of the statistical test can be plotted (see Figure~\ref{fig:ci_plot_mcp}). 
-For example, the mean of curve parameter A values of strain DSM 30083T is 26.615 units larger than the mean of A values of strain DSM18039 (see the estimate results above). 
+For example, the mean of curve parameter A values of strain DSM 30083T is 26.615 units larger than the mean of A values of strain DSM18039 (see the estimate results above, provided by \code{summary(x)}). 
 Therefore, point estimator of difference between these two strain is plotted at position 26.615 on the x-axis. 
 In pairwise comparisons where the 95\% confidence interval crosses the vertical dashed line at zero there is no significant difference between the group means. 
 The more distant the 95\% confidence interval is from the dashed zero line, the larger the biological effect of the difference, irrespective of the size of the p-value. 

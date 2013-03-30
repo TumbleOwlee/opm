@@ -22,7 +22,8 @@ is_ci_plottable <- function(x) {
     all(x[rest == 1L, , drop = FALSE] >= x[rest == 2L, , drop = FALSE]) &&
       all(x[rest == 1L, , drop = FALSE] <= x[rest == 0L, , drop = FALSE])
   }
-  is.data.frame(x) && !is.na(pos <- match("Parameter", colnames(x))) &&
+  is.data.frame(x) &&
+    !is.na(pos <- match(RESERVED_NAMES[["parameter"]], colnames(x))) &&
     param_column_ok(x[, pos]) &&
     data_columns_ok(x[, (pos + 1L):ncol(x), drop = FALSE])
 }
@@ -31,6 +32,13 @@ is_ci_plottable <- function(x) {
 A.VALUES <- extract(c(THIN.AGG, THIN.AGG, THIN.AGG),
   as.labels = list("organism", "run"),
   subset = "A", dataframe = TRUE)
+
+NESTED.MD <- SMALL.WITH.MD
+metadata(NESTED.MD) <- list(A = list(B = 63, C = 64), K = "N")
+tmp <- SMALL.WITH.MD
+metadata(tmp) <- list(A = list(F = 63, C = 64), K = "T", O = letters)
+NESTED.MD <- c(NESTED.MD, tmp)
+rm(tmp)
 
 
 ################################################################################
@@ -148,7 +156,7 @@ test_that("the plate type of OPMS objects can be changed", {
 
 ## flatten
 test_that("example data can be flattened", {
-  base.colnames <- c("Time", "Well", "Value")
+  base.colnames <- unname(RESERVED_NAMES[c("time", "well", "value")])
   flat <- flatten(SMALL)
   expect_is(flat, "data.frame")
   expect_equal(colnames(flat), base.colnames)
@@ -160,7 +168,7 @@ test_that("example data can be flattened", {
 
 ## flatten
 test_that("example data with metadata can be flattened", {
-  base.colnames <- c("Time", "Well", "Value")
+  base.colnames <- unname(RESERVED_NAMES[c("time", "well", "value")])
   flat <- flatten(SMALL.WITH.MD, include = list("Organism"))
   expect_is(flat, "data.frame")
   expect_equal(colnames(flat), c("Organism", base.colnames))
@@ -172,7 +180,7 @@ test_that("example data with metadata can be flattened", {
 
 ## flatten
 test_that("example data can be flattened with fixed entries", {
-  base.colnames <- c("Time", "Well", "Value")
+  base.colnames <- unname(RESERVED_NAMES[c("time", "well", "value")])
   flat <- flatten(SMALL.WITH.MD, fixed = list(A = 33, B = "zzz"))
   expect_is(flat, "data.frame")
   expect_equal(colnames(flat), c("A", "B", base.colnames))
@@ -187,7 +195,7 @@ test_that("example data can be flattened with fixed entries", {
 ## flatten
 test_that("OPMS objects can be flattened", {
   opms.input <- OPMS.INPUT[, 1L:10L]
-  base.colnames <- c("Plate", "Time", "Well", "Value")
+  base.colnames <- unname(RESERVED_NAMES[c("plate", "time", "well", "value")])
   flat <- flatten(opms.input)
   expect_is(flat, "data.frame")
   expect_equal(colnames(flat), base.colnames)
@@ -200,7 +208,7 @@ test_that("OPMS objects can be flattened", {
 ## flatten
 test_that("OPMS objects including metadata can be flattened", {
   opms.input <- OPMS.INPUT[, 1L:10L]
-  base.colnames <- c("Plate", "Time", "Well", "Value")
+  base.colnames <- unname(RESERVED_NAMES[c("plate", "time", "well", "value")])
   # Flatten with metadata no. 1
   flat <- flatten(opms.input, include = list("organism"))
   expect_is(flat, "data.frame")
@@ -224,33 +232,77 @@ test_that("OPMS objects including metadata can be flattened", {
 
 
 ## extract_columns
-test_that("extract_columns() gets nested metadat right", {
-
-  x <- SMALL.WITH.MD
-  metadata(x) <- list(A = list(B = 63, C = 64), K = "N")
-  y <- SMALL.WITH.MD
-  metadata(y) <- list(A = list(F = 63, C = 64), K = "T", O = letters)
-  x <- c(x, y)
+test_that("extract_columns() gets nested metadata right", {
 
   # 1
-  got <- extract_columns(x, list(c("A", "C"), "K"))
+  got <- extract_columns(NESTED.MD, list(c("A", "C"), "K"))
   expect_equal(names(got), c("A.C", "K"))
-  #print(sapply(got, class))
-  #expect_equal(got[, 1L, drop = TRUE], c(64, 64))
 
   # 2
-  got <- extract_columns(x, list(u = c("A", "C"), v = "K"))
+  got <- extract_columns(NESTED.MD, list(u = c("A", "C"), v = "K"))
   expect_equal(names(got), c("u", "v"))
 
   # 3
   old <- opm_opt(key.join = "~")
   on.exit(opm_opt(old))
-  got <- extract_columns(x, list(c("A", "C"), "K"))
+  got <- extract_columns(NESTED.MD, list(c("A", "C"), "K"))
   expect_equal(names(got), c("A~C", "K"))
+  opm_opt(old)
+
+  # 4
+  got <- extract_columns(NESTED.MD, list(u = "A"))
+  expect_equal(names(got), c("u.B", "u.C"))
+
+  # 4
+  got <- extract_columns(NESTED.MD, list(z = "K"))
+  expect_equal(names(got), "z")
 
 })
 
 
+## extract_columns
+test_that("extract_columns() gets metadata right using character vector", {
+
+  # 1
+  got <- extract_columns(NESTED.MD, "A")
+  expect_equal(names(got), c("B", "C"))
+
+  # 2
+  got <- extract_columns(NESTED.MD, c("A", "C"))
+  print(names(got))
+  expect_equal(names(got), "A.C")
+
+  # 3
+  old <- opm_opt(key.join = "~")
+  on.exit(opm_opt(old))
+  got <- extract_columns(NESTED.MD, c("A", "C"))
+  expect_equal(names(got), "A~C")
+
+})
+
+
+## extract_columns
+test_that("extract_columns() gets metadata right if a formula is used", {
+
+  # 1
+  got <- extract_columns(NESTED.MD, ~ A$C + K)
+  expect_equal(names(got), c("A.C", "K"))
+
+  # 2
+  got <- extract_columns(NESTED.MD, ~ A$C)
+  expect_equal(names(got), "A.C")
+
+  # 3
+  got <- extract_columns(NESTED.MD, ~ K)
+  expect_equal(names(got), "K")
+
+  # 4
+  old <- opm_opt(key.join = "~")
+  on.exit(opm_opt(old))
+  got <- extract_columns(NESTED.MD, ~ A$C + K)
+  expect_equal(names(got), c("A~C", "K"))
+
+})
 
 
 ## sort
@@ -337,7 +389,8 @@ test_that("aggregated parameters can be extracted as dataframe", {
     subset = "lambda", dataframe = TRUE, sep = "***")
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(2L, 99L))
-  expect_equal(colnames(mat), c("organism", "run", "Parameter",
+  expect_equal(colnames(mat), c("organism", "run",
+    RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE)))
   expect_true(all(sapply(mat[, 1L:3L], is.factor)))
   expect_true(all(sapply(mat[, 4L:99L], is.numeric)))
@@ -350,7 +403,8 @@ test_that("aggregated parameters can be extracted as dataframe", {
     as.groups = list("run", "organism"))
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(2L, 101L))
-  expect_equal(colnames(mat), c("organism", "run", "Parameter",
+  expect_equal(colnames(mat), c("organism", "run",
+    RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE), "run", "organism"))
   expect_true(all(sapply(mat[, 1L:3L], is.factor)))
   expect_true(all(sapply(mat[, 4L:99L], is.numeric)))
@@ -371,7 +425,8 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
     subset = "lambda", dataframe = TRUE, sep = "***", ci = TRUE)
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(6L, 99L))
-  expect_equal(colnames(mat), c("organism", "run", "Parameter",
+  expect_equal(colnames(mat), c("organism", "run",
+    RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE)))
   expect_true(all(sapply(mat[, 1L:3L], is.factor)))
   expect_true(all(sapply(mat[, 4L:99L], is.numeric)))
@@ -386,7 +441,8 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
     as.groups = list("run", "organism"))
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(6L, 101L))
-  expect_equal(colnames(mat), c("organism", "run", "Parameter",
+  expect_equal(colnames(mat), c("organism", "run",
+    RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE), "run", "organism"))
   expect_true(all(sapply(mat[, 1L:3L], is.factor)))
   expect_true(all(sapply(mat[, 4L:99L], is.numeric)))

@@ -43,19 +43,19 @@ stopifnot(c(`Plate number` = "6") \%q\% vaas_1)
 
 # Combined query
 stopifnot(c(Species = "Escherichia coli",
-  Experiment = "First replicate") \%Q\% vaas_1)
+  Experiment = "First replicate") \%Q\% vaas_1) # all present
 
-stopifnot(character() \%Q\% vaas_1) # Empty query
+stopifnot(character() \%Q\% vaas_1) # empty query always results
 
 # List method
-stopifnot(list(Experiment = "First replicate") \%Q\% vaas_1)
+stopifnot(list(Experiment = "First replicate") \%Q\% vaas_1) # present
 
 # Choice among alternatives is not done here: this query fails unless this
 # two-element vector is contained. Compare to \%q\%.
 stopifnot(!list(Experiment = c("First replicate",
   "Second replicate")) \%Q\% vaas_1)
 
-stopifnot(list() \%Q\% vaas_1) # Empty query
+stopifnot(list() \%Q\% vaas_1) # empty query always result
 }
 \keyword{attribute}
 

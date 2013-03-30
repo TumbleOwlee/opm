@@ -5,8 +5,8 @@
   \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
   object.}
 
-  \item{i}{Optional character or numeric vector with
-  name(s) or position(s) of well(s).}
+  \item{i}{Optional character or numeric vector or formula
+  with name(s) or position(s) of well(s).}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -28,12 +28,13 @@
 \examples{
 # 'OPM' method
 data(vaas_1)
-x <- measurements(vaas_1)
+head(x <- measurements(vaas_1))
 stopifnot(is.matrix(x), is.numeric(x))
-stopifnot(identical(dim(x), c(384L, 97L)))
-y <- measurements(vaas_1, "B03")
-stopifnot(is.matrix(y), is.numeric(y))
-stopifnot(identical(dim(y), c(384L, 2L)))
+stopifnot(dim(x) == c(384, 97))
+head(x <- measurements(vaas_1, "B03"))
+stopifnot(is.matrix(x), is.numeric(x), dim(x) == c(384, 2))
+head(y <- measurements(vaas_1, ~B03))
+stopifnot(identical(y, x))
 
 # 'OPMS' method
 data(vaas_4)

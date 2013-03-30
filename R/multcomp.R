@@ -182,16 +182,16 @@ setGeneric("opm_mcp",
 setMethod("opm_mcp", OPMS, function(object, model, mcp.def = c(Dunnett = 1L),
     m.type = "glm", glht.args = list(), ops = "+", do.mcp = TRUE, ...) {
   object <- extract(object = object, dataframe = TRUE, ...,
-    ## TODO: check wether this unnecessarily removes names
-    as.labels = metadata_key(model, FALSE, ops = ops, remove = RESERVED_NAMES))
+    as.labels = metadata_key(model, FALSE, ops = ops,
+      remove = RESERVED_NAMES[c("well", "value", "parameter")]))
   opm_mcp(object = object, model = model, mcp.def = mcp.def, ops = ops,
-    m.type = m.type, split.at = "Parameter", glht.args = glht.args,
+    m.type = m.type, split.at = param_names("split.at"), glht.args = glht.args,
     do.mcp = do.mcp)
 }, sealed = SEALED)
 
 setMethod("opm_mcp", "data.frame", function(object, model,
     mcp.def = c(Dunnett = 1L), ops = "+", m.type = c("glm", "lm", "aov"),
-    glht.args = list(), split.at = "Parameter", do.mcp = TRUE) {
+    glht.args = list(), split.at = param_names("split.at"), do.mcp = TRUE) {
 
   # helper functions and dependencies
   convert_and_check_model <- function(model, ops) {

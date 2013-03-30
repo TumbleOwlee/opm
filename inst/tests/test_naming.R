@@ -19,6 +19,9 @@ test_that("curve parameter names can be mapped", {
 })
 
 
+## well_index
+## UNTESTED
+
 ## map_well_names
 ## UNTESTED
 
