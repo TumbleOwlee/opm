@@ -327,7 +327,6 @@ The descriptive curve parameters are the lag phase $\lambda$,  the respiration r
 Note that many respiration curves, even if representing a clearly positive reaction, do not correspond to this idealized scheme.
 The parameters can nevertheless be robustly estimated from deviating curves, particularly \textit{via} spline fits \citep{vaas}.
 }
-\label{analysis-figure}
 \end{figure}
 
 
@@ -349,7 +348,6 @@ This scheme provides an overview of the possible strategies and appropriate func
 \rcsmark{Update needed, should be merged with old Figure 1.}
 Taking an \proglang{OPMS} object containing the kinetic raw data and the aggregated curve parameters (optionally with their corresponding 95\% confidence limits) as starting point, methods for metadata management, plotting the data in a customized manner, querying and sub-setting \proglang{OPMS} objects, and data conversion tools including discretization and output in files are provided.
 }
-\label{analysis-figure}
 \end{figure}
 
 

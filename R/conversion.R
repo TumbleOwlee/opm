@@ -537,14 +537,13 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
   else
     as.list(convert_factors(result))
   if (L(join)) {
-    labels <- unlist(lapply(result, FUN = paste, collapse = sep))
-    msg <- if (is.dup <- anyDuplicated(labels))
-      paste("duplicated label:", labels[is.dup])
+    result <- unlist(lapply(result, FUN = paste, collapse = sep))
+    msg <- if (is.dup <- anyDuplicated(result))
+      paste("duplicated label:", result[is.dup])
     else
       NULL
     if (length(msg))
       case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
-    labels
   } else {
     result <- as.data.frame(must(do.call(rbind, result)), optional = TRUE)
     if (ncol(result) > length(colnames(result)))
@@ -552,6 +551,7 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
         collapse = OPM_OPTIONS$key.join)
     result
   }
+  result
 }, sealed = SEALED)
 
 setMethod("extract_columns", "data.frame", function(object, what,

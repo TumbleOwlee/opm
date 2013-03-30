@@ -1356,7 +1356,7 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
     function(key) object@metadata[[key, exact = exact]]
   if (is.list(key))
     sapply(key, fetch_fun, simplify = FALSE)
-  else # should be a character vector
+  else # should be a (character) vector
     fetch_fun(key)
 }, sealed = SEALED)
 
