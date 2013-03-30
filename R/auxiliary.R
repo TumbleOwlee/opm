@@ -331,54 +331,21 @@ create_formula <- function(fmt, ..., .env = parent.frame()) {
 ################################################################################
 
 
-#' Create names
-#'
-#' A helper function that treats lists passed as query to
-#' \code{\link{metadata}}. Other objects are returned unchanged.
-#'
-#' @param x List of character vectors.
-#' @return List with potentially modified names.
-#' @keywords internal
-#'
-create_names <- function(x) UseMethod("create_names")
-
-#' @rdname create_names
-#' @method create_names default
-#'
-create_names.default <- function(x) x
-
-#' @rdname create_names
-#' @method create_names list
-#'
-create_names.list <- function(x) {
-  join <- function(x) vapply(x, paste, character(1L),
-    collapse = OPM_OPTIONS$key.join)
-  if (is.null(labels <- names(x)))
-    names(x) <- join(x)
-  else
-    names(x)[bad] <- join(x[bad <- !nzchar(labels) | is.na(labels)])
-  x
-}
-
-
-################################################################################
-
-
 #' Create metadata key
 #'
 #' A helper function for \code{\link{metadata}} and the methods that are
 #' dependent on it.
 #'
-#' @param x List of character vectors.
+#' @param x List, formula, or atomic object.
 #' @param to.formula Logical scalar indicating whether conversion to a formula
 #'   should be conducted.
-#' @param full.eval Logical scalar indicating whether to evaluate the result.
-#'   Usually makes no sense for formulas here.
+#' @param remove Names of elements to be deleted after conversion to list.
 #' @param ops Character vector containing the operators to use when converting
 #'   a list to a formula. Recycled if necessary.
-#' @param remove Names of elements to be deleted after conversion to list.
-#' @param envir Passed to \code{eval}.
 #' @inheritParams print
+#' @param full.eval Logical scalar indicating whether to evaluate the result.
+#'   Usually makes no sense for formulas here.
+#' @param envir Passed to \code{eval}.
 #' @return List or character vector.
 #' @keywords internal
 #'
@@ -388,6 +355,8 @@ metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
 #' @method metadata_key default
 #'
 metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {
+  if (!is.atomic(x))
+    stop(NOT_YET)
   if (length(x) == 1L && x %in% remove)
     return(NULL)
   if (to.formula) ## TODO check whether this makes sense
@@ -411,7 +380,7 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
 #' @rdname metadata_key
 #' @method metadata_key list
 #'
-metadata_key.list <- function(x, to.formula = FALSE, ops = "+", remove = NULL,
+metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
     ...) {
   join <- function(x) vapply(x, paste, character(1L),
     collapse = OPM_OPTIONS$key.join)
@@ -424,56 +393,58 @@ metadata_key.list <- function(x, to.formula = FALSE, ops = "+", remove = NULL,
     return(x)
   fmt <- case(length(x), stop("'x' must not be empty"), "",
     paste(rep(ops, length.out = length(x) - 1L), "`%s`", collapse = " "))
-  create_formula(paste("~ `%s`", fmt, collapse = " "), names(x))
+  create_formula(paste("~ `%s`", fmt), names(x))
 }
 
 #' @rdname metadata_key
 #' @method metadata_key formula
 #'
-metadata_key.formula <- function(x, to.formula = FALSE,
-    full.eval = !to.formula, envir = parent.frame(), ...) {
+metadata_key.formula <- function(x, to.formula = FALSE, ...,
+    full.eval = !to.formula, envir = parent.frame()) {
   elem_type <- function(name) switch(as.character(name),
     `::` =, `:::` =, `$` =, `@` = 1L, # operators with highest precedence
     `I` = 2L, # protected formula elements
     3L # anything else
   )
+  apply_to_tail <- function(x, fun) {
+    for (i in seq_along(x)[-1L])
+      x[[i]] <- fun(x[[i]])
+    x
+  }
   c.name <- as.name("c")
   list.name <- as.name("list")
-  rec_listify <- function(x) case(length(x), NULL, as.character(x), switch(
+  rec_listify <- function(x) case(length(x), NULL, if (is.call(x))
+      NULL
+    else if (is.name(x))
+      as.character(x)
+    else
+      x, switch(
     elem_type(x[[1L]]),
     {
-      for (i in seq.int(2L, length(x)))
-        x[[i]] <- rec_listify(x[[i]])
       x[[1L]] <- c.name # tight binding
-      x
+      apply_to_tail(x, rec_listify)
     },
     {
       x[[1L]] <- c.name # tight binding, no changes
       eval(x, envir)
     },
     {
-      for (i in seq.int(2L, length(x)))
-        x[[i]] <- rec_listify(x[[i]])
       x[[1L]] <- list.name
-      x
+      apply_to_tail(x, rec_listify)
     }
   ))
-  rec_replace <- function(x) case(length(x), x, as.name(x), switch(
+  rec_replace <- function(x) case(length(x), x, if (is.character(x))
+      as.name(x)
+    else
+      x, switch(
     elem_type(x[[1L]]),
-    {
-      for (i in seq.int(2L, length(x)))
-        x[[i]] <- rec_replace(x[[i]])
-      as.name(paste(all.vars(x), collapse = OPM_OPTIONS$key.join))
-    },
+    as.name(paste(all.vars(apply_to_tail(x, rec_replace)),
+      collapse = OPM_OPTIONS$key.join)),
     {
       x[[1L]] <- c.name
       as.name(paste(eval(x, envir), collapse = OPM_OPTIONS$key.join))
     },
-    {
-      for (i in seq.int(2L, length(x)))
-        x[[i]] <- rec_replace(x[[i]])
-      x
-    }
+    apply_to_tail(x, rec_replace)
   ))
   result <- (if (to.formula)
       rec_replace

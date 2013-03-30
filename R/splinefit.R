@@ -119,7 +119,7 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
 #'   smooth enough.
 #' @param est.method Character scalar. The smoothing parameter estimation
 #'   method. Currently, only \code{"REML"} and \code{"GCV"} are supported. This
-#'   argument is ignored for \code{type = "smoothing-splines"}. For details see
+#'   argument is ignored for \code{type = "smooth.spline"}. For details see
 #'   \code{\link[mgcv]{gam}} (see package \pkg{mgcv}).
 #' @param s.par list. Further arguments to be passed to the smoother
 #'   \code{\link[mgcv]{s}} (see package \pkg{mgcv}). Note that the \pkg{mgcv}

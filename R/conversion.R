@@ -531,7 +531,7 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
       as.character(x)
     else
       x
-  result <- metadata(object, what, exact = exact, strict = strict)
+  result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
     lapply(result, FUN = rapply, f = convert_factors)
   else
@@ -545,8 +545,12 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
     if (length(msg))
       case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
     labels
-  } else
-    must(as.data.frame(do.call(rbind, result)))
+  } else {
+    result <- as.data.frame(must(do.call(rbind, result)))
+    if (ncol(result) == 1L) # if 'what' was not a list
+      colnames(result) <- paste(what, collapse = OPM_OPTIONS$key.join)
+    result
+  }
 }, sealed = SEALED)
 
 setMethod("extract_columns", "data.frame", function(object, what,

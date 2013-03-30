@@ -253,7 +253,7 @@ setMethod("opm_mcp", "data.frame", function(object, model,
     if (is.list(mcp.def))
       result <- names(mcp.def)
     else if (is.numeric(mcp.def) || is.logical(mcp.def))
-      result <- names(metadata_key(mcp.def, FALSE))[mcp.def]
+      result <- names(metadata_key(model, FALSE))[mcp.def]
     else if (is.character(mcp.def))
       result <- mcp.def
     else
@@ -281,6 +281,8 @@ setMethod("opm_mcp", "data.frame", function(object, model,
 
 #   as.labels <- convert_and_check_labels(as.labels,
 #     colnames(object)[seq.int(param.pos)])
+
+  #print(names(object)[1:5])
 
   # create reshaped data frame and set helper column '.ID' to avoid non-unique
   # values when setting 'row.names'; note according shift of column positions!

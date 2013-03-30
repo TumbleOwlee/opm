@@ -141,10 +141,6 @@ test_that("rows can be picked", {
 ## UNTESTED
 
 
-## create_names
-## UNTESTED
-
-
 ## metadata_key
 test_that("we can convert formulas for use as metadata keys", {
 
@@ -183,6 +179,20 @@ test_that("we can convert lists for use as formulas", {
   got <- metadata_key(x, TRUE)
   expect_equal(got, ~ run)
 
+})
+
+
+## metadata_key
+test_that("some edge cases are correctly handled", {
+  x <- character()
+  expect_error(metadata_key(x, TRUE))
+  expect_equal(x, metadata_key(x, FALSE))
+  expect_equal(NULL, metadata_key(NULL, FALSE))
+  x <- numeric()
+  got <- metadata_key(x, TRUE)
+  expect_equal(metadata_key(got, TRUE), got)
+  x <- ~ list(list(), list())
+  expect_equal(x, metadata_key(x, TRUE))
 })
 
 
