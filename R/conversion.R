@@ -856,8 +856,8 @@ setMethod("rep", OPMS, function(x, ...) {
 
 #' Extract aggregated values
 #'
-#' Extract selected aggregated or discretized values into common matrix or data
-#' frame. The data-frame method conducts normalisation and/or computes
+#' Extract selected aggregated and/or discretized values into common matrix or
+#' data frame. The data-frame method conducts normalisation and/or computes
 #' normalized point-estimates and respective confidence intervals for
 #' user-defined experimental groups. It is mainly a helper function for
 #' \code{\link{ci_plot}}.
@@ -968,18 +968,19 @@ setMethod("rep", OPMS, function(x, ...) {
 #' data(vaas_et_al)
 #'
 #' # select only the first replicate of the E.coli strains
-#' vaas.test <- subset(vaas_et_al,
+#' x <- subset(vaas_et_al,
 #'   query = list(Experiment = "First replicate", Species = "Escherichia coli"))
+#'
 #' # extract parameter A with strain, experiment, slot and species as metadata
-#' vaas.test.A <- extract(vaas.test,
+#' x.A <- extract(x,
 #'   as.labels = list("Strain", "Experiment", "Slot", "Species"),
 #'   subset = "A", dataframe = TRUE)
-#' stopifnot(dim(vaas.test.A) == c(20L, 101L))
+#' stopifnot(dim(x.A) == c(20L, 101L))
 #'
 #' # simplest version:
 #' # no 'as.labels' specified, no grouping, no normalisation
-#' x <- group_CI(vaas.test.A, as.groups = FALSE, norm.per = NULL)
-#' stopifnot(is.data.frame(x), identical(dim(x), c(20L, 101L)))
+#' y <- group_CI(x.A, as.groups = FALSE, norm.per = NULL)
+#' stopifnot(is.data.frame(y), identical(dim(y), c(20L, 101L)))
 #'
 #' # grouping according all available metadata-columns, no normalisation
 #' x <- group_CI(vaas.test.A, as.groups = TRUE, as.labels = NULL,
