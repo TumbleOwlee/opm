@@ -1463,13 +1463,12 @@ setMethod("select", "data.frame", function(object, query) {
 #' classes.
 #'
 #' @param x \code{\link{OPMS}} object.
-#' @param query Logical, numeric or character vector, or list (other objects can
-#'   be provided but are coerced to class \sQuote{character}). If a logical or
-#'   numeric vector, \code{query} is directly used as the first argument of
-#'   \code{\link{[}}, and all following arguments, if any, are ignored. If a
-#'   list or a character vector, it is used for conducting a query based on one
-#'   of the infix operators as described below. The data-frame method expects a
-#'   character vector containing class names.
+#' @param query Logical, numeric or character vector, list, or formula. If a
+#'   logical or numeric vector, \code{query} is directly used as the first
+#'   argument of \code{\link{[}}, and all following arguments, if any, are
+#'   ignored. If a list, formula or a character vector, it is used for
+#'   conducting a query based on one of the infix operators as described below.
+#'   The data-frame method expects a character vector containing class names.
 #' @param values Logical scalar. If \code{TRUE}, the values of \code{query} are
 #'   also considered (by using \code{\link{infix.q}} or
 #'   \code{\link{infix.largeq}}). If \code{FALSE} only the keys are considered
@@ -1514,8 +1513,7 @@ setMethod("select", "data.frame", function(object, query) {
 #' @seealso base::`[` base::`[[` base::subset
 #' @examples
 #'
-#' ## 'OPMS' method
-#' data(vaas_4)
+#' data(vaas_4) # example OPMS object
 #' # simple object comparison function
 #' mustbe <- function(a, b) stopifnot(identical(a, b))
 #'
@@ -1523,10 +1521,24 @@ setMethod("select", "data.frame", function(object, query) {
 #' mustbe(vaas_4, vaas_4["Species" %k% vaas_4, ])
 #' mustbe(vaas_4, subset(vaas_4, list(Species = "Escherichia coli"),
 #'   values  = FALSE)) # equivalent
+#' mustbe(vaas_4, subset(vaas_4, ~ Species == "Escherichia coli",
+#'   values  = FALSE)) # also equivalent
 #'
 #' # two plates also have that value: yielding OPMS object with only two plates
 #' mustbe(vaas_4[1:2], vaas_4[list(Species = "Escherichia coli") %q% vaas_4, ])
 #' mustbe(vaas_4[1:2], subset(vaas_4, list(Species = "Escherichia coli")))
+#' mustbe(vaas_4[1:2], subset(vaas_4, ~ Species == "Escherichia coli"))
+#'
+#' # these are also equivalent
+#' mustbe(vaas_4[c(1, 3)],
+#'   vaas_4[list(Strain = c("DSM18039", "DSM1707")) %q% vaas_4])
+#' mustbe(vaas_4[c(1, 3)],
+#'   subset(vaas_4, list(Strain = c("DSM18039", "DSM1707"))))
+#' mustbe(vaas_4[c(1, 3)],
+#'   subset(vaas_4, ~ Strain %in% c("DSM18039", "DSM1707")))
+#' mustbe(vaas_4[c(1, 3)],
+#'   subset(vaas_4, ~ Strain == "DSM18039" || Strain == "DSM1707"))
+#' # note that particuraly formulas can be used to set up very complex queries
 #'
 #' # select all plates that have aggregated values
 #' x <- subset(vaas_4, has_aggr(vaas_4))
@@ -1610,14 +1622,16 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
   }
   if (is.logical(query) || is.numeric(query))
     return(x[query, , ])
-  if (!is.list(query) && !is.character(query))
-    query <- as.character(query)
+  #if (!is.list(query) && !is.character(query))
+  #  query <- as.character(query)
   pos <- if (values) {
     if (exact)
       query %Q% x
     else
       query %q% x
-  } else
+  } else if (exact)
+    query %K% x
+  else
     query %k% x
   if (invert)
     pos <- !pos
@@ -1807,29 +1821,41 @@ lapply(c(
 
 #' Search in metadata keys
 #'
-#' Using a character vector as query, this method tests whether all given keys
-#' are present in the top-level names of the metadata (these may be nested, but
-#' all sublists are ignored here). An empty query vector results in \code{TRUE}.
-#' Note that the values of the character vector, not its names, if any, are used
-#' for querying the metadata. Using a list as query, this method tests whether
-#' all given keys are present in the names of the metadata. This works like the
-#' character method, but because a query list is given, the comparison of keys
-#' can be applied recursively (by using, of course, a nested query list). This
-#' is based on \code{\link{contains}} with the \code{values} argument set to
-#' \code{FALSE}. The factor method first converts \code{x} to \sQuote{character}
-#' mode.
+#' Search for the presence of metadata keys, either using a vector, factor,
+#' list or formula. Depending on the arguments, the behaviour differs from
+#' \code{\link{infix.largek}}.
 #'
 #' @name %k%
 #' @aliases infix.k
 #' @rdname infix.k
 #'
-#' @param x Character vector, factor or list.
-#' @param table \code{\link{WMD}} object.
-#' @return Logical scalar.
+#' @param x Character vector, factor, list or formula. See \sQuote{Details}.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @return Logical vector of the length of the \code{\link{WMD}} or
+#'   \code{\link{OPMS}} object.
 #' @exportMethod "%k%"
 #' @export
 #~ @family getter-functions
 #' @keywords attribute
+#' @note The two arguments can swap their places.
+#' @details \itemize{
+#'   \item Using a character vector as query, this method tests whether all
+#'   given keys are present in the top-level names of the metadata (these may be
+#'   nested, but all sublists are ignored here). An empty query vector results
+#'   in \code{TRUE}. Note that the values of the character vector, not its
+#'   names, if any, are used for querying the metadata.
+#'   \item Using a list as query, this method tests whether all given keys are
+#'   present in the names of the metadata. This works like the character method,
+#'   but because a query list is given, the comparison of keys can be applied
+#'   recursively (by using, of course, a nested query list). This is based on
+#'   \code{\link{contains}} with the \code{values} argument set to \code{FALSE}.
+#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'   \item The formula method attempts to evaluate the right side of the formula
+#'   in the context of the metadata of \code{table} and returns whether or not
+#'   this fails (yields an error). But symbols that are not found within the
+#'   metadata are looked up in the enclosing environment. Note also that missing
+#'   objects are not the only potential reason of failure.
+#' }
 #'
 #' @examples
 #'
@@ -1867,6 +1893,16 @@ lapply(c(
 #' stopifnot(!list(Organism = "?", Experiment = NA) %k% vaas_1) # likewise
 #' stopifnot(list() %k% vaas_1) # empty query always results
 #'
+#' # Formulas for querying, compare with list examples above
+#' stopifnot((~ Experiment) %k% vaas_1) # key present
+#' stopifnot(vaas_1 %k% ~ Experiment) # key present, no parens needed
+#' stopifnot(vaas_1 %k% ~ Species) # key present, no parens needed
+#' stopifnot(!vaas_1 %k% ~ Species$Epithet) # nested key not present
+#' stopifnot(!vaas_1 %k% ~ missing.name) # key not present
+#' missing.name <- "abc"
+#' stopifnot(vaas_1 %k% ~ missing.name) # key found in enclosing environment
+#' rm(missing.name) # tidy up
+#'
 setGeneric("%k%", function(x, table) standardGeneric("%k%"))
 
 setMethod("%k%", c("character", WMD), function(x, table) {
@@ -1877,27 +1913,47 @@ setMethod("%k%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = FALSE)
 }, sealed = SEALED)
 
+setMethod("%k%", c("formula", WMD), function(x, table) {
+  tryCatch({
+    eval(x[[length(x)]], table@metadata, parent.frame())
+    TRUE
+  }, error = function(e) FALSE)
+}, sealed = SEALED)
+
 
 ################################################################################
 
 
-#' Search in metadata keys
+#' Search in metadata keys (strict version)
 #'
-#' Using a character vector as query, this method tests whether a given key is
-#' present in the metadata and fetches an object that is not \code{NULL}. If the
-#' key has a length > 1, sublists are queried. An empty vector results in
-#' \code{TRUE}. Note that the values of the character vector, not its names, if
-#' any, are used for querying the metadata. Using a list as query, this function
-#' behaves like \code{\link{infix.k}}. The factor method first converts \code{x}
-#' to \sQuote{character} mode.
+#' Search for the presence of metadata keys, either using a vector, factor,
+#' list or formula. Depending on the arguments, the behaviour differs from
+#' \code{\link{infix.k}}.
 #'
 #' @name %K%
 #' @aliases infix.largek
 #' @rdname infix.largek
 #'
-#' @param x Character vector, factor or list.
-#' @param table \code{\link{WMD}} object.
-#' @return Logical scalar.
+#' @param x Character vector, factor, list or formula. See \sQuote{Details}.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @return Logical vector of the length of the \code{\link{WMD}} or
+#'   \code{\link{OPMS}} object.
+#' @note The two arguments can swap their places.
+#' @details \itemize{
+#'   \item Using a character vector as query, this method tests whether a given
+#'   key is present in the metadata and fetches an object that is not
+#'   \code{NULL}. If the key has a length > 1, sublists are queried. An empty
+#'   vector results in \code{TRUE}. Note that the values of the character
+#'   vector, not its names, if any, are used for querying the metadata.
+#'   \item Using a list as query, this function behaves like
+#'   \code{\link{infix.k}}.
+#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'   \item The formula method attempts to evaluate the right side of the formula
+#'   in the context of the metadata of \code{table} and returns whether or not
+#'   this fails (yields an error). In contrast to \code{infix.k}, symbols that
+#'   are not found within the metadata are looked up in the base environment.
+#'   But note that missing objects are not the only potential reason of failure.
+#' }
 #' @export
 #' @exportMethod "%K%"
 #~ @family getter-functions
@@ -1931,6 +1987,16 @@ setMethod("%k%", c("list", WMD), function(x, table) {
 #' # List method
 #' # See %k% -- the behavior is identical for lists.
 #'
+#' # Formulas for querying, compare with %k%
+#' stopifnot((~ Experiment) %K% vaas_1) # key present
+#' stopifnot(vaas_1 %K% ~ Experiment) # key present, no parens needed
+#' stopifnot(vaas_1 %K% ~ Species) # key present, no parens needed
+#' stopifnot(!vaas_1 %K% ~ Species$Epithet) # nested key not present
+#' stopifnot(!vaas_1 %K% ~ missing.name) # key not present
+#' missing.name <- "abc"
+#' stopifnot(!vaas_1 %K% ~ missing.name) # enclosing environment ignored
+#' rm(missing.name) # tidy up
+#'
 setGeneric("%K%", function(x, table) standardGeneric("%K%"))
 
 setMethod("%K%", c("character", WMD), function(x, table) {
@@ -1943,33 +2009,58 @@ setMethod("%K%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = FALSE)
 }, sealed = SEALED)
 
+setMethod("%K%", c("formula", WMD), function(x, table) {
+  tryCatch({
+    eval(x[[length(x)]], table@metadata, baseenv())
+    TRUE
+  }, error = function(e) FALSE)
+}, sealed = SEALED)
+
 
 ################################################################################
 
 
 #' Query metadata (non-exact version)
 #'
-#' Using a character vector, test whether all given query keys are present in
-#' the top-level names of the metadata and refer to the same query elements.
-#' Using a list, conduct a non-exact query with a query list. The factor method
-#' first converts \code{x} to \sQuote{character} mode.
+#' Search for the presence of metadata values for given keys, either using a
+#' vector, factor, list or formula. Depending on the arguments, the behaviour
+#' differs from \code{\link{infix.largeq}}.
 #'
 #' @name %q%
 #' @aliases infix.q
 #' @rdname infix.q
 #'
-#' @param x Character vector, factor or list used as query. If a character
-#'   vector, its \code{names} are used to select elements from the top level of
-#'   the metadata. These elements are then converted to \sQuote{character} mode
-#'   before comparison with the values of \code{x}. A non-empty vector without a
-#'   \code{names} attribute is accepted but will always yield \code{FALSE}. In
-#'   contrast, an entirely empty vector yields \code{TRUE}. If a list, the
+#' @param x Character vector, factor, list or formula used as query. See
+#'   \sQuote{Details}.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @return Logical vector of the length of the \code{\link{WMD}} or
+#'   \code{\link{OPMS}} object.
+#' @note The two arguments can swap their places.
+#' @details \itemize{
+#'   \item Using a character vector as query, this tests whether all given query
+#'   keys are present in the top-level names of the metadata and refer to the
+#'   same query elements. The \code{names} of the vector are used to select
+#'   elements from the top level of the metadata. These elements are then
+#'   converted to \sQuote{character} mode before comparison with the values of
+#'   \code{x}. A non-empty vector without a \code{names} attribute is accepted
+#'   but will always yield \code{FALSE}. In contrast, an entirely empty vector
+#'   yields \code{TRUE}.
+#'   \item Using a list, a non-exact query with a query list is conducted.  The
 #'   comparison is applied recursively using \code{\link{contains}} with the
 #'   \code{values} argument set to \code{TRUE} but \code{exact} set to
 #'   \code{FALSE}. The main advantage of using a list over the character-based
-#'   search is that it allows one a nested query.
-#' @param table \code{\link{WMD}} object.
-#' @return Logical scalar.
+#'   search is that it allows for a nested query.
+#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'   \item The formula method attempts to evaluate the right side of the formula
+#'   in the context of the metadata of \code{table} and returns the result. For
+#'   the \code{\link{WMD}} method, is is up to the user to ensure that the
+#'   result is a logical scalar, but the method would succeed anyway. The
+#'   \code{\link{OPMS}} yields an error unless each plate yield a logical
+#'   scalar. Symbols that are not found within the metadata are looked up in the
+#'   enclosing environment. This is less strict than \code{\link{infix.largeq}}.
+#'   Because of missing objects and other reasons the method might nevertheless
+#'   fail.
+#' }
 #' @exportMethod "%q%"
 #' @export
 #~ @family getter-functions
@@ -2010,6 +2101,17 @@ setMethod("%K%", c("list", WMD), function(x, table) {
 #'
 #' stopifnot(list() %q% vaas_1) # Empty query
 #'
+#' # Formulas for querying, compare with %Q%
+#' stopifnot((~ Experiment == "First replicate") %q% vaas_1)
+#' stopifnot(vaas_1 %q% ~ Experiment == "First replicate")
+#' stopifnot(vaas_1 %q% ~ Species == "Escherichia coli")
+#' stopifnot(vaas_1 %q% ~ Species != "Bacillus subtilis")
+#' x <- try(vaas_1 %q% ~ missing.name == "abc", silent = TRUE) # fails
+#' stopifnot(inherits(x, "try-error"))
+#' missing.name <- "abc"  # enclosing environment considered
+#' stopifnot(vaas_1 %q% ~ missing.name == "abc")
+#' rm(missing.name) # tidy up
+#'
 setGeneric("%q%", function(x, table) standardGeneric("%q%"))
 
 setMethod("%q%", c("character", WMD), function(x, table) {
@@ -2023,31 +2125,50 @@ setMethod("%q%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = TRUE, exact = FALSE)
 }, sealed = SEALED)
 
+setMethod("%q%", c("formula", WMD), function(x, table) {
+  eval(x[[length(x)]], table@metadata, parent.frame())
+}, sealed = SEALED)
+
 
 ################################################################################
 
 
 #' Query metadata (strict version)
 #'
-#' Using a character vector as query, test whether all given query keys are
-#' present in the top-level names of the metadata and refer to the same query
-#' elements (without coercion to character). Using a list, conduct an exact
-#' query with this query list. The factor method first converts \code{x} to
-#' \sQuote{character} mode.
+#' Search for the presence of metadata values for given keys, either using a
+#' vector, factor, list or formula. Depending on the arguments, the behaviour
+#' differs from \code{\link{infix.q}}.
 #'
 #' @name %Q%
 #' @aliases infix.largeq
 #' @rdname infix.largeq
 #'
-#' @param x Character vector, factor or list used as query. If a character
-#'   vector, the result is identical to the one of \code{\link{infix.q}} except
-#'   for the fact that metadata elements are not coerced to \sQuote{character}
-#'   mode, making the query more strict. If a list, the comparison is applied
-#'   recursively using \code{\link{contains}} with the arguments \code{values}
-#'   and \code{exact} set to \code{TRUE}. This might be too strict for most
-#'   applications. The main advantage of using a list over the character-based
-#'   search is that it allows one a nested query.
-#' @param table \code{\link{WMD}} object.
+#' @param x Character vector, factor, list for formula used as query. See
+#'   \sQuote{Details}.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @note The two arguments can swap their places.
+#' @details \itemize{
+#'   \item Using a character vector as query, this tests whether all given query
+#'   keys are present in the top-level names of the metadata and refer to the
+#'   same query elements (without coercion to character). The result is
+#'   identical to the one of \code{\link{infix.q}} except for the fact that
+#'   metadata elements are not coerced to \sQuote{character} mode, making the
+#'   query more strict.
+#'   \item Using a list, this conducts an exact query with this query list. The
+#'   comparison is applied recursively using \code{\link{contains}} with the
+#'   arguments \code{values} and \code{exact} set to \code{TRUE}. This might be
+#'   too strict for most applications. The main advantage of using a list over
+#'   the character-based search is that it allows one a nested query.
+#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'   \item The formula method attempts to evaluate the right side of the formula
+#'   in the context of the metadata of \code{table} and returns the result. For
+#'   the \code{\link{WMD}} method, is is up to the user to ensure that the
+#'   result is a logical scalar, but the method would succeed anyway. The
+#'   \code{\link{OPMS}} yields an error unless each plate yield a logical
+#'   scalar. Symbols that are not found within the metadata are looked up in the
+#'   only in the base environment. This is stricter than \code{\link{infix.q}}.
+#'   Because of missing objects and other reasons the method might fail.
+#' }
 #' @return Logical scalar.
 #' @exportMethod "%Q%"
 #' @export
@@ -2084,6 +2205,18 @@ setMethod("%q%", c("list", WMD), function(x, table) {
 #'
 #' stopifnot(list() %Q% vaas_1) # empty query always result
 #'
+#' # Formulas for querying, compare with %q%
+#' stopifnot((~ Experiment == "First replicate") %Q% vaas_1)
+#' stopifnot(vaas_1 %Q% ~ Experiment == "First replicate")
+#' stopifnot(vaas_1 %Q% ~ Species == "Escherichia coli")
+#' stopifnot(vaas_1 %Q% ~ Species != "Bacillus subtilis")
+#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # fails
+#' stopifnot(inherits(x, "try-error"))
+#' missing.name <- "abc" # enclosing environment will be ignored
+#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # still fails
+#' stopifnot(inherits(x, "try-error"))
+#' rm(missing.name) # tidy up
+#'
 setGeneric("%Q%", function(x, table) standardGeneric("%Q%"))
 
 setMethod("%Q%", c("character", WMD), function(x, table) {
@@ -2095,6 +2228,10 @@ setMethod("%Q%", c("character", WMD), function(x, table) {
 
 setMethod("%Q%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = TRUE, exact = TRUE)
+}, sealed = SEALED)
+
+setMethod("%Q%", c("formula", WMD), function(x, table) {
+  eval(x[[length(x)]], table@metadata, baseenv())
 }, sealed = SEALED)
 
 
@@ -2164,6 +2301,44 @@ lapply(c(
   }, sealed = SEALED)
 })
 
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c("formula", OPMS), function(x, table) {
+    vapply(table@plates, func_, logical(1L), x = x, USE.NAMES = FALSE)
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c(WMD, "ANY"), function(x, table) {
+    func_(table, x)
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c(OPMS, "ANY"), function(x, table) {
+    func_(table, x)
+  }, sealed = SEALED)
+})
 
 
 ################################################################################

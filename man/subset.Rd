@@ -4,14 +4,13 @@
 \arguments{
   \item{x}{\code{\link{OPMS}} object.}
 
-  \item{query}{Logical, numeric or character vector, or
-  list (other objects can be provided but are coerced to
-  class \sQuote{character}). If a logical or numeric
-  vector, \code{query} is directly used as the first
-  argument of \code{\link{[}}, and all following arguments,
-  if any, are ignored. If a list or a character vector, it
-  is used for conducting a query based on one of the infix
-  operators as described below. The data-frame method
+  \item{query}{Logical, numeric or character vector, list,
+  or formula. If a logical or numeric vector, \code{query}
+  is directly used as the first argument of
+  \code{\link{[}}, and all following arguments, if any, are
+  ignored. If a list, formula or a character vector, it is
+  used for conducting a query based on one of the infix
+  operators as described below.  The data-frame method
   expects a character vector containing class names.}
 
   \item{values}{Logical scalar. If \code{TRUE}, the values
@@ -80,8 +79,7 @@
   belong to certain classes.
 }
 \examples{
-## 'OPMS' method
-data(vaas_4)
+data(vaas_4) # example OPMS object
 # simple object comparison function
 mustbe <- function(a, b) stopifnot(identical(a, b))
 
@@ -89,10 +87,24 @@ mustbe <- function(a, b) stopifnot(identical(a, b))
 mustbe(vaas_4, vaas_4["Species" \%k\% vaas_4, ])
 mustbe(vaas_4, subset(vaas_4, list(Species = "Escherichia coli"),
   values  = FALSE)) # equivalent
+mustbe(vaas_4, subset(vaas_4, ~ Species == "Escherichia coli",
+  values  = FALSE)) # also equivalent
 
 # two plates also have that value: yielding OPMS object with only two plates
 mustbe(vaas_4[1:2], vaas_4[list(Species = "Escherichia coli") \%q\% vaas_4, ])
 mustbe(vaas_4[1:2], subset(vaas_4, list(Species = "Escherichia coli")))
+mustbe(vaas_4[1:2], subset(vaas_4, ~ Species == "Escherichia coli"))
+
+# these are also equivalent
+mustbe(vaas_4[c(1, 3)],
+  vaas_4[list(Strain = c("DSM18039", "DSM1707")) \%q\% vaas_4])
+mustbe(vaas_4[c(1, 3)],
+  subset(vaas_4, list(Strain = c("DSM18039", "DSM1707"))))
+mustbe(vaas_4[c(1, 3)],
+  subset(vaas_4, ~ Strain \%in\% c("DSM18039", "DSM1707")))
+mustbe(vaas_4[c(1, 3)],
+  subset(vaas_4, ~ Strain == "DSM18039" || Strain == "DSM1707"))
+# note that particuraly formulas can be used to set up very complex queries
 
 # select all plates that have aggregated values
 x <- subset(vaas_4, has_aggr(vaas_4))

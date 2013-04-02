@@ -5,6 +5,8 @@
 
 - fixed bug in aggregated()
 
+- the infix operators now work with query formulas, and the two arguments can
+  be swapped; likewise, subset() works with query formulas
 - in `[`(), wells() and measurements(), wells can now be indexed using
   formulas, thus allowing for sequences of well coordinates and less code
 - metadata() and the functions depending on it can now use formuals for querying

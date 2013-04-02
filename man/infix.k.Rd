@@ -3,29 +3,48 @@
 \alias{infix.k}
 \title{Search in metadata keys}
 \arguments{
-  \item{x}{Character vector, factor or list.}
+  \item{x}{Character vector, factor, list or formula. See
+  \sQuote{Details}.}
 
-  \item{table}{\code{\link{WMD}} object.}
+  \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
+  object.}
 }
 \value{
-  Logical scalar.
+  Logical vector of the length of the \code{\link{WMD}} or
+  \code{\link{OPMS}} object.
 }
 \description{
-  Using a character vector as query, this method tests
-  whether all given keys are present in the top-level names
-  of the metadata (these may be nested, but all sublists
-  are ignored here). An empty query vector results in
-  \code{TRUE}. Note that the values of the character
-  vector, not its names, if any, are used for querying the
-  metadata. Using a list as query, this method tests
-  whether all given keys are present in the names of the
-  metadata. This works like the character method, but
-  because a query list is given, the comparison of keys can
-  be applied recursively (by using, of course, a nested
-  query list). This is based on \code{\link{contains}} with
-  the \code{values} argument set to \code{FALSE}. The
-  factor method first converts \code{x} to
-  \sQuote{character} mode.
+  Search for the presence of metadata keys, either using a
+  vector, factor, list or formula. Depending on the
+  arguments, the behaviour differs from
+  \code{\link{infix.largek}}.
+}
+\details{
+  \itemize{ \item Using a character vector as query, this
+  method tests whether all given keys are present in the
+  top-level names of the metadata (these may be nested, but
+  all sublists are ignored here). An empty query vector
+  results in \code{TRUE}. Note that the values of the
+  character vector, not its names, if any, are used for
+  querying the metadata.  \item Using a list as query, this
+  method tests whether all given keys are present in the
+  names of the metadata. This works like the character
+  method, but because a query list is given, the comparison
+  of keys can be applied recursively (by using, of course,
+  a nested query list). This is based on
+  \code{\link{contains}} with the \code{values} argument
+  set to \code{FALSE}.  \item The factor method first
+  converts \code{x} to \sQuote{character} mode.  \item The
+  formula method attempts to evaluate the right side of the
+  formula in the context of the metadata of \code{table}
+  and returns whether or not this fails (yields an error).
+  But symbols that are not found within the metadata are
+  looked up in the enclosing environment. Note also that
+  missing objects are not the only potential reason of
+  failure. }
+}
+\note{
+  The two arguments can swap their places.
 }
 \examples{
 # The dataset contains the metadata keys 'Species' and 'Experiment' but
@@ -61,6 +80,16 @@ stopifnot(list(Species = "?", Experiment = NA) \%k\% vaas_1) # keys present
 stopifnot(!list(Species = "?", Trial = NA) \%k\% vaas_1) # one key missing
 stopifnot(!list(Organism = "?", Experiment = NA) \%k\% vaas_1) # likewise
 stopifnot(list() \%k\% vaas_1) # empty query always results
+
+# Formulas for querying, compare with list examples above
+stopifnot((~ Experiment) \%k\% vaas_1) # key present
+stopifnot(vaas_1 \%k\% ~ Experiment) # key present, no parens needed
+stopifnot(vaas_1 \%k\% ~ Species) # key present, no parens needed
+stopifnot(!vaas_1 \%k\% ~ Species$Epithet) # nested key not present
+stopifnot(!vaas_1 \%k\% ~ missing.name) # key not present
+missing.name <- "abc"
+stopifnot(vaas_1 \%k\% ~ missing.name) # key found in enclosing environment
+rm(missing.name) # tidy up
 }
 \keyword{attribute}
 
@@ -70,6 +99,8 @@ stopifnot(list() \%k\% vaas_1) # empty query always results
 \alias{\%k\%,character,WMD-method}
 \alias{infix.k,list,WMD-method}
 \alias{\%k\%,list,WMD-method}
+\alias{infix.k,formula,WMD-method}
+\alias{\%k\%,formula,WMD-method}
 \alias{infix.k,factor,WMD-method}
 \alias{\%k\%,factor,WMD-method}
 \alias{infix.k,list,OPMS-method}
@@ -78,10 +109,18 @@ stopifnot(list() \%k\% vaas_1) # empty query always results
 \alias{\%k\%,character,OPMS-method}
 \alias{infix.k,factor,OPMS-method}
 \alias{\%k\%,factor,OPMS-method}
+\alias{infix.k,formula,OPMS-method}
+\alias{\%k\%,formula,OPMS-method}
+\alias{infix.k,WMD,ANY-method}
+\alias{\%k\%,WMD,ANY-method}
+\alias{infix.k,OPMS,ANY-method}
+\alias{\%k\%,OPMS,ANY-method}
 \usage{
   \S4method{\%k\%}{character,WMD}(x, table) 
 
   \S4method{\%k\%}{list,WMD}(x, table) 
+
+  \S4method{\%k\%}{formula,WMD}(x, table) 
 
   \S4method{\%k\%}{factor,WMD}(x, table) 
 
@@ -90,5 +129,11 @@ stopifnot(list() \%k\% vaas_1) # empty query always results
   \S4method{\%k\%}{character,OPMS}(x, table) 
 
   \S4method{\%k\%}{factor,OPMS}(x, table) 
+
+  \S4method{\%k\%}{formula,OPMS}(x, table) 
+
+  \S4method{\%k\%}{WMD,ANY}(x, table) 
+
+  \S4method{\%k\%}{OPMS,ANY}(x, table) 
 
 }
