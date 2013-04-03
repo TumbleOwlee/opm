@@ -43,15 +43,22 @@
 \description{
   Get the type of the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-  used in the measuring. This is a convenience function for
-  one of the more important entries of
-  \code{\link{csv_data}} with additional options useful for
-  creating plot titles. The character method normalizes the
-  names of
+  used in the measuring.
+}
+\details{
+  The \code{\link{OPM}} and \code{\link{OPMS}} methods are
+  convenience methods for one of the more important entries
+  of \code{\link{csv_data}} with additional options useful
+  for creating plot titles.
+
+  The character method normalizes the names of
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM
   plates to the internally used naming scheme. Unrecognized
   names are returned unchanged. This needs not normally be
   called by the \pkg{opm} user but might be of interest.
+
+  Factors are treated by passing their levels through the
+  character method.
 }
 \examples{
 ## 'OPM' method

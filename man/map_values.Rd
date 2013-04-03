@@ -10,43 +10,48 @@
   class \code{\link{MOA}}, comprising matrices and arrays.}
 
   \item{mapping}{Character vector, function, formula, or
-  missing. If a character vector used as a mapping from its
-  names to its values. Values from \code{object} are
-  searched for in the \code{names} attribute of
-  \code{mapping}; those found are replaced by the
-  corresponding values of \code{mapping}. If \code{mapping}
-  is missing, a character vector is returned (sorted and
-  with duplicates removed) whose names are identical to the
-  values. This eases the construction of mapping vectors
-  specific for \code{object}. If \code{mapping} is missing,
-  the \code{coerce} argument must be named. \code{mapping}
-  changes its usage if \code{coerce} is \code{TRUE}. For
+  missing.  \itemize{ \item If a character vector used as a
+  mapping from its names to its values.  Values from
+  \code{object} are searched for in the \code{names}
+  attribute of \code{mapping}; those found are replaced by
+  the corresponding values of \code{mapping}.  \item If
+  \code{mapping} is missing, a character vector is returned
+  (sorted and with duplicates removed) whose names are
+  identical to the values. This eases the construction of
+  mapping vectors specific for \code{object}. If
+  \code{mapping} is missing, the \code{coerce} argument
+  must be named.  \code{mapping} changes its usage if
+  \code{coerce} is \code{TRUE}.  \item For
   \code{\link{MOA}} objects, if \code{mapping} was a
   function, it would be applied to \code{object} after
   conversion with \code{as.vector}, and it would be
   attempted to add the original attributes (particularly
   important are \sQuote{dim} and \sQuote{dimnames} back to
-  the result. For \code{\link{MOA}} objects, if
+  the result.  \item For \code{\link{MOA}} objects, if
   \code{mapping} is the usual character vector, it then is
   used for mapping the \code{storage.mode}, not the
-  \code{class} of \code{object}. \code{mapping} can also be
-  a formula, it is then used to compute on lists. The see
-  examples below.}
+  \code{class} of \code{object}.  \item \code{mapping} can
+  also be a formula, it is then used to compute on lists.
+  The see examples below. }}
 
-  \item{coerce}{Character vector with the names of classes
-  that are coerced to \sQuote{character} to allow the
-  mapping. Other classes are returned unchanged. Note that
-  the coerced data are \strong{not} converted back to their
-  original data type. \sQuote{ANY} can be used to indicate
-  that all classes will be considered. Alternatively,
-  \code{coerce} can be \code{TRUE}. \code{mapping} is then
-  interpreted as a mapping between the names of classes,
-  and \code{as} from the \pkg{methods} package is used for
-  conducting the requested coercions. Attempting an
-  undefined coercion will result in an error.}
+  \item{coerce}{The usage of this argument depends on
+  \code{object}.  \itemize{ \item A character vector with
+  the names of classes that are coerced to
+  \sQuote{character} to allow the mapping. Other classes
+  are returned unchanged. Note that the coerced data are
+  \strong{not} converted back to their original data type.
+  \sQuote{ANY} can be used to indicate that all classes
+  will be considered.  \item Alternatively, \code{coerce}
+  can be \code{TRUE}. \code{mapping} is then interpreted as
+  a mapping between the names of classes, and \code{as}
+  from the \pkg{methods} package is used for conducting the
+  requested coercions. Attempting an undefined coercion
+  will result in an error.  \item For the formula method,
+  an enclosing environment to look up objects that are not
+  found in \code{mapping}.  }}
 
   \item{...}{Optional further arguments to \code{mapping}
-  (if it is a function).}
+  (\strong{if} it is a function).}
 }
 \value{
   List, data frame, character vector or \code{NULL}.
@@ -236,7 +241,8 @@ stopifnot(levels(x) == y, names(y) == y)
   \S4method{map_values}{list,missing}(object,
     coerce = character()) 
 
-  \S4method{map_values}{list,formula}(object, mapping) 
+  \S4method{map_values}{list,formula}(object, mapping,
+    coerce = parent.frame()) 
 
   \S4method{map_values}{data.frame,function}(object, mapping,
     coerce = character(), ...) 

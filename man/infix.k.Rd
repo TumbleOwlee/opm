@@ -20,15 +20,16 @@
   \code{\link{infix.largek}}.
 }
 \details{
-  \itemize{ \item Using a character vector as query, this
-  method tests whether all given keys are present in the
-  top-level names of the metadata (these may be nested, but
-  all sublists are ignored here). An empty query vector
-  results in \code{TRUE}. Note that the values of the
-  character vector, not its names, if any, are used for
-  querying the metadata.  \item Using a list as query, this
-  method tests whether all given keys are present in the
-  names of the metadata. This works like the character
+  The behaviour of these methods depends on the object used
+  as query. \itemize{ \item Using a character vector as
+  query, this method tests whether all given keys are
+  present in the top-level names of the metadata (these may
+  be nested, but all sublists are ignored here). An empty
+  query vector results in \code{TRUE}. Note that the values
+  of the character vector, not its names, if any, are used
+  for querying the metadata.  \item Using a list as query,
+  this method tests whether all given keys are present in
+  the names of the metadata. This works like the character
   method, but because a query list is given, the comparison
   of keys can be applied recursively (by using, of course,
   a nested query list). This is based on

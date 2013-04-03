@@ -14,12 +14,14 @@
   \item{pattern}{Regular expression or shell globbing
   pattern for matching the separator lines if \code{invert}
   is \code{FALSE} (the default) or matching the
-  non-separator lines if otherwise. Conceptually each of
-  the sections into which a file is split comprises a
-  separator line followed by non-separator lines. That is,
-  separator lines followed by another separator line are
-  ignored. Non-separator lines not preceded by a separator
-  line are treated as a section of their own, however.}
+  non-separator lines if otherwise.
+
+  Conceptually each of the sections into which a file is
+  split comprises a separator line followed by
+  non-separator lines. That is, separator lines followed by
+  another separator line are ignored. Non-separator lines
+  not preceded by a separator line are treated as a section
+  of their own, however.}
 
   \item{outdir}{Character scalar determining the output
   directory. If empty, each file's input directory is
@@ -50,11 +52,11 @@
 
   \item{format}{Character scalar determining the outfile
   name format. It is passed to \code{sprintf} and expects
-  three placeholders: (i) the basename of the file; (ii)
-  the index of the section; and (iii) the file extension.
-  Getting \code{format} wrong might result in non-unique
-  filenames and thus probably in overwritten files;
-  accordingly, it should be used with care.}
+  three placeholders: \itemize{ \item the basename of the
+  file; \item the index of the section; \item the file
+  extension.  } Getting \code{format} wrong might result in
+  non-unique filenames and thus probably in overwritten
+  files; accordingly, it should be used with care.}
 
   \item{compressed}{Logical scalar. Passed to
   \code{\link{file_pattern}}, but here only affects the way
@@ -108,7 +110,7 @@ if (length(x) > 0) {
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{to_metadata}}
+  \code{\link{to_metadata}}
 }
 \keyword{utilities}
 

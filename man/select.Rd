@@ -24,11 +24,11 @@
   returns a data frame.
 }
 \description{
-  Select a subset of the plates in an \code{\link{OPMS}}
-  object based on the content of the metadata.
-  Alternatively, select a common subset of time points from
-  all plates. The data-frame method selects columns that
-  belong to certain classes.
+  \strong{Deprecated} function to select a subset of the
+  plates in an \code{\link{OPMS}} object based on the
+  content of the metadata. Alternatively, select a common
+  subset of time points from all plates. The data-frame
+  method selects columns that belong to certain classes.
 }
 \note{
   The use of this function is \strong{deprecated}. Please

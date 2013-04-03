@@ -33,14 +33,15 @@
   the \code{\link{OPM}} method.}
 }
 \value{
-  Dataframe. Column names are unchecked (not converted to
+  Data frame. Column names are unchecked (not converted to
   variable names). The three last columns are coding for
-  time, well and value, with the exact spelling given by
-  \code{\link{param_names}}. The \code{\link{OPMS}} method
-  yields an additional column for the plate, its exact
-  spelling also being available via
-  \code{\link{param_names}}, which contains each plate's
-  number within \code{object}.
+  time, well and value, with the exact spelling of the
+  column names given by \code{\link{param_names}}.
+
+  The \code{\link{OPMS}} method yields an additional column
+  for the plate, the exact spelling of its name also being
+  available via \code{\link{param_names}}. This column
+  contains the position of each plate within \code{object}.
 }
 \description{
   Convert into \sQuote{flat} data frame, including all

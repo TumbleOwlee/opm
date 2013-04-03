@@ -8,12 +8,13 @@
   from the \pkg{base} package. By default this is
   \code{FALSE}.}
 
-  \item{what}{Character scalar indicating which parts of
-  \code{x} should be compared. \sQuote{all} compares entire
-  \code{OPM} objects; \sQuote{csv} compares the
+  \item{what}{Indicating which parts of \code{x} should be
+  compared. If a character scalar, the following entries
+  are special: \describe{ \item{all}{Compares entire
+  \code{OPM} objects.} \item{csv}{Compares the
   \acronym{CSV} data entries \code{\link{setup_time}} and
-  \code{\link{position}}; \sQuote{metadata} compares the
-  entire metadata content. If \code{what} does not match
+  \code{\link{position}}.} \item{metadata}{Compares the
+  entire metadata content.} } If \code{what} does not match
   any of these, or is not a character scalar at all, it is
   passed as \code{key} argument to \code{\link{metadata}},
   and the resulting metadata subsets are compared.}

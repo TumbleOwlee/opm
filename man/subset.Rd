@@ -10,20 +10,20 @@
   \code{\link{[}}, and all following arguments, if any, are
   ignored. If a list, formula or a character vector, it is
   used for conducting a query based on one of the infix
-  operators as described below.  The data-frame method
-  expects a character vector containing class names.}
+  operators as described below.}
 
   \item{values}{Logical scalar. If \code{TRUE}, the values
   of \code{query} are also considered (by using
   \code{\link{infix.q}} or \code{\link{infix.largeq}}). If
   \code{FALSE} only the keys are considered (by using
-  \code{\link{infix.k}}). That is, choose either the plates
-  for which certain metadata entries contain certain
-  values, or choose the plates for which these metadata
-  have been set at all (to some arbitrary value).  See the
-  mentioned functions for details, and note the special
-  behavior if \code{query} is a character vector and
-  \code{values} is \code{FALSE}.}
+  \code{\link{infix.k}}).
+
+  That is, choose either the plates for which certain
+  metadata entries contain certain values, or choose the
+  plates for which these metadata have been set at all (to
+  some arbitrary value). See the mentioned functions for
+  details, and note the special behavior if \code{query} is
+  a character vector and \code{values} is \code{FALSE}.}
 
   \item{invert}{Logical scalar. If \code{TRUE}, return the
   plates for which the condition is not \code{TRUE}.}
@@ -40,30 +40,34 @@
   minutes).}
 
   \item{positive}{Character scalar. If \sQuote{ignore}, not
-  used, Otherwise all previous arguments except
-  \code{object} are ignored. If \sQuote{any}, wells are
-  selected that contain positive reactions in at least one
-  plate. If \sQuote{all}, wells are selected that contain
-  positive reactions in all plates. This works only if all
-  elements of \code{object} have discretized values. Using
-  \code{invert} means selecting all negative or weak
-  reactions.}
+  used. Otherwise all previous arguments except
+  \code{object} are ignored, and the function yields an
+  error unless all elements of \code{object} have
+  discretized values.
+
+  In that case, if \sQuote{any}, wells are selected that
+  contain positive reactions in at least one plate. If
+  \sQuote{all}, wells are selected that contain positive
+  reactions in all plates. Using \code{invert} means
+  selecting all negative or weak reactions.}
 
   \item{negative}{Character scalar. Like \code{positive},
   but returns the negative reactions. Using \code{invert}
   means selecting all positive or weak reactions.}
 
   \item{use}{Character scalar. An alternative way to
-  specify the settings. If \sQuote{i} or \sQuote{I},
-  ignored. If \sQuote{t} or \sQuote{T}, \code{time} is set
-  to \code{TRUE}. If \sQuote{p} or \sQuote{P},
-  \code{positive} is set to \sQuote{any} or \sQuote{all},
-  respectively. If \sQuote{n} or \sQuote{N},
-  \code{non.negative} is set to \sQuote{any} or
-  \sQuote{all}, respectively.  Otherwise, \code{use} is
-  taken directly as the one-latter name of the infix
-  operators to use for plate selection, overriding
-  \code{values} and \code{exact}.}
+  specify the settings.
+
+  If \sQuote{i} or \sQuote{I}, ignored. If \sQuote{t} or
+  \sQuote{T}, \code{time} is set to \code{TRUE}. If
+  \sQuote{p} or \sQuote{P}, \code{positive} is set to
+  \sQuote{any} or \sQuote{all}, respectively. If \sQuote{n}
+  or \sQuote{N}, \code{non.negative} is set to \sQuote{any}
+  or \sQuote{all}, respectively.
+
+  Otherwise, \code{use} is taken directly as the one-latter
+  name of the infix operators to use for plate selection,
+  overriding \code{values} and \code{exact}.}
 }
 \value{
   \code{NULL} or \code{\link{OPM}} or \code{\link{OPMS}}
@@ -104,7 +108,7 @@ mustbe(vaas_4[c(1, 3)],
   subset(vaas_4, ~ Strain \%in\% c("DSM18039", "DSM1707")))
 mustbe(vaas_4[c(1, 3)],
   subset(vaas_4, ~ Strain == "DSM18039" || Strain == "DSM1707"))
-# note that particuraly formulas can be used to set up very complex queries
+# note that particularly formulas can be used to set up very complex queries
 
 # select all plates that have aggregated values
 x <- subset(vaas_4, has_aggr(vaas_4))

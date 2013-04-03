@@ -219,41 +219,6 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
 ################################################################################
 
 
-#' Turn the head of a formula into a vector
-#'
-#' If a formula has length 3, the second element represents the left part (the
-#' first element is the tilde). Once extracted using \code{[[}, the left part
-#' can be a call, a name or a vector. These methods convert it to a vector,
-#' aiming at generating a valid key for indexing a list. Other classes for the
-#' left part are possible but currently \strong{not} supported.
-#'
-#' @param object An object of class \sQuote{call}, \sQuote{name} or
-#'   \sQuote{vector} (S4-based).
-#' @return Vector.
-#' @keywords internal
-#'
-setGeneric("parse_formula_head",
-  function(object) standardGeneric("parse_formula_head"))
-
-setMethod("parse_formula_head", "vector", function(object) {
-  object
-}, sealed = SEALED)
-
-setMethod("parse_formula_head", "name", function(object) {
-  as.character(object)
-}, sealed = SEALED)
-
-setMethod("parse_formula_head", "call", function(object) {
-  if (identical(object[[1L]], as.name("$")))
-    all.names(object, functions = FALSE)
-  else
-    eval(object)
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 #' Pick rows
 #'
 #' Pick rows from a data frame if selected columns are identical to keys.
@@ -363,6 +328,13 @@ metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {
     create_formula("~ c(%s)", paste(x, collapse = ", "))
   else
     x
+}
+
+#' @rdname metadata_key
+#' @method metadata_key factor
+#'
+metadata_key.factor <- function(x, to.formula = FALSE, remove = NULL, ...) {
+  metadata_key.character(as.character(x), to.formula, remove, ...)
 }
 
 #' @rdname metadata_key
@@ -506,15 +478,18 @@ setMethod("parse_time", c("character", "character"), function(object, format,
 #'
 #' @param object Character vector to be split, or data frame in which character
 #'   vectors (or factors) shall be attempted to be split, or factor.
-#' @param split Character vector or \code{TRUE}. If a character vector, used as
-#'   container of the splitting characters and converted to a vector containing
-#'   only non-duplicated single-character strings. For instance, the default
-#'   \code{split} argument \code{".-_"} yields \code{c(".", "-", "_")}. If a
-#'   vector of only empty strings or \code{TRUE}, strings with substrings
-#'   representing fixed-width fields are assumed, and splitting is done at
-#'   whitespace-only columns. Beforehand, equal-length strings are created by
-#'   padding with spaces at the right. After splitting in fixed-width mode,
-#'   whitespace characters are trimmed from both ends of the resulting strings.
+#' @param split Character vector or \code{TRUE}. \itemize{
+#'   \item If a character vector, used as container of the splitting characters
+#'   and converted to a vector containing only non-duplicated single-character
+#'   strings. For instance, the default \code{split} argument \code{".-_"}
+#'   yields \code{c(".", "-", "_")}.
+#'   \item If a vector of only empty strings or \code{TRUE}, strings with
+#'   substrings representing fixed-width fields are assumed, and splitting is
+#'   done at whitespace-only columns. Beforehand, equal-length strings are
+#'   created by padding with spaces at the right. After splitting in fixed-width
+#'   mode, whitespace characters are trimmed from both ends of the resulting
+#'   strings.
+#'   }
 #' @param simplify Logical scalar indicating whether a resulting matrix with one
 #'   column should be simplified to a vector (or such a data frame to a factor).
 #' @param keep.const Logical scalar indicating whether constant columns should
@@ -1132,33 +1107,42 @@ prepare_class_names.character <- function(x) {
 #'   \code{NULL} or an empty named character vector (if \code{mapping} is
 #'   missing). \code{object} may also belong to the virtual class
 #'   \code{\link{MOA}}, comprising matrices and arrays.
-#' @param mapping Character vector, function, formula, or missing. If a
-#'   character vector used as a mapping from its names to its values. Values
-#'   from \code{object} are searched for in the \code{names} attribute of
+#' @param mapping Character vector, function, formula, or missing.
+#'   \itemize{
+#'   \item If a character vector used as a mapping from its names to its values.
+#'   Values from \code{object} are searched for in the \code{names} attribute of
 #'   \code{mapping}; those found are replaced by the corresponding values of
-#'   \code{mapping}. If \code{mapping} is missing, a character vector is
-#'   returned (sorted and with duplicates removed) whose names are identical to
-#'   the values. This eases the construction of mapping vectors specific for
-#'   \code{object}. If \code{mapping} is missing, the \code{coerce} argument
-#'   must be named. \code{mapping} changes its usage if \code{coerce} is
-#'   \code{TRUE}. For \code{\link{MOA}} objects, if \code{mapping} was a
-#'   function, it would be applied to \code{object} after conversion with
-#'   \code{as.vector}, and it would be attempted to add the original attributes
-#'   (particularly important are \sQuote{dim} and \sQuote{dimnames} back to the
-#'   result. For \code{\link{MOA}} objects, if \code{mapping} is the usual
+#'   \code{mapping}.
+#'   \item If \code{mapping} is missing, a character vector is returned (sorted
+#'   and with duplicates removed) whose names are identical to the values. This
+#'   eases the construction of mapping vectors specific for \code{object}. If
+#'   \code{mapping} is missing, the \code{coerce} argument must be named.
+#'   \code{mapping} changes its usage if \code{coerce} is \code{TRUE}.
+#'   \item For \code{\link{MOA}} objects, if \code{mapping} was a function, it
+#'   would be applied to \code{object} after conversion with \code{as.vector},
+#'   and it would be attempted to add the original attributes (particularly
+#'   important are \sQuote{dim} and \sQuote{dimnames} back to the result.
+#'   \item For \code{\link{MOA}} objects, if \code{mapping} is the usual
 #'   character vector, it then is used for mapping the \code{storage.mode}, not
-#'   the \code{class} of \code{object}. \code{mapping} can also be a formula, it
-#'   is then used to compute on lists. The see examples below.
-#' @param coerce Character vector with the names of classes that are coerced to
+#'   the \code{class} of \code{object}.
+#'   \item \code{mapping} can also be a formula, it is then used to compute on
+#'   lists. The see examples below.
+#' }
+#' @param coerce The usage of this argument depends on \code{object}.
+#'   \itemize{
+#'   \item A character vector with the names of classes that are coerced to
 #'   \sQuote{character} to allow the mapping. Other classes are returned
 #'   unchanged. Note that the coerced data are \strong{not} converted back to
 #'   their original data type. \sQuote{ANY} can be used to indicate that all
-#'   classes will be considered. Alternatively, \code{coerce} can be
-#'   \code{TRUE}. \code{mapping} is then interpreted as a mapping between the
-#'   names of classes, and \code{as} from the \pkg{methods} package is used for
-#'   conducting the requested coercions. Attempting an undefined coercion will
-#'   result in an error.
-#' @param ... Optional further arguments to \code{mapping} (if it is a
+#'   classes will be considered.
+#'   \item Alternatively, \code{coerce} can be \code{TRUE}. \code{mapping} is
+#'   then interpreted as a mapping between the names of classes, and \code{as}
+#'   from the \pkg{methods} package is used for conducting the requested
+#'   coercions. Attempting an undefined coercion will result in an error.
+#'   \item For the formula method, an enclosing environment to look up objects
+#'   that are not found in \code{mapping}.
+#'   }
+#' @param ... Optional further arguments to \code{mapping} (\strong{if} it is a
 #'   function).
 #' @export
 #' @return List, data frame, character vector or \code{NULL}.
@@ -1336,13 +1320,20 @@ setMethod("map_values", c("list", "missing"), function(object,
   map_values(rapply(object, mapfun, classes = classes))
 }, sealed = SEALED)
 
-setMethod("map_values", c("list", "formula"), function(object, mapping) {
+setMethod("map_values", c("list", "formula"), function(object, mapping,
+    coerce = parent.frame()) {
   if (length(mapping) > 2L) {
-    object[[parse_formula_head(mapping[[2L]])]] <- eval(expr = mapping[[3L]],
-      envir = object)
+    right <- eval(mapping[[3L]], object, coerce)
+    left <- metadata_key.formula(mapping[-3L], FALSE, envir = coerce)
+    if (is.list(left)) {
+      right <- rep(right, length.out = length(left))
+      for (i in seq_along(left))
+        object[[names(left)[i]]] <- right[[i]]
+    } else
+      object[[left]] <- right
     object
   } else
-    eval(expr = mapping[[2L]], envir = object)
+    eval(mapping[[2L]], object, coerce)
 }, sealed = SEALED)
 
 #-------------------------------------------------------------------------------
@@ -1478,15 +1469,7 @@ setMethod("map_values", c("NULL", "missing"), function(object, mapping) {
 #'
 #' Use a character vector or a function for recursively mapping list names, or
 #' mapping the \sQuote{colnames} and \sQuote{rownames} attributes of a data
-#' frame. In the case of lists, the function is not applied to list elements
-#' which are not themselves lists, even if they have a \sQuote{names} attribute.
-#' Such elements and their names, if any, are returned unchanged. If a
-#' \sQuote{names}, \sQuote{colnames} or \sQuote{rownames} attribute is
-#' \code{NULL}, it is ignored. Alternatively, instead of mapping the names,
-#' collect them and return them as a single character vector, sorted and with
-#' duplicates removed. The collected names are added as their own \code{names}
-#' attribute; this might be useful if the result is later on used for some
-#' mapping (using this function or \code{\link{map_values}}).
+#' frame.
 #'
 #' @param object Any \R object. The default method applies the mapping to the
 #'   \sQuote{names} attribute. The behaviour is special for lists, which are
@@ -1506,6 +1489,17 @@ setMethod("map_values", c("NULL", "missing"), function(object, mapping) {
 #' @family auxiliary-functions
 #' @seealso base::rapply base::list base::as.list
 #' @keywords manip list
+#' @details In the case of lists, the function is not applied to list elements
+#'   which are not themselves lists, even if they have a \sQuote{names}
+#'   attribute. Such elements and their names, if any, are returned unchanged.
+#'   If a \sQuote{names}, \sQuote{colnames} or \sQuote{rownames} attribute is
+#'   \code{NULL}, it is ignored.
+#'
+#'   Alternatively, instead of mapping the names, collect them and return them
+#'   as a single character vector, sorted and with duplicates removed. The
+#'   collected names are added as their own \code{names} attribute; this might
+#'   be useful if the result is later on used for some mapping (using this
+#'   function or \code{\link{map_values}}).
 #' @note This function is not normally directly called by an \pkg{opm} user
 #'   because \code{\link{map_metadata}} is available.
 #' @examples
@@ -1792,14 +1786,7 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
 #'
 #' Test whether all names of a query list occur as names in a data list and
 #' optionally also whether they point to the same elements; apply this principle
-#' recursively to all sublists. Non-list elements are ignored if \code{values}
-#' is \code{FALSE}. Otherwise the comparison is done using \code{identical} if
-#' \code{exact} is \code{TRUE}. If \code{exact} is \code{FALSE}, the value(s) in
-#' the data list can be any of the values at the corresponding position in the
-#' query list, and the comparison is done by coercion to character vectors. An
-#' empty query list results in \code{TRUE}. Missing names in a non-empty query
-#' list result in \code{FALSE}. There is also an \code{\link{OPMS}} method,
-#' which tests whether an \code{\link{OPM}} object is contained.
+#' recursively to all sublists.
 #'
 #' @param object List containing the data, or \code{\link{OPMS}} object.
 #' @param other For the list method, a list used as query; for the
@@ -1808,15 +1795,26 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
 #'   \code{FALSE}, \code{exact} is ignored.
 #' @param exact Logical scalar. If \code{FALSE}, the data value(s) might by any
 #'   of the query value(s), and some coercion is done before comparing (see
-#'   \code{match} for details. If \code{TRUE}, the data value(s) must exactly
-#'   correspond to the query value(s), and no coercion is done (see
-#'   \code{identical}) for details). This might be too strict for most
-#'   applications.
+#'   \code{match} for details.
+#'
+#'   If \code{TRUE}, the data value(s) must exactly correspond to the query
+#'   value(s), and no coercion is done (see \code{identical}) for details). This
+#'   might be too strict for most applications.
 #' @param ... Optional arguments passed to \code{identical} from the \pkg{base}
 #'   package, allowing for fine-control of identity. Has no effect unless
 #'   \code{exact} is \code{TRUE}.
 #' @export
 #' @return Logical scalar.
+#' @details  Non-list elements are ignored if \code{values} is \code{FALSE}.
+#'   Otherwise the comparison is done using \code{identical} if \code{exact} is
+#'   \code{TRUE}. If \code{exact} is \code{FALSE}, the value(s) in the data list
+#'   can be any of the values at the corresponding position in the query list,
+#'   and the comparison is done by coercion to character vectors. An empty query
+#'   list results in \code{TRUE}. Missing names in a non-empty query list result
+#'   in \code{FALSE}.
+#'
+#'   There is also an \code{\link{OPMS}} method, which tests whether an
+#'   \code{\link{OPM}} object is contained in an \code{\link{OPMS}} object.
 #' @family auxiliary-functions
 #' @seealso base::list base::as.list base::`[` base::`[[` base::match
 #' @seealso base::identity
@@ -1836,7 +1834,11 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
 #'
 #' # OPMS/OPM method
 #' data(vaas_4)
-#' stopifnot(contains(vaas_4, vaas_4[3]))
+#' stopifnot(contains(vaas_4, vaas_4[3])) # single one contained
+#' stopifnot(contains(vaas_4, vaas_4)) # all contained
+#' stopifnot(!contains(vaas_4[3], vaas_4)) # OPMS cannot be contained in OPM
+#' stopifnot(contains(vaas_4[3], vaas_4[3])) # identical OPM objects
+#' stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 #'
 setGeneric("contains",
   function(object, other, ...) standardGeneric("contains"))
@@ -1878,6 +1880,24 @@ setMethod("contains", c(OPMS, OPM), function(object, other, ...) {
     if (identical(x = plate, y = other, ...))
       return(TRUE)
   FALSE
+}, sealed = SEALED)
+
+setMethod("contains", c(OPMS, OPMS), function(object, other, ...) {
+  single_contained <- function(x) {
+    for (plate in object@plates)
+      if (identical(x = plate, y = x, ...))
+        return(TRUE)
+    FALSE
+  }
+  vapply(other@plates, single_contained, logical(1L))
+}, sealed = SEALED)
+
+setMethod("contains", c(OPM, OPMS), function(object, other, ...) {
+  FALSE
+}, sealed = SEALED)
+
+setMethod("contains", c(OPM, OPM), function(object, other, ...) {
+  identical(x = object, y = other, ...)
 }, sealed = SEALED)
 
 

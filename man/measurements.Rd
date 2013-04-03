@@ -18,12 +18,14 @@
 \description{
   Return the measurements. The first column contains the
   hours, the other ones contain the values from each well.
-  There is one row per time point. Column names are
-  appropriately set, but not translated (as, e.g., to
-  substrate names). It is possible to select wells, but the
-  time points are always included as first column (in
-  contrast to \code{\link{well}}). The \code{i} argument
-  refers only to the remaining matrix.
+  There is one row per time point.
+}
+\details{
+  Column names are appropriately set, but not translated
+  (as, e.g., to substrate names). It is possible to select
+  wells, but the time points are always included as first
+  column (in contrast to \code{\link{well}}). The \code{i}
+  argument refers only to the remaining matrix.
 }
 \examples{
 # 'OPM' method

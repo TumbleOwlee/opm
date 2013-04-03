@@ -269,7 +269,6 @@ test_that("extract_columns() gets metadata right using character vector", {
 
   # 2
   got <- extract_columns(NESTED.MD, c("A", "C"))
-  print(names(got))
   expect_equal(names(got), "A.C")
 
   # 3

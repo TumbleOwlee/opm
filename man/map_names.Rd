@@ -27,18 +27,21 @@
 \description{
   Use a character vector or a function for recursively
   mapping list names, or mapping the \sQuote{colnames} and
-  \sQuote{rownames} attributes of a data frame. In the case
-  of lists, the function is not applied to list elements
-  which are not themselves lists, even if they have a
-  \sQuote{names} attribute. Such elements and their names,
-  if any, are returned unchanged. If a \sQuote{names},
-  \sQuote{colnames} or \sQuote{rownames} attribute is
-  \code{NULL}, it is ignored. Alternatively, instead of
-  mapping the names, collect them and return them as a
-  single character vector, sorted and with duplicates
-  removed. The collected names are added as their own
-  \code{names} attribute; this might be useful if the
-  result is later on used for some mapping (using this
+  \sQuote{rownames} attributes of a data frame.
+}
+\details{
+  In the case of lists, the function is not applied to list
+  elements which are not themselves lists, even if they
+  have a \sQuote{names} attribute. Such elements and their
+  names, if any, are returned unchanged.  If a
+  \sQuote{names}, \sQuote{colnames} or \sQuote{rownames}
+  attribute is \code{NULL}, it is ignored.
+
+  Alternatively, instead of mapping the names, collect them
+  and return them as a single character vector, sorted and
+  with duplicates removed. The collected names are added as
+  their own \code{names} attribute; this might be useful if
+  the result is later on used for some mapping (using this
   function or \code{\link{map_values}}).
 }
 \note{

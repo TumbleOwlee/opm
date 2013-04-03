@@ -10,11 +10,7 @@
 #' Stored measurements
 #'
 #' Return the measurements. The first column contains the hours, the other ones
-#' contain the values from each well. There is one row per time point. Column
-#' names are appropriately set, but not translated (as, e.g., to substrate
-#' names). It is possible to select wells, but the time points are always
-#' included as first column (in contrast to \code{\link{well}}). The \code{i}
-#' argument refers only to the remaining matrix.
+#' contain the values from each well. There is one row per time point.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param i Optional character or numeric vector or formula with name(s) or
@@ -22,6 +18,10 @@
 #' @param ... Optional arguments passed between the methods.
 #' @return Numeric matrix with column names indicating the well coordinate and a
 #'   first column containing the time points.
+#' @details Column names are appropriately set, but not translated (as, e.g., to
+#'   substrate names). It is possible to select wells, but the time points are
+#'   always included as first column (in contrast to \code{\link{well}}). The
+#'   \code{i} argument refers only to the remaining matrix.
 #' @export
 #' @family getter-functions
 #' @keywords attribute
@@ -51,7 +51,8 @@ setMethod("measurements", OPM, function(object, i) {
     object@measurements
   else
     cbind(object@measurements[, 1L, drop = FALSE],
-      object@measurements[, -1L, drop = FALSE][, well_index(i), drop = FALSE])
+      object@measurements[, -1L, drop = FALSE][,
+        well_index(i, colnames(object@measurements)[-1L]), drop = FALSE])
 }, sealed = SEALED)
 
 
@@ -63,17 +64,10 @@ setMethod("measurements", OPM, function(object, i) {
 
 #' Select subset
 #'
-#' Select a subset of the measurements. Return other slots unchanged. In
-#' contrast to the usual `[` functions, always return a matrix (as a component
-#' of the returned object), even if it could be simplified to a vector. The time
-#' column is not counted and always copied. It is an error to delete the entire
-#' matrix. In all other respects, this method behaves like the `[` functions
-#' from the \pkg{base} package. The \code{\link{OPMS}} method selects a subset
-#' of the plates and/or the measurements of the individual plates. It simplifies
-#' the outcome to a \code{\link{OPM}} or \code{\link{OPMA}} object if only a
-#' single plate remains and to \code{NULL} if no plate remains. This behaves
-#' like subsetting a three-dimensional array with plates as first dimension,
-#' time points as second, and wells as third.
+#' Select a subset of the \code{\link{measurements}} (and, if present, of the
+#' \code{\link{aggregated}} data and the \code{\link{discretized}} data) or
+#' plates. Return this subset (or theses subsets) together with the other slots
+#' (which are unchanged).
 #'
 #' @rdname bracket
 #' @exportMethod "["
@@ -83,30 +77,54 @@ setMethod("measurements", OPM, function(object, i) {
 #' @param i Vector or missing. For the \code{\link{OPM}} and \code{\link{OPMA}}
 #'   method, the indexes of one to several time points. For the
 #'   \code{\link{OPMS}} method, the indexes of one to several plates.
-#' @param j Vector or missing. For the \code{\link{OPM}} and \code{\link{OPMA}}
-#'   method, the indexes or names of one to several wells. For the
-#'   \code{\link{OPMS}} method, the indexes of one to several time points. In
-#'   that case, if \code{j} is a list, its values are passed to the respective
-#'   \code{\link{OPM}} object separately, allowing for individual choices of
-#'   time points. Otherwise \code{j} is used as the \code{i} argument of the
-#'   \code{\link{OPM}} and \code{\link{OPMA}} method.
-#' @param k Vector or missing. The \code{\link{OPMS}} method uses \code{k} as
+#' @param j Vector or missing. \itemize{
+#'   \item For the \code{\link{OPM}} and \code{\link{OPMA}} method, the indexes
+#'   or names of one to several wells. Can also be a formula, which allows for
+#'   sequences of well coordinates, which are translated to their positions
+#'   within the currently present well names. Be aware that this means that the
+#'   content of a sequence of well coordinates is dependent on \code{x}!
+#'   \item For the \code{\link{OPMS}} method, the indexes of one to several time
+#'   points. In that case, if \code{j} is a list, its values are passed to the
+#'   respective \code{\link{OPM}} object separately, allowing for individual
+#'   choices of time points. Otherwise \code{j} is used as the \code{i} argument
+#'   of the \code{\link{OPM}} and \code{\link{OPMA}} method.
+#'   }
+#' @param k Vector or missing. The \code{\link{OPMS}} method passes \code{k} as
 #'   \code{j} argument of the \code{\link{OPM}} and \code{\link{OPMA}} method.
-#'   That is, this parameter selects the wells.
+#'   That is, in that case \emph{this} parameter selects the wells. See \code{j}
+#'   for details.
 #' @param ... This should \strong{not} be set. It is an error to specify
 #'   additional dimensions.
-#' @param drop Logical scalar. Remove the aggregated data and turn
-#'   \code{\link{OPMA}} to \code{\link{OPM}} objects? Has no effect if \code{x}
-#'   already is an \code{\link{OPM}} object or contains only such objects.
+#' @param drop Logical scalar. Remove the aggregated data (and the discretized
+#'   data, if any) and turn an \code{\link{OPMA}} or \code{\link{OPMD}} object
+#'   to an \code{\link{OPM}} object? Has no effect if \code{x} already is an
+#'   \code{\link{OPM}} object or contains only such objects.
 #' @return \code{\link{OPM}}, \code{\link{OPMA}} or \code{\link{OPMS}} object,
 #'   or \code{NULL}.
 #'
 #' @details The \code{\link{OPMA}} method works like the \code{\link{OPM}} one,
 #'   but the function applies the subsetting to the original and the aggregated
-#'   data in parallel. The aggregated data may also be dropped entirely; this
+#'   data in parallel. The \code{\link{OPMD}} method applies the selection also
+#'   to the discretized data.
+#'
+#'   The aggregated and discretized data may also be dropped entirely; this
 #'   might be appropriate if a subset of the time points is selected,
 #'   potentially yielding aggregated values that do not fit to the measurements
 #'   anymore.
+#'
+#'   In contrast to the usual `[` methods, with respect to the measurements this
+#'   always return a matrix (as a component of the returned object), even if it
+#'   could be simplified to a vector. The time column is not counted and always
+#'   copied. It is an error to delete the entire matrix. In all other respects,
+#'   this method behaves like the `[` methods from the \pkg{base} package.
+#'
+#'   The \code{\link{OPMS}} method selects a subset of the plates and/or the
+#'   measurements of the individual plates. It simplifies the outcome to a
+#'   \code{\link{OPM}} or \code{\link{OPMA}} object if only a single plate
+#'   remains and to \code{NULL} if no plate remains. This behaves like
+#'   subsetting a three-dimensional array with plates as first dimension, time
+#'   points as second, and wells as third.
+#'
 #' @seealso base::`[` base::`[[`
 #' @keywords manip
 #'
@@ -160,7 +178,7 @@ setMethod("measurements", OPM, function(object, i) {
 #' stopifnot(dim(x) == c(4, 384, 12))
 #'
 #' # The same with well names
-#' x <- vaas_4[, , ~ A01:A12] # these are well names 1 to 12
+#' x <- vaas_4[, , ~ A01:A12] # within x, these are well names 1 to 12
 #' stopifnot(dim(x) == c(4, 384, 12))
 #' # to do this with a vector, one would need sprintf("A%02i", 1:12)
 #'
@@ -185,8 +203,8 @@ setMethod("measurements", OPM, function(object, i) {
 #'
 setMethod("[", c(OPM, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  mat <- x@measurements[, -1L, drop = FALSE][i, well_index(j), ...,
-    drop = FALSE]
+  mat <- x@measurements[, -1L, drop = FALSE]
+  mat <- mat[i, well_index(j, colnames(mat)), ..., drop = FALSE]
   if (!all(dim(mat)))
     stop("selection resulted in empty matrix")
   mat <- cbind(x@measurements[i, 1L, drop = FALSE], mat)
@@ -202,7 +220,8 @@ setMethod("[", c(OPMA, "ANY", "ANY", "ANY"), function(x, i, j, ...,
   if (drop)
     return(as(result, OPM))
   if (!missing(j))
-    result@aggregated <- result@aggregated[, well_index(j), ..., drop = FALSE]
+    result@aggregated <- result@aggregated[,
+      well_index(j, colnames(result@aggregated)), ..., drop = FALSE]
   result
 }, sealed = SEALED)
 
@@ -212,7 +231,8 @@ setMethod("[", c(OPMD, "ANY", "ANY", "ANY"), function(x, i, j, ...,
   if (drop)
     return(result) # ... which is an OPM object in that case
   if (!missing(j))
-    result@discretized <- result@discretized[well_index(j)]
+    result@discretized <- result@discretized[well_index(j,
+      names(result@discretized))]
   result
 }, sealed = SEALED)
 
@@ -222,8 +242,10 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     stop("incorrect number of dimensions")
   fetch <- function(obj, idx) obj[i = idx, j = k, drop = drop]
   result <- x@plates[i]
+  if (!length(result))
+    return(NULL)
   no.k <- missing(k)
-  k <- well_index(k)
+  k <- well_index(k, colnames(result[[1L]]@measurements)[-1L])
   if (missing(j)) {
     if (!no.k || drop)
       result <- lapply(result, fetch, idx = TRUE)
@@ -284,7 +306,8 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 setGeneric("well", function(object, ...) standardGeneric("well"))
 
 setMethod("well", OPM, function(object, i, drop = TRUE) {
-  object@measurements[, -1L, drop = FALSE][, well_index(i), drop = drop]
+  object@measurements[, -1L, drop = FALSE][,
+    well_index(i, colnames(object@measurements)[-1L]), drop = drop]
 }, sealed = SEALED)
 
 
@@ -725,13 +748,7 @@ setMethod("filename", OPM, function(object) {
 #' Plate type used or normalized
 #'
 #' Get the type of the OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-#' used in the measuring. This is a convenience function for one of the more
-#' important entries of \code{\link{csv_data}} with additional options useful
-#' for creating plot titles. The character method normalizes the names of
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM plates to the
-#' internally used naming scheme. Unrecognized names are returned unchanged.
-#' This needs not normally be called by the \pkg{opm} user but might be of
-#' interest.
+#' used in the measuring.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object, or character
 #'   vector of original plate name(s), or factor.
@@ -753,6 +770,18 @@ setMethod("filename", OPM, function(object) {
 #' @return Character scalar in the case of the \code{\link{OPM}} and
 #'   \code{\link{OPMS}} methods, otherwise a character vector with the same
 #'   length than \code{object}, or a corresponding factor.
+#'
+#' @details The \code{\link{OPM}} and \code{\link{OPMS}} methods are convenience
+#'   methods for one of the more important entries of \code{\link{csv_data}}
+#'   with additional options useful for creating plot titles.
+#'
+#' The character method normalizes the names of
+#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM plates to the
+#' internally used naming scheme. Unrecognized names are returned unchanged.
+#' This needs not normally be called by the \pkg{opm} user but might be of
+#' interest.
+#'
+#' Factors are treated by passing their levels through the character method.
 #'
 #' @export
 #' @family getter-functions
@@ -1079,15 +1108,20 @@ setMethod("summary", OPMS, function(object, ...) {
 #'   in the output?
 #' @param trim Character scalar. Parameter estimates from intrinsically negative
 #'   reactions (i.e., no respiration) are sometimes biologically unreasonable
-#'   because they are too large or too small. If \code{trim} is \sQuote{medium}
-#'   or \sQuote{full}, lambda estimates larger than \code{\link{hours}(object)}
-#'   (i.e.,the maximum time value observed) are set to that value. Negative
-#'   lambda estimates smaller than \code{- hours(object)} are set to this value
-#'   (i.e., negative of maximum time) if \code{trim} is \sQuote{medium}; this is
-#'   a more moderate treatment than setting all negative values to zero, which
-#'   is done if \code{trim} is \sQuote{full}. Currently the other parameters are
-#'   not checked, and all \code{NA} values also remain unchanged. If \code{trim}
-#'   is \sQuote{no}, lambda is not modified either.
+#'   because they are too large or too small, and some corrections might be
+#'   appropriate. \describe{
+#'   \item{no}{No modification.}
+#'   \item{full}{Negative
+#'   lamdda estimates are set to zero.}
+#'   \item{medium}{Lambda estimates larger than \code{\link{hours}(object)}
+#'   (i.e., the maximum time value observed) are set to that value. Negative
+#'   lambda estimates smaller than \code{-hours(object)} are set to this value
+#'   (i.e., the negative maximum time).}
+#'   \item{full}{Like \sQuote{medium}, but all negative values are set to zero,
+#'   which is a less moderate treatment.}
+#'   }
+#'   Currently the other parameters are not checked, and all \code{NA} values,
+#'   if any, also remain unchanged.
 #' @param ... Optional arguments passed between the methods.
 #' @note See \code{\link{do_aggr}} for generating aggregated data.
 #' @export
@@ -1277,15 +1311,19 @@ setMethod("disc_settings", OPMD, function(object) {
 #' Get meta-information stored together with the data.
 #'
 #' @param object \code{\link{WMD}} object.
-#' @param key If \code{NULL} or otherwise empty, return all metadata. If a
-#'   non-empty list, treated as list of keys and return list of corresponding
-#'   metadata values. Here, character vectors of length > 1 can be used to query
-#'   nested metadata lists. If neither empty nor a list (i.e. usually a
-#'   character or numeric vector), treat \code{key} as a single list key.
-#'   Factors are converted to \sQuote{character} mode. Formulas can also be used
-#'   and are converted to a list or character or numeric vector using the rules
-#'   described below. It is in general not recommended to use numeric vectors
-#'   as \code{key} arguments, either directly or within a list or formula.
+#' @param key \code{NULL}, vector, factor or formula. \itemize{
+#'   \item If \code{NULL} or otherwise empty, return all metadata.
+#'   \item If a non-empty list, treated as list of keys. Return value would be
+#'   the list of corresponding metadata values. Here, character vectors of
+#'   length > 1 can be used to query nested metadata lists.
+#'   \item If neither empty nor a list nior a formula (i.e. usually a character
+#'   or numeric vector), \code{key} is treated as a single list key. Factors are
+#'   converted to \sQuote{character} mode.
+#'   \item Formulas can also be used and are converted to a list or character or
+#'   numeric vector using the rules described under \sQuote{Details}.
+#'   \item It is in general not recommended to use numeric vectors as \code{key}
+#'   arguments, either directly or within a list or formula.
+#' }
 #' @param exact Logical scalar. Use exact or partial matching of keys? Has no
 #'   effect if \code{key} is empty.
 #' @param strict Logical scalar. Is it an error if a \code{NULL} value results
@@ -1296,29 +1334,30 @@ setMethod("disc_settings", OPMD, function(object) {
 #' @export
 #' @family getter-functions
 #' @keywords attribute
-#' @details \itemize{
-#'   \item If a named list is used as \code{key} argument, its names will be
+#' @details If a named list is used as \code{key} argument, its names will be
 #'   used within the first level of the resulting nested or non-nested list.
-#'   That is, \code{key} can be used to translate names on the fly, and this
-#'   can be used by all functions that call \code{metadata} indirectly, usually
-#'   via an \code{as.labels} or \code{as.groups} argument.
-#'   \item Even though it is not technically impossible per se, it is usually
-#'   a bad idea to select metadata entries using numeric (positional) keys. The
+#'   That is, \code{key} can be used to translate names on the fly, and this can
+#'   be used by all functions that call \code{metadata} indirectly, usually via
+#'   an \code{as.labels} or \code{as.groups} argument.
+#'
+#'   Even though it is not technically impossible per se, it is usually a bad
+#'   idea to select metadata entries using numeric (positional) keys. The
 #'   problem is that, in contrast to, e.g., data frames, their is no guarantee
 #'   that metadata entries with the same name occur in the same position, even
 #'   if they belong to \code{\link{OPM}} objects within a single
 #'   \code{\link{OPMS}} object.
-#'   \item Formulas passed as \code{key} argument are treated by ignoring the
-#'   left side (if any) and converting the right side to a list or other vector.
-#'   Code enclosed in \code{I} is evaluated with a call to \code{eval}. It is up
-#'   to the user to ensure that this call succeeds and yields a character vector
-#'   or a list. Operators in all other code within the formula are used just as
+#'
+#'   Formulas passed as \code{key} argument are treated by ignoring the left
+#'   side (if any) and converting the right side to a list or other vector. Code
+#'   enclosed in \code{I} is evaluated with a call to \code{eval}. It is up to
+#'   the user to ensure that this call succeeds and yields a character vector or
+#'   a list. Operators in all other code within the formula are used just as
 #'   separators, and all names are converted to character scalars. The \code{$}
 #'   operator binds tightly, i.e. it separates elements of a character vector
 #'   (for nested querying) in the output. The same effect have other operators
 #'   of high precedence such as \code{::} but their use is not recommended. All
 #'   operators with a lower precedence than \code{$} separate list elements.
-#' }
+#'
 #' @examples
 #'
 #' # 'OPM' method
@@ -1345,8 +1384,6 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
   key <- metadata_key(key, FALSE)
   fetch_fun <- if (strict)
     function(key) {
-      if (is.factor(key))
-        key <- as.character(key)
       if (is.null(result <- object@metadata[[key, exact = exact]]))
         stop(sprintf("got NULL value when using key '%s'",
           paste(key, collapse = " -> ")))
@@ -1366,10 +1403,10 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
 
 #' Select a subset of the plates (or time points) [deprecated]
 #'
-#' Select a subset of the plates in an \code{\link{OPMS}} object based on the
-#' content of the metadata. Alternatively, select a common subset of time points
-#' from all plates. The data-frame method selects columns that belong to certain
-#' classes.
+#' \strong{Deprecated} function to select a subset of the plates in an
+#' \code{\link{OPMS}} object based on the content of the metadata.
+#' Alternatively, select a common subset of time points from all plates. The
+#' data-frame method selects columns that belong to certain classes.
 #'
 #' @param object \code{\link{OPMS}} object.
 #' @param query Logical, numeric or character vector, or list (other objects can
@@ -1468,15 +1505,16 @@ setMethod("select", "data.frame", function(object, query) {
 #'   argument of \code{\link{[}}, and all following arguments, if any, are
 #'   ignored. If a list, formula or a character vector, it is used for
 #'   conducting a query based on one of the infix operators as described below.
-#'   The data-frame method expects a character vector containing class names.
 #' @param values Logical scalar. If \code{TRUE}, the values of \code{query} are
 #'   also considered (by using \code{\link{infix.q}} or
 #'   \code{\link{infix.largeq}}). If \code{FALSE} only the keys are considered
-#'   (by using \code{\link{infix.k}}). That is, choose either the plates for
-#'   which certain metadata entries contain certain values, or choose the plates
-#'   for which these metadata have been set at all (to some arbitrary value).
-#'   See the mentioned functions for details, and note the special behavior if
-#'   \code{query} is a character vector and \code{values} is \code{FALSE}.
+#'   (by using \code{\link{infix.k}}).
+#'
+#'   That is, choose either the plates for which certain metadata entries
+#'   contain certain values, or choose the plates for which these metadata have
+#'   been set at all (to some arbitrary value). See the mentioned functions for
+#'   details, and note the special behavior if \code{query} is a character
+#'   vector and \code{values} is \code{FALSE}.
 #' @param invert Logical scalar. If \code{TRUE}, return the plates for which the
 #'   condition is not \code{TRUE}.
 #' @param exact Logical scalar. If the values of \code{query} are considered,
@@ -1486,20 +1524,26 @@ setMethod("select", "data.frame", function(object, query) {
 #' @param time Logical scalar. If \code{TRUE}, all other arguments are ignored
 #'   and the object is reduced to the common subset of time points (measurement
 #'   hours and minutes).
-#' @param positive Character scalar. If \sQuote{ignore}, not used, Otherwise all
-#'   previous arguments except \code{object} are ignored. If \sQuote{any}, wells
-#'   are selected that contain positive reactions in at least one plate. If
-#'   \sQuote{all}, wells are selected that contain positive reactions in all
-#'   plates. This works only if all elements of \code{object} have discretized
-#'   values. Using \code{invert} means selecting all negative or weak reactions.
+#' @param positive Character scalar. If \sQuote{ignore}, not used. Otherwise all
+#'   previous arguments except \code{object} are ignored, and the function
+#'   yields an error unless all elements of \code{object} have discretized
+#'   values.
+#'
+#'   In that case, if \sQuote{any}, wells are selected that contain positive
+#'   reactions in at least one plate. If \sQuote{all}, wells are selected that
+#'   contain positive reactions in all plates. Using \code{invert} means
+#'   selecting all negative or weak reactions.
 #' @param negative Character scalar. Like \code{positive}, but returns the
 #'   negative reactions. Using \code{invert} means selecting all positive or
 #'   weak reactions.
-#' @param use Character scalar. An alternative way to specify the settings. If
-#'   \sQuote{i} or \sQuote{I}, ignored. If \sQuote{t} or \sQuote{T}, \code{time}
-#'   is set to \code{TRUE}. If \sQuote{p} or \sQuote{P}, \code{positive} is set
-#'   to \sQuote{any} or \sQuote{all}, respectively. If \sQuote{n} or \sQuote{N},
-#'   \code{non.negative} is set to \sQuote{any} or \sQuote{all}, respectively.
+#' @param use Character scalar. An alternative way to specify the settings.
+#'
+#'   If \sQuote{i} or \sQuote{I}, ignored. If \sQuote{t} or \sQuote{T},
+#'   \code{time} is set to \code{TRUE}. If \sQuote{p} or \sQuote{P},
+#'   \code{positive} is set to \sQuote{any} or \sQuote{all}, respectively. If
+#'   \sQuote{n} or \sQuote{N}, \code{non.negative} is set to \sQuote{any} or
+#'   \sQuote{all}, respectively.
+#'
 #'   Otherwise, \code{use} is taken directly as the one-latter name of the infix
 #'   operators to use for plate selection, overriding \code{values} and
 #'   \code{exact}.
@@ -1538,7 +1582,7 @@ setMethod("select", "data.frame", function(object, query) {
 #'   subset(vaas_4, ~ Strain %in% c("DSM18039", "DSM1707")))
 #' mustbe(vaas_4[c(1, 3)],
 #'   subset(vaas_4, ~ Strain == "DSM18039" || Strain == "DSM1707"))
-#' # note that particuraly formulas can be used to set up very complex queries
+#' # note that particularly formulas can be used to set up very complex queries
 #'
 #' # select all plates that have aggregated values
 #' x <- subset(vaas_4, has_aggr(vaas_4))
@@ -1651,13 +1695,16 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
 #' @param x \code{\link{OPMS}} object.
 #' @param  incomparables Vector passed to \code{duplicated} from the \pkg{base}
 #'   package. By default this is \code{FALSE}.
-#' @param what Character scalar indicating which parts of \code{x} should be
-#'   compared. \sQuote{all} compares entire \code{OPM} objects; \sQuote{csv}
-#'   compares the \acronym{CSV} data entries \code{\link{setup_time}} and
-#'   \code{\link{position}}; \sQuote{metadata} compares the entire metadata
-#'   content. If \code{what} does not match any of these, or is not a character
-#'   scalar at all, it is passed as \code{key} argument to
-#'   \code{\link{metadata}}, and the resulting metadata subsets are compared.
+#' @param what Indicating which parts of \code{x} should be compared. If a
+#'   character scalar, the following entries are special: \describe{
+#'   \item{all}{Compares entire \code{OPM} objects.}
+#'   \item{csv}{Compares the \acronym{CSV} data entries \code{\link{setup_time}}
+#'   and \code{\link{position}}.}
+#'   \item{metadata}{Compares the entire metadata content.}
+#'   }
+#'   If \code{what} does not match any of these, or is not a character scalar at
+#'   all, it is passed as \code{key} argument to \code{\link{metadata}}, and the
+#'   resulting metadata subsets are compared.
 #' @param ... Optional arguments passed to \code{duplicated} from the \pkg{base}
 #'   package.
 #' @export
@@ -1838,7 +1885,8 @@ lapply(c(
 #~ @family getter-functions
 #' @keywords attribute
 #' @note The two arguments can swap their places.
-#' @details \itemize{
+#' @details The behaviour of these methods depends on the object used as query.
+#' \itemize{
 #'   \item Using a character vector as query, this method tests whether all
 #'   given keys are present in the top-level names of the metadata (these may be
 #'   nested, but all sublists are ignored here). An empty query vector results
@@ -1939,7 +1987,8 @@ setMethod("%k%", c("formula", WMD), function(x, table) {
 #' @return Logical vector of the length of the \code{\link{WMD}} or
 #'   \code{\link{OPMS}} object.
 #' @note The two arguments can swap their places.
-#' @details \itemize{
+#' @details The behaviour of these methods depends on the object used as query.
+#' \itemize{
 #'   \item Using a character vector as query, this method tests whether a given
 #'   key is present in the metadata and fetches an object that is not
 #'   \code{NULL}. If the key has a length > 1, sublists are queried. An empty
@@ -2036,7 +2085,8 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' @return Logical vector of the length of the \code{\link{WMD}} or
 #'   \code{\link{OPMS}} object.
 #' @note The two arguments can swap their places.
-#' @details \itemize{
+#' @details The behaviour of these methods depends on the object used as query.
+#' \itemize{
 #'   \item Using a character vector as query, this tests whether all given query
 #'   keys are present in the top-level names of the metadata and refer to the
 #'   same query elements. The \code{names} of the vector are used to select
@@ -2147,7 +2197,8 @@ setMethod("%q%", c("formula", WMD), function(x, table) {
 #'   \sQuote{Details}.
 #' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
 #' @note The two arguments can swap their places.
-#' @details \itemize{
+#' @details The behaviour of these methods depends on the object used as query.
+#' \itemize{
 #'   \item Using a character vector as query, this tests whether all given query
 #'   keys are present in the top-level names of the metadata and refer to the
 #'   same query elements (without coercion to character). The result is

@@ -345,12 +345,14 @@ lapply(c(
 #' @param ... Optional other arguments passed to \code{\link{wells}}, or from
 #'   the \code{\link{OPMS}} to the \code{\link{OPM}} method.
 #' @export
-#' @return Dataframe. Column names are unchecked (not converted to variable
+#' @return Data frame. Column names are unchecked (not converted to variable
 #'   names). The three last columns are coding for time, well and value, with
-#'   the exact spelling given by \code{\link{param_names}}. The
-#'   \code{\link{OPMS}} method yields an additional column for the plate, its
-#'   exact spelling also being available via \code{\link{param_names}}, which
-#'   contains each plate's number within \code{object}.
+#'   the exact spelling of the column names given by \code{\link{param_names}}.
+#'
+#'   The \code{\link{OPMS}} method yields an additional column for the plate,
+#'   the exact spelling of its name also being available via
+#'   \code{\link{param_names}}. This column contains the position of each plate
+#'   within \code{object}.
 #' @family conversion-functions
 #' @keywords manip dplot
 #' @seealso stats::reshape
@@ -456,17 +458,13 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' Create data frame or vector from metadata
 #'
 #' Extract selected metadata entries for use as additional columns in a data
-#' frame or (after joining) as character vector with labels. This is not
-#' normally directly called by an \pkg{opm} user because \code{\link{extract}}
-#' is available, which uses this function, but can be used for testing the
-#' applied metadata selections beforehand. The data-frame method is partially
-#' trivial (extract the selected columns and join them to form a character
-#' vector), partially more useful (extract columns with data of a specified
-#' class).
+#' frame or (after joining) as character vector with labels.
 #'
 #' @param object \code{\link{OPMS}} object or data frame.
-#' @param what List of metadata keys to consider, or single such key; passed to
-#'   \code{\link{metadata}}. A formula is also possible; see there fpr details.
+#' @param what For the \code{\link{OPMS}} method, a list of metadata keys to
+#'   consider, or single such key; passed to \code{\link{metadata}}. A formula
+#'   is also possible; see there for details.
+#'
 #'   For the data-frame method, just the names of the columns to extract, or
 #'   their indices, as vector; alternatively, the name of the class to extract
 #'   from the data frame to form the matrix values.
@@ -485,6 +483,13 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' @param direct Logical scalar. Extract column names directly, or search for
 #'   columns of one to several given classes?
 #' @export
+#' @details This function is not normally directly called by an \pkg{opm} user
+#'   because \code{\link{extract}} is available, which uses this function, but
+#'   can be used for testing the applied metadata selections beforehand.
+#'
+#'   The data-frame method is partially trivial (extract the selected columns
+#'   and join them to form a character vector), partially more useful (extract
+#'   columns with data of a specified class).
 #' @return Data frame or character vector, depending on the \code{join}
 #'   argument. The data-frame method always returns a character vector.
 #' @family conversion-functions
@@ -527,15 +532,11 @@ setGeneric("extract_columns",
 setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), exact = TRUE,
     strict = TRUE) {
-  convert_factors <- function(x) if (is.factor(x))
-      as.character(x)
-    else
-      x
   result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
-    lapply(result, FUN = rapply, f = convert_factors)
+    lapply(result, rapply, f = as.character)
   else
-    as.list(convert_factors(result))
+    as.list(as.character(result))
   if (L(join)) {
     result <- unlist(lapply(result, FUN = paste, collapse = sep))
     msg <- if (is.dup <- anyDuplicated(result))
@@ -545,11 +546,11 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
     if (length(msg))
       case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
   } else {
-    result <- as.data.frame(must(do.call(rbind, result)), optional = TRUE)
+    result <- must(do.call(rbind, result))
+    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = TRUE)
     if (ncol(result) > length(colnames(result)))
       colnames(result) <- paste(metadata_key(what, FALSE),
         collapse = OPM_OPTIONS$key.join)
-    result
   }
   result
 }, sealed = SEALED)
@@ -557,7 +558,6 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
 setMethod("extract_columns", "data.frame", function(object, what,
     as.labels = NULL, as.groups = NULL, sep = " ",
     direct = inherits(what, "AsIs")) {
-  ## TODO: mabye enabling a formula here, too?
   join <- function(x, what, sep) {
     apply(x[, what, drop = FALSE], 1L, FUN = paste, collapse = sep)
   }
@@ -866,9 +866,9 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   as indicated by \code{split.at} (default given by
 #'   \code{\link{param_names}("split.at")}), columns with factor variables
 #'   before that column and columns with numeric vectors after that column.
-#' @param as.labels List. Metadata to be joined and used as row names (if
-#'   \code{dataframe} is \code{FALSE}) or additional columns (if otherwise).
-#'   Ignored if \code{NULL}.
+#' @param as.labels List, character vector or formula indicating the metadata to
+#'   be joined and used as row names (if \code{dataframe} is \code{FALSE}) or
+#'   additional columns (if otherwise). Ignored if \code{NULL}.
 #'
 #' @param subset Character vector. The parameter(s) to put in the matrix. If it
 #'   is \sQuote{disc}, discretized data are returned, and \code{ci} is ignored.
@@ -876,14 +876,17 @@ setMethod("rep", OPMS, function(x, ...) {
 #' @param trim Character scalar. See \code{\link{aggregated}} for details.
 #' @param dataframe Logical scalar. Return data frame or matrix?
 #'
-#' @param as.groups List. Metadata to be joined and used as \sQuote{row.groups}
-#'   attribute of the output matrix. See \code{\link{heat_map}} for its usage.
-#'   Ignored if \code{NULL} and if \code{dataframe} is \code{FALSE}. For the
-#'   data-frame method, a vector. For the data-frame method, a logical,
-#'   character or numeric vector indicating according to which columns (before
-#'   the \code{split.at} column) the data should be aggregated by calculating
-#'   means and confidence intervals. If \code{FALSE}, such an aggregation does
-#'   not take place. If \code{TRUE}, all those columns are used for grouping.
+#' @param as.groups For the \code{\link{OPMS}} method, a list, character vector
+#'   or formula indicating the etadata to be joined and used as
+#'   \sQuote{row.groups} attribute of the output matrix. See
+#'   \code{\link{heat_map}} for its usage. Ignored if \code{NULL} and if
+#'   \code{dataframe} is \code{FALSE}.
+#'
+#'   For the data-frame method, a logical, character or numeric vector
+#'   indicating according to which columns (before the \code{split.at} column)
+#'   the data should be aggregated by calculating means and confidence
+#'   intervals. If \code{FALSE}, such an aggregation does not take place. If
+#'   \code{TRUE}, all those columns are used for grouping.
 #' @param sep Character scalar. See \code{\link{extract_columns}}.
 #' @param dups Character scalar. See \code{\link{extract_columns}}. For the
 #'   data-frame method, a character scalar defining the action to conduct if
@@ -928,7 +931,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   used, a triplet structure of the rows, as indicated in the new
 #'   \code{split.at} column: (i) group mean, (ii) lower and (iii) upper boundary
 #'   of the group confidence interval. The data could then be visualized using
-#'   \code{\link{ci_plot}}.
+#'   \code{\link{ci_plot}}. See the examples.
 #'
 #' @family conversion-functions
 #' @seealso \code{\link{aggregated}} for the extraction of aggregated values
@@ -1194,7 +1197,8 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #'   understood by many programming languages. It is particularly more human
 #'   readable than \acronym{XML}, and vector-like data structures (such as
 #'   Phenotype MicroArray measurements) can be much more compactly encoded.
-#' @note Many PM datasets can be batch-converted into \acronym{YAML} format
+#'
+#'   Many PM datasets at once can be batch-converted into \acronym{YAML} format
 #'   using \code{\link{batch_opm_to_yaml}}. The output format for the child
 #'   classes is described in detail there, as well as other aspects relevant in
 #'   practice.

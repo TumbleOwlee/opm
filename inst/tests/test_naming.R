@@ -20,7 +20,17 @@ test_that("curve parameter names can be mapped", {
 
 
 ## well_index
-## UNTESTED
+test_that("well indices given as formula can be mapped", {
+  expect_equal(well_index(1:10), 1:10)
+  expect_equal(well_index(), TRUE)
+  expect_equal(well_index(letters), letters)
+  expect_error(well_index(NULL ~ a:c))
+  expect_equal(well_index(NULL ~ a:c, letters), 1:3)
+  expect_equal(well_index(NULL ~ c(b, e:f), letters), c(2, 5, 6))
+  expect_error(well_index(NULL ~ c(b, e:f), LETTERS))
+  expect_equal(well_index(NULL ~ c(B, E:F), LETTERS), c(2, 5, 6))
+})
+
 
 ## map_well_names
 ## UNTESTED

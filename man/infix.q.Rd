@@ -20,21 +20,22 @@
   \code{\link{infix.largeq}}.
 }
 \details{
-  \itemize{ \item Using a character vector as query, this
-  tests whether all given query keys are present in the
-  top-level names of the metadata and refer to the same
-  query elements. The \code{names} of the vector are used
-  to select elements from the top level of the metadata.
-  These elements are then converted to \sQuote{character}
-  mode before comparison with the values of \code{x}. A
-  non-empty vector without a \code{names} attribute is
-  accepted but will always yield \code{FALSE}. In contrast,
-  an entirely empty vector yields \code{TRUE}.  \item Using
-  a list, a non-exact query with a query list is conducted.
-  The comparison is applied recursively using
-  \code{\link{contains}} with the \code{values} argument
-  set to \code{TRUE} but \code{exact} set to \code{FALSE}.
-  The main advantage of using a list over the
+  The behaviour of these methods depends on the object used
+  as query. \itemize{ \item Using a character vector as
+  query, this tests whether all given query keys are
+  present in the top-level names of the metadata and refer
+  to the same query elements. The \code{names} of the
+  vector are used to select elements from the top level of
+  the metadata. These elements are then converted to
+  \sQuote{character} mode before comparison with the values
+  of \code{x}. A non-empty vector without a \code{names}
+  attribute is accepted but will always yield \code{FALSE}.
+  In contrast, an entirely empty vector yields \code{TRUE}.
+  \item Using a list, a non-exact query with a query list
+  is conducted.  The comparison is applied recursively
+  using \code{\link{contains}} with the \code{values}
+  argument set to \code{TRUE} but \code{exact} set to
+  \code{FALSE}. The main advantage of using a list over the
   character-based search is that it allows for a nested
   query.  \item The factor method first converts \code{x}
   to \sQuote{character} mode.  \item The formula method

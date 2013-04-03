@@ -47,27 +47,33 @@
   used.}
 
   \item{r.groups}{Determines the plotting of a colour bar
-  indicating row groups. If \code{NULL}, ignored. If a
-  function, applied to the row names of \code{object};
-  should then yield one group name for each row name. If a
-  character scalar, the name of an attribute of
-  \code{object} that contains the row group affiliations
-  (ignored if this is not found). Otherwise, coerced to
-  \sQuote{character} mode. Finally the groups are converted
-  to a factor and used for selecting from \code{r.col}.}
+  indicating row groups.
+
+  If \code{NULL}, ignored. If a function, applied to the
+  row names of \code{object}; should then yield one group
+  name for each row name. If a character scalar, the name
+  of an attribute of \code{object} that contains the row
+  group affiliations (ignored if this is not found).
+  Otherwise, coerced to \sQuote{character} mode.
+
+  Finally the groups are converted to a factor and used for
+  selecting from \code{r.col}.}
 
   \item{r.col}{Character vector of colour names used by
   \code{r.groups}.  Ignored if that is \code{NULL}.}
 
   \item{c.groups}{Determines the plotting of a colour bar
-  indicating column groups. If \code{NULL}, ignored. If a
-  function, applied to the column names of \code{object};
-  should then yield one group name for each column name. If
-  a character scalar, the name of an attribute of
-  \code{object} that contains the column group affiliations
-  (ignored if this is not found). Otherwise, coerced to
-  \sQuote{character} mode. Finally the groups are converted
-  to a factor and used for selecting from \code{c.col}.}
+  indicating column groups.
+
+  If \code{NULL}, ignored. If a function, applied to the
+  column names of \code{object}; should then yield one
+  group name for each column name. If a character scalar,
+  the name of an attribute of \code{object} that contains
+  the column group affiliations (ignored if this is not
+  found). Otherwise, coerced to \sQuote{character} mode.
+
+  Finally the groups are converted to a factor and used for
+  selecting from \code{c.col}.}
 
   \item{c.col}{Character vector of colour names used by
   \code{c.groups}.  Ignored if that is \code{NULL}.}

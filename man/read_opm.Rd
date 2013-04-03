@@ -9,26 +9,27 @@
 }
 \arguments{
   \item{names}{Character vector with names of files in one
-  of three formats accepted by \code{\link{read_opm}}, or
-  names of directories containing such files, or both; or
-  convertible to such a vector. See the \code{include}
+  of the formats accepted by \code{\link{read_single_opm}},
+  or names of directories containing such files, or both;
+  or convertible to such a vector. See the \code{include}
   argument of \code{\link{read_opm}} and
   \code{\link{explode_dir}} for how to select subsets from
   the input files or directories.}
 
-  \item{convert}{Character scalar. If \sQuote{no}, always
-  return a list. If \sQuote{yes}, convert to \code{NULL},
-  \code{\link{OPM}} object, or \code{\link{OPMS}} object,
-  depending on the number of files read (0, 1, or more).
-  \sQuote{try} behaves like \sQuote{yes} but does not
-  result in an error message if conversion to OPMS is
-  impossible; a list is returned in that case. \sQuote{sep}
-  returns a nested list, each sublist containing
-  \code{\link{OPM}} objects of the same plate type.
-  \sQuote{grp} also splits into such sublists but converts
-  them to \code{\link{OPMS}} objects if more than one plate
-  is encountered. An error is raised if this is impossible
-  (in contrast to \sQuote{try}).}
+  \item{convert}{Character scalar with one of the following
+  values: \describe{ \item{no}{Always return a list (of
+  \code{\link{OPM}} objects).} \item{yes}{Convert to
+  \code{NULL}, \code{\link{OPM}} object, or
+  \code{\link{OPMS}} object, depending on the number of
+  files read (0, 1, or more).} \item{try}{Behave like
+  \sQuote{yes} but do not result in an error message if
+  conversion to OPMS is impossible; return a list in that
+  case.} \item{sep}{Return a nested list, each sublist
+  containing \code{\link{OPM}} objects of the same plate
+  type.} \item{grp}{Also split into such sublists but
+  convert them to \code{\link{OPMS}} objects if more than
+  one plate is encountered. An error is raised if this is
+  impossible (in contrast to \sQuote{try}).} }}
 
   \item{gen.iii}{Logical or character scalar. If
   \code{TRUE}, invoke \code{\link{gen_iii}} on each plate.
@@ -119,8 +120,8 @@ x <- read_opm(".")
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
-  \code{\link{opm_files}}, \code{\link{read_single_opm}},
-  \code{\link{split_files}}, \code{\link{to_metadata}}
+  \code{\link{opm_files}}, \code{\link{split_files}},
+  \code{\link{to_metadata}}
 }
 \keyword{IO}
 

@@ -20,23 +20,24 @@
   \code{\link{infix.k}}.
 }
 \details{
-  \itemize{ \item Using a character vector as query, this
-  method tests whether a given key is present in the
-  metadata and fetches an object that is not \code{NULL}.
-  If the key has a length > 1, sublists are queried. An
-  empty vector results in \code{TRUE}. Note that the values
-  of the character vector, not its names, if any, are used
-  for querying the metadata.  \item Using a list as query,
-  this function behaves like \code{\link{infix.k}}.  \item
-  The factor method first converts \code{x} to
-  \sQuote{character} mode.  \item The formula method
-  attempts to evaluate the right side of the formula in the
-  context of the metadata of \code{table} and returns
-  whether or not this fails (yields an error). In contrast
-  to \code{infix.k}, symbols that are not found within the
-  metadata are looked up in the base environment.  But note
-  that missing objects are not the only potential reason of
-  failure. }
+  The behaviour of these methods depends on the object used
+  as query. \itemize{ \item Using a character vector as
+  query, this method tests whether a given key is present
+  in the metadata and fetches an object that is not
+  \code{NULL}. If the key has a length > 1, sublists are
+  queried. An empty vector results in \code{TRUE}. Note
+  that the values of the character vector, not its names,
+  if any, are used for querying the metadata.  \item Using
+  a list as query, this function behaves like
+  \code{\link{infix.k}}.  \item The factor method first
+  converts \code{x} to \sQuote{character} mode.  \item The
+  formula method attempts to evaluate the right side of the
+  formula in the context of the metadata of \code{table}
+  and returns whether or not this fails (yields an error).
+  In contrast to \code{infix.k}, symbols that are not found
+  within the metadata are looked up in the base
+  environment.  But note that missing objects are not the
+  only potential reason of failure. }
 }
 \note{
   The two arguments can swap their places.

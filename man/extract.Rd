@@ -8,10 +8,10 @@
   columns with factor variables before that column and
   columns with numeric vectors after that column.}
 
-  \item{as.labels}{List. Metadata to be joined and used as
-  row names (if \code{dataframe} is \code{FALSE}) or
-  additional columns (if otherwise).  Ignored if
-  \code{NULL}.}
+  \item{as.labels}{List, character vector or formula
+  indicating the metadata to be joined and used as row
+  names (if \code{dataframe} is \code{FALSE}) or additional
+  columns (if otherwise). Ignored if \code{NULL}.}
 
   \item{subset}{Character vector. The parameter(s) to put
   in the matrix. If it is \sQuote{disc}, discretized data
@@ -25,17 +25,19 @@
   \item{dataframe}{Logical scalar. Return data frame or
   matrix?}
 
-  \item{as.groups}{List. Metadata to be joined and used as
-  \sQuote{row.groups} attribute of the output matrix. See
-  \code{\link{heat_map}} for its usage.  Ignored if
-  \code{NULL} and if \code{dataframe} is \code{FALSE}. For
-  the data-frame method, a vector. For the data-frame
-  method, a logical, character or numeric vector indicating
-  according to which columns (before the \code{split.at}
-  column) the data should be aggregated by calculating
-  means and confidence intervals. If \code{FALSE}, such an
-  aggregation does not take place. If \code{TRUE}, all
-  those columns are used for grouping.}
+  \item{as.groups}{For the \code{\link{OPMS}} method, a
+  list, character vector or formula indicating the etadata
+  to be joined and used as \sQuote{row.groups} attribute of
+  the output matrix. See \code{\link{heat_map}} for its
+  usage. Ignored if \code{NULL} and if \code{dataframe} is
+  \code{FALSE}.
+
+  For the data-frame method, a logical, character or
+  numeric vector indicating according to which columns
+  (before the \code{split.at} column) the data should be
+  aggregated by calculating means and confidence intervals.
+  If \code{FALSE}, such an aggregation does not take place.
+  If \code{TRUE}, all those columns are used for grouping.}
 
   \item{sep}{Character scalar. See
   \code{\link{extract_columns}}.}
@@ -101,7 +103,7 @@
   \code{split.at} column: (i) group mean, (ii) lower and
   (iii) upper boundary of the group confidence interval.
   The data could then be visualized using
-  \code{\link{ci_plot}}.
+  \code{\link{ci_plot}}. See the examples.
 }
 \description{
   Extract selected aggregated and/or discretized values

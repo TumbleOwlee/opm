@@ -104,31 +104,39 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #' @aliases metadata<-
 #'
 #' @param object \code{\link{WMD}} or \code{\link{OPMS}} object..
-#' @param key Missing, numeric scalar, character vector, factor, or list. If
-#'   missing, replace all metadata by \code{value} (unless \code{value} is a
-#'   formula that specifies the key to replace). If a numeric scalar, then if
-#'   positive, prepend \code{value} to old metadata. If negative, append
-#'   \code{value} to old metadata. If zero, replace old metadata entirely by
-#'   \code{value}. If a list, treat it as list of keys; expect \code{value} to
-#'   be a list of corresponding metadata values to be set. Names are replaced by
-#'   the values of either list if they are missing. If a character vector, use
-#'   it as key and set/replace this metadata entry to/by \code{value}. It is an
-#'   error if \code{key} has zero length. If it contains more than one entry, a
-#'   nested query is done. See \code{[[} from the \pkg{base} package for
-#'   details. The factor method calls the character method after converting
+#' @param key Missing, numeric scalar, character vector, factor, or list.
+#' \itemize{
+#'   \item If missing, replace all metadata by \code{value} (unless \code{value}
+#'   is a formula that specifies the key to replace).
+#'   \item If a numeric scalar, then if positive, prepend \code{value} to old
+#'   metadata. If negative, append \code{value} to old metadata. If zero,
+#'   replace old metadata entirely by \code{value}.
+#'   \item If a list, treated as list of keys; expect \code{value} to be a list
+#'   of corresponding metadata values to be set. Names are replaced by the
+#'   values of either list if they are missing.
+#'   \item If a character vector, used as key for setting/replacing this
+#'   metadata entry to/by \code{value}. It is an error if \code{key} has zero
+#'   length. If it contains more than one entry, a nested query is done. See
+#'   \code{[[} from the \pkg{base} package for details.
+#'   \item The factor method calls the character method after converting
 #'   \code{key} to mode \sQuote{character}.
-#' @param value If \code{key} is a character vector, this can be arbitrary
-#'   value(s) to be included in the metadata (if \code{NULL}, this metadata
-#'   entry is deleted). If \code{key} is otherwise, \code{value} must be list of
-#'   values to be prepended, appended or set as metadata, either entirely or
-#'   specifically, depending on \code{key}. Formulas can also be used as
-#'   \code{value}. In that case, the formula can specify the key to be replaced.
-#'   See the examples below and \code{\link{map_values}} for details. If
-#'   \code{object} is of class \sQuote{OPMS}, \code{value} can be a data frame
-#'   whose number of rows must be equal to the number of plates. Metadata to be
-#'   set will then be selected from each individual row in turn and in input
-#'   order.
-#'
+#' }
+#' @param value Character vector, list, data frame or formula.
+#'   \itemize{
+#'   \item If \code{key} is a character vector, this can be arbitrary value(s)
+#'   to be included in the metadata (if \code{NULL}, this metadata entry is
+#'   deleted).
+#'   \item If \code{key} is otherwise, \code{value} must be list of values to be
+#'   prepended, appended or set as metadata, either entirely or specifically,
+#'   depending on \code{key}.
+#'   \item Formulas can also be used as \code{value}. In that case, the formula
+#'   can specify the key to be replaced. See the examples below and
+#'   \code{\link{map_values}} for details.
+#'   \item If \code{object} is of class \sQuote{OPMS}, \code{value} can be a
+#'   data frame whose number of rows must be equal to the number of plates.
+#'   Metadata to be set will then be selected from each individual row in turn
+#'   and in input order.
+#'   }
 #' @return \code{value}.
 #' @export
 #' @exportMethod "metadata<-"
@@ -378,32 +386,36 @@ setMethod("metadata<-", c(OPMS, "factor", "data.frame"), function(
 #' Map metadata
 #'
 #' Modify meta-information stored together with the measurements by using a
-#' function (this is just a wrapper for \code{rapply}, with \code{how} set to
-#' \sQuote{replace}, if \code{values} is \code{TRUE}) or a \sQuote{character}
-#' vector-based mapping. The \code{\link{OPMS}} method applies this to all
-#' plates in turn and returns an \code{\link{OPMS}} object with accordingly
-#' modified metadata.
+#' function or other kinds of mappings and return the objects otherwise
+#' unchanged. The \code{\link{OPMS}} method applies this to all plates in turn
+#' and returns an \code{\link{OPMS}} object with accordingly modified metadata.
 #'
 #' @param object \code{\link{WMD}} object or \code{\link{OPMS}} object.
-#' @param mapping A function. It is applied to all non-list elements of
-#'   \code{\link{metadata}}, which is traversed recursively. Alternatively, a
-#'   character vector. See \code{\link{map_values}} for usage details.
-#'   \code{\link{metadata_chars}} can be used to create a template for such a
-#'   vector. \code{mapping} can also be a formula; in that case,
-#'   \code{\link{metadata}} is replaced by the result of the list+formula method
-#'   of \code{\link{map_values}}. If the left side of the formula is missing,
-#'   the entire metadata are replaced by the result, which is an error if the
-#'   result is not a list.
-#' @param values Logical scalar. If \code{FALSE}, metadata names, not values,
-#'   are mapped, and \code{classes} is ignored (names are always of class
-#'   \sQuote{character}).
+#' @param mapping Passed to \code{\link{map_values}}. \itemize{
+#'   \item If a function, this is just a wrapper for \code{rapply}, with
+#'   \code{how} set to \sQuote{replace}, if \code{values} is \code{TRUE}. It is
+#'   applied to all non-list elements of \code{\link{metadata}}, which is
+#'   traversed recursively.
+#'   \item Alternatively, a character vector. \code{\link{metadata_chars}} can
+#'   be used to create a template for such a vector.
+#'   \item \code{mapping} can also be a formula; in that case,
+#'   \code{\link{metadata}} is replaced by the according  method of
+#'   \code{\link{map_values}}. If the left side of the formula is missing, the
+#'   entire metadata are replaced by the result, which is an error if the result
+#'   is not a list.
+#' }
+#' @param values Mostly a logical scalar. If \code{FALSE}, metadata names, not
+#'   values, are mapped, and \code{classes} is ignored (names are always of
+#'   class \sQuote{character}). For the formula method, it is the enclosing
+#'   environment used.
 #' @param classes Character vector or (for the character vector-based mapping)
 #'   \code{TRUE}. For the mapping with a function or vector, this specifies the
 #'   classes in addition to \sQuote{character} that are mapped (after converting
-#'   to \sQuote{character} mode). If \code{classes} is \code{TRUE},
-#'   \code{mapping} is treated as a mapping between class names, and the
-#'   according conversions are applied. See the \code{coerce} argument of
-#'   \code{\link{map_values}} for details.
+#'   to \sQuote{character} mode).
+#'
+#'   If \code{classes} is \code{TRUE}, \code{mapping} is treated as a mapping
+#'   between class names, and the according conversions are applied. See the
+#'   \code{coerce} argument of \code{\link{map_values}} for details.
 #' @param ... Optional argument passed to \code{mapping} if it is a function,
 #'   and from the \code{\link{OPMS}} method to the \code{\link{WMD}} method.
 #' @return \code{\link{WMD}} or \code{\link{OPMS}} object with modified
@@ -494,14 +506,15 @@ setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, "formula"), function(object, mapping) {
-  object@metadata <- map_values(object@metadata, mapping)
+setMethod("map_metadata", c(WMD, "formula"), function(object, mapping,
+    values = parent.frame()) {
+  object@metadata <- map_values(object@metadata, mapping, values)
   object
 }, sealed = SEALED)
 
 setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
-  object@plates <- lapply(object@plates, FUN = map_metadata, mapping = mapping,
-    ...)
+  object@plates <- lapply(X = object@plates, FUN = map_metadata,
+    mapping = mapping, ...)
   object
 }, sealed = SEALED)
 

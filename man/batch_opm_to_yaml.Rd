@@ -43,9 +43,9 @@
   \code{fun.args} are set automatically.}
 
   \item{names}{Character vector with names of files in one
-  of three formats accepted by \code{\link{read_opm}}, or
-  names of directories containing such files, or both; or
-  convertible to such a vector. See the \code{include}
+  of the formats accepted by \code{\link{read_single_opm}},
+  or names of directories containing such files, or both;
+  or convertible to such a vector. See the \code{include}
   argument of \code{\link{read_opm}} and
   \code{\link{explode_dir}} for how to select subsets from
   the input files or directories.}
@@ -134,28 +134,29 @@
   files containing a sequence of mappings as described
   above, one per plate, to keep a 1:1 relationship between
   input and output files.
+
+  Attempting to generate \acronym{YAML} from input data
+  with a wrong character encoding might cause \R to crash
+  or hang. This problem was observed with \acronym{CSV}
+  files that were generated on a distinct operating system
+  and contained special characters such as German umlauts.
+  It is then necessary to explicitely (and correctly)
+  specify the encoding used in these files; see the
+  \sQuote{file.encoding} option of \code{\link{opm_opt}}
+  for how to do this.
+
+  When inputting \acronym{YAML} files generated with the
+  help of the \pkg{yaml} package (on which the \pkg{opm}
+  implementation is based) using other programming
+  languages, a potential problem is that they, and
+  \acronym{YAML} in general, lack a native representation
+  of \code{NA} values. Such entries are likely to be
+  misunderstood as \sQuote{NA} character scalars.
 }
 \note{
-  \itemize{ \item Regarding the \acronym{CSV} format, see
-  the remark to \code{\link{read_single_opm}}.  \item This
-  function is for batch-converting many files; for writing
-  a single object to a \acronym{YAML} file (or string), see
-  \code{\link{to_yaml}}.  \item When inputting
-  \acronym{YAML} files generated with the help of the
-  \pkg{yaml} package (on which the \pkg{opm} implementation
-  is based) using other programming languages, a potential
-  problem is that they, and \acronym{YAML} in general, lack
-  a native representation of \code{NA} values. Such entries
-  are likely to be misunderstood as \sQuote{NA} character
-  scalars.  \item Attempting to generate \acronym{YAML}
-  from input data with a wrong character encoding might
-  cause \R to crash or hang. This problem was observed with
-  \acronym{CSV} files that were generated on a distinct
-  operating system and contained special characters such as
-  German umlauts.  It is then necessary to explicitely (and
-  correctly) specify the encoding used in these files; see
-  the \sQuote{file.encoding} option of
-  \code{\link{opm_opt}} for how to do this. }
+  This function is for batch-converting many files; for
+  writing a single object to a \acronym{YAML} file (or
+  string), see \code{\link{to_yaml}}.
 }
 \examples{
 test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,
@@ -183,8 +184,7 @@ if (length(test.files) > 0) {
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+  \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{IO}
 

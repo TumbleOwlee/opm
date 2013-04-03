@@ -52,9 +52,11 @@
   one to several \acronym{CSS} files to link. Empty strings
   and empty vectors are ignored.  It is no error if the
   file does not exist, but the page will then probably not
-  be displayed as intended. Under Windows it is recommended
-  to convert a filename \code{f} beforehand using
-  \code{normalizePath(f, winslash = "/")}.}
+  be displayed as intended.
+
+  Under Windows it is recommended to convert a filename
+  \code{f} beforehand using \code{normalizePath(f, winslash
+  = "/")}.}
 
   \item{...}{Optional other arguments available for
   inserting user-defined \acronym{HTML} content. Currently

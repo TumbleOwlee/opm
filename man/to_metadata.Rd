@@ -61,7 +61,7 @@ stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{split_files}}
+  \code{\link{split_files}}
 }
 \keyword{IO}
 \keyword{manip}

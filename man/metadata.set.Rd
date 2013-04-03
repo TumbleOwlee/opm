@@ -7,37 +7,40 @@
   object..}
 
   \item{key}{Missing, numeric scalar, character vector,
-  factor, or list. If missing, replace all metadata by
-  \code{value} (unless \code{value} is a formula that
-  specifies the key to replace). If a numeric scalar, then
-  if positive, prepend \code{value} to old metadata. If
-  negative, append \code{value} to old metadata. If zero,
-  replace old metadata entirely by \code{value}. If a list,
-  treat it as list of keys; expect \code{value} to be a
-  list of corresponding metadata values to be set. Names
-  are replaced by the values of either list if they are
-  missing. If a character vector, use it as key and
-  set/replace this metadata entry to/by \code{value}. It is
-  an error if \code{key} has zero length. If it contains
-  more than one entry, a nested query is done. See
-  \code{[[} from the \pkg{base} package for details. The
-  factor method calls the character method after converting
-  \code{key} to mode \sQuote{character}.}
+  factor, or list. \itemize{ \item If missing, replace all
+  metadata by \code{value} (unless \code{value} is a
+  formula that specifies the key to replace).  \item If a
+  numeric scalar, then if positive, prepend \code{value} to
+  old metadata. If negative, append \code{value} to old
+  metadata. If zero, replace old metadata entirely by
+  \code{value}.  \item If a list, treated as list of keys;
+  expect \code{value} to be a list of corresponding
+  metadata values to be set. Names are replaced by the
+  values of either list if they are missing.  \item If a
+  character vector, used as key for setting/replacing this
+  metadata entry to/by \code{value}. It is an error if
+  \code{key} has zero length. If it contains more than one
+  entry, a nested query is done. See \code{[[} from the
+  \pkg{base} package for details.  \item The factor method
+  calls the character method after converting \code{key} to
+  mode \sQuote{character}. }}
 
-  \item{value}{If \code{key} is a character vector, this
-  can be arbitrary value(s) to be included in the metadata
-  (if \code{NULL}, this metadata entry is deleted). If
-  \code{key} is otherwise, \code{value} must be list of
-  values to be prepended, appended or set as metadata,
-  either entirely or specifically, depending on \code{key}.
-  Formulas can also be used as \code{value}. In that case,
-  the formula can specify the key to be replaced.  See the
-  examples below and \code{\link{map_values}} for details.
-  If \code{object} is of class \sQuote{OPMS}, \code{value}
-  can be a data frame whose number of rows must be equal to
-  the number of plates. Metadata to be set will then be
+  \item{value}{Character vector, list, data frame or
+  formula.  \itemize{ \item If \code{key} is a character
+  vector, this can be arbitrary value(s) to be included in
+  the metadata (if \code{NULL}, this metadata entry is
+  deleted).  \item If \code{key} is otherwise, \code{value}
+  must be list of values to be prepended, appended or set
+  as metadata, either entirely or specifically, depending
+  on \code{key}.  \item Formulas can also be used as
+  \code{value}. In that case, the formula can specify the
+  key to be replaced. See the examples below and
+  \code{\link{map_values}} for details.  \item If
+  \code{object} is of class \sQuote{OPMS}, \code{value} can
+  be a data frame whose number of rows must be equal to the
+  number of plates.  Metadata to be set will then be
   selected from each individual row in turn and in input
-  order.}
+  order.  }}
 }
 \value{
   \code{value}.

@@ -98,8 +98,7 @@ if (length(infiles) > 0) {
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+  \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{IO}
 

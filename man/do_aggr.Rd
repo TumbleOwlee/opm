@@ -31,8 +31,11 @@
 
   \item{method}{Character scalar. The aggregation method to
   use. Currently only the following methods are supported:
-  \describe{ \item{grofit}{The \code{grofit} function in
-  the eponymous package, with spline fitting as default.}
+  \describe{ \item{splines}{Fit various splines (smoothing
+  splines and P-splines from \pkg{mgcv} and smoothing
+  splines via \code{smooth.spline}) to opm data.}
+  \item{grofit}{The \code{grofit} function in the eponymous
+  package, with spline fitting as default.}
   \item{opm-fast}{The native, faster parameter estimation.
   This will only yield two of the four parameters, the area
   under the curve and the maximum height. The area under
@@ -42,10 +45,7 @@
   \code{max}. By default the median of the bootstrap values
   is used as point estimate. For details see the argument
   \code{as.pe} of the function
-  \code{\link{fast_estimate}}.} \item{splines}{Fit various
-  splines (smoothing splines and P-splines from \pkg{mgcv}
-  and smoothing splines via \code{smooth.spline}) to opm
-  data.} }}
+  \code{\link{fast_estimate}}.} }}
 
   \item{program}{Deprecated. Use \sQuote{method} instead.
   If provided, \sQuote{program} has precedence over
@@ -103,13 +103,11 @@
   the point estimate is simply regarded as \sQuote{A}
   parameter (maximum height) and all other parameters are
   set to \code{NA}.
-}
-\note{
-  \itemize{ \item The aggregated values can be queried for
-  using \code{\link{has_aggr}} and received using
-  \code{\link{aggregated}}.  \item The \sQuote{OPMS} method
-  just applies the \sQuote{OPM} method to each contained
-  plate in turn; there are not inter-dependencies.  \item
+
+  The \sQuote{OPMS} method just applies the \sQuote{OPM}
+  method to each contained plate in turn; there are no
+  inter-dependencies.
+
   Examples with \code{plain = TRUE} are not given, as only
   the return value is different: Let \code{x} be the normal
   result of \code{do_aggr()}. The matrix returned if
@@ -117,7 +115,12 @@
   \code{aggregated(x)}, whereas the \sQuote{method} and the
   \sQuote{settings} attributes could be obtained as
   components of the list returned by
-  \code{aggr_settings(x)}. }
+  \code{aggr_settings(x)}.
+}
+\note{
+  The aggregated values can be queried for using
+  \code{\link{has_aggr}} and received using
+  \code{\link{aggregated}}.
 }
 \examples{
 # OPM method

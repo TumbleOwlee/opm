@@ -533,8 +533,10 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' @param css.file Character vector indicating the name of one to several
 #'   \acronym{CSS} files to link. Empty strings and empty vectors are ignored.
 #'   It is no error if the file does not exist, but the page will then probably
-#'   not be displayed as intended. Under Windows it is recommended to convert a
-#'   filename \code{f} beforehand using \code{normalizePath(f, winslash = "/")}.
+#'   not be displayed as intended.
+#'
+#'   Under Windows it is recommended to convert a filename \code{f} beforehand
+#'   using \code{normalizePath(f, winslash = "/")}.
 #' @param ... Optional other arguments available for inserting user-defined
 #'   \acronym{HTML} content. Currently the following ones (in their order of
 #'   insertion) are not ignored, and can even be provided several times:
@@ -597,15 +599,19 @@ html_args <- function(
 #'   then the matrix method. The methods for \sQuote{OPMD_Listing} and
 #'   \sQuote{OPMS_Listing} objects can be applied to the results of
 #'   \code{\link{listing}}.
-#' @param format Character scalar, either \sQuote{epf} (Extended Phylip Format),
-#'   \sQuote{nexus}, \sQuote{phylip}, \sQuote{hennig} or \sQuote{html}. If
-#'   \sQuote{nexus} or \sQuote{hennig} format are chosen, a non-empty
+#' @param format Character scalar determining the output format, either
+#'   \sQuote{epf} (Extended Phylip Format), \sQuote{nexus}, \sQuote{phylip},
+#'   \sQuote{hennig} or \sQuote{html}.
+#'
+#'   If \sQuote{nexus} or \sQuote{hennig} format are chosen, a non-empty
 #'   \code{comment} attribute will be output together with the data (and
 #'   appropriately escaped). In case of \sQuote{html} format, a non-empty
-#'   \code{comment} yields the title of the HTML document. The main difference
-#'   between \sQuote{epf} and \sQuote{phylip} is that the former can use labels
-#'   with more than ten characters, but its labels must not contain whitespace.
-#'   (These adaptations are done automatically with \code{\link{safe_labels}}.)
+#'   \code{comment} yields the title of the HTML document.
+#'
+#'   The main difference between \sQuote{epf} and \sQuote{phylip} is that the
+#'   former can use labels with more than ten characters, but its labels must
+#'   not contain whitespace. (These adaptations are done automatically with
+#'   \code{\link{safe_labels}}.)
 #' @param outfile Character scalar. If a non-empty character scalar, resulting
 #'   lines are directly written to this file. Otherwise, they are returned.
 #' @param enclose Logical scalar. Shall labels be enclosed in single quotes?
@@ -616,14 +622,18 @@ html_args <- function(
 #' @param paup.block Logical scalar. Append a \acronym{PAUP*} block with
 #'   selected (recommended) default values? Has no effect unless \sQuote{nexus}
 #'   is selected as \sQuote{format}.
-#' @param delete Character scalar. If \sQuote{uninf}, columns are removed which
-#'   are either constant (in the strict sense) or are columns in which some
-#'   fields contain polymorphisms, and no pairs of fields share no character
-#'   states. If \sQuote{ambig}, columns with ambiguities (multiple states in at
-#'   least one single field) are removed. If \sQuote{constant}, columns which
-#'   are constant in the strict sense are removed. \code{delete} is currently
-#'   ignored for formats other than \sQuote{html}, and note that columns become
-#'   rows in the final \acronym{HTML} output.
+#' @param delete Character scalar with one of the following values:
+#'   \describe{
+#'   \item{uninf}{Columns are removed which are either constant (in the strict
+#'   sense) or are columns in which some fields contain polymorphisms, and no
+#'   pairs of fields share no character states.}
+#'   \item{ambig}{Columns with ambiguities (multiple states in at least one
+#'   single field) are removed.}
+#'   \item{constant}{Columns which are constant in the strict sense are
+#'   removed.}
+#'   }
+#'   \code{delete} is currently ignored for formats other than \sQuote{html},
+#'   and note that columns become rows in the final \acronym{HTML} output.
 #'
 #' @param join Logical scalar, vector or factor. Unless \code{FALSE}, rows of
 #'   \code{object} are joined together, either according to the row names (if
@@ -673,33 +683,34 @@ html_args <- function(
 #'   output file, returned invisibly if \code{outfile} is given.
 #' @family phylogeny-functions
 #' @seealso base::comment base::write hwriter::hwrite
-#' @details \itemize{
-#'   \item Exporting PM data in such formats allows one to either infer trees
-#'     from the data under the maximum-likelihood and/or the maximum-parsimony
-#'     criterion, or to reconstruct the evolution of PM characters on given
-#'     phylogenetic trees, or to nicely display the data in \acronym{HTML}
-#'     format.
-#'   \item For exporting NEXUS format, the matrix should normally be converted
-#'     beforehand by applying \code{\link{discrete}}. Exporting \acronym{HTML}
-#'     is optimized for data discretized with \code{gap} set to \code{TRUE}. For
-#'     other data, the \code{character.states} argument should be modified, see
-#'     \code{\link{html_args}}. The \sQuote{hennig} (Hennig86) format is
-#'     the one used by \acronym{TNT}; it allows continuous characters to be
-#'     analysed as such.
+#' @details Exporting PM data in such formats allows one to either infer trees
+#'   from the data under the maximum-likelihood and/or the maximum-parsimony
+#'   criterion, or to reconstruct the evolution of PM characters on given
+#'   phylogenetic trees, or to nicely display the data in \acronym{HTML} format.
+#'
+#'   For exporting NEXUS format, the matrix should normally be converted
+#'   beforehand by applying \code{\link{discrete}}. Exporting \acronym{HTML} is
+#'   optimized for data discretized with \code{gap} set to \code{TRUE}. For
+#'   other data, the \code{character.states} argument should be modified, see
+#'   \code{\link{html_args}}. The \sQuote{hennig} (Hennig86) format is the one
+#'   used by \acronym{TNT}; it allows continuous characters to be analysed as
+#'   such.
+#'
+#'   The generated \acronym{HTML} is guaranteed to produce neither errors nor
+#'   warnings if checked using the Tidy program. It deliberately contains no
+#'   formatting instructions but a rich annotation with \sQuote{class}
+#'   attributes which allows for \acronym{CSS}-based formatting. This annotation
+#'   includes the naming of all sections and all kinds of textual content.
+#'   Whether the characters show differences between at least one organism and
+#'   the others is also indicated. For the \acronym{CSS} files that come with
+#'   the package, see the examples below and \code{\link{opm_files}}.
+#'
+#' @note \itemize{
+#'   \item Regarding the meaning of \sQuote{character} as used here, see the
+#'   \sQuote{Details} section of \code{\link{discrete}}.
 #'   \item \sQuote{epf} or \sQuote{extended PHYLIP} is sometimes called
 #'     \sQuote{relaxed PHYLIP}.
-#'   \item The generated \acronym{HTML} is guaranteed to produce neither errors
-#'     nor warnings if checked using the Tidy program. It deliberately contains
-#'     no formatting instructions but a rich annotation with \sQuote{class}
-#'     attributes which allows for \acronym{CSS}-based formatting. This
-#'     annotation includes the naming of all sections and all kinds of textual
-#'     content. Whether the characters show differences between at least one
-#'     organism and the others is also indicated. For the \acronym{CSS} files
-#'     that come with the package, see the examples below and
-#'     \code{\link{opm_files}}.
 #' }
-#' @note Regarding the meaning of \sQuote{character} as used here, see the
-#'   \sQuote{details} section of \code{\link{discrete}}.
 #'
 #' @keywords character cluster IO
 #'

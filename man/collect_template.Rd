@@ -3,13 +3,18 @@
 \title{Collect metadata template}
 \arguments{
   \item{object}{Character vector or \code{\link{OPM}} or
-  \code{\link{OPMS}} object. If a character vector is
-  provided, it acts like the \code{names} argument of
-  \code{\link{read_opm}}. That is, if it is a directory
-  name, this is automatically scanned for all \acronym{CSV}
-  and \acronym{YAML} files it contains (unless restrictions
-  with patterns are made). One can also provide file names,
-  or a mixture of file and directory names.}
+  \code{\link{OPMS}} object. The \code{\link{OPM}} and
+  \code{\link{OPMS}} methods just collect a data frame from
+  their input object.
+
+  If a character vector is provided, it acts like the
+  \code{names} argument of \code{\link{read_opm}}. That is,
+  if it is a directory name, this is automatically scanned
+  for all \acronym{CSV} and \acronym{YAML} files it
+  contains (unless restrictions with patterns are made).
+  One can also provide file names, or a mixture of file and
+  directory names.  Regarding the supported input file
+  formats, see \code{\link{read_single_opm}}.}
 
   \item{outfile}{Character scalar. Ignored if \code{NULL}
   or empty string.  Otherwise, interpreted as the name of a
@@ -66,19 +71,15 @@
   Collect a metadata template from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   \acronym{CSV} comments assisting in later on adding
-  metadata using \code{\link{include_metadata}}. The
-  character method batch-collects such information from
-  files and optionally add these data as novel rows to
-  previously collected data. It writes the collected
-  template to a file for use with an external editor,
-  and/or creates a data frame for editing the data directly
-  in \R with the \code{edit} function. The
-  \code{\link{OPM}} and \code{\link{OPMS}} methods collect
-  a data frame.
+  metadata using \code{\link{include_metadata}}.
 }
-\note{
-  Regarding the \acronym{CSV} format, see the remark to
-  \code{\link{read_single_opm}}.
+\details{
+  The character method batch-collects templates for
+  meta-information from files and optionally add these data
+  as novel rows to previously collected data. It writes the
+  collected template to a file for use with an external
+  editor, and/or creates a data frame for editing the data
+  directly in \R with the \code{edit} function.
 }
 \examples{
 # Character method
@@ -132,8 +133,8 @@ stopifnot(identical(dim(x), c(4L, 5L)))
   \code{\link{batch_process}},
   \code{\link{clean_filenames}}, \code{\link{explode_dir}},
   \code{\link{file_pattern}}, \code{\link{opm_files}},
-  \code{\link{read_opm}}, \code{\link{read_single_opm}},
-  \code{\link{split_files}}, \code{\link{to_metadata}}
+  \code{\link{read_opm}}, \code{\link{split_files}},
+  \code{\link{to_metadata}}
 }
 \keyword{IO}
 \keyword{attribute}

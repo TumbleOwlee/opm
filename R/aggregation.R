@@ -219,6 +219,8 @@ param_names <- function(
 #' @param method Character scalar. The aggregation method to use. Currently
 #'   only the following methods are supported:
 #'   \describe{
+#'     \item{splines}{Fit various splines (smoothing splines and P-splines from
+#'     \pkg{mgcv} and smoothing splines via \code{smooth.spline}) to opm data.}
 #'     \item{grofit}{The \code{grofit} function in the eponymous package, with
 #'     spline fitting as default.}
 #'     \item{opm-fast}{The native, faster parameter estimation. This will only
@@ -229,8 +231,6 @@ param_names <- function(
 #'     the median of the bootstrap values is used as point estimate. For details
 #'     see the argument \code{as.pe} of the function
 #'     \code{\link{fast_estimate}}.}
-#'     \item{splines}{Fit various splines (smoothing splines and P-splines from
-#'     \pkg{mgcv} and smoothing splines via \code{smooth.spline}) to opm data.}
 #'   }
 #' @param program Deprecated. Use \sQuote{method} instead. If provided,
 #'   \sQuote{program} has precedence over \sQuote{method}, but \sQuote{program}
@@ -268,18 +268,18 @@ param_names <- function(
 #'   estimate is simply regarded as \sQuote{A} parameter (maximum height) and
 #'   all other parameters are set to \code{NA}.
 #'
-#' @note \itemize{
-#'   \item The aggregated values can be queried for using \code{\link{has_aggr}}
-#'     and received using \code{\link{aggregated}}.
-#'   \item The \sQuote{OPMS} method just applies the \sQuote{OPM} method to
-#'     each contained plate in turn; there are not inter-dependencies.
-#'   \item Examples with \code{plain = TRUE} are not given, as only the return
-#'     value is different: Let \code{x} be the normal result of
-#'     \code{do_aggr()}. The matrix returned if \code{plain} is \code{TRUE}
-#'     could then be received using \code{aggregated(x)}, whereas the
-#'     \sQuote{method} and the \sQuote{settings} attributes could be obtained
-#'     as components of the list returned by \code{aggr_settings(x)}.
-#' }
+#'   The \sQuote{OPMS} method just applies the \sQuote{OPM} method to each
+#'   contained plate in turn; there are no inter-dependencies.
+#'
+#'   Examples with \code{plain = TRUE} are not given, as only the return value
+#'   is different: Let \code{x} be the normal result of \code{do_aggr()}. The
+#'   matrix returned if \code{plain} is \code{TRUE} could then be received using
+#'   \code{aggregated(x)}, whereas the \sQuote{method} and the \sQuote{settings}
+#'   attributes could be obtained as components of the list returned by
+#'   \code{aggr_settings(x)}.
+#'
+#' @note The aggregated values can be queried for using \code{\link{has_aggr}}
+#'   and received using \code{\link{aggregated}}.
 #'
 #' @references Brisbin, I. L., Collins, C. T., White, G. C., McCallum, D. A.
 #'   1986 A new paradigm for the analysis and interpretation of growth data:

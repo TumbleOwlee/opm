@@ -525,21 +525,18 @@ default_color_regions <- function(colors, space, bias, n) {
 #' XY plot
 #'
 #' Customized plotting of a single or multiple PM plate(s), using \code{xyplot}
-#' from the \pkg{lattice} package. The optimal number of rows and columns is
-#' estimated  from the number of selected wells. An optimal font size of the
-#' panel headers is also chosen automatically, but can also be adapted by the
-#' user, much like most aspects of the resulting graphics output. In the case of
-#' the \code{\link{OPMS}} method, if metadata are selected, curve colours are
-#' determined according to the combinations of these metadata entries, otherwise
-#' each plate gets its own colour.
+#' from the \pkg{lattice} package.
 #'
 #' @param x \code{\link{OPM}} or \code{\link{OPMS}} object.
 #'
 #' @param col For the \code{\link{OPM}} method, just a character scalar (colour
-#'   name) determining the line colour. For the \code{\link{OPMS}} method,
-#'   either a character vector with colour codes or one of the arguments of
-#'   \code{\link{select_colors}} (for picking one of the predefined colour
-#'   sets). It is an error if fewer colours are chosen than the number of plate
+#'   name) determining the line colour.
+#'
+#'   For the \code{\link{OPMS}} method, either a character vector with colour
+#'   codes or one of the arguments of \code{\link{select_colors}} (for picking
+#'   one of the predefined colour sets).
+#'
+#'   It is an error if fewer colours are chosen than the number of plate
 #'   grouping levels (see the \code{\dots} argument below). For user-chosen
 #'   colour sets, keep in mind that the sets are not checked for duplicates, and
 #'   see \code{max_rgb_contrast} from the \pkg{pkgutils} package as a method for
@@ -547,12 +544,16 @@ default_color_regions <- function(colors, space, bias, n) {
 #' @param lwd Numeric scalar determining the line width.
 #'
 #' @param neg.ctrl Determine the height of a horizontal baseline drawn in each
-#'   panel. If \code{NULL} or \code{FALSE}, no baseline will be drawn. If
-#'   \code{TRUE}, the baseline's height is the value of \code{\link{minmax}}. If
-#'   a character scalar, \code{neg.ctrl} is interpreted as the name of the wells
-#'   regarded as negative control, and the baseline's height becomes the value
-#'   of \code{\link{minmax}} applied to these wells only. Set \code{neg.ctrl} to
-#'   a numeric value for assigning the height directly (at your own risk).
+#'   panel. \itemize{
+#'   \item If \code{NULL} or \code{FALSE}, no baseline will be drawn.
+#'   \item If \code{TRUE}, the baseline's height is the value of
+#'   \code{\link{minmax}}.
+#'   \item If a character scalar, \code{neg.ctrl} is interpreted as the name of
+#'   the wells regarded as negative control, and the baseline's height becomes
+#'   the value of \code{\link{minmax}} applied to these wells only.
+#'   \item Set \code{neg.ctrl} to a numeric value for assigning the height
+#'   directly (at your own risk).
+#'   }
 #' @param base.col Character scalar. Baseline colour (ignored if no baseline is
 #'   drawn).
 #' @param base.lwd Numeric scalar determining the width of the baseline (ignored
@@ -627,6 +628,15 @@ default_color_regions <- function(colors, space, bias, n) {
 #'   It is currently \strong{undocumented} and potentially subject to frequent
 #'   changes or even removal. Users interested in the method should contact the
 #'   authors.
+#'
+#' @details The optimal number of rows and columns is estimated  from the number
+#'   of selected wells. An optimal font size of the panel headers is also chosen
+#'   automatically, but can also be adapted by the user, much like most aspects
+#'   of the resulting graphics output.
+#'
+#'   In the case of the \code{\link{OPMS}} method, if metadata are selected,
+#'   curve colours are determined according to the combinations of these
+#'   metadata entries, otherwise each plate gets its own colour.
 #'
 #' @export
 #' @family plotting-functions
@@ -994,22 +1004,29 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 
 #' Plot point estimates with CIs
 #'
-#' Draw point estimates with their confidence intervals. The data frame method
-#' is not normally directly called by an \pkg{opm} user but via the
-#' \code{\link{OPMS}} method. This one is used for comparing aggregated values
-#' together with their confidence intervals between plates. This method can in
-#' most cases \strong{not} be applied to entire plates but to selected wells
-#' only.
+#' Draw point estimates with their confidence intervals.  Used for comparing
+#' aggregated values together with their confidence intervals between plates.
+#' This method can in most cases \strong{not} be applied to entire plates but to
+#' selected wells only.
 #'
-#' @param object Dataframe or \code{\link{OPMS}} object. If an
+#' @param object \code{\link{OPMS}} object or (seldomly) a data frame. If an
 #'   \code{\link{OPMS}} object, it is in most cases necessary to restrict the
 #'   plates to at most about one dozen wells. See \code{\link{[}} for how to
-#'   achieve this. The data frame should be as exported by \code{\link{extract}}
-#'   with \code{ci} set to \code{TRUE}. There must be a column named
-#'   \code{\link{param_names}("split.at")} followed by columns with only numeric
-#'   values. Columns before that split column, if any, are used for grouping.
-#'   The rows must entirely comprise triplets representing (i) the point
-#'   estimate, (ii) the lower and (iii) the upper confidence interval.
+#'   achieve this.
+#'
+#'   The data frame method is not normally directly called by an \pkg{opm} user
+#'   but via the \code{\link{OPMS}} method, unless it is used after
+#'   \code{\link{extract}} was applied to a data frame for calculating point
+#'   estimates and confidence intervals from groups of oberservations. See
+#'   there for details.
+#'
+#'   Otherwise, the data frame should be as exported bythe \code{\link{OPMS}}
+#'   method of \code{\link{extract}} with \code{ci} set to \code{TRUE}. There
+#'   must be a column named \code{\link{param_names}("split.at")} followed by
+#'   columns with only numeric values. Columns before that split column, if any,
+#'   are used for grouping. The rows must entirely comprise triplets
+#'   representing (i) the point estimate, (ii) the lower and (iii) the upper
+#'   confidence interval.
 #'
 #' @param as.labels List. Metadata to be joined and used to draw a legend.
 #'   Ignored if \code{NULL}.
@@ -1047,13 +1064,10 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 #'
 #' @param split.at Character vector. See \code{\link{extract}}.
 #'
-#' @note \itemize{
-#'   \item The default placement of the legend is currently not necessarily
-#'     very useful.
-#'   \item When plotting entire PM plates, the \sQuote{mar} parameter of
-#'     \code{par} most likely would need to be set to a lower value, but it
-#'     is recommended to plot only subsets of plates, i.e. selected wells.
-#'   }
+#' @details The default placement of the legend is currently not necessarily
+#'   very useful. When plotting entire PM plates, the \sQuote{mar} parameter of
+#'   \code{par} most likely would need to be set to a lower value, but it is
+#'   recommended to plot only subsets of plates, i.e. selected wells.
 #'
 #' @references Vaas LAI, Sikorski J, Michael V, Goeker M, Klenk H-P. 2012
 #'   Visualization and curve parameter estimation strategies for efficient
@@ -1075,6 +1089,8 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 #' x
 #' stopifnot(is.character(x), identical(length(x), 4L))
 #' # ... and that the return value contains the legend (even if it is not drawn)
+#'
+#' ## See also the examples for the data-frame method of extract().
 #'
 setGeneric("ci_plot", function(object, ...) standardGeneric("ci_plot"))
 
@@ -1200,21 +1216,29 @@ setMethod("ci_plot", OPMS, function(object, as.labels,
 #'   \sQuote{column} should be used.
 #'
 #' @param r.groups Determines the plotting of a colour bar indicating row
-#'   groups. If \code{NULL}, ignored. If a function, applied to the row names of
+#'   groups.
+#'
+#'   If \code{NULL}, ignored. If a function, applied to the row names of
 #'   \code{object}; should then yield one group name for each row name. If a
 #'   character scalar, the name of an attribute of \code{object} that contains
 #'   the row group affiliations (ignored if this is not found). Otherwise,
-#'   coerced to \sQuote{character} mode. Finally the groups are converted to a
-#'   factor and used for selecting from \code{r.col}.
+#'   coerced to \sQuote{character} mode.
+#'
+#'   Finally the groups are converted to a factor and used for selecting from
+#'   \code{r.col}.
 #' @param r.col Character vector of colour names used by \code{r.groups}.
 #'   Ignored if that is \code{NULL}.
 #' @param c.groups Determines the plotting of a colour bar indicating column
-#'   groups. If \code{NULL}, ignored. If a function, applied to the column names
-#'   of \code{object}; should then yield one group name for each column name. If
-#'   a character scalar, the name of an attribute of \code{object} that contains
+#'   groups.
+#'
+#'   If \code{NULL}, ignored. If a function, applied to the column names of
+#'   \code{object}; should then yield one group name for each column name. If a
+#'   character scalar, the name of an attribute of \code{object} that contains
 #'   the column group affiliations (ignored if this is not found). Otherwise,
-#'   coerced to \sQuote{character} mode. Finally the groups are converted to a
-#'   factor and used for selecting from \code{c.col}.
+#'   coerced to \sQuote{character} mode.
+#'
+#'   Finally the groups are converted to a factor and used for selecting from
+#'   \code{c.col}.
 #' @param c.col Character vector of colour names used by \code{c.groups}.
 #'   Ignored if that is \code{NULL}.
 #'

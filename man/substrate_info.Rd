@@ -21,19 +21,20 @@
 }
 \description{
   Return information on substrates such as their
-  \acronym{CAS} number or \acronym{KEGG} ID. The query
-  names must be written exactly as used in the stored plate
-  annotations. To determine their spelling, use
-  \code{\link{find_substrate}}. Alternatively, this
-  functions converts the substrate names to lower case,
-  protecting one-letter specifiers, acronyms and chemical
-  symbols, and translating relevant characters from the
-  Greek alphabet, or only translates to Greek letters,
-  optionally in \acronym{HTML}.
+  \acronym{CAS} number or \acronym{KEGG} ID. Alternatively,
+  convert substrate names to lower case, protecting
+  one-letter specifiers, acronyms and chemical symbols, and
+  translating relevant characters from the Greek alphabet,
+  or only translate to Greek letters, optionally formatted
+  with \acronym{HTML} tags.
 }
-\note{
+\details{
+  The query names must be written exactly as used in the
+  stored plate annotations. To determine their spelling,
+  use \code{\link{find_substrate}}.
+
   Currently the information is incomplete, particularly for
-  the PM-M plates. While it should eventually be possible
+  the PM-M plates.  While it should eventually be possible
   to link all substrates to \acronym{CAS} numbers, they are
   not necessarily contained in the other databases.
 }

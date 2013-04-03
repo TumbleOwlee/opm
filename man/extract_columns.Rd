@@ -4,13 +4,15 @@
 \arguments{
   \item{object}{\code{\link{OPMS}} object or data frame.}
 
-  \item{what}{List of metadata keys to consider, or single
-  such key; passed to \code{\link{metadata}}. A formula is
-  also possible; see there fpr details.  For the data-frame
-  method, just the names of the columns to extract, or
-  their indices, as vector; alternatively, the name of the
-  class to extract from the data frame to form the matrix
-  values.}
+  \item{what}{For the \code{\link{OPMS}} method, a list of
+  metadata keys to consider, or single such key; passed to
+  \code{\link{metadata}}. A formula is also possible; see
+  there for details.
+
+  For the data-frame method, just the names of the columns
+  to extract, or their indices, as vector; alternatively,
+  the name of the class to extract from the data frame to
+  form the matrix values.}
 
   \item{join}{Logical scalar. Join each row together to
   yield a character vector? Otherwise it is just attempted
@@ -50,11 +52,15 @@
 \description{
   Extract selected metadata entries for use as additional
   columns in a data frame or (after joining) as character
-  vector with labels. This is not normally directly called
-  by an \pkg{opm} user because \code{\link{extract}} is
+  vector with labels.
+}
+\details{
+  This function is not normally directly called by an
+  \pkg{opm} user because \code{\link{extract}} is
   available, which uses this function, but can be used for
-  testing the applied metadata selections beforehand. The
-  data-frame method is partially trivial (extract the
+  testing the applied metadata selections beforehand.
+
+  The data-frame method is partially trivial (extract the
   selected columns and join them to form a character
   vector), partially more useful (extract columns with data
   of a specified class).

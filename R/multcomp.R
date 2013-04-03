@@ -5,11 +5,10 @@
 
 #' Multiple comparison of group means
 #'
-#' This function invokes functionality coded in \code{glht} (from the
-#' \pkg{multcomp} package) and thus provides linear-hypothesis testing and
-#' multiple comparisons for group means of curve parameters. It is an error if
-#' this function is called and the package \pkg{multcomp} is unavailable (even
-#' though it is not formally a dependency of \pkg{opm}).
+#' This function provides linear-hypothesis testing and multiple comparisons for
+#' group means of curve parameters. It is an error if this function is called
+#' and the package \pkg{multcomp} is unavailable (even though it is not formally
+#' a dependency of \pkg{opm}).
 #'
 #' @param object \code{\link{OPMS}} object or data frame derived via
 #'   \code{\link{extract}} containing factor variables that determine
@@ -17,14 +16,16 @@
 #'   using \code{as.labels}.
 #'
 #' @param model A model formula or a character vector or a list containing the
-#'   names of factors to be included in the model for fitting. If \code{object}
-#'   is of class \code{\link{OPMS}}, \code{model} is passed to
+#'   names of factors to be included in the model for fitting. For model
+#'   specifications using formulas in general, see \code{formula} (in the
+#'   \pkg{stats} package).
+#'
+#'   If \code{object} is of class \code{\link{OPMS}}, \code{model} is passed to
 #'   \code{\link{extract}} after removal of the reserved names (see
 #'   \code{\link{param_names}}, which can nevertheless be included in the model
 #'   formula as they always contained in the resulting data frame. If
 #'   \code{model} is a list or vector, it is then automatically converted to a
-#'   formula, using operator(s) as specified with \code{ops}. See \code{formula}
-#'   for further details (in the \pkg{stats} package).
+#'   formula, using operator(s) as specified with \code{ops}.
 #'
 #' @param m.type Character scalar indicating which of the following model types
 #'   to use in model fitting: \sQuote{glm}, \sQuote{aov} or \sQuote{lm}. See
@@ -60,12 +61,14 @@
 #'
 #' @return Usually an object of class \sQuote{glht} with \code{print},
 #'   \code{summary}, \code{confint}, \code{coef} and \code{vcov} methods being
-#'   available. See \code{glht} in the \pkg{multcomp} package for details. As an
-#'   exception, if \code{do.mcp} is \code{FALSE}, no multiple comparison is
-#'   performed but the return value is a data frame containing the reshaped data
-#'   with one column for the measured values, one factorial variable determining
-#'   the well, one factorial variable for the parameter and additional factorial
-#'   variables if labels have been selected.
+#'   available. See \code{glht} in the \pkg{multcomp} package for details.
+#'
+#'   As an exception, if \code{do.mcp} is \code{FALSE}, no multiple comparison
+#'   is performed but the return value is the \sQuote{flat} data frame described
+#'   under \sQuote{Details}. containing the reshaped data with one column for
+#'   the measured values, one factorial variable determining the well, one
+#'   factorial variable for the parameter and additional factorial variables if
+#'   labels have been selected.
 #'
 #' @keywords htest
 #' @export
@@ -73,22 +76,25 @@
 #' @family multcomp-functions
 #' @seealso multcomp::glht stats::lm stats::formula
 #'
-#' @details This function internally reshapes the data into a \sQuote{flat} data
-#'   frame containing column for the measured values, one factorial variable
-#'   determining the wells, one factorial variable for the parameter and
-#'   additional factorial variables if labels have been selected. By invoking
-#'   function \code{glht} the user is then enabled to set up (general linear)
-#'   models and, indicating a contrast type, user-defined simultaneous multiple
-#'   testing procedures. If \code{do.mcp} is \code{FALSE} no multiple
-#'   comparisons are performed and just the reshaped data frame is returned
-#'   Since this function makes use of \code{mcp}, we refer to the
-#'   \sQuote{details} section from \code{glht}. The \code{mcp} function muss be
-#'   used with care when defining parameters of interest in two-way ANOVA or
-#'   ANCOVA models. The definition of treatment differences might be
-#'   problem-specific. An automated determination of the parameters of interest
-#'   would be impossible and thus only comparisons for the main effects
-#'   (ignoring covariates and interactions) would be generated and a warning
-#'   issued.
+#' @details In the first step, this function internally reshapes the data into a
+#'   \sQuote{flat} data frame containing one column for the measured values, one
+#'   factorial variable indicating the wells, one factorial variable for the
+#'   curve parameter (see \code{\link{param_names}} and additional factorial
+#'   variables determined by \code{model}. In the second step (which is
+#'   conducted unless \code{do.mcp} is \code{FALSE}), \code{glht} from the
+#'   \pkg{multcomp} package is applied to this data frame. Thus, (general
+#'   linear) models and, by indicating a contrast type, user-defined
+#'   simultaneous multiple testing procedures are applied to the
+#'   \code{\link{OPMS}} object.
+#'
+#'   Since either the user or this function itself makes use of \code{mcp}, we
+#'   refer to the \sQuote{Details} section of the \code{glht} function. The
+#'   \code{mcp} function must be used with care when defining parameters of
+#'   interest in two-way ANOVA or ANCOVA models. The definition of treatment
+#'   differences might be problem-specific. An automated determination of the
+#'   parameters of interest would be impossible and thus only comparisons for
+#'   the main effects (ignoring covariates and interactions) would be generated
+#'   and a warning issued.
 #'
 #' @examples
 #'

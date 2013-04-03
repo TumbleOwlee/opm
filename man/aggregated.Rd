@@ -14,18 +14,18 @@
   \item{trim}{Character scalar. Parameter estimates from
   intrinsically negative reactions (i.e., no respiration)
   are sometimes biologically unreasonable because they are
-  too large or too small. If \code{trim} is \sQuote{medium}
-  or \sQuote{full}, lambda estimates larger than
-  \code{\link{hours}(object)} (i.e.,the maximum time value
+  too large or too small, and some corrections might be
+  appropriate. \describe{ \item{no}{No modification.}
+  \item{full}{Negative lamdda estimates are set to zero.}
+  \item{medium}{Lambda estimates larger than
+  \code{\link{hours}(object)} (i.e., the maximum time value
   observed) are set to that value. Negative lambda
-  estimates smaller than \code{- hours(object)} are set to
-  this value (i.e., negative of maximum time) if
-  \code{trim} is \sQuote{medium}; this is a more moderate
-  treatment than setting all negative values to zero, which
-  is done if \code{trim} is \sQuote{full}. Currently the
-  other parameters are not checked, and all \code{NA}
-  values also remain unchanged. If \code{trim} is
-  \sQuote{no}, lambda is not modified either.}
+  estimates smaller than \code{-hours(object)} are set to
+  this value (i.e., the negative maximum time).}
+  \item{full}{Like \sQuote{medium}, but all negative values
+  are set to zero, which is a less moderate treatment.} }
+  Currently the other parameters are not checked, and all
+  \code{NA} values, if any, also remain unchanged.}
 
   \item{...}{Optional arguments passed between the
   methods.}

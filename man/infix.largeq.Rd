@@ -19,32 +19,34 @@
   \code{\link{infix.q}}.
 }
 \details{
-  \itemize{ \item Using a character vector as query, this
-  tests whether all given query keys are present in the
-  top-level names of the metadata and refer to the same
-  query elements (without coercion to character). The
-  result is identical to the one of \code{\link{infix.q}}
-  except for the fact that metadata elements are not
-  coerced to \sQuote{character} mode, making the query more
-  strict.  \item Using a list, this conducts an exact query
-  with this query list. The comparison is applied
-  recursively using \code{\link{contains}} with the
-  arguments \code{values} and \code{exact} set to
-  \code{TRUE}. This might be too strict for most
-  applications. The main advantage of using a list over the
-  character-based search is that it allows one a nested
-  query.  \item The factor method first converts \code{x}
-  to \sQuote{character} mode.  \item The formula method
-  attempts to evaluate the right side of the formula in the
-  context of the metadata of \code{table} and returns the
-  result. For the \code{\link{WMD}} method, is is up to the
-  user to ensure that the result is a logical scalar, but
-  the method would succeed anyway. The \code{\link{OPMS}}
-  yields an error unless each plate yield a logical scalar.
-  Symbols that are not found within the metadata are looked
-  up in the only in the base environment. This is stricter
-  than \code{\link{infix.q}}.  Because of missing objects
-  and other reasons the method might fail. }
+  The behaviour of these methods depends on the object used
+  as query. \itemize{ \item Using a character vector as
+  query, this tests whether all given query keys are
+  present in the top-level names of the metadata and refer
+  to the same query elements (without coercion to
+  character). The result is identical to the one of
+  \code{\link{infix.q}} except for the fact that metadata
+  elements are not coerced to \sQuote{character} mode,
+  making the query more strict.  \item Using a list, this
+  conducts an exact query with this query list. The
+  comparison is applied recursively using
+  \code{\link{contains}} with the arguments \code{values}
+  and \code{exact} set to \code{TRUE}. This might be too
+  strict for most applications. The main advantage of using
+  a list over the character-based search is that it allows
+  one a nested query.  \item The factor method first
+  converts \code{x} to \sQuote{character} mode.  \item The
+  formula method attempts to evaluate the right side of the
+  formula in the context of the metadata of \code{table}
+  and returns the result. For the \code{\link{WMD}} method,
+  is is up to the user to ensure that the result is a
+  logical scalar, but the method would succeed anyway. The
+  \code{\link{OPMS}} yields an error unless each plate
+  yield a logical scalar. Symbols that are not found within
+  the metadata are looked up in the only in the base
+  environment. This is stricter than \code{\link{infix.q}}.
+  Because of missing objects and other reasons the method
+  might fail. }
 }
 \note{
   The two arguments can swap their places.

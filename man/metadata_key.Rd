@@ -2,6 +2,7 @@
 \alias{metadata_key}
 \alias{metadata_key.character}
 \alias{metadata_key.default}
+\alias{metadata_key.factor}
 \alias{metadata_key.formula}
 \alias{metadata_key.list}
 \title{Create metadata key}
@@ -9,6 +10,9 @@
   metadata_key(x, to.formula, ...)
 
   \method{metadata_key}{default} (x, to.formula = FALSE,
+    remove = NULL, ...)
+
+  \method{metadata_key}{factor} (x, to.formula = FALSE,
     remove = NULL, ...)
 
   \method{metadata_key}{character} (x, to.formula = FALSE,

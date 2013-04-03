@@ -60,37 +60,6 @@ test_that("constantness can be checked", {
 })
 
 
-## parse_formula_head
-test_that("formula heads can be parsed", {
-
-  # name
-  x <- a ~ paste(b$d, c)
-  got <- parse_formula_head(x[[2L]])
-  expect_equal(got, "a")
-
-  # call
-  x <- c("a", "b") ~ paste(b$d, c)
-  got <- parse_formula_head(x[[2L]])
-  expect_equal(got, c("a", "b"))
-
-  # Character
-  x <- "a" ~ paste(b$d, c)
-  got <- parse_formula_head(x[[2L]])
-  expect_equal(got, "a")
-
-  # Numeric
-  x <- 1 ~ paste(b$d, c)
-  got <- parse_formula_head(x[[2L]])
-  expect_equal(got, 1)
-
-  # Call with $-operator
-  x <- a$b$`c d`$e ~ paste(b$d, c)
-  got <- parse_formula_head(x[[2L]])
-  expect_equal(got, c("a", "b", "c d", "e"))
-
-})
-
-
 ## pick_from
 test_that("rows can be picked", {
 

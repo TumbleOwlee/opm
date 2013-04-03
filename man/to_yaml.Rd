@@ -28,9 +28,8 @@
   particularly more human readable than \acronym{XML}, and
   vector-like data structures (such as Phenotype MicroArray
   measurements) can be much more compactly encoded.
-}
-\note{
-  Many PM datasets can be batch-converted into
+
+  Many PM datasets at once can be batch-converted into
   \acronym{YAML} format using
   \code{\link{batch_opm_to_yaml}}. The output format for
   the child classes is described in detail there, as well

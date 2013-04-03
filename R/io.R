@@ -319,8 +319,9 @@ read_microstation_opm <- function(filename) {
 #'
 #' Read single OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} or \pkg{opm}
 #' data file in either new- or old-style \acronym{CSV} or \acronym{YAML} format.
-#' Files compressed using \command{gzip}, \command{bzip2}, \command{lzma} or
-#' \command{xz} are also understood.
+#' MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)} \acronym{CSV} are
+#' also understood, as well as files compressed using \command{gzip},
+#' \command{bzip2}, \command{lzma} or \command{xz} are also understood.
 #'
 #' @param filename Character scalar, or convertible to such, with the obvious
 #'   meaning.
@@ -329,26 +330,33 @@ read_microstation_opm <- function(filename) {
 #'   might also be an \code{\link{OPMA}} object or a list of such objects, but
 #'   \strong{not} an \code{\link{OPMS}} object.
 #' @family io-functions
-#' @details \itemize{
-#'   \item The expected \acronym{CSV} format is what is output by the
-#'     OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
-#'     per file. Other formats, or
-#'     OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} files re-saved with
-#'     distinct \acronym{CSV} settings, are not understood. For this reason, if
-#'     any editing of the files was necessary at all, it is advisable to do this
-#'     in an editor for plain text, not in a spreadsheet program.
-#'   \item It is \strong{impossible} to read \acronym{CSV} files that contain
-#'     more than one plate. For splitting old-style and new-style \acronym{CSV}
-#'     files into one file per plate, see the example under
-#'     \code{\link{split_files}}.
-#'   \item In contrast, input \acronym{YAML} files can contain data from more
-#'     than one plate. The format is described in detail under
-#'     \code{\link{batch_opm_to_yaml}}.
-#'   \item Plates run in ID mode are automatically detected as such (their
-#'     plate type is changed from \sQuote{OTH} to the internally used spelling
-#'     of \sQuote{Generation III}). A generation-III plate type can also be
-#'     forced later on by using \code{\link{gen_iii}}.
-#' }
+#'
+#' \itemize{
+#'   \item Regarding the \acronym{CSV} format, see the remark to
+#'     \code{\link{read_single_opm}}.
+#'   \item
+#'
+#' @details The expected \acronym{CSV} format is what is output by an
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
+#'   per file, or a MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+#'   instrument, with one to many plates per file. Other formats, or
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} files re-saved with
+#'   distinct \acronym{CSV} settings, are not understood. For this reason, if
+#'   any editing of the files was necessary at all, it is advisable to do this
+#'   in an editor for plain text, not in a spreadsheet program.
+#'
+#'   Plates run in ID mode are automatically detected as such (their plate type
+#'   is changed from \sQuote{OTH} to the internally used spelling of
+#'   \sQuote{Generation III}). A generation-III or other plate type can also be
+#'   forced later on by using \code{\link{gen_iii}}.
+#'
+#'   It is \strong{impossible} to read \acronym{CSV} files that contain more
+#'   than one plate. For splitting old-style and new-style \acronym{CSV} files
+#'   into one file per plate, see the example under \code{\link{split_files}}.
+#'   In contrast, input \acronym{YAML} files can contain data from more than one
+#'   plate. The format is described in detail under
+#'   \code{\link{batch_opm_to_yaml}}.
+#'
 #' @references \url{http://www.yaml.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv
@@ -561,22 +569,27 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary")) {
 #' \command{bzip2}, \command{lzma} or \command{xz} are also understood (but may
 #' be excluded using \code{include} and/or \code{exclude}).
 #'
-#' @param names Character vector with names of files in one of three formats
-#'   accepted by \code{\link{read_opm}}, or names of directories containing such
-#'   files, or both; or convertible to such a vector. See the \code{include}
-#'   argument of \code{\link{read_opm}} and \code{\link{explode_dir}} for how to
-#'   select subsets from the input files or directories.
+#' @param names Character vector with names of files in one of the formats
+#'   accepted by \code{\link{read_single_opm}}, or names of directories
+#'   containing such files, or both; or convertible to such a vector. See the
+#'   \code{include} argument of \code{\link{read_opm}} and
+#'   \code{\link{explode_dir}} for how to select subsets from the input files or
+#'   directories.
 #'
-#' @param convert Character scalar. If \sQuote{no}, always return a list. If
-#'   \sQuote{yes}, convert to \code{NULL}, \code{\link{OPM}} object, or
+#' @param convert Character scalar with one of the following values:
+#'   \describe{
+#'   \item{no}{Always return a list (of \code{\link{OPM}} objects).}
+#'   \item{yes}{Convert to \code{NULL}, \code{\link{OPM}} object, or
 #'   \code{\link{OPMS}} object, depending on the number of files read (0, 1, or
-#'   more). \sQuote{try} behaves like \sQuote{yes} but does not result in an
-#'   error message if conversion to OPMS is impossible; a list is returned in
-#'   that case. \sQuote{sep} returns a nested list, each sublist containing
-#'   \code{\link{OPM}} objects of the same plate type. \sQuote{grp} also splits
-#'   into such sublists but converts them to \code{\link{OPMS}} objects if more
-#'   than one plate is encountered. An error is raised if this is impossible (in
-#'   contrast to \sQuote{try}).
+#'   more).}
+#'   \item{try}{Behave like \sQuote{yes} but do not result in an error message
+#'   if conversion to OPMS is impossible; return a list in that case.}
+#'   \item{sep}{Return a nested list, each sublist containing \code{\link{OPM}}
+#'   objects of the same plate type.}
+#'   \item{grp}{Also split into such sublists but convert them to
+#'   \code{\link{OPMS}} objects if more than one plate is encountered. An error
+#'   is raised if this is impossible (in contrast to \sQuote{try}).}
+#'   }
 #' @param gen.iii Logical or character scalar. If \code{TRUE}, invoke
 #'   \code{\link{gen_iii}} on each plate. This is automatically done with
 #'   \acronym{CSV} input if the plate type is given as \sQuote{OTH} (which is
@@ -801,19 +814,19 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #' Collect a metadata template from
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} comments
 #' assisting in later on adding metadata using  \code{\link{include_metadata}}.
-#' The character method batch-collects such information from files and
-#' optionally add these data as novel rows to previously collected data. It
-#' writes the collected template to a file for use with an external editor,
-#' and/or creates a data frame for editing the data directly in \R with the
-#' \code{edit} function. The \code{\link{OPM}} and \code{\link{OPMS}} methods
-#' collect a data frame.
 #'
 #' @param object Character vector or \code{\link{OPM}} or \code{\link{OPMS}}
-#'   object. If a character vector is provided, it acts like the \code{names}
+#'   object. The \code{\link{OPM}} and \code{\link{OPMS}} methods just collect a
+#'   data frame from their input object.
+#'
+#'   If a character vector is provided, it acts like the \code{names}
 #'   argument of \code{\link{read_opm}}. That is, if it is a directory name,
 #'   this is automatically scanned for all \acronym{CSV} and \acronym{YAML}
 #'   files it contains (unless restrictions with patterns are made). One can
 #'   also provide file names, or a mixture of file and directory names.
+#'   Regarding the supported input file formats, see
+#'   \code{\link{read_single_opm}}.
+#'
 #' @param outfile Character scalar. Ignored if \code{NULL} or empty string.
 #'   Otherwise, interpreted as the name of a \acronym{CSV} output file. If
 #'   metadata have already been collected in an older file with the same name,
@@ -848,9 +861,12 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #'   the sum of the lengths of \code{selection} and \code{add.cols}. The
 #'   \code{\link{OPM}} method returns such a data frame with one row per
 #'   contained plate.
+#' @details The character method batch-collects templates for meta-information
+#'   from files and optionally add these data as novel rows to previously
+#'   collected data. It writes the collected template to a file for use with an
+#'   external editor, and/or creates a data frame for editing the data directly
+#'   in \R with the \code{edit} function.
 #'
-#' @note Regarding the \acronym{CSV} format, see the remark to
-#'   \code{\link{read_single_opm}}.
 #' @seealso utils::edit utils::read.delim
 #' @family io-functions
 #' @references \url{http://www.biolog.com/}
@@ -1173,26 +1189,8 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   addition to \code{verbose} and \code{demo}. Note that \code{out.ext},
 #'   \code{fun} and \code{fun.args} are set automatically.
 #' @export
-#' @note \itemize{
-#'   \item Regarding the \acronym{CSV} format, see the remark to
-#'     \code{\link{read_single_opm}}.
-#'   \item This function is for batch-converting many files; for writing a
-#'     single object to a \acronym{YAML} file (or string), see
-#'     \code{\link{to_yaml}}.
-#'   \item When inputting \acronym{YAML} files generated with the help of the
-#'     \pkg{yaml} package (on which the \pkg{opm} implementation is based) using
-#'     other programming languages, a potential problem is that they, and
-#'     \acronym{YAML} in general, lack a native representation of \code{NA}
-#'     values. Such entries are likely to be misunderstood as \sQuote{NA}
-#'     character scalars.
-#'   \item Attempting to generate \acronym{YAML} from input data with a wrong
-#'     character encoding might cause \R to crash or hang. This problem was
-#'     observed with \acronym{CSV} files that were generated on a distinct
-#'     operating system and contained special characters such as German umlauts.
-#'     It is then necessary to explicitely (and correctly) specify the encoding
-#'     used in these files; see the \sQuote{file.encoding} option of
-#'     \code{\link{opm_opt}} for how to do this.
-#' }
+#' @note This function is for batch-converting many files; for writing a single
+#'   object to a \acronym{YAML} file (or string), see \code{\link{to_yaml}}.
 #' @return The function invisibly returns a matrix which describes each
 #'   attempted file conversion. See \code{\link{batch_process}} for details.
 #' @family io-functions
@@ -1247,6 +1245,21 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   \code{batch_opm_to_yaml} generates \acronym{YAML} output files containing a
 #'   sequence of mappings as described above, one per plate, to keep a 1:1
 #'   relationship between input and output files.
+#'
+#'   Attempting to generate \acronym{YAML} from input data with a wrong
+#'   character encoding might cause \R to crash or hang. This problem was
+#'   observed with \acronym{CSV} files that were generated on a distinct
+#'   operating system and contained special characters such as German umlauts.
+#'   It is then necessary to explicitely (and correctly) specify the encoding
+#'   used in these files; see the \sQuote{file.encoding} option of
+#'   \code{\link{opm_opt}} for how to do this.
+#'
+#'   When inputting \acronym{YAML} files generated with the help of the
+#'   \pkg{yaml} package (on which the \pkg{opm} implementation is based) using
+#'   other programming languages, a potential problem is that they, and
+#'   \acronym{YAML} in general, lack a native representation of \code{NA}
+#'   values. Such entries are likely to be misunderstood as \sQuote{NA}
+#'   character scalars.
 #'
 #' @examples
 #' test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,
@@ -1351,11 +1364,13 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   be split.
 #' @param pattern Regular expression or shell globbing pattern for matching the
 #'   separator lines if \code{invert} is \code{FALSE} (the default) or matching
-#'   the non-separator lines if otherwise. Conceptually each of the sections
-#'   into which a file is split comprises a separator line followed by
-#'   non-separator lines. That is, separator lines followed by another separator
-#'   line are ignored. Non-separator lines not preceded by a separator line are
-#'   treated as a section of their own, however.
+#'   the non-separator lines if otherwise.
+#'
+#'   Conceptually each of the sections into which a file is split comprises a
+#'   separator line followed by non-separator lines. That is, separator lines
+#'   followed by another separator line are ignored. Non-separator lines not
+#'   preceded by a separator line are treated as a section of their own,
+#'   however.
 #'
 #' @param outdir Character scalar determining the output directory. If empty,
 #'   each file's input directory is used.
@@ -1376,8 +1391,11 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   files?
 #'
 #' @param format Character scalar determining the outfile name format. It is
-#'   passed to \code{sprintf} and expects three placeholders: (i) the basename
-#'   of the file; (ii) the index of the section; and (iii) the file extension.
+#'   passed to \code{sprintf} and expects three placeholders: \itemize{
+#'   \item the basename of the file;
+#'   \item the index of the section;
+#'   \item the file extension.
+#'   }
 #'   Getting \code{format} wrong might result in non-unique filenames and thus
 #'   probably in overwritten files; accordingly, it should be used with care.
 #' @param compressed Logical scalar. Passed to \code{\link{file_pattern}}, but

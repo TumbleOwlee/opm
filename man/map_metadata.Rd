@@ -5,31 +5,37 @@
   \item{object}{\code{\link{WMD}} object or
   \code{\link{OPMS}} object.}
 
-  \item{mapping}{A function. It is applied to all non-list
-  elements of \code{\link{metadata}}, which is traversed
-  recursively. Alternatively, a character vector. See
-  \code{\link{map_values}} for usage details.
-  \code{\link{metadata_chars}} can be used to create a
-  template for such a vector. \code{mapping} can also be a
-  formula; in that case, \code{\link{metadata}} is replaced
-  by the result of the list+formula method of
-  \code{\link{map_values}}. If the left side of the formula
-  is missing, the entire metadata are replaced by the
-  result, which is an error if the result is not a list.}
+  \item{mapping}{Passed to \code{\link{map_values}}.
+  \itemize{ \item If a function, this is just a wrapper for
+  \code{rapply}, with \code{how} set to \sQuote{replace},
+  if \code{values} is \code{TRUE}. It is applied to all
+  non-list elements of \code{\link{metadata}}, which is
+  traversed recursively.  \item Alternatively, a character
+  vector. \code{\link{metadata_chars}} can be used to
+  create a template for such a vector.  \item
+  \code{mapping} can also be a formula; in that case,
+  \code{\link{metadata}} is replaced by the according
+  method of \code{\link{map_values}}. If the left side of
+  the formula is missing, the entire metadata are replaced
+  by the result, which is an error if the result is not a
+  list. }}
 
-  \item{values}{Logical scalar. If \code{FALSE}, metadata
-  names, not values, are mapped, and \code{classes} is
-  ignored (names are always of class \sQuote{character}).}
+  \item{values}{Mostly a logical scalar. If \code{FALSE},
+  metadata names, not values, are mapped, and
+  \code{classes} is ignored (names are always of class
+  \sQuote{character}). For the formula method, it is the
+  enclosing environment used.}
 
   \item{classes}{Character vector or (for the character
   vector-based mapping) \code{TRUE}. For the mapping with a
   function or vector, this specifies the classes in
   addition to \sQuote{character} that are mapped (after
-  converting to \sQuote{character} mode). If \code{classes}
-  is \code{TRUE}, \code{mapping} is treated as a mapping
-  between class names, and the according conversions are
-  applied. See the \code{coerce} argument of
-  \code{\link{map_values}} for details.}
+  converting to \sQuote{character} mode).
+
+  If \code{classes} is \code{TRUE}, \code{mapping} is
+  treated as a mapping between class names, and the
+  according conversions are applied. See the \code{coerce}
+  argument of \code{\link{map_values}} for details.}
 
   \item{...}{Optional argument passed to \code{mapping} if
   it is a function, and from the \code{\link{OPMS}} method
@@ -41,10 +47,8 @@
 }
 \description{
   Modify meta-information stored together with the
-  measurements by using a function (this is just a wrapper
-  for \code{rapply}, with \code{how} set to
-  \sQuote{replace}, if \code{values} is \code{TRUE}) or a
-  \sQuote{character} vector-based mapping. The
+  measurements by using a function or other kinds of
+  mappings and return the objects otherwise unchanged. The
   \code{\link{OPMS}} method applies this to all plates in
   turn and returns an \code{\link{OPMS}} object with
   accordingly modified metadata.
@@ -128,7 +132,8 @@ stopifnot(length(x) == 4) # one entry per plate
   \S4method{map_metadata}{WMD,character}(object, mapping,
     values = TRUE, classes = "factor") 
 
-  \S4method{map_metadata}{WMD,formula}(object, mapping) 
+  \S4method{map_metadata}{WMD,formula}(object, mapping,
+    values = parent.frame()) 
 
   \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 
 
