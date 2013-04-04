@@ -224,6 +224,10 @@ Since experimental frameworks can be imagined where only very limited meta-infor
 The raw kinetic data can be exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis} as CSV files and imported into the \pkg{opm} package using \code{read\_opm()}. 
 This is explained in detail in section Section~\ref{methods import}, whereas corresponding code examples are found in Section~\ref{application import}.
 
+Batch processing many files is also possible, even without starting an interactive \proglang{R} session.
+This includes storage of the \pkg{opm} data in the \proglang{YAML} format, as detailed in Section~\ref{methods batch}.
+Example code is given in  Section~\ref{application batch}.
+
 All kinds of PM data can be enriched with metadata (see Figure~\ref{fig:data}).
 The underlying principles are described in Section~\ref{methods metadata}, whereas example code for metadata management is included in Section~\ref{application metadata}.
 
@@ -247,8 +251,6 @@ The methods implemented in \pkg{opm} for classifying reactions as either ``posit
 Example code, including the export of discretization results as  publication-ready tables, is included in Section~\ref{application discrete-table}.
 Textual reports with or without formatting markup can also be produced, as exemplified in Section~\ref{application discrete-text}.
 The discretization settings can be modified in detail; see Section~\ref{application discrete-finetuning}.
-
-\rcsadd{To support a fast and easy data exchange of the resulting complex data bundles its conversion into the \pkg{opm} \proglang{YAML} format is facilitated. Section~\ref{methods batch} describes the procedure and example code from Section~\ref{application batch} facilitates the method's direct application.}
 
 Furthermore, substrate informations can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available. Code examples are included in Section~\ref{application substrates}.
 
@@ -280,6 +282,17 @@ The function \code{read\_opm()} has an argument ``convert'' which controls how s
 The entire \proglang{S4} class hierarchy used by \pkg{opm} is shown in Figure~\ref{fig:class_hierarchy}.
 Users come in direct contact only with the \proglang{OPM}, \proglang{OPMA}, \proglang{OPMD} and \proglang{OPMS} classes.
 A number of \proglang{S3} helper classes are also used by several functions.
+
+
+
+\subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
+
+To process and store huge numbers of raw data files, the function \code{batch\_opm\_to\_yaml()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} format.
+It is possible to let \pkg{opm} automatically include metadata (Section~\ref{methods metadata}) and aggregated values (curve parameters) (Section~\ref{methods aggregating}) as well as discretized values (Section~\ref{methods discrete-binary}) during this conversion.
+File selection and unselection using regular expressions or globbing patterns is integrated in the function.
+The result from each file conversion is reported in detail, and a \textit{demo} mode is available for viewing the attempted file selections and conversions before actually running the (potentially time consuming) conversion process.
+The package is accompanied by a command-line script ``run\_opm.R'', enabling the users to run the batch conversion without starting an interactive \proglang{R} session.
+This script is guaranteed to run at least under \proglang{UNIX}-like operating systems.
 
 
 \subsection[Integration of metadata]{Integration of metadata}\label{methods metadata}
@@ -426,9 +439,9 @@ The underlying ideas are mainly derived from DNA-microarray experiments for meas
 Using \code{extract()} the user can select certain aggregated or discretized values into common matrices or data frames.
 If applied a second time to a previously generated data frame, \code{extract()} can compute point estimates and their respective confidence intervals for individually defined experimental groups.
 Optionally, normalization by either the subtraction of or division by the plate-wise or well-wise means (i.e., either per row or per column) can be conducted beforehand.
-Although this function is intended mainly as a helper function for \code{ci_plot()}, it can be quite useful for specific normalization purposes, for example when data were derived before and after servicing the Omnilog\textregistered \ facility, which might result in shifting the measurements by a certain amount.
-In conjunction with \code{extract()}, \code{ci_plot()} allows for visualizing point estimates and confidence intervals of groups of parameter estimates.
-For visualizing differences between groups and their confidence intervals, see \code{opm_mcp()} as described in Section~\ref{methods group-means}.
+Although this function is intended mainly as a helper function for \code{ci\_plot()}, it can be quite useful for specific normalization purposes, for example when data were derived before and after servicing the Omnilog\textregistered \ facility, which might result in shifting the measurements by a certain amount.
+In conjunction with \code{extract()}, \code{ci\_plot()} allows for visualizing point estimates and confidence intervals of groups of parameter estimates.
+For visualizing differences between groups and their confidence intervals, see \code{opm\_mcp()} as described in Section~\ref{methods group-means}.
  
 Additionally, the package offers the possibility of plotting the aggregated curve parameters as a heat map \textit{via} the function \code{heat\_map()}.
 Heat maps appear particularly powerful for visualizing the outcomes of PM experiment because dendrograms inferred from both the substrates and the plates can be used to rearrange the plot.
@@ -506,20 +519,6 @@ Both methods are accessible \textit{via} \code{do\_disc()}.
 Export as richly annotated, publication-ready \proglang{HTML} table or text is possible using \code{phylo\_data()} and \code{listing()}.
 If analysis with phylogenetic programs was of interest, in the case of an intermediary state the data should then be analysed as described above.
 If intermediary values were coded as missing information they could be analysed under either Wagner or unordered (Fitch) maximum parsimony in \proglang{PAUP*} \citep{farris, fitch} or with the options for binary phenotypic characters in \proglang{RAxML} \citep{berger}, or corresponding settings in other programs.
-
-%{\color{red} \subsection[Accessing substrate information]{Accessing substrate information}
-
-%TODO maybe write this description
-%TODO what's about global settings?
-
-\subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
-
-To process and store huge numbers of raw data files, the function \code{batch\_opm\_to\_yaml()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} format.
-It is possible to let \pkg{opm} automatically include metadata and aggregated values (curve parameters) during this conversion.
-File selection and unselection using regular expressions or globbing patterns is integrated in the function.
-The result from each file conversion is reported in detail, and a \textit{demo} mode is available for viewing the attempted file selections and conversions before actually running the (potentially time consuming) conversion process.
-The package is accompanied by a command-line script \code{run_opm.R}, enabling the users to run the batch conversion without starting an interactive \proglang{R} session.
-This script is guaranteed to run at least under \proglang{UNIX}-like operating systems; see the documentation of \proglang{Rscript} for details.
 
 
 \subsection[Global settings]{Global settings}\label{methods settings}
@@ -655,6 +654,43 @@ rm(many.plates) # tidy up
 
 A single plate could also be imported using \code{read\_single\_opm}.
 But this might only occasionally be useful, as \code{read\_opm} can cope with single files, too.
+
+
+
+\subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
+
+In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML}) to \proglang{YAML} format, is also possible.
+This optionally includes aggregating the raw data by estimating curve parameters (Section~\ref{application aggregating}), discretizing these parameters (Section~\ref{application discrete-text}) and integrating metadata (Section~\ref{application discrete-text}). 
+Again there is a \textit{demo} mode to first investigate the attempted conversions:
+
+<<results=hide, width=10>>=
+batch_opm_to_yaml(files, include = "*Example_?.csv.xz",
+  aggr.args = list(boot = 100, method = "opm-fast"),
+  outdir = ".", demo = TRUE)
+@
+
+The arguments \code{aggr.args}, \code{disc.args} and \code{md.args} control aggregation, discretization and metadata incorporation, respectively.
+Details on all three processes are given in the according sections, and for the exact use of these arguments see the \pkg{opm} manual, entering \code{?batch\_opm\_to\_yaml}.
+
+The following command would read three of the seven example input files, estimate two of the four curve parameters using the fast native method including 100 rounds of bootstrapping, and store the resulting \proglang{YAML} files (one per plate) in the current working directory (given by ``.''):
+
+<<results=hide, width=10>>=
+batch.result <- batch_opm_to_yaml(files, include = "*Example_?.csv.xz",
+  outdir = ".",
+  aggr.args = list(boot = 100, method = "opm-fast"))
+@
+
+By default, progress messages are printed to the screen.
+The return value, here assigned to the \code{batch.result} variable, also contains all information about the success of the individual file conversions.
+
+The ``run\_opm.R'' script distributed with the package is an \proglang{Rscript}-dependent command-line tool for non-interactively running such file conversions.
+Its location in the file system can be obtained using
+
+<<results=hide, width=10>>=
+opm_files("scripts")
+@
+
+Regarding its use, see the documentation of \proglang{Rscript} for details (enter \code{?Rscript} at the \proglang{R} prompt) and watch the help output of this script (try \code{system(opm_files("scripts"))}).
 
 
 \subsection[Integration and manipulation of metadata]{Integration and manipulation of metadata}\label{application metadata}
@@ -1097,19 +1133,18 @@ The function \code{heat\_map()} (see Figure~\ref{fig:heat_map}) provides false-c
 In the context of PM data, it makes most sense to apply it to the estimated curve parameters.
 This \pkg{opm} function is a wrapper for \code{heatmap()} from the \pkg{stats} and \code{heatmap.2()} from the \pkg{gplots} package with some adaptations to PM data.
 For instance, row groups can be automatically constructed from the metadata.
-The function \code{heat\_map()} must be applied to matrices or data frames constructed using the helper-function \code{extract()}:
+
+The function \code{heat\_map()} could be applied to matrices or data frames constructed using the helper function \code{extract()}, but it is more convenient to apply it directly to \proglang{OPMS} objects:
 
 <<results=hide, fig=FALSE, width=10>>=
-vaas.1.6.A <- extract(vaas.1.6, as.labels = list("Species", "Strain"),
-  dataframe = TRUE)
-vaas.1.6.A.hm <- heat_map(vaas.1.6.A, as.labels = "Strain",
+vaas.1.6.A <- heat_map(vaas.1.6, as.labels = "Strain",
   as.groups = "Species")
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-print(heat_map(vaas.1.6.A, as.labels = "Strain", as.groups = "Species"))
+print(heat_map(vaas.1.6, as.labels = "Strain", as.groups = "Species"))
 @
 }
 \caption{
@@ -1122,9 +1157,12 @@ The default colour setting uses topological colours, with deep violet and blue i
 }
 \end{figure}
 
-Additionally, using the function \code{ci\_plot()} the user is enabled to visualize parameters'point estimators and corresponding 95\% confidence intervals, derived \textit{via} bootstrapping during aggregation of raw kinetic data into curve parameters. 
-Thereby the bracket operator as described above (see Section~\ref{application manipulation}) facilitates the free selection of subsets of interest. 
-In an example Figure~\ref{fig:ci_plot} provides such a visualization of the parameter maximum height (A) for the three wells A01 (Negative Control), A02 (Dextrin) and A03 (D-Maltose) from one plate (the sixth plate of the first biological repetion from dataset \code{vaas_et_al}).
+The function \code{ci\_plot()} is able to visualize point estimates and corresponding 95\% confidence intervals for the parameters, derived \textit{via} bootstrapping during aggregation of raw kinetic data into curve parameters, or, in conjunction with \code{extract()}, from plate groups defined by the metadata.
+Thereby the bracket operator as described above (see Section~\ref{application manipulation}) facilitates the selection of subsets of interest. 
+
+Figure~\ref{fig:ci_plot} provides an example of such a visualization.
+The parameter maximum height (A) is plotted for the three wells A01 (Negative Control), A02 (Dextrin) and A03 (D-Maltose) from one plate (the sixth plate of the first biological repetition from dataset \code{vaas_et_al}).
+The code is as follows:
 
 <<results=hide, fig=FALSE, width=10>>=
 ci_plot.legend <- ci_plot(vaas.1.6[, , c("A01", "A02", "A03")],
@@ -1135,89 +1173,104 @@ ci_plot.legend <- ci_plot(vaas.1.6[, , c("A01", "A02", "A03")],
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-print(ci_plot(vaas.1.6[, , c("A01", "A02", "A03")], as.labels = list("Species", "Strain"), subset = "A", legend.field = NULL, x = 170, y = 3))
+ci_plot(vaas.1.6[, , c("A01", "A02", "A03")], as.labels = list("Species", "Strain"), subset = "A", legend.field = NULL, x = 170, y = 3)
 @
 }
 \caption{
 \label{fig:ci_plot}
 Comparison of point estimates and their 95\% confidence intervals for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
 Shown are the results for estimating the maximum height of the single curves on the three wells A01 (Negative Control), A02 (Dextrin) and A03 (D-Maltose) as indicated by the sub-plot titles. Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
+But note that here the confidence intervals only indicate the uncertainty in parameter estimation from single curves.
 }
 \end{figure}
 
-Furthermore, the helper-function \code{extract()} offers flexibility to apply different approaches of normalisation and grouping of comprehensive OPMS-objects according selected metadata, as introduced in Section~\ref{methods plotting-aggregated}.
-As introduced in Section~\ref{methods plotting-aggregated} the purpose of normalization in an PM-experiment is to minimize systematic variations in the aggregated curve parameters so as to more easily recognize biological differences, as well as to allow for the comparison of parameters across plates processed in different experimental runs.
-The underlying ideas are mainly derived from DNA-microarray experiments for measuring gene-expression levels \citep{quackenbush}.
+Furthermore, the helper function \code{extract()} (more specifically, its data-frame method) can group curve parameters from \proglang{OPMS} objects according to selected metadata and calculate according point estimates (means) and confidence intervals.
+It can also apply normalisation beforehand, which might frequently be necessary to more easily recognize biological differences; see Section~\ref{methods plotting-aggregated}.
 
-After the extraction of the values together with demanded metatdata (argument \code{as.labels}), the resulting dataframe can be treated by \code{extract()} for generating dataframes with joined metadata for grouping (indicated by \code{as.groups}) and applied normalisation \textit{via} the argument \code{norm.per}. 
+After the extraction of the values together with necessary metadata (argument \code{as.labels}) in a first call to \code{extract()}, the resulting data frame can be treated by \code{extract()} again for generating another data frame with numeric values grouped according to the \code{as.groups} argument and optionally normalisation applied, as triggered \textit{via} the argument \code{norm.per}.
+The first data frame would be created as follows:
 
 <<results=hide, fig=FALSE, width=10>>=
 x <- extract(vaas_et_al, as.labels = list("Species", "Strain"),
   dataframe = TRUE)
 @
-For a better understanding of the following applications of \code{extract()} it is highly recommended to take a look on the structure of the resulting dataframe.
 
-\code{norm.per = c("none")} applies no normalisation and returns a dataframe with \code{as.groups = TRUE} containing means computed of estimators according the available metadata (see Fig~\ref{fig:ci_plot_groups}). (Note: the bracket operator \code{[]} addresses the respective columns in the data frame \code{y} produced using \code{extract()}).
+For a better understanding of the following secondary applications of \code{extract()} it is highly recommended to take a look at the results from plotting the data with \code{ci\-plot()} and also at structure of the created data frames.
+
+Using \code{norm.per = "none"} causes normalisation to be omitted.
+If \code{as.groups = TRUE} is used, all metadata that have been included in the first data frame are used to determine the groups.
+The result is shown in Fig~\ref{fig:ci_plot_groups}, after a further selection of columns from the second data frame to be passed to \code{ci\_plot()}.
 
 <<results=hide, fig=FALSE, width=10>>=
 # without normalisation
-y <- extract(x, as.groups = TRUE,  norm.per = c("none"))
-ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 350, y = 0)
+y <- extract(x, as.groups = TRUE,  norm.per = "none")
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 0)
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=8>>=
-print(ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 350, y = 0))
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 0)
 @
 }
 \caption{
 \label{fig:ci_plot_groups}
-Comparison of mean point estimates and their 95\% confidence intervals, computed over "Species" and "Strain", for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
-Shown are the results on the three wells A01 (Negative Control), A02 (Dextrin), A03 (D-Maltose), A04 (D-Trehalose) and A10 (Positive Control) as indicated by the sub-plot titles. Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
+Comparison of mean point estimates and their 95\% confidence intervals, computed with \code{extract()} over groups defined by the ``Species'' and ``Strain'' metadata entries, for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
+Shown are the results on the three wells A01 (Negative Control), A02 (Dextrin), A03 (D-Maltose), A04 (D-Trehalose) and A10 (Positive Control) as indicated by the sub-plot titles.
+Normalisation was not used for this plot.
+Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
+Compare this with Figure~\ref{fig:ci_plot_norm}.
 }
 \end{figure}
 
-Normalisation subtracting plate means (\code{norm.per = c("row")}; by default, this would subtract the mean of each plate from each of its values (over all wells of that plate)) or well means (\code{norm.per = c("column")}; by default, this would subtract the mean of each well from each of its values (over all plates in which this well is present)) can be applied and the results directly plotted using \code{ci\_plot()}.
+Normalisation can be applied by subtracting plate means (\code{norm.per = "row"}).
+Per default, this would subtract the mean of each plate from each of its values (over all wells of that plate).
+Alternatively, well means can be subtracted (\code{norm.per = "column"}).
+Per default, this would subtract the mean of each well from each of its values (over all plates in which this well is present).
+Division instead of subtraction is also possible (\code{subtract = FALSE}).
 
 <<results=hide, fig=FALSE, width=10>>=
-# without normalisation (no figure is plotted in this manual)
-y <- extract(x, as.groups = TRUE,  norm.per = c("none"))
-ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 350, y = 1)
-# normalisation by plate-means (no figure is plotted in this manual)
-y <- extract(x, as.groups = TRUE,  norm.per = c("row"))
-ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 130, y = 1)
-# normalisation by well-means (no figure is plotted in this manual)
-y <- extract(x, as.groups = TRUE,  norm.per = c("column"))
-ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 20, y = 1)
+# without normalisation (figure not shown)
+y <- extract(x, as.groups = TRUE,  norm.per = "none")
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 1)
+
+# normalisation by plate means (figure not shown)
+y <- extract(x, as.groups = TRUE,  norm.per = "row")
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 130, y = 1)
+
+# normalisation by well means (figure not shown)
+y <- extract(x, as.groups = TRUE,  norm.per = "column")
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 20, y = 1)
 @
 
-Moreover, \textit{via} \code{norm.by} it is possible to use selected well(s)/plate(s) for calculation of means used for normalisation. 
+Moreover, \textit{via} \code{norm.by} it is possible to use one to several selected wells or plates for the calculation of the means used for normalisation. 
 With \code{direct = TRUE} even directly entered numeric values can be used for normalisation purposes. 
-See Figure~\ref{fig:ci_plot_norm} for an example of plotted CIs normalized by subtracting the value of well A10 (Positive Control). 
-Note that due to the internal structure of the dataframe \code{norm.per = "row"} in combination with the \code{norm.by}-argument has to be used.
+See Figure~\ref{fig:ci_plot_norm} for an example of plotted confidence intervals obtained from data normalized by subtracting the value of well A10 (``Positive Control''). 
+Note that due to the structure of the data frame \code{norm.per = "row"} in combination with the \code{norm.by} argument has to be used.
 
 
 <<results=hide, fig=FALSE, width=10>>=
-# normalisation by subtraction of well-mean of A10
-y <- extract(x, as.groups = TRUE,  norm.per = c("row"), norm.by = 10,
+# normalisation by subtraction of the well means of well A10 only
+y <- extract(x, as.groups = TRUE,  norm.per = "row", norm.by = 10,
   subtract = TRUE)
-ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 0, y = 0)
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 0, y = 0)
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=8>>=
-print(ci_plot(y[,c(1:7, 13)], legend.field = NULL, x = 0, y = 0))
+print(ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 0, y = 0))
 @
 }
 \caption{
 \label{fig:ci_plot_norm}
-Comparison of mean point estimates and their 95\% confidence intervals, computed over ``Species'' and ``Strain'' and normalized by subtraction of the overall well-mean of A10 (Positive Control) for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
+Comparison of mean point estimates and their 95\% confidence intervals, computed with \code{extract()} over groups defined by the ``Species'' and ``Strain'' metadata entries, for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
 Shown are the results on the three wells A01 (Negative Control), A02 (Dextrin), A03 (D-Maltose), A04 (D-Trehalose) and A10 (Positive Control) as indicated by the sub-plot titles.
-Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
+Normalisation was done by subtracting the overall well means of well A10 (``Positive Control''). Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
+Compare this with Figure~\ref{fig:ci_plot_groups}.
 }
 \end{figure}
+
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
@@ -1286,22 +1339,13 @@ summary(xx)
 @
 
 \rcscom{
-Is it possible to show here at least part of the output from \code{summary(x)}?
+Is it possible to show here at least part of the output from \code{summary(xx)}?
 Markus, can we adapt the summary function, that only the model-fit is shown without the data?
 }
 
 \code{opm_mcp()} internally calls \code{glht} from package \pkg{multcomp} and returns an object of class \code{glht}. The results of the performed statistical test can be plotted (shown in Figure~\ref{fig:ci_plot_mcp}) using the methods available for objects of class \code{glht} (see help-page of \code{glht} for details).
 On the y-axes the performed comparisons are indicated as differences of the groups, determining which differences of means are computed.
 
-For example, the last comparison showing the difference of mean of curve parameter A values of strain DSM 30083T minus the mean of A values of strain DSM18039 results 26.615 units. 
-Therefore, the point estimator of this difference of specific group-means is plotted at position 26.615 on the x-axis. 
-That is, in mean A-values for Strain DSM30083T is 26.615 units larger than the mean A-value of strain DSM18039 (for the detailed numeric outcome see the estimate results provided by \code{summary(xx)} or \code{confint(xx)}).
-Additionally, each point estimator for difference of means comes with an 95\% confidence interval providing information about statistical significance of the test, the effect size and the variability of the mean-differences.
-
-In pairwise comparisons where the 95\% confidence interval includes zero there is no significant difference between the group means and respectively, if zero is not included, a significant difference is shown. 
-Then, the more distant the 95\% confidence interval is from zero (dashed vertical line in the plot), the larger the biological effect size, i.e. the real differences between the groups. 
-It has to be pointed out, that effect sizes are not correlated with sizes of the corresponding p-values: In this example the results from the statistical calculations indicate that all significant differences are highly significant (p < 0.001).
-However, the position of the 95\% confidence interval indicates that the difference between strains DSM18039 and 429SC1 (i.e, the effect size in the second comparison) is much larger than between strains DSM30083T and 429SC1 (smaller effect size in the third comparison).
 
 <<fig=FALSE, width=8>>=
 op <- par(no.readonly = TRUE) # default plotting settings
@@ -1330,21 +1374,35 @@ par(op)
 
 \end{figure}
 
+
+For example, the last comparison showing the difference of mean of curve parameter A values of strain DSM 30083T minus the mean of A values of strain DSM18039 results 26.615 units. 
+Therefore, the point estimator of this difference of specific group-means is plotted at position 26.615 on the x-axis. 
+That is, in mean A-values for Strain DSM30083T is 26.615 units larger than the mean A-value of strain DSM18039 (for the detailed numeric outcome see the estimate results provided by \code{summary(xx)} or \code{confint(xx)}).
+Additionally, each point estimator for difference of means comes with an 95\% confidence interval providing information about statistical significance of the test, the effect size and the variability of the mean-differences.
+
+In pairwise comparisons where the 95\% confidence interval includes zero there is no significant difference between the group means and respectively, if zero is not included, a significant difference is shown. 
+Then, the more distant the 95\% confidence interval is from zero (dashed vertical line in the plot), the larger the biological effect size, i.e. the real differences between the groups. 
+It has to be pointed out, that effect sizes are not correlated with sizes of the corresponding p-values: In this example the results from the statistical calculations indicate that all significant differences are highly significant (p < 0.001).
+However, the position of the 95\% confidence interval indicates that the difference between strains DSM18039 and 429SC1 (i.e, the effect size in the second comparison) is much larger than between strains DSM30083T and 429SC1 (smaller effect size in the third comparison).
+
 %\rcscom{
 %Kommentar Johannes: Bis hierhin hatten wir ein sehr simples und straight-forward example.
 %Nun koennte Lea, wie schon von ihr angedeutet, die Spezialitaeten erlaeutern, z.B. was eine contrast matrix ist, ect.
 %Anschliessend koennten wir nochmal ein echt komplexes Beispiel bringen, in dem man die volle Wucht der moeglichen Argumente in  \code{opm\_mcp()} ausnutzt, so dass der Leser nocheinmal wirklich vor Augen gefuehrt bekommt, was man mit  \code{opm\_mcp()} so alles Feines machen kann.
 %}
 
-\rcscom{TODO Lea: here the application of \code{opm\_mcp()} with example and output-graphics.
-reshaping the data}
+The main steps the function \code{opm\_mcp()} internally proceeds are a reshaping of the data into a flat-file formatted dataframe and the application of \code{glhp} from \pkg{multcomp}.
+The reshaping can be viewed, when the argument \code{do.mcp = FALSE}:
+
 <<results=hide, width=8>>=
 data(vaas_4)
 x <- opm_mcp(vaas_4, model = ~ Species + Strain,
   do.mcp = FALSE)
 @
 
-\rcscom{Lea, explain contrasts, refer to \code{contrMat() from \pkg{multcomp}}}
+For performing the comparisons of interest, the user has to provide a contrast-matrix.
+A contrast is defined as a linear combination of two or more factor level means (averages) whose coefficients add up to zero \citep{hochberg}. 
+The function \code{contrMat()} from \pkg{multcomp} provides an overview about the predefined contrast-types, which can be used in the \code{opm\_mcp()}-argument \code{mcp.def}.
 
 <<results=hide, echo=FALSE, width=8>>=
 n <- c(10,20,30,40)
@@ -1360,24 +1418,54 @@ n <- c(10,20,30,40)
  contrMat(n, type = "McDermott")
 @
 
-
-\rcscom{comment Johannes: Lea, could it make sense to explain the contrast matrix using the following example? I still not have understood for what these 0, 1, and -1 are.}
-
-The principle of a contrast matrix can best be explained using the example from above (see Figure~\ref{fig:ci_plot_mcp}). If I had any idea on that stuff, I would have given an appropriate explanation for the code output seen below.
+Using the example from above (see Figure~\ref{fig:ci_plot_mcp}), a brief illustration of a resulting contrast matrix is given.
+``Tukey''-type contrasts define to compare all group-against all others in the dataset. The underlying contrast-matrix can be viewed by typing  
 <<width=8>>=
 summary(xx)[2]
 @
 
+Analogously, the user is free to set up contrast-matrices containing the comparisons of interest.
+However, it must be set up a model first, which defines which factor determines the groups and thus the possibilities for comparisons.
+For matters of convenience, we want to compare the overall-performance of the tested organisms on the first four wells A01 to A04. 
+The model will therefore contain \code{Well} as factor-variable and four possible comparisons of interest can be defined like:
+<<results=hide, width=8>>=
+ contr <- rbind(
+   "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
+   "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
+  "A01 (Negative Control) - A04 (D-Trehalose)" = c(-1, 0, 0, -1),
+   "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
+@
 
-\rcscom{Lea, comparison according metadata 'Species'}
+Using the \code{opm_mcp()}-function, the resulting code ends in:
+<<results=hide, width=8>>=
+x <- opm_mcp(vaas_4[, , 1:4],
+    model = ~ Well, m.type = "lm", mcp.def = contr)
+@
+
+Visualization of the results is available by the \code{plot()}-method for \code{glht}-objects:
+\begin{figure}
+\scalebox{0.9}{
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
+ # creating an informative plot
+ op <- par(no.readonly = TRUE) # default plotting settings
+ par(mar = c(3, 20, 3, 2))
+ plot(x)
+ par(op) # reset plotting settings
+@
+}
+\caption{
+\label{fig:opm_mcp_CI_plotII}
+95\% confidence interval for manyally chosen comparison of group means on a specifically selected set of wells.
+}
+\end{figure}
+
+It has to be pointed out, that the \code{model}-statement defines, which group-means are available for comparisons. In the following example \code{Species} contains only two levels (``Pseudomonas aeruginosa'' and ``Escherichia coli''). Thus, irrespectively the stated contrast-type, only one comparison is possible.
+
 <<results=hide, width=8>>=
 x <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
   mcp.def = mcp(Species = "Dunnett"))
 @
 
-\rcscom{Lea, explain confidence intervals for differences of group means, point out the difference to the 95\%CI of the curve-parameter estimators.
-Figure:
-informative plotting of the CI:}
 <<results=hide, width=8>>=
 op <- par(no.readonly = TRUE) # default plotting settings
 par(mar = c(3, 20, 3, 2))
@@ -1400,35 +1488,10 @@ par(op)
 }
 \end{figure}
 
-\rcscom{Lea, explain: more sophisticated with manually defined set of contrast:}
 
-<<results=hide, width=8>>=
- contr <- rbind(
-   "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
-   "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
-  "A01 (Negative Control) - A04 (D-Trehalose)" = c(-1, 0, 0, -1),
-   "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
- x <- opm_mcp(vaas_4[, , 1:4],
-    model = ~ Well, m.type = "lm", mcp.def = contr)
-@
-
-
-\begin{figure}
-\scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
- # creating an informative plot
- op <- par(no.readonly = TRUE) # default plotting settings
- par(mar = c(3, 20, 3, 2))
- plot(x)
- par(op) # reset plotting settings
-@
-}
-\caption{
-\label{fig:opm_mcp_CI_plotII}
-95\% confidence interval for manyally chosen comparison of group means on a specifically selected set of wells.
-}
-\end{figure}
-
+\rcscom{Lea, explain confidence intervals for differences of group means, point out the difference to the 95\%CI of the curve-parameter estimators.
+Figure:
+informative plotting of the CI:}
 
 
 \subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete-phylogeny}
@@ -1544,7 +1607,7 @@ See the manual for further details, using \code{?html\_args}.
 \subsection[Fine-tuning the discretization]{Fine-tuning the discretization}\label{application discrete-finetuning}
 
 One can also conduct discretization step-by-step by using the functions \code{best\_cutoff()} or \code{discrete()} after extracting matrices from the \proglang{OPMS} object.
-This offers more flexibility (such as additional discretization approaches, e.g. the creation of multiple-state characters) but is also more tedious.
+This offers more flexibility (such as additional discretization approaches, e.g. the creation of multiple-state characters) but is also more tedious than using \code{do\_disc()}.
 
 <<results=hide, width=8>>=
 vaas.repl <- subset(vaas_et_al,
@@ -1553,8 +1616,7 @@ vaas.repl <- extract(vaas.repl,
   as.labels = list("Species", "Strain", "Experiment", "Plate number"))
 @
 
-%(As above, to specify \code{opm::} is not normally necessary but clashes with a \code{select} method defined in the \pkg{MASS} package sometimes need to be avoided.)
-The A parameter can be discretized into (per default) 32 states using the theoretical range of 0 to 400 OmniLog\textregistered \ units (see Section~\ref{methods discrete-multistate}):
+The A parameter (see Figure~\ref{fig:parameters}) can be discretized into (per default) 32 states using the theoretical range of 0 to 400 OmniLog\textregistered \ units (see Section~\ref{methods discrete-multistate}):
 
 <<width=12>>=
 vaas.repl.disc <- discrete(vaas.repl, range = c(0, 400))
@@ -1590,33 +1652,6 @@ Exporting the data in one of the supported phylogeny formats would work as descr
 If the \code{do\_disc()} function described above calls \code{discrete()}, then only in gap mode and with \code{middle.na} set to \code{TRUE}, yielding a vector or logical matrix.
 
 
-\subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
-
-In addition to \code{read\_opm()} and \code{read\_single\_opm()}, which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML}) to \proglang{YAML} format, optionally after aggregating the raw data by estimating curve parameters and integrating metadata, is also possible.
-Again there is a \textit{demo} mode to first investigate the attempted conversions:
-<<results=hide, width=10>>=
-batch_opm_to_yaml(files, include = "*Example_?.csv.xz",
-  aggr.args = list(boot = 100, method = "opm-fast"),
-  outdir = ".", demo = TRUE)
-@
-The arguments \code{aggr.args} and \code{md.args} control aggregation and metadata incorporation, respectively.
-Details on both processes are given below, and for the exact use of these arguments see the \pkg{opm} manual, entering \code{?batch\_opm\_to\_yaml}.
-The following command would thus read three of the seven example input files, estimate two of the four curve parameters using the fast native method including 100 rounds of bootstrapping, and store the resulting \proglang{YAML} files (one per plate) in the current working directory (given by ``.''):
-<<results=hide, width=10>>=
-batch.result <- batch_opm_to_yaml(files, include = "*Example_?.csv.xz",
-  outdir = ".",
-  aggr.args = list(boot = 100, method = "opm-fast"))
-@
-By default, progress messages are printed to the screen.
-The return value, here assigned to the \code{batch.result} variable, also contains all information about the success of the individual file conversions.
-The \code{run_opm.R} script distributed with the package is an \proglang{Rscript}-dependent command-line tool for non-interactively running such file conversions.
-Its location in the file system can be obtained using
-
-<<results=hide, width=10>>=
-opm_files("scripts")
-@
-
-
 \subsection[Accessing substrate information]{Accessing substrate information}\label{application substrates}
 
 The \pkg{opm} package contains a number of functions suitable for accessing precomputed information on the substrates of wells and plates.
@@ -1624,7 +1659,8 @@ In the manual and help pages these functions are contained in the family ``namin
 One usually would start a search by determining the exact spelling of an internally used name with \code{find\_substrate()}:
 
 <<results=hide>>=
-(names <- find_substrate(c("Glutamine", "Glutamic acid")))
+names <- find_substrate(c("Glutamine", "Glutamic acid"))
+names
 @
 
 The results is a list containing character vectors with the results for each query name as values.
@@ -1633,13 +1669,15 @@ The default \code{search} argument is ``exact'', which is exact (case-sensitive)
 One might want to use ``glob'' searching mode:
 
 <<results=hide>>=
-(names <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob"))
+names <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob")
+names
 @
 
 But with so-called wildcards, i.e. ``*'' for zero to many and ``?'' for a single arbitrary character the search is more flexible:
 
 <<results=hide>>=
-(names <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob"))
+names <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob")
+names
 @
 
 This fetches all terms that end in either query character string, and does so case-insensitively.
@@ -1648,17 +1686,19 @@ Advanced users can apply the much more powerful ``regex'' and ``approx'' search 
 Once the internally used names have been found, information on the substrates can be queried such as their occurrences and positions on plates:
 
 <<results=hide>>=
-(positions <- find_positions(names))
+positions <- find_positions(names)
+positions
 @
 
 This yields a nested list containing two-column matrices with plate names in the first and well coordinates in the second column.
 References to external data resources for each substrate name can be obtained using \code{substrate\_info()}:
 
 <<results=hide>>=
-(subst.info <- substrate_info(names))
+subst.info <- substrate_info(names)
+subst.info
 @
 
-By default this yields CAS numbers, but KEGG and Metacyc IDs have also been collected for the majority of the substrates.
+By default this yields CAS numbers, but MeSH, KEGG and Metacyc IDs have also been collected for the majority of the substrates.
 Another use of \code{substrate\_info()} is to convert substrate names to lower case but protecting name components such as abbreviations or chemical symbols.
 See the manual for further details, help page \code{?substrate\_info}.
 
@@ -1666,27 +1706,31 @@ See the manual for further details, help page \code{?substrate\_info}.
 \section[Discussion and conclusion]{Discussion and conclusion}
 
 The high-dimensional sets of longitudinal data collected by the OmniLog\textregistered \ PM system call for fast and easily applicable (and extendable) data organisation and analysis facilities.
-The here presented \pkg{opm} package for the free statistical software \proglang{R} \citep{r} features not only the calculation of aggregated values (curve parameters) including their (bootstrapped) confidence intervals, but also provides a rather complete infrastructure for the management of raw kinetic values and aggregated curve parameters together with any kind of meta-information of relevance for the user.
+The here presented \pkg{opm} package for the free statistical software \proglang{R} \citep{r} features not only the calculation of aggregated values (curve parameters) including their (bootstrapped) confidence intervals, but also provides a rather complete infrastructure for the management of raw kinetic values and curve parameters together with any kind of meta-information of relevance for the user.
+
+The spline estimation and parameter calculation in the data-aggregation step of has been optimized for the analysis of PM data.
+One main issue in the spline-fitting procedure is the selection of suitable smoothing parameters.
+The methods included in \pkg{opm} provide not only the basic framework \citep{vaas} based on methods from the \pkg{grofit} package \citep{kahm}, but also specifically adapted applications of  \code{smooth.spline} and the \pkg{mgcv} package \citep{Wood2003, eilers}
+
 The analysis toolbox of the package includes the implementation of a fully automated estimation of whether respiration kinetics should be classified as either a ``positive'' or ``negative'' (absent) physiological reaction.
 This dichotomization is apparently of high interest to many users of the OmniLog\textregistered \ PM system but would apparently be extremely biased as long as thresholds are chosen ad hoc and by eye.
-(Users should nevertheless be aware that loss of information is inherent to discretizing continuous data.)
-The \pkg{opm} package enables the user to produce highly informative and specialized graphical outputs from both the raw kinetic data as well as the curve parameter estimates.
+Users should nevertheless be aware that loss of information is inherent to discretizing continuous data.
+
+The \pkg{opm} package enables the user to produce highly informative and specialized graphical outputs from both the raw kinetic data as well as the curve-parameter estimates.
+Moreover, the package provides simultaneous multiple comparisons of group means \citep{hothorn, bretz, hsu} with an interface specifically adapted to the typical PM data objects.
 In combination with the functionality for annotating the data with meta-information and then selecting subsets of the data, straightforward analyses regarding specific analytical questions can be performed without the need to invoke other \proglang{R} packages.
 
-But since the design of the \pkg{opm} objects is not intended to be limited to specific analysis frameworks, the \pkg{opm} package works as a data containment providing well organized and comprehensive PM data for further, more specialized analyses using methods from different \proglang{R} packages or other third party software tools including phylogeny software.
-The generation of \proglang{S4} objects featuring a rich set of methods as containers for either single or multiple OmniLog\textregistered \ PM plates enables not only the transfer of raw kinetic data into \proglang{R} but also eases their further processing with, for example, other \proglang{R} packages.
+But since the design of the \pkg{opm} objects is not intended to be limited to specific analysis frameworks, the \pkg{opm} package works as a data containment providing well organized and comprehensive PM data for further, more specialized analyses using methods from different \proglang{R} packages or other third-party software tools.
+Particularly the generation of \proglang{S4} objects featuring a rich set of methods as containers for either single or multiple OmniLog\textregistered \ PM plates enables not only the transfer of raw kinetic data into \proglang{R} but also eases their further processing.
 The complex data bundles can also be exported in \proglang{YAML} format (www.yaml.org), which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
 
-These features render the \pkg{opm} package to be the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
+These features render the \pkg{opm} package the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
 Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 
 An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
-At the moment only the translation of well coordinates to substrate names is provided, as well as access to CAS, KEGG and Metacyc IDs for the majority of the substrates.
+At the moment only the translation of well coordinates to substrate names is provided, as well as access to CAS, MeSH, KEGG and Metacyc IDs for the majority of the substrates.
 More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
 
-Potential for improvement can also be seen in the spline estimation and parameter calculation in the data-aggregation step.
-One main issue in the spline-fitting procedure is the selection of suitable smoothing parameters.
-The here presented methods provide a basic framework for this based on methods from the \pkg{grofit} package, but could also be improved by the incorporation of approaches to the selection of smoothing parameters \textit{via} cross-validation \citep{eilers}, generalized cross-validation \citep{craven} and application of information criteria like AIC or BIC \citep{eilers} into the fitting procedure \citep{vaas}.
 Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
 The current version is entirely file-based, and whereas powerful selection mechanisms for both input files and container objects for previously imported PM plates have already been implemented, future version could directly include database access.
 In the meantime, however, the output \proglang{YAML} format is likely to facilitate the quick establishment of third-party software for importing PM data into a database.

@@ -73,6 +73,7 @@
 #' @keywords htest
 #' @export
 #'
+#' @author Lea A.I. Vaas
 #' @family multcomp-functions
 #' @seealso multcomp::glht stats::lm stats::formula
 #'

@@ -195,6 +195,9 @@ par(mar = c(3, 15, 3, 2))
 plot(y)
 par(op) # reset plotting settings
 }
+\author{
+  Lea A.I. Vaas
+}
 \seealso{
   multcomp::glht stats::lm stats::formula
 }
