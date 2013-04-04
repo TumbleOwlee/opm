@@ -1328,7 +1328,7 @@ setMethod("map_values", c("list", "formula"), function(object, mapping,
     if (is.list(left)) {
       right <- rep(right, length.out = length(left))
       for (i in seq_along(left))
-        object[[names(left)[i]]] <- right[[i]]
+        object[[left[[i]]]] <- right[[i]]
     } else
       object[[left]] <- right
     object

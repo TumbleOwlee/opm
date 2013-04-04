@@ -908,7 +908,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   \item{none}{No normalization.}
 #'   \item{row}{Normalization per row. By default, this would subtract the mean
 #'     of each plate from each of its values (over all wells of that plate).}
-#'   \item{column}{Normalization per column By default, this would subtract the
+#'   \item{column}{Normalization per column. By default, this would subtract the
 #'     mean of each well from each of its values (over all plates in which this
 #'     well is present).}
 #'   }
@@ -1094,17 +1094,17 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
     direct = inherits(norm.by, "AsIs"), dups = c("warn", "error", "ignore"),
     split.at = param_names("split.at")) {
 
-  do_norm <- function(x, row, by, direct, subtract) {
-    sweep(x, 2L - row, if (direct)
-        by
-      else if (row)
-        rowMeans(x[, by, drop = FALSE])
-      else
-        colMeans(x[by, , drop = FALSE]), if (subtract)
-        "-"
-      else
-        "/")
-  }
+  do_norm <- function(x, row, by, direct, subtract) sweep(x, 2L - row,
+    if (direct)
+      by
+    else if (row)
+      rowMeans(x[, by, drop = FALSE])
+    else
+      colMeans(x[by, , drop = FALSE]), if (subtract)
+      "-"
+    else
+      "/"
+  )
 
   LL(subtract, direct)
   param.pos <- assert_splittable_matrix(object, split.at)

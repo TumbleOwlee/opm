@@ -70,7 +70,7 @@
   \item{none}{No normalization.} \item{row}{Normalization
   per row. By default, this would subtract the mean of each
   plate from each of its values (over all wells of that
-  plate).} \item{column}{Normalization per column By
+  plate).} \item{column}{Normalization per column. By
   default, this would subtract the mean of each well from
   each of its values (over all plates in which this well is
   present).} } This step can further by modified by the
