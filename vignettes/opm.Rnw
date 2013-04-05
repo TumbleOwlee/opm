@@ -545,6 +545,7 @@ A usage example is provided in Section~\ref{application discrete-table}.
 <<echo=FALSE>>=
 options(prompt = "R> ")
 options(continue = "   ")
+options(useFancyQuotes = FALSE)
 library("methods") # necessary?
 @
 
@@ -1373,17 +1374,11 @@ The filled black circle indicates the point estimator of difference between the 
 
 The main results can be obtained as follows:
 
-<<results=hide, width=8>>=
+<<width=8>>=
 mcp.summary <- summary(vaas.subset.mcp)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
 @
-
-\rcscom{
-Currently showing this output yielded unprintable characters!
-Unless this can be fixed we cannot show the output of summary() here.
-At the moment we could thus also omit \code{mcp.summary\$model\$call <- NULL}
-}
 
 The interpretation of confidence intervals for differences of means is somewhat distinct from the interpretation of the confidence intervals for the point estimators for curve parameters as discussed in Section~\ref{application plotting-aggregated}.
 In pairwise comparisons, if the 95\% confidence interval includes zero (dashed vertical lines in Figure~\ref{fig:ci_plot_mcp}) there is no significant difference between the group means.

@@ -207,54 +207,53 @@ setMethod("[", c(OPM, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     stop("selection resulted in empty matrix")
   mat <- cbind(x@measurements[i, 1L, drop = FALSE], mat)
   names(dimnames(mat)) <- names(dimnames(x@measurements))
-  result <- x
-  result@measurements <- mat
-  result
+  x@measurements <- mat
+  x
 }, sealed = SEALED)
 
 setMethod("[", c(OPMA, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  result <- callNextMethod(x, i, j, ..., drop = drop)
+  x <- callNextMethod(x, i, j, ..., drop = drop)
   if (drop)
-    return(as(result, OPM))
+    return(as(x, OPM))
   if (!missing(j))
-    result@aggregated <- result@aggregated[,
-      well_index(j, colnames(result@aggregated)), ..., drop = FALSE]
-  result
+    x@aggregated <- x@aggregated[, well_index(j, colnames(x@aggregated)), ...,
+      drop = FALSE]
+  x
 }, sealed = SEALED)
 
 setMethod("[", c(OPMD, "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
-  result <- callNextMethod(x, i, j, ..., drop = drop)
+  x <- callNextMethod(x, i, j, ..., drop = drop)
   if (drop)
-    return(result) # ... which is an OPM object in that case
+    return(x) # ... which is an OPM object in that case
   if (!missing(j))
-    result@discretized <- result@discretized[well_index(j,
-      names(result@discretized))]
-  result
+    x@discretized <- x@discretized[well_index(j, names(x@discretized))]
+  x
 }, sealed = SEALED)
 
 setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     drop = FALSE) {
   if (!missing(...))
     stop("incorrect number of dimensions")
-  fetch <- function(obj, idx) obj[i = idx, j = k, drop = drop]
-  result <- x@plates[i]
-  if (!length(result))
+  if (!length(y <- x@plates[i]))
     return(NULL)
-  no.k <- missing(k)
-  k <- well_index(k, colnames(result[[1L]]@measurements)[-1L])
-  if (missing(j)) {
-    if (!no.k || drop)
-      result <- lapply(result, fetch, idx = TRUE)
-  } else if (is.list(j))
-    result <- mapply(fetch, result, j, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-  else
-    result <- lapply(result, fetch, idx = j)
-  case(length(result), NULL, result[[1L]], {
-      x@plates <- result
-      x
-    })
+  k <- well_index(k, colnames(y[[1L]]@measurements)[-1L])
+  if (missing(j) || identical(j, TRUE)) {
+    # no call of OPM method if j and k are missing/TRUE and drop is FALSE
+    if (!identical(k, TRUE) || drop)
+      y <- mapply(`[`, x = y, MoreArgs = list(j = k, drop = drop),
+        SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  } else if (is.list(j)) {
+    y <- mapply(`[`, x = y, i = j, MoreArgs = list(j = k, drop = drop),
+      SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  } else
+    y <- mapply(`[`, x = y, MoreArgs = list(i = j, j = k, drop = drop),
+      SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  if (length(y) == 1L)
+    return(y[[1L]])
+  x@plates <- y
+  x
 }, sealed = SEALED)
 
 
