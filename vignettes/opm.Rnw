@@ -467,8 +467,8 @@ By referring to available metadata and/or the substrate names, the user is able 
 The choice of appropriate models and contrasts will be explained in detail below.
 As comparisons of the different curve parameters are performed separately, it is possible to ask very specific questions on differences between curve shapes.
 
-At this point, it is necessary to highlight the power and flexibility of simultaneous multiple comparison procedures and encourage the user to apply contrast tests on individually designed sets of mean comparison rather than to employ the probably more popular classical ANOVA-based approaches followed by F-tests.
-In general, F-tests \textit{only} provide global information about main effects and interaction effects.
+At this point, it is necessary to highlight the power and flexibility of simultaneous multiple comparison procedures and encourage the user to apply contrast tests on individually designed sets of mean comparisons rather than to employ the probably more popular classical ANOVA approaches, which perform F-tests.
+In general, such F-tests \textit{only} provide global information about main effects and interaction effects.
 That is, only the significance of a result yields evidence for a difference in the means among any of the considered treatments.
 For example, in the framework of PM data, a significant F-test on the effect of the substrate would indicate that at least two of the substrates cause distinct respiration. 
 Considering that each PM experiment encounters up to 96 different substrates per plate (overall up to 2,000), this information would obviously be nearly useless.
@@ -480,9 +480,15 @@ That is, if an increasing number of groups is compared to each other, conclusion
 Thus the so-called family-wise error-rate, which is essentially the probability of at least one false rejection among all the null hypotheses, needs to be controlled \citep{tukey}.
 The here internally employed functionality from the package \pkg{multcomp} provides solutions for all listed difficulties, since it allows for testing a user-defined set of contrasts based on a broad range of model types while internally controlling the family-wise error-rate.  
 
+Users of multiple-comparison procedures, especially of simultaneous multiple contrast-tests as applied here, are encouraged to have a look at the books by \citep{hochberg} and \citep{hsu}. 
+To evaluate the differences of treatment means where the groups are defined by more than one metadata entry and thus may result in quite complex models, we suggest to set up \textit{cell-means-models} (also known as \textit{pseudo-one-way-layouts} as discussed in \citep{schaarschmidt}). 
+In this approach estimators for treatment and variance are derived from a model with all treatments (here: metadata) combined in a single factor. 
+Technically this combination of factors can be done using \code{interaction()} or \code{paste()}.
+
 \rcscom{
-Lea, please explain the implementation of how factors are merged to produce a pseudo-one-way-layout \citep{schaarschmidt}, and/or remove this note.
+But this is never explained, and it is left unclear at which stage and to which kind of object either function could be applied.
 }
+
 The function \code{opm\_mcp()} internally reshapes the data into a ``flat'' data frame containing one column for the chosen parameter value, one column for the well (substrate) name and optionally additional columns for the selected metadata.
 For performing the testing procedure, a model has to be stated that specifies the factor levels that determine the grouping \citep{searle, hothorn}.
 The \code{opm\_mcp()} function allows for applying such testing directly to \proglang{OPMS} objects, obtaining these factors from stored metadata.
@@ -896,7 +902,6 @@ Other spline types can be specified \textit{via} the \code{type} argument in the
 But the defaults have been optimized for PM data.
 
 
-
 \subsection[Manipulation of OPM and OPMS data]{Manipulation of \proglang{OPM} and \proglang{OPMS} data}\label{application manipulation}
 
 In the \pkg{opm} manual and help pages, the functions relevant for retrieving information contained in \proglang{OPM} or \proglang{OPMS} objects are included in a family called ``getter-functions'' with according cross-references.
@@ -933,6 +938,7 @@ Which plates within \code{vaas\_et\_al} have \textit{Experiment} as metadata key
 "Experiment" %k% vaas_et_al
 vaas_et_al %k% "Experiment" # equivalent
 vaas_et_al %k% ~ Experiment # equivalent
+(~ Experiment) %k% vaas_et_al # equivalent, parentheses needed
 @
 
 Note that the arguments can be swapped and that a formula can be used.
@@ -1279,130 +1285,125 @@ Compare this with Figure~\ref{fig:ci_plot_groups}.
 %Die beiden Beispiel-Figures von Lea \ref{fig:opm_mcp_CI_plotI}, \ref{fig:opm_mcp_CI_plotII}) halte ich nicht fuer so ideal, denn \ref{fig:opm_mcp_CI_plotI} beinhaltet nur einen paarweisen Vergleich, kein multiple comparison, und in \ref{fig:opm_mcp_CI_plotII} gibt es keinen Unterschied bei irgendeinem der paarweisen Vergleich - es wird dem Leser das Potential einer solchen Abbildung nicht vollstaendig klar.
 %}
 
-To demonstrate the functionality of \code{opm\_mcp()}, a comparison of four different bacteria, with each ten replicates using GEN-III microplates, will serve as an example. 
-One experimental questions, which could be addressed might be ``Do these four bacteria differ in, e.g., the mean value of, e.g., curve parameter A of, e.g, well G06''?
-The answer will be given by perfoming a statistical comparison of the four groups (four organisms) against each other. 
-First, from the data set \code{vaas\_et\_al}, a subset of the ten technical replicates of GEN-III plates from the first biological replicate and also for the curves from well G06 only will be made.
+To demonstrate the use of \code{opm\_mcp()}, the function for conducting comparisons of group means directly on \proglang{OPMS} objects, we conduct a comparison of four distinct strains, each of which represented by ten replicates of GEN-III microplate measurements.
+An experimental questions that could be addressed with these data might be ``Do these four bacteria differ in the mean value of curve parameter A on well G06''?
+An according subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
 
 <<results=hide, width=8>>=
-vaas.subset.mcp <- subset(vaas_et_al[, , "G06"], 
+vaas.subset <- subset(vaas_et_al[, , "G06"], 
   list(Experiment = "First replicate"))
 @
 
-Now the dataset contains four strains measured each in ten replicates, represented by ten curves per strain (see Figure~\ref{fig:xy_plot_mcp}). 
+Now the dataset contains the four strains, each represented by the ten replicates shown in Figure~\ref{fig:xy_plot_mcp}. 
 
 <<fig=FALSE, width=10>>=
-xy_plot(vaas.subset.mcp, include = ~ Strain, neg.ctrl = FALSE,
-  legend.fmt = list(space = "right"))
+xy_plot(vaas.subset, include = ~ Strain, neg.ctrl = FALSE,
+  space = "right")
 @
 
 \begin{figure}
-
 \scalebox{1.225}{
-
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-xy_plot(vaas.subset.mcp, include = ~ Strain, neg.ctrl = FALSE, 
-  legend.fmt  = list(space = "right"))
+xy_plot(vaas.subset, include = ~ Strain, neg.ctrl = FALSE, 
+  space = "right")
 @
-
 }
-
 \caption{
 \label{fig:xy_plot_mcp}
 PM curves from the ten technical replicates of the first biological repetition plotted using \code{xy\_plot()}.
 The respective curves from all four strains are superimposed; the affiliation to each strain is indicated by colour (see the legend).
 The x-axes show the measurement time in hours, the y-axes the measured colour intensities in OmniLog\textregistered \ units.
 }
-
 \end{figure}
 
-The statistical question to be addressed is: ``Is there a significant difference between any of the four strains, comparing the mean of their curve parameter A values (determined for each of the ten curves)?''
-
-Here, a multiple comparison of group means is performed using \code{opm\_mcp()}.
-The groups to be compared are defined by the argument \code{model}.
-The argument \code{m.type} specifies the model type to be used for fitting the mode, e.g., a linear model (\code{lm}), a generalized linar model (\code{glm}), or an analysis of variance model (\code{aov}).
+To solve the statistical question, we now perform a multiple comparison of group means using \code{opm\_mcp()}.
+The groups to be compared (and to be selected from the metadata beforehand) are defined by the argument \code{model}.
+The argument \code{m.type} specifies the type of model to be used for fitting, e.g., a linear model (\code{lm}), a generalized linear model (\code{glm}), or an analysis-of-variance model (\code{aov}).
 \textit{Via} the argument \code{mcp.def} the user can define the type of contrast matrix to be used for the multiple comparison. 
 In principle, the contrast matrix defines which group means should be compared and how.
-In our example Tukey-type contrast-matrix indicates an all-against-all comparison, resulting in a set of six two sided pairwise comparisons amoung all the four strain-means (all possible pairs).
-A more detailed explanation of contrast matrices is shown further below.
-
-
-<<results=hide, width=8>>=
-(xx <- opm_mcp(vaas.subset.mcp, model = ~ Strain, m.type = "aov",
-  mcp.def = mcp(Strain = "Tukey")))
-@
-
-The results shown below indicate that all group means are significantly different from each other, except for the comparison of strains DSM30083T and DSM1707:
+In our example a Tukey-type contrast matrix is applied, indicating an all-against-all comparison. 
+This results in a set of six two-sided pairwise comparisons between all the four strain means (all possible pairs).
+A more detailed explanation of contrast matrices is given below.
 
 <<results=hide, width=8>>=
-summary(xx)
+vaas.subset.mcp <- opm_mcp(vaas.subset, model = ~ Strain, m.type = "aov",
+  mcp.def = mcp(Strain = "Tukey"))
 @
 
-\rcscom{
-Is it possible to show here at least part of the output from \code{summary(xx)}?
-Markus, can we adapt the summary function, that only the model-fit is shown without the data?
-}
-
-\code{opm_mcp()} internally calls \code{glht} from package \pkg{multcomp} and returns an object of class \code{glht}. The results of the performed statistical test can be plotted (shown in Figure~\ref{fig:ci_plot_mcp}) using the methods available for objects of class \code{glht} (see help-page of \code{glht} for details).
-On the y-axes the performed comparisons are indicated as differences of the groups, determining which differences of means are computed.
+\code{opm_mcp()} uses \code{glht()} from the package \pkg{multcomp} and returns an object of class \code{glht}.
+As shown in Figure~\ref{fig:ci_plot_mcp}, the results of the performed statistical test can be plotted using the methods available for objects of that class (see the help pages of \code{glht} for details).
+\rcsmark{Too unspecific, provide help page(s) exactly.}
 
 
 <<fig=FALSE, width=8>>=
 op <- par(no.readonly = TRUE) # default plotting settings
 par(mar = c(3, 15, 3, 2)) # adapt margins in the plot
-plot(xx)
+plot(vaas.subset.mcp)
 par(op) # reset to default plotting settings
 @
 
+
 \begin{figure}
-
 \scalebox{1.225}{
-
 <<fig=TRUE, echo=FALSE, width=8, height=3>>=
 op <- par(no.readonly = TRUE) # default plotting settings
 par(mar = c(3, 15, 3, 2))
-plot(xx)
+plot(vaas.subset.mcp)
 par(op)
 @
-
 }
-
 \caption{
 \label{fig:ci_plot_mcp}
-95\% confidence interval for comparison of group means between the strains. All pairwise comparisons are shown. The filled black circle indicates the point estimator of difference betweeen the mean of groups. 
+Comparisons of group means from well G06 between the four exemplar strains calculated with \code{opm\_mcp()} and the plotting method for the resulting object.
+On the y axis the performed comparisons are indicated as differences of the groups, determining which differences of means are computed.
+All pairwise comparisons are shown.
+The filled black circle indicates the point estimator of difference between the mean of groups.
+95\% confidence intervals for are indicated by horizontal bars and parentheses.
 }
-
 \end{figure}
 
 
-For example, the last comparison showing the difference of mean of curve parameter A values of strain DSM 30083T minus the mean of A values of strain DSM18039 results 26.615 units. 
-Therefore, the point estimator of this difference of specific group-means is plotted at position 26.615 on the x-axis. 
-That is, in mean A-values for Strain DSM30083T is 26.615 units larger than the mean A-value of strain DSM18039 (for the detailed numeric outcome see the estimate results provided by \code{summary(xx)} or \code{confint(xx)}).
-Additionally, each point estimator for difference of means comes with an 95\% confidence interval providing information about statistical significance of the test, the effect size and the variability of the mean-differences.
-
-In pairwise comparisons where the 95\% confidence interval includes zero there is no significant difference between the group means and respectively, if zero is not included, a significant difference is shown. 
-Then, the more distant the 95\% confidence interval is from zero (dashed vertical line in the plot), the larger the biological effect size, i.e. the real differences between the groups. 
-It has to be pointed out, that effect sizes are not correlated with sizes of the corresponding p-values: In this example the results from the statistical calculations indicate that all significant differences are highly significant (p < 0.001).
-However, the position of the 95\% confidence interval indicates that the difference between strains DSM18039 and 429SC1 (i.e, the effect size in the second comparison) is much larger than between strains DSM30083T and 429SC1 (smaller effect size in the third comparison).
-
-%\rcscom{
-%Kommentar Johannes: Bis hierhin hatten wir ein sehr simples und straight-forward example.
-%Nun koennte Lea, wie schon von ihr angedeutet, die Spezialitaeten erlaeutern, z.B. was eine contrast matrix ist, ect.
-%Anschliessend koennten wir nochmal ein echt komplexes Beispiel bringen, in dem man die volle Wucht der moeglichen Argumente in  \code{opm\_mcp()} ausnutzt, so dass der Leser nocheinmal wirklich vor Augen gefuehrt bekommt, was man mit  \code{opm\_mcp()} so alles Feines machen kann.
-%}
-
-The main steps the function \code{opm\_mcp()} internally proceeds are a reshaping of the data into a flat-file formatted dataframe and the application of \code{glhp} from \pkg{multcomp}.
-The reshaping can be viewed, when the argument \code{do.mcp = FALSE}:
+The main results can be obtained as follows:
 
 <<results=hide, width=8>>=
-data(vaas_4)
-x <- opm_mcp(vaas_4, model = ~ Species + Strain,
-  do.mcp = FALSE)
+mcp.summary <- summary(vaas.subset.mcp)
+mcp.summary$model$call <- NULL # avoid some unnecessary output
+mcp.summary
 @
 
-For performing the comparisons of interest, the user has to provide a contrast-matrix.
+\rcscom{
+Currently showing this output yielded unprintable characters!
+Unless this can be fixed we cannot show the output of summary() here.
+At the moment we could thus also omit \code{mcp.summary\$model\$call <- NULL}
+}
+
+The interpretation of confidence intervals for differences of means is somewhat distinct from the interpretation of the confidence intervals for the point estimators for curve parameters as discussed in Section~\ref{application plotting-aggregated}.
+In pairwise comparisons, if the 95\% confidence interval includes zero (dashed vertical lines in Figure~\ref{fig:ci_plot_mcp}) there is no significant difference between the group means.
+Conversely, if zero is not included, a significant difference is indicated.
+Furthermore, the more distant the 95\% confidence interval is from zero, the larger the biological effect size, i.e. the real difference between the groups. 
+In the here shown example all group means are significantly different from each other, except for the comparison of strains DSM 30083\textsuperscript{T} and DSM 1707 (Figure~\ref{fig:ci_plot_mcp}).
+
+The last comparison showing the difference of mean of curve parameter A values of strain DSM 30083\textsuperscript{T} minus the mean of A values of strain DSM 18039 results 26.615 units. 
+Therefore, the point estimator of this difference of specific group means is plotted at position 26.615 on the x-axis. 
+That is, on average the A values from well G06 and Strain DSM 30083\textsuperscript{T} are 26.615 units larger than the A values of strain DSM 18039.
+(The detailed numeric outcome would be obtained using \code{mcp.summary)} or \code{confint(vaas.subset.mcp)}).
+Additionally, each point estimator for the difference of means comes with an 95\% confidence interval providing information about the statistical significance of the test, the effect size and the variability of the mean differences.
+
+Note that effect sizes are not correlated with the sizes of the corresponding p-values.
+In our example, the results from the statistical calculations indicate that all significant differences are also highly significant (p < 0.001).
+But the position of the 95\% confidence interval indicates that the difference between strains DSM 18039 and 429SC1 (i.e, the effect size in the second comparison in Figure~\ref{fig:ci_plot_mcp}) is much larger than between strains DSM 30083\textsuperscript{T} and 429SC1 (smaller effect size in the third comparison).
+
+For performing the comparisons of interest, the user has to provide a contrast matrix.
 A contrast is defined as a linear combination of two or more factor level means (averages) whose coefficients add up to zero \citep{hochberg}. 
-The function \code{contrMat()} from \pkg{multcomp} provides an overview about the predefined contrast-types, which can be used in the \code{opm\_mcp()}-argument \code{mcp.def}.
+In the example from above (see Figure~\ref{fig:ci_plot_mcp}), a ``Tukey''-type contrast was used to trigger the comparison of all groups against all others in the data set.
+The underlying contrast matrix can be viewed by entering
+
+<<width=8>>=
+mcp.summary$linfct
+@
+
+
+The function \code{contrMat()} from \pkg{multcomp} provides an overview of the predefined contrast types that can be used in the \code{opm\_mcp()} argument \code{mcp.def}.
 
 <<results=hide, echo=FALSE, width=8>>=
 n <- c(10,20,30,40)
@@ -1418,34 +1419,33 @@ n <- c(10,20,30,40)
  contrMat(n, type = "McDermott")
 @
 
-Using the example from above (see Figure~\ref{fig:ci_plot_mcp}), a brief illustration of a resulting contrast matrix is given.
-``Tukey''-type contrasts define to compare all group-against all others in the dataset. The underlying contrast-matrix can be viewed by typing  
-<<width=8>>=
-summary(xx)[2]
-@
+\rcscom{
+At this position is some hidden R code chunk in the LaTeX source code.
+Shouldn't this be shown?
+}
 
-Analogously, the user is free to set up contrast-matrices containing the comparisons of interest.
-However, it must be set up a model first, which defines which factor determines the groups and thus the possibilities for comparisons.
-For matters of convenience, we want to compare the overall-performance of the tested organisms on the first four wells A01 to A04. 
+Accordingly, the user is free to set up contrast matrices for \code{opm\_mcp()} that define the comparisons of interest.
+However, first a model must be set up that defines the factors that determine the groups and thus the possibilities for comparisons.
+As the next example, we will now compare the overall performance of the tested organisms on the first four wells A01 to A04. 
 The model will therefore contain \code{Well} as factor-variable and four possible comparisons of interest can be defined like:
 <<results=hide, width=8>>=
- contr <- rbind(
-   "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
-   "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
+contr <- rbind(
+  "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
+  "A01 (Negative Control) - A03 (D-Maltose)" = c(-1, 0, 1, 0),
   "A01 (Negative Control) - A04 (D-Trehalose)" = c(-1, 0, 0, -1),
-   "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
+  "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
 @
 
-Using the \code{opm_mcp()}-function, the resulting code ends in:
+The resulting call of the \code{opm_mcp()} function would then be:
 <<results=hide, width=8>>=
-x <- opm_mcp(vaas_4[, , 1:4],
-    model = ~ Well, m.type = "lm", mcp.def = contr)
+x <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, m.type = "lm", mcp.def = contr)
 @
 
-Visualization of the results is available by the \code{plot()}-method for \code{glht}-objects:
+As mentioned above, the outcome can be visualized using the \code{plot()} method for \code{glht} objects:
+
 \begin{figure}
 \scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
  # creating an informative plot
  op <- par(no.readonly = TRUE) # default plotting settings
  par(mar = c(3, 20, 3, 2))
@@ -1455,43 +1455,58 @@ Visualization of the results is available by the \code{plot()}-method for \code{
 }
 \caption{
 \label{fig:opm_mcp_CI_plotII}
-95\% confidence interval for manyally chosen comparison of group means on a specifically selected set of wells.
+Point estimates and 95\% confidence intervals in a manually defined comparison of group means for a specifically selected set of wells (A01 to A04) from the \code{vaas\_4} exemplar object.
+The picture was obtained by running \code{opm\_mcp()} and then the the plotting function for the resulting object.
+Compare with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation are given.
 }
 \end{figure}
 
-It has to be pointed out, that the \code{model}-statement defines, which group-means are available for comparisons. In the following example \code{Species} contains only two levels (``Pseudomonas aeruginosa'' and ``Escherichia coli''). Thus, irrespectively the stated contrast-type, only one comparison is possible.
+Note that the \code{model} statement defines the group means available for comparisons. 
+In the following example \code{Species} contains only two levels (``\textit{Pseudomonas aeruginosa}'' and ``\textit{Escherichia coli}''). 
+Thus, irrespective of the stated contrast type, only one comparison is possible.
 
-<<results=hide, width=8>>=
+<<width=8>>=
 x <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
   mcp.def = mcp(Species = "Dunnett"))
 @
 
+\rcscom{
+The options for more easily defining mcp.def are not explored in the chapter!
+}
+
+%<<results=hide, width=8>>=
+%op <- par(no.readonly = TRUE) # default plotting settings
+%par(mar = c(3, 20, 3, 2))
+%plot(x)
+%par(op)
+%@
+
+%\begin{figure}
+%\scalebox{0.9}{
+%<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
+%op <- par(no.readonly = TRUE) # default plotting settings
+%par(mar = c(3, 20, 3, 2))
+%plot(x)
+%par(op)
+%@
+%}
+%\caption{
+%\label{fig:opm_mcp_CI_plotI}
+%95\% confidence interval for comparison of group means between the species.
+%}
+%\end{figure}
+
+
+Finally, note that \code{opm\_mcp()} in an intermediary step reshapes the selected data into a ``flat'' data frame.
+This object can be returned (and the multiple comparisons omitted) by using \code{do.mcp = FALSE}:
+
 <<results=hide, width=8>>=
-op <- par(no.readonly = TRUE) # default plotting settings
-par(mar = c(3, 20, 3, 2))
-plot(x)
-par(op)
+x <- opm_mcp(vaas_4, model = ~ Species + Strain,
+  do.mcp = FALSE)
 @
 
-\begin{figure}
-\scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
-op <- par(no.readonly = TRUE) # default plotting settings
-par(mar = c(3, 20, 3, 2))
-plot(x)
-par(op)
-@
-}
-\caption{
-\label{fig:opm_mcp_CI_plotI}
-95\% confidence interval for comparison of group means between the species.
-}
-\end{figure}
-
-
-\rcscom{Lea, explain confidence intervals for differences of group means, point out the difference to the 95\%CI of the curve-parameter estimators.
-Figure:
-informative plotting of the CI:}
+The resulting object might be of use in other analysis strategies, analogously to the function \code{flatten()}, which performs a similar reshaping for raw data.
+See the \pkg{opm} manual for details, typing \code{?opm\_mcp} or \code{?flatten}.
 
 
 \subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete-phylogeny}
