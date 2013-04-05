@@ -37,7 +37,7 @@
   analyzed with subsequent runs of the same plate in PM
   mode. Results obtained with \emph{Geodermatophilus}
   strains and Generation-III plates indicate that this
-  works well in practice.
+  works well in practice. See the references.
 
   See the arguments \sQuote{time.fmt} and
   \sQuote{time.zone} of \code{\link{opm_opt}} for modifying
@@ -50,6 +50,21 @@
 data(vaas_4) # merge() is biologically unreasonable for these data!
 summary(x <- merge(vaas_4))
 stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
+}
+\references{
+  Montero-Calasanz, M. d. C., Goeker, M., Poetter, G.,
+  Rohde, M., Sproeer, C., Schumann, P., Gorbushina, A. A.,
+  Klenk, H.-P. 2012 \emph{Geodermatophilus arenarius} sp.
+  nov., a xerophilic actinomycete isolated from Saharan
+  desert sand in Chad. \emph{Extremophiles} \strong{16},
+  903--909.
+
+  Montero-Calasanz, M. d. C., Goeker, M., Rohde, M.,
+  Schumann, P., Poetter, G., Sproeer, C., Gorbushina, A.
+  A., Klenk, H.-P. 2013 \emph{Geodermatophilus siccatus}
+  sp. nov., isolated from arid sand of the Saharan desert
+  in Chad. \emph{Antonie van Leeuwenhoek} \strong{103},
+  449--456.
 }
 \seealso{
   Other conversion-functions: \code{\link{extract}},

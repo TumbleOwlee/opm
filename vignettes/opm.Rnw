@@ -393,6 +393,9 @@ The composition of \proglang{OPM} and \proglang{OPMS} objects, and the implement
 But a plethora of methods for querying other aspects of \proglang{OPM} and \proglang{OPMS} objects have also been implemented.
 Standard operations such as sorting objects and making them unique are also available for the \proglang{OPM} and \proglang{OPMS} classes.
 Of course, \proglang{OPMS} objects can not only be subset but it it also possible to build up larger \proglang{OPMS} objects by combining \proglang{OPMS} and \proglang{OPM} objects using specialized methods for the \code{c()} generic function and the \code{+} operator as well as the very flexible function \code{opms()}.
+Moreover, an \proglang{OPMS} method for \code{merge()} has been implemented, that allows for concatenating PM measurements that represent subsequent runs of the same plate.
+This has successfully been applied to slow-growing organisms in the genus \textit{Geodermatophilus}, which had to be measured three times consecutively in the OmniLog\textregistered \ instrument \citep{montero, montero2013}.
+
 It is also possible to convert the \proglang{OPM} or \proglang{OPMS} objects to other objects for an independent exploration by the user.
 This can be done within \proglang{R}, based on a variety of distinct data frame or matrix objects that can be generated.
 But export in some useful file formats is also possible.
@@ -1039,6 +1042,11 @@ vaas.mu <- extract(vaas_et_al, dataframe = TRUE,
 This only works if this meta-information is present for the plates under study.
 Once a data frame is exported, these metadata will be contained in additional columns; once a matrix is exported, they will be used to construct the row names.
 The metadata could also be selected using a formula; see the help pages for details, particularly \code{?metadata}.
+
+Finally, note that methods for a variety of generic \proglang{R} functions such as \code{unique}, \code{sort}, \code{duplicated}, \code{anyDuplicated} and \code{merge} are available for \proglang{OPMS} objects.
+As specified using \code{sort(by = ...)}, sorting can be done based on selected metadata or on \code{csv_data()} entries such as the setup time.
+The latter is of use in conjunction with the \code{merge} method, which is able to concatenate \proglang{OPM} objects from subsequent runs of the same plate.
+Enter \code{help(sort, package = "opm")} and \code{help(merge, package = "opm")} at the \proglang{R} prompt for details.
 
 
 \subsection[Plotting functions for raw data]{Plotting functions for raw data}\label{application plotting}
