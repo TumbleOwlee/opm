@@ -146,10 +146,9 @@
   are selected, curve colours are determined according to
   the combinations of these metadata entries, otherwise
   each plate gets its own colour.
-}
-\note{
+
   The data-frame method is not intended for phenotype
-  microarray data.  It is currently \strong{undocumented}
+  microarray data. It is currently \strong{undocumented}
   and potentially subject to frequent changes or even
   removal. Users interested in the method should contact
   the authors.

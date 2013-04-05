@@ -127,15 +127,15 @@
   object and pass the result to the matrix method.
 }
 \examples{
-data("vaas_4")
+data(vaas_4)
 
-# Matrix method
+# Matrix method (usually unnecessary, see below)
 x <- extract(vaas_4, as.labels = list("Strain"),
   as.groups = list("Species"))
 hm <- heat_map(x)
 stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
 
-# 'OPMS' method
+# 'OPMS' method (more convenient)
 hm.2 <- heat_map(vaas_4, as.labels = "Strain", as.groups = "Species")
 stopifnot(identical(hm[-3], hm.2[-3]))
 

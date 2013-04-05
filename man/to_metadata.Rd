@@ -23,9 +23,13 @@
   or \code{as.data.frame}.}
 }
 \value{
-  Dataframe.
+  Data frame.
 }
 \description{
+  Create data frame holding potential \code{\link{OPM}} or
+  \code{\link{OPMS}} object metadata.
+}
+\details{
   The character method reads metadata from an input file
   and is only a thin wrapper for \code{read.delim} but
   contains some useful adaptations (such as \strong{not}
@@ -40,7 +44,7 @@
 (x <- to_metadata(list(a = 7:8, `b c` = letters[1:2])))
 tmpfile <- tempfile()
 write.table(x, tmpfile, row.names = FALSE, sep = "\t")
-(x1 <- read.delim(tmpfile))
+(x1 <- read.delim(tmpfile)) # comparison with base R function
 (x2 <- to_metadata(tmpfile))
 stopifnot(identical(names(x2), names(x)), !identical(names(x1), names(x)))
 

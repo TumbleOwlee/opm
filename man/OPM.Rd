@@ -9,31 +9,32 @@
   phenotype microarray data without aggregated values, but
   with information read from the original input
   \acronym{CSV} files as well as an additional arbitrary
-  amount of arbitrarily organised metadata. \acronym{OPM}
-  is an acronym for
-  \sQuote{OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  Phenotype Microarray}.
+  amount of arbitrarily organised metadata.
 }
 \details{
   Objects of this class are usually created by inputting
   files with \code{\link{read_single_opm}} or
   \code{\link{read_opm}}.
+
+  Regarding the coercion of this class to other classes
+  (see the \code{as} from the \pkg{methods} package),
+  consider the following: \itemize{ \item The coercion of
+  this class (and its child classes) to a list (and vice
+  versa) relies on a mapping between slot names and keys in
+  the list, i.e. the list must be appropriately named. For
+  instance, this is the mechanism when reading from and
+  writing to \acronym{YAML}, see \code{\link{to_yaml}}.
+  \item Coercions to other data frames and matrices first
+  coerce the \code{\link{measurements}} and then add the
+  other slots as attributes.  \item Methods such as
+  \code{\link{flatten}} and \code{\link{extract}} might be
+  way more appropriate for converting \code{\link{OPM}}
+  objects.  }
 }
 \note{
-  Regarding the coercion of this class to other classes
-  (see the \code{coerce} methods listed above and \code{as}
-  from the \pkg{methods} package), consider the following:
-  \itemize{ \item The coercion of this class (and its child
-  classes) to a list (and vice versa) relies on a mapping
-  between slot names and keys in the list, i.e. the list
-  must be appropriately named. For instance, this is the
-  mechanism when reading from and writing to
-  \acronym{YAML}, see \code{\link{to_yaml}}.  \item
-  Coercions to other data frames and matrices first coerce
-  the \code{\link{measurements}} and then add the other
-  slots as attributes.  \item Methods such as
-  \code{\link{flatten}} might be more appropriate for
-  converting \code{\link{OPM}} objects.  }
+  \acronym{OPM} is an acronym for
+  \sQuote{OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  Phenotype Microarray}.
 }
 \seealso{
   methods::Methods methods::new

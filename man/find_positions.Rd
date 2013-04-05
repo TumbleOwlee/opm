@@ -17,10 +17,12 @@
 }
 \description{
   Identify the positions of substrates, i.e. the plate(s)
-  and well(s) in which they occur. The query names must be
-  written exactly as used in the stored plate annotations.
-  To determine their spelling, use
-  \code{\link{find_substrate}}.
+  and well(s) in which they occur.
+}
+\details{
+  The query names must be written exactly as used in the
+  stored plate annotations. To determine their spelling,
+  use \code{\link{find_substrate}}.
 }
 \examples{
 # Character method; compare correct and misspelled substrate name

@@ -62,8 +62,8 @@
   \sQuote{T}, \code{time} is set to \code{TRUE}. If
   \sQuote{p} or \sQuote{P}, \code{positive} is set to
   \sQuote{any} or \sQuote{all}, respectively. If \sQuote{n}
-  or \sQuote{N}, \code{non.negative} is set to \sQuote{any}
-  or \sQuote{all}, respectively.
+  or \sQuote{N}, \code{negative} is set to \sQuote{any} or
+  \sQuote{all}, respectively.
 
   Otherwise, \code{use} is taken directly as the one-latter
   name of the infix operators to use for plate selection,
@@ -72,15 +72,13 @@
 \value{
   \code{NULL} or \code{\link{OPM}} or \code{\link{OPMS}}
   object. This depends on how many plates are selected; see
-  \code{\link{[}} for details.  The data-frame method
-  returns a data frame.
+  \code{\link{[}} for details.
 }
 \description{
   Select a subset of the plates in an \code{\link{OPMS}}
   object based on the content of the metadata.
   Alternatively, select a common subset of time points from
-  all plates. The data-frame method selects columns that
-  belong to certain classes.
+  all plates.
 }
 \examples{
 data(vaas_4) # example OPMS object

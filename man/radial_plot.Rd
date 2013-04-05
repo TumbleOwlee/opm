@@ -66,26 +66,27 @@
   A wrapper for \code{radial.plot} from the \pkg{plotrix}
   package with some adaptations likely to be useful for
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data.
-  The data frame and \sQuote{OPMS} methods extract a
-  numeric matrix from a given data frame or \sQuote{OPMS}
-  object and pass the result to the matrix method.
 }
-\note{
+\details{
   The default positioning of the legend is not necessarily
   very useful, but suitable combinations of \code{margin},
   \code{x} and \code{y} can be found for given data sizes.
   Plotting entire plates usually makes not much sense (see
   the examples).
+
+  The data frame and \sQuote{OPMS} methods extract a
+  numeric matrix from a given data frame or \sQuote{OPMS}
+  object and pass the result to the matrix method.
 }
 \examples{
 data("vaas_4")
 
-# Matrix method
+# Matrix method (usually not needed)
 x <- extract(vaas_4, as.labels = list("Species", "Strain"))
 (y <- radial_plot(x[, 1:5]))
 stopifnot(is.character(y), names(y) == rownames(x))
 
-# 'OPMS' method
+# 'OPMS' method (more convenient)
 (yy <- radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain")))
 stopifnot(identical(y, yy)) # should also yield the same picture than above
 

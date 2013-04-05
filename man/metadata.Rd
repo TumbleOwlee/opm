@@ -72,15 +72,15 @@
 # 'OPM' method
 data(vaas_1)
 (x <- metadata(vaas_1, "Strain"))
-stopifnot(identical(x, "DSM30083T"))
-(y <- metadata(vaas_1, ~ Strain)) # using a formula
+stopifnot(x == "DSM30083T")
+(y <- metadata(vaas_1, ~ Strain)) # using a formula => same result
 stopifnot(identical(x, y))
 
 # 'OPMS' method
 data(vaas_4)
 (x <- metadata(vaas_4, "Strain"))
 stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
-(y <- metadata(vaas_4, ~ Strain)) # using a formula
+(y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
 stopifnot(identical(x, y))
 }
 \seealso{

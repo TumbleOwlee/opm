@@ -294,7 +294,15 @@ test_that("factors can be split regularly", {
 
 
 ## glob_to_regex
-## UNTESTED
+test_that("wildcards can be converted to regular expressions", {
+  # from http://docstore.mik.ua/orelly/perl/cookbook/ch06_10.htm
+  # with some adaptations and
+  x <- c("list.?", "project.*", "*old", "type*.[ch]", "*.*", "*")
+  wanted <- c("^list\\..$", "^project\\.", "^.*old$", "^type.*\\.\\[ch]$",
+    "^.*\\.", "^")
+  got <- glob_to_regex(x)
+  expect_equal(wanted, got)
+})
 
 
 ## trim_string
@@ -751,7 +759,5 @@ test_that("character-matrix objects can be updated by deletion", {
   expect_equal(dim(got), c(2, 1))
 
 })
-
-
 
 

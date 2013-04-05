@@ -42,6 +42,8 @@ setMethod("include_metadata", OPM, function(object, md,
     keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
     remove.keys = TRUE, ...) {
 
+  LL(replace, skip.failure, remove.keys)
+
   selection <- as.list(csv_data(object, keys))
 
   # Get and check metadata.
@@ -525,10 +527,7 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #' Get metadata characters
 #'
 #' Collect all \sQuote{character} entries from the meta-information stored
-#' together with the measurements. Optionally coerce data of other types. The
-#' result can be used to create a mapping for \code{\link{map_metadata}}. The
-#' \code{\link{OPMS}} method just applies the \code{\link{WMD}} method to all
-#' contained plates in turn.
+#' together with the measurements. Optionally coerce data of other types.
 #'
 #' @param object \code{\link{WMD}} or \code{\link{OPMS}} object.
 #' @param values Logical scalar. If \code{FALSE}, metadata names, not values,
@@ -544,6 +543,9 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #'   attributes, if any, are dropped and replaced by the character vector
 #'   itself. (This might be convenient regarding its use with
 #'   \code{\link{map_metadata}}.)
+#' @details The result can be used to create a mapping for
+#'   \code{\link{map_metadata}}. The \code{\link{OPMS}} method just applies the
+#'   \code{\link{WMD}} method to all contained plates in turn.
 #' @export
 #' @family metadata-functions
 #' @keywords attribute
@@ -552,9 +554,9 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #' # WMD method
 #' data(vaas_1)
 #' (x <- metadata_chars(vaas_1, values = FALSE))
-#' stopifnot(names(x) == x)
+#' stopifnot(names(x) == x) # mapping metadata keys to themselves
 #' (x <- metadata_chars(vaas_1, values = TRUE))
-#' stopifnot(names(x) == x)
+#' stopifnot(names(x) == x) # mapping metadata values to themselves
 #' # See map_metadata() for a potential usage of the metadata_chars() result
 #'
 #' # OPMS method

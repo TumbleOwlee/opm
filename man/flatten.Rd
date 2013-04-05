@@ -51,6 +51,7 @@
 \examples{
 # OPM method
 data(vaas_1)
+# distinct numbers of columns due to distinct selection settings
 head(x <- flatten(vaas_1))
 stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
 head(x <- flatten(vaas_1, fixed = "TEST"))
@@ -60,6 +61,7 @@ stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 5L)))
 
 # OPMS method
 data(vaas_4)
+# distinct numbers of columns due to distinct selection settings
 head(x <- flatten(vaas_4))
 stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
 head(x <- flatten(vaas_4, fixed = "TEST"))

@@ -23,15 +23,23 @@
 #'   times before merging?
 #' @param parse Logical scalar. Ignored unless \code{sort.first} is \code{TRUE}.
 #'   For sorting, parse the setup times using \code{strptime} from the
-#'   \pkg{base} package? It is an error if this does not work.
+#'   \pkg{base} package? It is an error if this does not work, but see
+#'   \sQuote{Details}.
 #' @export
 #' @return \code{\link{OPM}} object. The \code{\link{metadata}} and
 #'   \code{\link{csv_data}} will be taken from the first contained plate, but
 #'   aggregated values, if any, will be dropped.
-#' @note This function is intended for dealing with slowly growing or reacting
-#'   organisms that need to be analyzed with subsequent runs of the same plate
-#'   in PM mode. Results obtained with \emph{Geodermatophilus} strains and
-#'   Generation-III plates indicate that this works well in practice.
+#' @details This \code{\link{OPMS}} method is intended for dealing with slowly
+#'   growing or reacting organisms that need to be analyzed with subsequent runs
+#'   of the same plate in PM mode. Results obtained with \emph{Geodermatophilus}
+#'   strains and Generation-III plates indicate that this works well in
+#'   practice.
+#'
+#'   See the arguments \sQuote{time.fmt} and \sQuote{time.zone} of
+#'   \code{\link{opm_opt}} for modifying the parsing of setup-time entries. If
+#'   it does not work, additional time-string templates must be stored.
+#'
+#'   The \code{CMAT} method is only for internal use.
 #' @family conversion-functions
 #' @keywords manip
 #' @examples
@@ -100,8 +108,7 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 #' Get all plates contained in an \code{\link{OPMS}} object or a list, or create
 #' a list containing a single \code{\link{OPM}} object as element. The list
 #' method traverses the input recursively and skips all objects of other classes
-#' than \code{\link{OPM}} (see also \code{\link{opms}}, which is somewhat
-#' similar but more flexible).
+#' than \code{\link{OPM}}.
 #'
 #' @param object List, \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @return List of \code{\link{OPM}} objects (may be empty instead if
@@ -109,22 +116,24 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 #' @export
 #' @family conversion-functions
 #' @keywords attribute
+#' @note See also \code{\link{opms}}, which is somewhat similar but more
+#'   flexible.
 #' @seealso base::list base::as.list
 #' @examples
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' summary(x <- plates(vaas_1))
+#' summary(x <- plates(vaas_1)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 1L, sapply(x, inherits, what = "OPM"))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- plates(vaas_4))
+#' summary(x <- plates(vaas_4)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 4L, sapply(x, inherits, what = "OPM"))
 #'
 #' # list method
 #' x <- list(vaas_1, letters, vaas_4, 1:10)
-#' summary(x <- plates(x))
+#' summary(x <- plates(x)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 5, sapply(x, inherits, what = "OPM"))
 #'
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
@@ -169,9 +178,9 @@ setMethod("plates", "list", function(object) {
 #' @seealso base::sapply
 #' @examples
 #' data(vaas_4)
-#' x <- oapply(vaas_4, identity)
+#' (x <- oapply(vaas_4, identity)) # trivial
 #' stopifnot(identical(x, vaas_4))
-#' x <- oapply(vaas_4, identity, simplify = FALSE)
+#' (x <- oapply(vaas_4, identity, simplify = FALSE)) # => yields list
 #' stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 #'
 setGeneric("oapply", function(object, ...) standardGeneric("oapply"))
@@ -206,9 +215,9 @@ setMethod("oapply", OPMS, function(object, fun, ..., simplify = TRUE) {
 #' @export
 #' @return \code{\link{OPM}} object.
 #' @family conversion-functions
-#' @note Thinning the plates out is experimental insofar as it has \strong{not}
-#'   been tested whether and how this could sensibly be applied before
-#'   aggregating the data.
+#' @details Thinning the plates out is experimental insofar as it has
+#'   \strong{not} been tested whether and how this could sensibly be applied
+#'   before aggregating the data.
 #' @keywords manip
 #'
 #' @examples
@@ -249,9 +258,7 @@ setMethod("thin_out", OPM, function(object, factor, drop = FALSE) {
 #' Change to Generation III (or other plate type)
 #'
 #' Change the plate type of an \code{\link{OPM}} object to \sQuote{Generation
-#' III} or another plate type. The actual spelling used might differ but is
-#' internally consistent. It is an error to set one of the PM plate types or to
-#' assign an unknown plate type.
+#' III} or another plate type.
 #'
 #' @param object \code{\link{OPM}} object.
 #' @param to Character scalar indicating the plate type. User-defined plate
@@ -262,12 +269,16 @@ setMethod("thin_out", OPM, function(object, factor, drop = FALSE) {
 #' @param ... Optional arguments passed between the methods.
 #' @return Novel \code{\link{OPM}} object.
 #' @export
-#' @note This is currently the only function to change plate names. It is
+#' @details This is currently the only function to change plate names. It is
 #'   intended for Generation-III plates which were run like PM plates. Usually
 #'   they will be annotated as some PM plate by the
 #'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} system. In contrast,
 #'   input ID-mode plates are automatically detected (see
 #'   \code{\link{read_single_opm}}).
+#'
+#'   The actual spelling of the plate type used might (in theory) differ between
+#'   distinct versions of \pkg{opm} but is internally consistent. It is an error
+#'   to set one of the PM plate types or to assign an unknown plate type.
 #' @keywords manip
 #' @family conversion-functions
 #' @examples
@@ -360,6 +371,7 @@ lapply(c(
 #'
 #' # OPM method
 #' data(vaas_1)
+#' # distinct numbers of columns due to distinct selection settings
 #' head(x <- flatten(vaas_1))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
 #' head(x <- flatten(vaas_1, fixed = "TEST"))
@@ -369,6 +381,7 @@ lapply(c(
 #'
 #' # OPMS method
 #' data(vaas_4)
+#' # distinct numbers of columns due to distinct selection settings
 #' head(x <- flatten(vaas_4))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
 #' head(x <- flatten(vaas_4, fixed = "TEST"))
@@ -399,13 +412,11 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
     stringsAsFactors = factors)
   colnames(result) <- RESERVED_NAMES[colnames(result)]
 
-  # Include fixed stuff
-  if (length(fixed))
+  if (length(fixed)) # Include fixed stuff
     result <- cbind(as.data.frame(as.list(fixed), stringsAsFactors = factors),
       result)
 
-  # Pick metadata and include them in the data frame
-  if (length(include))
+  if (length(include)) # Pick metadata and include them in the data frame
     result <- cbind(as.data.frame(metadata(object, include,
       exact = exact, strict = strict), stringsAsFactors = factors), result)
 
@@ -504,22 +515,22 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(4L, 2L)))
 #' (y <- extract_columns(vaas_4, what = ~ Species + Strain))
-#' stopifnot(identical(x, y)) # using a formula
+#' stopifnot(identical(x, y)) # same result using a formula
 #'
 #' # Create a character vector
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
 #' stopifnot(is.character(x), length(x) == 4L)
 #' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-#'   dups = "error"), silent = TRUE))
+#'   dups = "error"), silent = TRUE)) # duplicates yield error
 #' stopifnot(inherits(x, "try-error"))
 #' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-#'   dups = "warn"), silent = TRUE))
+#'   dups = "warn"), silent = TRUE)) # duplicates yield warning only
 #' stopifnot(is.character(x), length(x) == 4L)
 #'
 #' # data-frame method, 'direct' running mode
 #' x <- data.frame(a = 1:26, b = letters, c = LETTERS)
 #' (y <- extract_columns(x, I(c("a", "b")), sep = "-"))
-#' stopifnot(grepl("^\\s*\\d+-[a-z]$", y))
+#' stopifnot(grepl("^\\s*\\d+-[a-z]$", y)) # pasted columns 'a' and 'b'
 #'
 #' # data-frame method, using class name
 #' (y <- extract_columns(x, as.labels = "b", what = "integer", as.groups = "c"))
@@ -609,6 +620,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #' @param parse Logical scalar. Convert the \code{\link{setup_time}} via
 #'   \code{strptime} before ordering? Has only an effect if \code{by} is
 #'   \sQuote{setup_time}. It is an error if the time format is not recognized.
+#'   See \code{\link{opm_opt}}, arguments \sQuote{time.fmt} and
+#'   \sQuote{time.zone}, for modifying the parsing of setup-time entries.
 #' @param exact Logical scalar. Passed to \code{\link{metadata}}. Affects only
 #'   metadata querying, not directly the sorting.
 #' @param strict Logical scalar. Is it an error if metadata keys are not found?
@@ -639,9 +652,9 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'
 #' # Non-existing keys
 #' x <- try(sort(vaas_4, by = list("Not there", "Missing"), strict = TRUE))
-#' stopifnot(inherits(x, "try-error"))
+#' stopifnot(inherits(x, "try-error")) # yields error
 #' x <- try(sort(vaas_4, by = list("Not there", "Missing"), strict = FALSE))
-#' stopifnot(identical(x, vaas_4))
+#' stopifnot(identical(x, vaas_4)) # no error, but no new order
 #'
 #' # CSV-data based
 #' copy <- sort(vaas_4) # default: by setup time
@@ -726,14 +739,14 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
 #' stopifnot(identical(x, vaas_4))
 #' (x <- unique(c(vaas_4, vaas_4)))
 #' stopifnot(identical(x, vaas_4))
-#' (x <- unique(vaas_4, what = "Species"))
+#' (x <- unique(vaas_4, what = "Species")) # species are not unique
 #' stopifnot(dim(x)[1L] < dim(vaas_4)[1L])
 #' (x <- unique(vaas_4, what = list("Species", "Strain")))
-#' stopifnot(identical(x, vaas_4))
+#' stopifnot(identical(x, vaas_4)) # organisms are unique
 #'
 #' ## 'OPM' method
 #' data(vaas_1)
-#' (x <- unique(vaas_1))
+#' (x <- unique(vaas_1)) # trivial
 #' stopifnot(identical(x, vaas_1))
 #' (x <- unique(vaas_1, what = list("Species", "Strain")))
 #' stopifnot(identical(x, vaas_1))
@@ -781,7 +794,7 @@ setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
 #'
 #' ## 'OPMS' method
 #' data(vaas_1)
-#' summary(x <- rev(vaas_1))
+#' summary(x <- rev(vaas_1)) # trivial
 #' stopifnot(identical(x, vaas_1))
 #'
 setGeneric("rev")
@@ -830,19 +843,19 @@ setMethod("rev", OPMS, function(x) {
 #' data(vaas_1)
 #' summary(x <- rep(vaas_1, 1))
 #' stopifnot(identical(x, vaas_1))
-#' summary(x <- rep(vaas_1, 2))
+#' summary(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
 #' stopifnot(length(x) == 2, is(x, "OPMS"))
 #' stopifnot(is.null(rep(vaas_4, 0)))
 #'
 setGeneric("rep")
 
 setMethod("rep", OPM, function(x, ...) {
-  x <- rep(x = list(x), ...)
+  x <- rep(list(x), ...)
   case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
 }, sealed = SEALED)
 
 setMethod("rep", OPMS, function(x, ...) {
-  x <- rep(x = x@plates, ...)
+  x <- rep(x@plates, ...)
   case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
 }, sealed = SEALED)
 

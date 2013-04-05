@@ -44,11 +44,13 @@
   result. For the \code{\link{WMD}} method, is is up to the
   user to ensure that the result is a logical scalar, but
   the method would succeed anyway. The \code{\link{OPMS}}
-  yields an error unless each plate yield a logical scalar.
-  Symbols that are not found within the metadata are looked
-  up in the enclosing environment. This is less strict than
-  \code{\link{infix.largeq}}.  Because of missing objects
-  and other reasons the method might nevertheless fail. }
+  yields an error unless each plate yields a logical
+  scalar. Symbols that are not found within the metadata
+  are looked up in the enclosing environment. This is less
+  strict than \code{\link{infix.largeq}}.  Because of
+  missing objects and other reasons the method might
+  nevertheless fail. } See \code{\link{subset}} for usage
+  examples with \code{\link{OPMS}} objects.
 }
 \note{
   The two arguments can swap their places.
@@ -85,7 +87,7 @@ stopifnot(!list(Experiment = c("Second replicate",
 stopifnot(list(Experiment = c("First replicate", "Second replicate"),
   Species = c("Escherichia coli", "Bacillus subtilis")) \%q\% vaas_1)
 
-stopifnot(list() \%q\% vaas_1) # Empty query
+stopifnot(list() \%q\% vaas_1) # empty query
 
 # Formulas for querying, compare with \%Q\%
 stopifnot((~ Experiment == "First replicate") \%q\% vaas_1)
@@ -97,6 +99,8 @@ stopifnot(inherits(x, "try-error"))
 missing.name <- "abc"  # enclosing environment considered
 stopifnot(vaas_1 \%q\% ~ missing.name == "abc")
 rm(missing.name) # tidy up
+
+# examples for OPMS methods are given under subset()
 }
 \keyword{attribute}
 

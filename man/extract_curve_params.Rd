@@ -15,9 +15,9 @@
   \item{x}{Object of class \sQuote{grofit} or
   \sQuote{opm_model}.}
 
-  \item{...}{Additional arguments.}
+  \item{all}{Logic. Should [TODO]}
 
-  \item{all}{Logic. Should}
+  \item{...}{Additional arguments.}
 }
 \value{
   Matrix.

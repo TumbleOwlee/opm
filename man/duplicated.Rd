@@ -34,15 +34,17 @@
 \examples{
 # 'OPM' method
 data(vaas_1)
-(x <- duplicated(vaas_1))
+(x <- duplicated(vaas_1)) # 1 element => nothing duplicated
 stopifnot(identical(x, FALSE))
 
 # 'OPMS' method
 data(vaas_4)
-stopifnot(!duplicated(vaas_4))
+stopifnot(!duplicated(vaas_4)) # => no complete plates duplicated
 stopifnot(!duplicated(vaas_4, what = list("Species", "Strain")))
+# => no organisms duplicated
 stopifnot(duplicated(vaas_4, what = "Species") == rep(c(FALSE, TRUE), 2))
-x <- vaas_4[c(1, 1)]
+# => species duplicated
+x <- vaas_4[c(1, 1)] # => complete plate duplicated
 stopifnot(c(FALSE, TRUE) == duplicated(x))
 }
 \seealso{

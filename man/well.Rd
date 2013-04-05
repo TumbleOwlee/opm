@@ -32,22 +32,22 @@
 \examples{
 # 'OPM' method
 data(vaas_1)
-head(x <- well(vaas_1, "B04"))
+head(x <- well(vaas_1, "B04")) # => numeric vector
 stopifnot(is.numeric(x), length(x) == 384)
-head(x <- well(vaas_1, c("B08", "C07")))
+head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
 stopifnot(is.matrix(x), dim(x) == c(384, 2))
 # selecting adjacent wells is easer if using a formula
 head(x <- well(vaas_1, c("B12", "C01", "C02")))
 stopifnot(is.matrix(x), dim(x) == c(384, 3))
-head(y <- well(vaas_1, ~ B12:C02))
+head(y <- well(vaas_1, ~ B12:C02)) # => same result
 stopifnot(identical(x, y))
 
 # 'OPMS' method
 data(vaas_4)
-head(x <- well(vaas_4, "B04"))
+head(x <- well(vaas_4, "B04")) # => numeric matrix
 stopifnot(is.matrix(x), dim(x) == c(4, 384))
 head(y <- well(vaas_4, ~ B04)) # using a formula
-stopifnot(identical(x, y))
+stopifnot(identical(x, y)) # => same result
 }
 \seealso{
   Other getter-functions: \code{\link{aggr_settings}},

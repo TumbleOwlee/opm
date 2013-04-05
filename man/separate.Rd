@@ -71,6 +71,16 @@
   data frame method applies this to all character vectors
   (and optionally also all factors) within a data frame.
 }
+\details{
+  This function is useful if information coded in the
+  elements of a character vector is to be converted to a
+  matrix or data frame. For instance, file names created by
+  a batch export conducted by a some software are usually
+  more or less regularly structured and contain content at
+  distinct possitions. In such situations, the correct
+  splitting approach can be recognized by yielding the same
+  number of fields from each vector element.
+}
 \examples{
 # Splitting by characters
 x <- c("a-b-cc", "d-ff-g")
@@ -98,7 +108,7 @@ stopifnot(is.matrix(y), dim(y) == c(3, 3), is.logical(y))
 x <- data.frame(a = 1:2, b = c("a-b-cc", "a-ff-g"))
 (y <- separate(x, coerce = FALSE))
 stopifnot(identical(x, y))
-(y <- separate(x))
+(y <- separate(x)) # only character/factor columns are split
 stopifnot(is.data.frame(y), dim(y) == c(2, 4))
 stopifnot(sapply(y, class) == c("integer", "factor", "factor", "factor"))
 (y <- separate(x, keep.const = FALSE))

@@ -10,14 +10,14 @@
 #' Show OPM or OPMS objects
 #'
 #' Display an \code{\link{OPM}} or \code{\link{OPMS}} object on screen.
-#' Currently this is just a wrapper for the \code{\link{summary}} method for
-#' these objects with an additional call to \code{\link{print}}.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @export
 #' @return See \code{\link{summary}}.
 #' @family plotting-functions
 #' @keywords attribute
+#' @details Currently this is just a wrapper for the \code{\link{summary}}
+#'   method for these objects with an additional call to \code{\link{print}}.
 #' @seealso methods::show base::print
 #' @examples
 #'
@@ -440,7 +440,7 @@ setMethod("negative_control", OPMX, function(object, neg.ctrl) {
 #' @references \url{http://www.colorbrewer.org}
 #' @examples
 #' (x <- select_colors("nora"))
-#' (y <- select_colors("nora.i"))
+#' (y <- select_colors("nora.i")) # same in reverse order
 #' stopifnot(is.character(x), length(x) > 0L, identical(x, rev(y)))
 #'
 select_colors <- function(
@@ -624,11 +624,6 @@ default_color_regions <- function(colors, space, bias, n) {
 #' @param f Formula (for the data-frame method).
 #' @param groups Character vector (for the data-frame method).
 #'
-#' @note The data-frame method is not intended for phenotype microarray data.
-#'   It is currently \strong{undocumented} and potentially subject to frequent
-#'   changes or even removal. Users interested in the method should contact the
-#'   authors.
-#'
 #' @details The optimal number of rows and columns is estimated  from the number
 #'   of selected wells. An optimal font size of the panel headers is also chosen
 #'   automatically, but can also be adapted by the user, much like most aspects
@@ -637,6 +632,10 @@ default_color_regions <- function(colors, space, bias, n) {
 #'   In the case of the \code{\link{OPMS}} method, if metadata are selected,
 #'   curve colours are determined according to the combinations of these
 #'   metadata entries, otherwise each plate gets its own colour.
+#'
+#'   The data-frame method is not intended for phenotype microarray data. It is
+#'   currently \strong{undocumented} and potentially subject to frequent changes
+#'   or even removal. Users interested in the method should contact the authors.
 #'
 #' @export
 #' @family plotting-functions
@@ -1277,15 +1276,15 @@ setMethod("ci_plot", OPMS, function(object, as.labels,
 #'
 #' @examples
 #'
-#' data("vaas_4")
+#' data(vaas_4)
 #'
-#' # Matrix method
+#' # Matrix method (usually unnecessary, see below)
 #' x <- extract(vaas_4, as.labels = list("Strain"),
 #'   as.groups = list("Species"))
 #' hm <- heat_map(x)
 #' stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
 #'
-#' # 'OPMS' method
+#' # 'OPMS' method (more convenient)
 #' hm.2 <- heat_map(vaas_4, as.labels = "Strain", as.groups = "Species")
 #' stopifnot(identical(hm[-3], hm.2[-3]))
 #'
@@ -1403,9 +1402,7 @@ setMethod("heat_map", OPMS, function(object, as.labels,
 #'
 #' A wrapper for \code{radial.plot} from the \pkg{plotrix} package with some
 #' adaptations likely to be useful for
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data. The data frame and
-#' \sQuote{OPMS} methods extract a numeric matrix from a given data frame or
-#' \sQuote{OPMS} object and pass the result to the matrix method.
+#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data.
 #'
 #' @param object Data frame, numeric matrix or \sQuote{OPMS} object (with
 #'   aggregated values) to be plotted.
@@ -1450,21 +1447,25 @@ setMethod("heat_map", OPMS, function(object, as.labels,
 #'   corresponding colours as values, equivalent to the legend; \code{NULL} if
 #'   no row names are present.
 #'
-#' @note The default positioning of the legend is not necessarily very useful,
-#'   but suitable combinations of \code{margin}, \code{x} and \code{y} can be
-#'   found for given data sizes. Plotting entire plates usually makes not much
-#'   sense (see the examples).
+#' @details The default positioning of the legend is not necessarily very
+#'   useful, but suitable combinations of \code{margin}, \code{x} and \code{y}
+#'   can be found for given data sizes. Plotting entire plates usually makes not
+#'   much sense (see the examples).
+#'
+#'   The data frame and \sQuote{OPMS} methods extract a numeric matrix from a
+#'   given data frame or \sQuote{OPMS} object and pass the result to the matrix
+#'   method.
 #'
 #' @examples
 #'
 #' data("vaas_4")
 #'
-#' # Matrix method
+#' # Matrix method (usually not needed)
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"))
 #' (y <- radial_plot(x[, 1:5]))
 #' stopifnot(is.character(y), names(y) == rownames(x))
 #'
-#' # 'OPMS' method
+#' # 'OPMS' method (more convenient)
 #' (yy <- radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain")))
 #' stopifnot(identical(y, yy)) # should also yield the same picture than above
 #'

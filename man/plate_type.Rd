@@ -66,6 +66,7 @@ data(vaas_1)
 (x <- plate_type(vaas_1, full = FALSE))
 (y <- plate_type(vaas_1, full = TRUE))
 (z <- plate_type(vaas_1, full = TRUE, in.parens = FALSE))
+# strings lengths differ depending on the selection
 stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 
 \dontrun{
@@ -78,12 +79,13 @@ x <- split(x), sapply(x, plate_type))
 ## 'OPMS' method
 data(vaas_4)
 (xx <- plate_type(vaas_4, full = FALSE))
+# plate type is guaranteed to be uniform within an OPMS object
 stopifnot(identical(x, xx))
 
 ## Character method
 
 # Entirely unrecognized strings are returned as-is
-x <- plate_type(letters)
+(x <- plate_type(letters))
 stopifnot(identical(x, letters))
 
 # Something more realistic
@@ -92,7 +94,7 @@ stopifnot(x != y)
 
 # Factor method
 (z <- plate_type(as.factor(y), TRUE))
-stopifnot(is.factor(z), z == x)
+stopifnot(is.factor(z), z == x) # same result after conversion
 }
 \seealso{
   base::strtrim base::abbreviate base::gsub

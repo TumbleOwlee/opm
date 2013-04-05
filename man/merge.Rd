@@ -16,7 +16,8 @@
   \item{parse}{Logical scalar. Ignored unless
   \code{sort.first} is \code{TRUE}.  For sorting, parse the
   setup times using \code{strptime} from the \pkg{base}
-  package? It is an error if this does not work.}
+  package? It is an error if this does not work, but see
+  \sQuote{Details}.}
 }
 \value{
   \code{\link{OPM}} object. The \code{\link{metadata}} and
@@ -30,13 +31,20 @@
   the same experimental plate. Adjust the times
   accordingly.
 }
-\note{
-  This function is intended for dealing with slowly growing
-  or reacting organisms that need to be analyzed with
-  subsequent runs of the same plate in PM mode. Results
-  obtained with \emph{Geodermatophilus} strains and
-  Generation-III plates indicate that this works well in
-  practice.
+\details{
+  This \code{\link{OPMS}} method is intended for dealing
+  with slowly growing or reacting organisms that need to be
+  analyzed with subsequent runs of the same plate in PM
+  mode. Results obtained with \emph{Geodermatophilus}
+  strains and Generation-III plates indicate that this
+  works well in practice.
+
+  See the arguments \sQuote{time.fmt} and
+  \sQuote{time.zone} of \code{\link{opm_opt}} for modifying
+  the parsing of setup-time entries. If it does not work,
+  additional time-string templates must be stored.
+
+  The \code{CMAT} method is only for internal use.
 }
 \examples{
 data(vaas_4) # merge() is biologically unreasonable for these data!

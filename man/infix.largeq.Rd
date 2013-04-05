@@ -46,7 +46,8 @@
   the metadata are looked up in the only in the base
   environment. This is stricter than \code{\link{infix.q}}.
   Because of missing objects and other reasons the method
-  might fail. }
+  might fail. } See \code{\link{subset}} for usage examples
+  with \code{\link{OPMS}} objects.
 }
 \note{
   The two arguments can swap their places.

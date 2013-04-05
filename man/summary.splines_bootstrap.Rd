@@ -14,7 +14,7 @@
   vector of bootstrap confidence intervals
 }
 \description{
-  Function for internal use; Creates confidence intervalls
+  Function for internal use; Creates confidence intervals
   based on bootstrap replicates.
 }
 \author{

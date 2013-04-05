@@ -27,7 +27,9 @@
 \description{
   Use a character vector or a function for recursively
   mapping list names, or mapping the \sQuote{colnames} and
-  \sQuote{rownames} attributes of a data frame.
+  \sQuote{rownames} attributes of a data frame. This
+  function is not normally directly called by an \pkg{opm}
+  user because \code{\link{map_metadata}} is available.
 }
 \details{
   In the case of lists, the function is not applied to list
@@ -43,11 +45,6 @@
   their own \code{names} attribute; this might be useful if
   the result is later on used for some mapping (using this
   function or \code{\link{map_values}}).
-}
-\note{
-  This function is not normally directly called by an
-  \pkg{opm} user because \code{\link{map_metadata}} is
-  available.
 }
 \examples{
 # List/function method

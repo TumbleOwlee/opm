@@ -75,12 +75,11 @@
   \code{\link{read_single_opm}}. The \acronym{YAML} format
   is described in detail under
   \code{\link{batch_opm_to_yaml}}.
-}
-\note{
-  For splitting lists of \code{\link{OPM}} objects
-  according to the plate type, see
-  \code{\link{plate_type}}, and consider the plate-type
-  selection options of \code{\link{opms}}.
+
+  or splitting lists of \code{\link{OPM}} objects according
+  to the plate type, see \code{\link{plate_type}}, and
+  consider the plate-type selection options of
+  \code{\link{opms}}.
 }
 \examples{
 test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,

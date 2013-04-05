@@ -19,12 +19,9 @@
 }
 \description{
   Change the plate type of an \code{\link{OPM}} object to
-  \sQuote{Generation III} or another plate type. The actual
-  spelling used might differ but is internally consistent.
-  It is an error to set one of the PM plate types or to
-  assign an unknown plate type.
+  \sQuote{Generation III} or another plate type.
 }
-\note{
+\details{
   This is currently the only function to change plate
   names. It is intended for Generation-III plates which
   were run like PM plates. Usually they will be annotated
@@ -33,6 +30,11 @@
   system. In contrast, input ID-mode plates are
   automatically detected (see
   \code{\link{read_single_opm}}).
+
+  The actual spelling of the plate type used might (in
+  theory) differ between distinct versions of \pkg{opm} but
+  is internally consistent. It is an error to set one of
+  the PM plate types or to assign an unknown plate type.
 }
 \examples{
 # 'OPM' method

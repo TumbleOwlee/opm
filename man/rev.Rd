@@ -26,7 +26,7 @@ stopifnot(identical(rev(x), vaas_4))
 
 ## 'OPMS' method
 data(vaas_1)
-summary(x <- rev(vaas_1))
+summary(x <- rev(vaas_1)) # trivial
 stopifnot(identical(x, vaas_1))
 }
 \seealso{

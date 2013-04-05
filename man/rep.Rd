@@ -32,7 +32,7 @@ stopifnot(is.null(rep(vaas_4, 0)))
 data(vaas_1)
 summary(x <- rep(vaas_1, 1))
 stopifnot(identical(x, vaas_1))
-summary(x <- rep(vaas_1, 2))
+summary(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
 stopifnot(length(x) == 2, is(x, "OPMS"))
 stopifnot(is.null(rep(vaas_4, 0)))
 }

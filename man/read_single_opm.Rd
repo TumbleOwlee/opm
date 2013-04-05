@@ -54,7 +54,7 @@
 \examples{
 test.files <- opm_files("testdata")
 if (length(test.files) > 0) { # if the folder is found
-  x <- read_single_opm(test.files[1])
+  x <- read_single_opm(test.files[1]) # => 'OPM' object
   class(x)
   dim(x)
   summary(x)

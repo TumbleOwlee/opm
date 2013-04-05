@@ -37,7 +37,9 @@
   In contrast to \code{infix.k}, symbols that are not found
   within the metadata are looked up in the base
   environment.  But note that missing objects are not the
-  only potential reason of failure. }
+  only potential reason of failure. } See
+  \code{\link{subset}} for usage examples with
+  \code{\link{OPMS}} objects.
 }
 \note{
   The two arguments can swap their places.

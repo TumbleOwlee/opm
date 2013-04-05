@@ -47,8 +47,9 @@
   results in \code{TRUE}. Missing names in a non-empty
   query list result in \code{FALSE}.
 
-  There is also an \code{\link{OPMS}} method, which tests
-  whether an \code{\link{OPM}} object is contained in an
+  There are also \code{\link{OPMS}} and \code{\link{OPM}}
+  methods, which test, for instance, whether an
+  \code{\link{OPM}} object is contained in an
   \code{\link{OPMS}} object.
 }
 \note{

@@ -34,24 +34,27 @@
   Convert strings to safe phylogenetic taxon labels:
   replace disallowed characters or include all labels in
   single quotes, and double pre-existing single quotes, if
-  any. This is not normally called directly by an \pkg{opm}
-  user but by \code{\link{phylo_data}}; see there for
-  further details.
+  any.
+}
+\details{
+  This is not normally called directly by an \pkg{opm} user
+  but by \code{\link{phylo_data}}; see there for further
+  details.
 }
 \examples{
 # Some animals you might know
 x <- c("Elephas maximus", "Loxodonta africana", "Giraffa camelopardalis")
 
 (y <- safe_labels(x, "phylip"))
-stopifnot(nchar(y) == 10L)
+stopifnot(nchar(y) == 10L) # truncation
 
 (y <- safe_labels(x, "epf"))
-stopifnot(nchar(y) == nchar(x))
+stopifnot(nchar(y) == nchar(x)) # changes in length unnecessary
 (y <- safe_labels(x, "epf", pad = TRUE))
-stopifnot(nchar(y) == 22)
+stopifnot(nchar(y) == 22) # padded to uniform length
 
 (y <- safe_labels(x, "nexus", enclose = TRUE))
-stopifnot(grepl("^'.*'$", y))
+stopifnot(grepl("^'.*'$", y)) # all strings enclosed in sinqle quotes
 }
 \seealso{
   base::gsub

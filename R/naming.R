@@ -171,7 +171,7 @@ to_sentence.logical <- function(x, html, ...) {
 #'
 #' This creates a textual listing of the discretized values. This is useful to
 #' describe OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype
-#' microarray results in a manuscript.
+#' microarray results in a scientific manuscript.
 #'
 #' @param x \code{\link{OPMD}} or \code{\link{OPMS}} object.
 #' @param downcase Logical scalar passed to \code{\link{wells}}.
@@ -409,9 +409,7 @@ setMethod("find_substrate", "character", function(object,
 #' Identify positions of substrates
 #'
 #' Identify the positions of substrates, i.e. the plate(s) and well(s) in which
-#' they occur. The query names must be written exactly as used in the stored
-#' plate annotations. To determine their spelling, use
-#' \code{\link{find_substrate}}.
+#' they occur.
 #'
 #' @param object Query character vector or query list.
 #' @param ... Optional arguments passed between the methods.
@@ -420,6 +418,8 @@ setMethod("find_substrate", "character", function(object,
 #'   nothing was found), with one row per position found, the plate name in the
 #'   first column and the well name in the second. The names of this list
 #'   correspond to \code{names}. The list method returns lists of such lists.
+#' @details  The query names must be written exactly as used in the stored plate
+#'   annotations. To determine their spelling, use \code{\link{find_substrate}}.
 #' @family naming-functions
 #' @keywords utilities
 #' @examples

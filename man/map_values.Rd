@@ -57,20 +57,22 @@
   List, data frame, character vector or \code{NULL}.
 }
 \description{
-  Map \sQuote{character} data using another
-  \sQuote{character} vector, or recursively apply a mapping
-  function to all \sQuote{character} values within a list,
-  or non-recursively to a data frame. Optionally coerce
-  other data types to \sQuote{character}; return remaining
-  ones unchanged. It is also possible to map between
-  classes using coercion functions. For convenience in
-  programming, methods for the \sQuote{NULL} class are also
-  available.
-}
-\note{
-  This function is not normally directly called by an
+  Map values using a character vector, a function or a
+  formula. This is not normally directly called by an
   \pkg{opm} user because \code{\link{map_metadata}} is
   available.
+}
+\details{
+  Mapping of \sQuote{character} data using another
+  \sQuote{character} vector is possible, as well as
+  recursively applying a mapping function to all
+  \sQuote{character} values within a list, or
+  non-recursively to a data frame. Optionally other data
+  types are coerced to \sQuote{character}; the remaining
+  ones are returned unchanged. It is also possible to map
+  between classes using coercion functions. For convenience
+  in programming, methods for the \sQuote{NULL} class are
+  also available.
 }
 \examples{
 # Character/character method

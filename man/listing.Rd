@@ -49,7 +49,7 @@
   This creates a textual listing of the discretized values.
   This is useful to describe
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  phenotype microarray results in a manuscript.
+  phenotype microarray results in a scientific manuscript.
 }
 \note{
   See \code{\link{do_disc}} for generating discretized

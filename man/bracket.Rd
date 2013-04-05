@@ -100,12 +100,10 @@ copy <- vaas_1[, ~ A11:22]
 stopifnot(dim(copy) == c(384, 12)) # same result as above
 
 # dropping aggregated data
-copy <- vaas_1[]
-stopifnot(has_aggr(copy))
-stopifnot(identical(copy, vaas_1))
-copy <- vaas_1[drop = TRUE]
-stopifnot(!has_aggr(copy))
-stopifnot(!identical(copy, vaas_1))
+copy <- vaas_1[] # normal selection
+stopifnot(has_aggr(copy), identical(copy, vaas_1))
+copy <- vaas_1[drop = TRUE] # selection with dropping
+stopifnot(!has_aggr(copy), !identical(copy, vaas_1))
 
 
 ## OPMS method

@@ -64,6 +64,7 @@ setMethod("to_grofit_data", OPM, function(object) {
 #' Extract and rename estimated curve parameters.
 #'
 #' @param x Object of class \sQuote{grofit} or \sQuote{opm_model}.
+#' @param all Logic. Should [TODO]
 #' @param ... Additional arguments.
 #' @return Matrix.
 #' @keywords internal
@@ -82,7 +83,6 @@ extract_curve_params.grofit <- function(x, ...) {
 }
 
 #' @rdname extract_curve_params
-#' @param all Logic. Should
 #' @method extract_curve_params opm_model
 #'
 extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
@@ -117,7 +117,7 @@ extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
 
 #' Summary method for bootstraped splines
 #'
-#' Function for internal use; Creates confidence intervalls based on bootstrap
+#' Function for internal use; Creates confidence intervals based on bootstrap
 #' replicates.
 #'
 #' @param object An object of class \code{splines_bootstrap}.
@@ -125,8 +125,10 @@ extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
 #' @return vector of bootstrap confidence intervals
 #' @author Benjamin Hofner
 #' @keywords internal
+#'
 summary.splines_bootstrap <- function (object, ...) {
 
+    # TODO: should rather rely on map_grofit_names()
     cnames <- c("mu", "lambda", "A", "AUC",
       "mu CI95 low", "lambda CI95 low", "A CI95 low", "AUC CI95 low",
       "mu CI95 high", "lambda CI95 high", "A CI95 high", "AUC CI95 high")
@@ -220,7 +222,8 @@ param_names <- function(
 #'   only the following methods are supported:
 #'   \describe{
 #'     \item{splines}{Fit various splines (smoothing splines and P-splines from
-#'     \pkg{mgcv} and smoothing splines via \code{smooth.spline}) to opm data.}
+#'     \pkg{mgcv} and smoothing splines via \code{smooth.spline}) to opm data.
+#'     Recommended.}
 #'     \item{grofit}{The \code{grofit} function in the eponymous package, with
 #'     spline fitting as default.}
 #'     \item{opm-fast}{The native, faster parameter estimation. This will only

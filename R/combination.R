@@ -158,10 +158,10 @@ setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
 #'
 #' @examples
 #'
-#' data(vaas_1)
-#' data(vaas_4)
-#' # the examples do not show particularly useful additions, as the plates
-#' # are either entirely or partially identical
+#' data(vaas_1, vaas_4)
+#' # The examples do not show particularly useful additions, as the plates
+#' # are either entirely or partially identical. Note the changes in the
+#' # dimensions.
 #'
 #' # OPM+OPM method
 #' summary(x <- vaas_1 + vaas_1)
@@ -258,6 +258,7 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #'
 #' ## Testing distinct OPM/OPMS combinations -- all should work
 #' data(vaas_1, vaas_4)
+#' # Note the number of contained plates in the generated objects.
 #'
 #' (x <- opms())
 #' stopifnot(is.null(x))
@@ -269,7 +270,7 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #' stopifnot(identical(x, vaas_4))
 #'
 #' summary((x <- opms(vaas_4, group = "PM01")))
-#' stopifnot(is.null(x))
+#' stopifnot(is.null(x)) # no such plate type => empty object!
 #'
 #' summary(x <- opms(vaas_1, vaas_1))
 #' stopifnot(is(x, "OPMS"), length(x) == 2L)

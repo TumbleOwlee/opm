@@ -10,7 +10,7 @@
   either kind of object, but this class is not directly
   dealt with by an \pkg{opm} user.
 }
-\details{
+\note{
   \sQuote{MOA} is an acronym for \sQuote{matrix or array}.
 }
 \seealso{

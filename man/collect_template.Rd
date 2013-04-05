@@ -107,18 +107,18 @@ if (length(test.files) > 0) {
 
 # OPM method
 data(vaas_1)
-(x <- collect_template(vaas_1))
+(x <- collect_template(vaas_1)) # => data frame, one row per plate
 stopifnot(identical(dim(x), c(1L, 3L)))
 (x <- collect_template(vaas_1, add.cols = c("A", "B")))
-stopifnot(identical(dim(x), c(1L, 5L)))
+stopifnot(identical(dim(x), c(1L, 5L))) # => data frame with more columns
 # see include_metadata() for how to use this to add metadata information
 
 # OPMS method
 data(vaas_4)
-(x <- collect_template(vaas_4))
+(x <- collect_template(vaas_4)) # => data frame, one row per plate
 stopifnot(identical(dim(x), c(4L, 3L)))
 (x <- collect_template(vaas_4, add.cols = c("A", "B")))
-stopifnot(identical(dim(x), c(4L, 5L)))
+stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
 # again see include_metadata() for how to use this to add metadata
 # information
 }

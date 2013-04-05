@@ -161,7 +161,7 @@
 \examples{
 test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,
   value = TRUE, fixed = TRUE)
-if (length(test.files) > 0) {
+if (length(test.files) > 0) { # if the files are found
   num.files <- length(list.files(outdir <- tempdir()))
   x <- batch_opm_to_yaml(test.files[1], outdir = outdir)
   stopifnot(length(list.files(outdir)) == num.files + 1, is.matrix(x))

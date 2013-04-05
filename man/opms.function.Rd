@@ -58,6 +58,7 @@
 \examples{
 ## Testing distinct OPM/OPMS combinations -- all should work
 data(vaas_1, vaas_4)
+# Note the number of contained plates in the generated objects.
 
 (x <- opms())
 stopifnot(is.null(x))
@@ -69,7 +70,7 @@ summary((x <- opms(vaas_4, group = plate_type(vaas_4))))
 stopifnot(identical(x, vaas_4))
 
 summary((x <- opms(vaas_4, group = "PM01")))
-stopifnot(is.null(x))
+stopifnot(is.null(x)) # no such plate type => empty object!
 
 summary(x <- opms(vaas_1, vaas_1))
 stopifnot(is(x, "OPMS"), length(x) == 2L)

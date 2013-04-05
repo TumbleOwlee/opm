@@ -57,13 +57,13 @@
 #'
 #' # combined optimization
 #' (y <- best_cutoff(x, grps))
-#' stopifnot(is.numeric(y), length(y) == 2)
+#' stopifnot(is.numeric(y), length(y) == 2) # two-element numeric vector
 #' stopifnot(y[["maximum"]] < 4, y[["maximum"]] > 3, y[["objective"]] == 2)
 #' plot(best_cutoff(x, grps, all = TRUE), type = "l")
 #'
 #' # separate optimization
 #' (y <- best_cutoff(x, grps, combined = FALSE))
-#' stopifnot(is.matrix(y), dim(y) == c(2, 2))
+#' stopifnot(is.matrix(y), dim(y) == c(2, 2)) # numeric matrix
 #' stopifnot(y["a", "objective"] == 2, y["b", "objective"] == 2)
 #' (y <- best_cutoff(x, grps, combined = FALSE, all = TRUE))
 #' plot(y$a, type = "l")

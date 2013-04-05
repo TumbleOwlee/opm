@@ -73,22 +73,22 @@ data(vaas_4)
 (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
 stopifnot(is.data.frame(x), identical(dim(x), c(4L, 2L)))
 (y <- extract_columns(vaas_4, what = ~ Species + Strain))
-stopifnot(identical(x, y)) # using a formula
+stopifnot(identical(x, y)) # same result using a formula
 
 # Create a character vector
 (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
 stopifnot(is.character(x), length(x) == 4L)
 (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-  dups = "error"), silent = TRUE))
+  dups = "error"), silent = TRUE)) # duplicates yield error
 stopifnot(inherits(x, "try-error"))
 (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-  dups = "warn"), silent = TRUE))
+  dups = "warn"), silent = TRUE)) # duplicates yield warning only
 stopifnot(is.character(x), length(x) == 4L)
 
 # data-frame method, 'direct' running mode
 x <- data.frame(a = 1:26, b = letters, c = LETTERS)
 (y <- extract_columns(x, I(c("a", "b")), sep = "-"))
-stopifnot(grepl("^\\\s*\\\d+-[a-z]$", y))
+stopifnot(grepl("^\\\s*\\\d+-[a-z]$", y)) # pasted columns 'a' and 'b'
 
 # data-frame method, using class name
 (y <- extract_columns(x, as.labels = "b", what = "integer", as.groups = "c"))

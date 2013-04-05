@@ -83,7 +83,7 @@
 # in temporary files
 pf <- function(infile, outfile) write(readLines(infile, n = 1), outfile)
 infiles <- opm_files("testdata")
-if (length(infiles) > 0) {
+if (length(infiles) > 0) { # if the files are found
   x <- batch_process(infiles, out.ext = "tmp", io.fun = pf,
     outdir = tempdir())
   stopifnot(is.matrix(x), identical(x[, 1], infiles))

@@ -13,8 +13,7 @@
 #'
 #' Convert strings to safe phylogenetic taxon labels: replace disallowed
 #' characters or include all labels in single quotes, and double pre-existing
-#' single quotes, if any. This is not normally called directly by an \pkg{opm}
-#' user but by \code{\link{phylo_data}}; see there for further details.
+#' single quotes, if any.
 #'
 #' @param x Character vector or convertible to such.
 #' @param format Character scalar. See \code{\link{phylo_data}}.
@@ -28,6 +27,8 @@
 #'   not accept comments and will yield an error. If \code{enclose} is
 #'   \code{TRUE}, the comment-enclosing characters are appended
 #'   prepended to the vector, otherwise to each string seperately.
+#' @details This is not normally called directly by an \pkg{opm} user but by
+#'   \code{\link{phylo_data}}; see there for further details.
 #' @export
 #' @return Character vector.
 #' @family phylogeny-functions
@@ -38,15 +39,15 @@
 #' x <- c("Elephas maximus", "Loxodonta africana", "Giraffa camelopardalis")
 #'
 #' (y <- safe_labels(x, "phylip"))
-#' stopifnot(nchar(y) == 10L)
+#' stopifnot(nchar(y) == 10L) # truncation
 #'
 #' (y <- safe_labels(x, "epf"))
-#' stopifnot(nchar(y) == nchar(x))
+#' stopifnot(nchar(y) == nchar(x)) # changes in length unnecessary
 #' (y <- safe_labels(x, "epf", pad = TRUE))
-#' stopifnot(nchar(y) == 22)
+#' stopifnot(nchar(y) == 22) # padded to uniform length
 #'
 #' (y <- safe_labels(x, "nexus", enclose = TRUE))
-#' stopifnot(grepl("^'.*'$", y))
+#' stopifnot(grepl("^'.*'$", y)) # all strings enclosed in sinqle quotes
 #'
 safe_labels <- function(x, format, enclose = TRUE, pad = FALSE,
     comment = FALSE) {

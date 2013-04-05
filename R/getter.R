@@ -29,17 +29,17 @@
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' head(x <- measurements(vaas_1))
+#' head(x <- measurements(vaas_1)) # => numeric matrix
 #' stopifnot(is.matrix(x), is.numeric(x))
 #' stopifnot(dim(x) == c(384, 97))
 #' head(x <- measurements(vaas_1, "B03"))
 #' stopifnot(is.matrix(x), is.numeric(x), dim(x) == c(384, 2))
-#' head(y <- measurements(vaas_1, ~B03))
+#' head(y <- measurements(vaas_1, ~B03)) # => same result with formula
 #' stopifnot(identical(y, x))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' x <- measurements(vaas_4)
+#' summary(x <- measurements(vaas_4)) # => list of numeric matrices
 #' stopifnot(is.list(x), length(x) == length(vaas_4))
 #' stopifnot(sapply(x, is.matrix), sapply(x, is.numeric))
 #'
@@ -149,12 +149,10 @@ setMethod("measurements", OPM, function(object, i) {
 #' stopifnot(dim(copy) == c(384, 12)) # same result as above
 #'
 #' # dropping aggregated data
-#' copy <- vaas_1[]
-#' stopifnot(has_aggr(copy))
-#' stopifnot(identical(copy, vaas_1))
-#' copy <- vaas_1[drop = TRUE]
-#' stopifnot(!has_aggr(copy))
-#' stopifnot(!identical(copy, vaas_1))
+#' copy <- vaas_1[] # normal selection
+#' stopifnot(has_aggr(copy), identical(copy, vaas_1))
+#' copy <- vaas_1[drop = TRUE] # selection with dropping
+#' stopifnot(!has_aggr(copy), !identical(copy, vaas_1))
 #'
 #'
 #' ## OPMS method
@@ -286,22 +284,22 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' head(x <- well(vaas_1, "B04"))
+#' head(x <- well(vaas_1, "B04")) # => numeric vector
 #' stopifnot(is.numeric(x), length(x) == 384)
-#' head(x <- well(vaas_1, c("B08", "C07")))
+#' head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
 #' stopifnot(is.matrix(x), dim(x) == c(384, 2))
 #' # selecting adjacent wells is easer if using a formula
 #' head(x <- well(vaas_1, c("B12", "C01", "C02")))
 #' stopifnot(is.matrix(x), dim(x) == c(384, 3))
-#' head(y <- well(vaas_1, ~ B12:C02))
+#' head(y <- well(vaas_1, ~ B12:C02)) # => same result
 #' stopifnot(identical(x, y))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' head(x <- well(vaas_4, "B04"))
+#' head(x <- well(vaas_4, "B04")) # => numeric matrix
 #' stopifnot(is.matrix(x), dim(x) == c(4, 384))
 #' head(y <- well(vaas_4, ~ B04)) # using a formula
-#' stopifnot(identical(x, y))
+#' stopifnot(identical(x, y)) # => same result
 #'
 setGeneric("well", function(object, ...) standardGeneric("well"))
 
@@ -353,7 +351,7 @@ setMethod("well", OPM, function(object, i, drop = TRUE) {
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- hours(vaas_4))
+#' (x <- hours(vaas_4)) # all with the same overall running time
 #' stopifnot(length(x) == 4, x == 95.75)
 #'
 setGeneric("hours", function(object, ...) standardGeneric("hours"))
@@ -412,13 +410,13 @@ setMethod("hours", OPM, function(object,
 #' data(vaas_1)
 #' (x <- max(vaas_1))
 #' (y <- max(vaas_1, 1)) # this is the negative control
-#' stopifnot(x > y)
+#' stopifnot(x > y) # i.e., some stronger reactions present
 #'
 #' # OPMS method
 #' data(vaas_4)
 #' (x <- max(vaas_4))
 #' (y <- max(vaas_4, 1)) # this is the negative control
-#' stopifnot(x > y)
+#' stopifnot(x > y) # i.e., some stronger reactions present
 #'
 setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
   if (missing(...))
@@ -457,15 +455,13 @@ setMethod("max", OPMS, function(x, ..., na.rm = FALSE) {
 #'
 #' # OPM method
 #' data(vaas_1)
-#' (x <- max(vaas_1))
-#' (y <- minmax(vaas_1))
-#' stopifnot(x > y)
+#' (x <- minmax(vaas_1))
+#' stopifnot(max(vaas_1) > x) # obviously
 #'
 #' # OPMS method
 #' data(vaas_4)
-#' (x <- max(vaas_4))
-#' (y <- minmax(vaas_4))
-#' stopifnot(x > y)
+#' (x <- minmax(vaas_4))
+#' stopifnot(max(vaas_4) > x) # obviously
 #'
 setGeneric("minmax", function(x, ...) standardGeneric("minmax"))
 
@@ -510,7 +506,7 @@ setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
 #'
 #' # OPMS method
 #' data(vaas_4)
-#' (x <- dim(vaas_4))
+#' (x <- dim(vaas_4)) # 2nd value needs not be correct for all plates
 #' stopifnot(identical(x, c(4L, 384L, 96L)))
 #'
 setMethod("dim", OPM, function(x) {
@@ -538,7 +534,7 @@ setMethod("dim", OPMS, function(x) {
 #' @examples
 #' data(vaas_4)
 #' (x <- length(vaas_4))
-#' stopifnot(identical(x, 4L))
+#' stopifnot(identical(x, 4L)) # 4 plates contained
 #'
 setMethod("length", OPMS, function(x) {
   length(x@plates)
@@ -568,13 +564,13 @@ setMethod("length", OPMS, function(x) {
 #' # 'OPMS' method
 #' data(vaas_4)
 #' (x <- seq(vaas_4))
-#' stopifnot(identical(x, 1:4))
+#' stopifnot(identical(x, 1:4)) # indexes for 4 plates
 #' (y <- seq(vaas_4, letters, LETTERS)) # other arguments are ignored
 #' stopifnot(identical(x, y))
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- try(seq(vaas_1), silent = TRUE))
+#' (x <- try(seq(vaas_1), silent = TRUE)) # deliberately yields an error
 #' stopifnot(inherits(x, "try-error"))
 #'
 setGeneric("seq")
@@ -634,11 +630,13 @@ setMethod("seq", OPMS, function(...) {
 #' (x <- wells(vaas_1, full = FALSE))
 #' (y <- wells(vaas_1, full = TRUE))
 #' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))
+#' # string lengths differ depending on selection
 #' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 #'
 #' # 'OPM' method
 #' data(vaas_4)
 #' (xx <- wells(vaas_4, full = FALSE))
+#' # wells are guaranteed to be uniform within OPMS objects
 #' stopifnot(identical(x, xx))
 #'
 setGeneric("wells", function(object, ...) standardGeneric("wells"))
@@ -684,13 +682,12 @@ setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' # compare this to setup_time()
-#' (x <- csv_data(vaas_1, "Setup Time"))
+#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to setup_time()
 #' stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- csv_data(vaas_4, "Setup Time"))
+#' (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 #' stopifnot(is.character(x), length(x) == 4)
 #'
 setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
@@ -727,12 +724,12 @@ setMethod("csv_data", OPM, function(object, keys = character(),
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- filename(vaas_1))
+#' (x <- filename(vaas_1)) # one file name (of course)
 #' stopifnot(is.character(x), length(x) == 1L)
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- filename(vaas_4))
+#' (x <- filename(vaas_4))  # one file name per plate
 #' stopifnot(is.character(x), length(x) == 4L)
 #'
 setGeneric("filename", function(object, ...) standardGeneric("filename"))
@@ -794,6 +791,7 @@ setMethod("filename", OPM, function(object) {
 #' (x <- plate_type(vaas_1, full = FALSE))
 #' (y <- plate_type(vaas_1, full = TRUE))
 #' (z <- plate_type(vaas_1, full = TRUE, in.parens = FALSE))
+#' # strings lengths differ depending on the selection
 #' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 #'
 #' \dontrun{
@@ -806,12 +804,13 @@ setMethod("filename", OPM, function(object) {
 #' ## 'OPMS' method
 #' data(vaas_4)
 #' (xx <- plate_type(vaas_4, full = FALSE))
+#' # plate type is guaranteed to be uniform within an OPMS object
 #' stopifnot(identical(x, xx))
 #'
 #' ## Character method
 #'
 #' # Entirely unrecognized strings are returned as-is
-#' x <- plate_type(letters)
+#' (x <- plate_type(letters))
 #' stopifnot(identical(x, letters))
 #'
 #' # Something more realistic
@@ -820,7 +819,7 @@ setMethod("filename", OPM, function(object) {
 #'
 #' # Factor method
 #' (z <- plate_type(as.factor(y), TRUE))
-#' stopifnot(is.factor(z), z == x)
+#' stopifnot(is.factor(z), z == x) # same result after conversion
 #'
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))
 
@@ -903,14 +902,14 @@ setMethod("plate_type", "factor", function(object, subtype = FALSE) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- setup_time(vaas_1))
+#' (x <- setup_time(vaas_1)) # single setup time (of course)
 #' # WARNING: It is unlikely that all OmniLog output has this setup time format
 #' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- setup_time(vaas_4))
+#' (x <- setup_time(vaas_4)) # one setup time per plate
 #' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 #'
@@ -941,12 +940,12 @@ setMethod("setup_time", OPM, function(object) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- position(vaas_1))
+#' (x <- position(vaas_1)) # single position (of course)
 #' stopifnot(identical(x, " 7-B"))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- position(vaas_4))
+#' (x <- position(vaas_4)) # one position per plate
 #' stopifnot(is.character(x), length(x) == length(vaas_4))
 #'
 setGeneric("position", function(object, ...) standardGeneric("position"))
@@ -1050,12 +1049,13 @@ setMethod("has_disc", OPM, function(object) {
 #' # OPM method
 #' data(vaas_1)
 #' (x <- summary(vaas_1))
-#' stopifnot(is.list(x))
+#' stopifnot(is.list(x), is.object(x))
 #'
 #' # OPMS method
 #' data(vaas_4)
 #' (x <- summary(vaas_4))
-#' stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)))
+#' stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
+#'   is.object(x))
 #'
 setGeneric("summary")
 
@@ -1212,12 +1212,12 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- aggr_settings(vaas_1))
+#' (x <- aggr_settings(vaas_1)) # yields named list
 #' stopifnot(is.list(x), !is.null(names(x)))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- aggr_settings(vaas_4))
+#' summary(x <- aggr_settings(vaas_4)) # list of named lists, one per plate
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 #'
 setGeneric("aggr_settings",
@@ -1247,13 +1247,13 @@ setMethod("aggr_settings", OPMA, function(object) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- discretized(vaas_1))
+#' (x <- discretized(vaas_1)) # => logical vector
 #' stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- discretized(vaas_4))
+#' (x <- discretized(vaas_4)) # => logical matrix
 #' stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 #' stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
 #'
@@ -1282,12 +1282,12 @@ setMethod("discretized", OPMD, function(object) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- disc_settings(vaas_1))
+#' (x <- disc_settings(vaas_1)) # => named list
 #' stopifnot(is.list(x), !is.null(names(x)))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- disc_settings(vaas_4))
+#' summary(x <- disc_settings(vaas_4)) # => list of named lists, one per plate
 #' stopifnot(is.list(x), is.null(names(x)), length(x) == length(vaas_4))
 #' stopifnot(duplicated(x)[-1])
 #'
@@ -1363,15 +1363,15 @@ setMethod("disc_settings", OPMD, function(object) {
 #' # 'OPM' method
 #' data(vaas_1)
 #' (x <- metadata(vaas_1, "Strain"))
-#' stopifnot(identical(x, "DSM30083T"))
-#' (y <- metadata(vaas_1, ~ Strain)) # using a formula
+#' stopifnot(x == "DSM30083T")
+#' (y <- metadata(vaas_1, ~ Strain)) # using a formula => same result
 #' stopifnot(identical(x, y))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
 #' (x <- metadata(vaas_4, "Strain"))
 #' stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
-#' (y <- metadata(vaas_4, ~ Strain)) # using a formula
+#' (y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
 #' stopifnot(identical(x, y))
 #'
 setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
@@ -1496,8 +1496,7 @@ setMethod("select", "data.frame", function(object, query) {
 #'
 #' Select a subset of the plates in an \code{\link{OPMS}} object based on the
 #' content of the metadata. Alternatively, select a common subset of time points
-#' from all plates. The data-frame method selects columns that belong to certain
-#' classes.
+#' from all plates.
 #'
 #' @param x \code{\link{OPMS}} object.
 #' @param query Logical, numeric or character vector, list, or formula. If a
@@ -1541,7 +1540,7 @@ setMethod("select", "data.frame", function(object, query) {
 #'   If \sQuote{i} or \sQuote{I}, ignored. If \sQuote{t} or \sQuote{T},
 #'   \code{time} is set to \code{TRUE}. If \sQuote{p} or \sQuote{P},
 #'   \code{positive} is set to \sQuote{any} or \sQuote{all}, respectively. If
-#'   \sQuote{n} or \sQuote{N}, \code{non.negative} is set to \sQuote{any} or
+#'   \sQuote{n} or \sQuote{N}, \code{negative} is set to \sQuote{any} or
 #'   \sQuote{all}, respectively.
 #'
 #'   Otherwise, \code{use} is taken directly as the one-latter name of the infix
@@ -1550,7 +1549,6 @@ setMethod("select", "data.frame", function(object, query) {
 #' @export
 #' @return \code{NULL} or \code{\link{OPM}} or \code{\link{OPMS}} object. This
 #'   depends on how many plates are selected; see \code{\link{[}} for details.
-#'   The data-frame method returns a data frame.
 #'
 #' @family getter-functions
 #' @keywords manip
@@ -1666,8 +1664,6 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
   }
   if (is.logical(query) || is.numeric(query))
     return(x[query, , ])
-  #if (!is.list(query) && !is.character(query))
-  #  query <- as.character(query)
   pos <- if (values) {
     if (exact)
       query %Q% x
@@ -1716,15 +1712,17 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- duplicated(vaas_1))
+#' (x <- duplicated(vaas_1)) # 1 element => nothing duplicated
 #' stopifnot(identical(x, FALSE))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' stopifnot(!duplicated(vaas_4))
+#' stopifnot(!duplicated(vaas_4)) # => no complete plates duplicated
 #' stopifnot(!duplicated(vaas_4, what = list("Species", "Strain")))
+#' # => no organisms duplicated
 #' stopifnot(duplicated(vaas_4, what = "Species") == rep(c(FALSE, TRUE), 2))
-#' x <- vaas_4[c(1, 1)]
+#' # => species duplicated
+#' x <- vaas_4[c(1, 1)] # => complete plate duplicated
 #' stopifnot(c(FALSE, TRUE) == duplicated(x))
 #'
 setGeneric("duplicated")
@@ -1775,16 +1773,18 @@ setMethod("duplicated", c(OPMS, "ANY"), function(x, incomparables,
 #' # 'OPM' method
 #' data(vaas_1)
 #' (x <- anyDuplicated(vaas_1))
-#' stopifnot(identical(x, 0L))
+#' stopifnot(identical(x, 0L)) # no complete plate duplicated
 #' (x <- anyDuplicated(vaas_1, what = list("Strain", "Species")))
-#' stopifnot(identical(x, 0L))
+#' stopifnot(identical(x, 0L)) # no organisms duplicated
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
 #' stopifnot(identical(anyDuplicated(vaas_4), 0L))
 #' stopifnot(identical(anyDuplicated(vaas_4, what = list("Strain")), 0L))
+#' # => no strains duplicated
 #' stopifnot(identical(anyDuplicated(vaas_4, what = list("Species")), 2L))
-#' x <- vaas_4[c(1, 1)]
+#' # => species duplicated
+#' x <- vaas_4[c(1, 1)] # complete plate duplicated
 #' stopifnot(identical(anyDuplicated(x), 2L))
 #'
 setGeneric("anyDuplicated")
@@ -1904,6 +1904,7 @@ lapply(c(
 #'   metadata are looked up in the enclosing environment. Note also that missing
 #'   objects are not the only potential reason of failure.
 #' }
+#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #'
 #' @examples
 #'
@@ -2003,6 +2004,7 @@ setMethod("%k%", c("formula", WMD), function(x, table) {
 #'   are not found within the metadata are looked up in the base environment.
 #'   But note that missing objects are not the only potential reason of failure.
 #' }
+#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #' @export
 #' @exportMethod "%K%"
 #~ @family getter-functions
@@ -2105,12 +2107,13 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #'   in the context of the metadata of \code{table} and returns the result. For
 #'   the \code{\link{WMD}} method, is is up to the user to ensure that the
 #'   result is a logical scalar, but the method would succeed anyway. The
-#'   \code{\link{OPMS}} yields an error unless each plate yield a logical
+#'   \code{\link{OPMS}} yields an error unless each plate yields a logical
 #'   scalar. Symbols that are not found within the metadata are looked up in the
 #'   enclosing environment. This is less strict than \code{\link{infix.largeq}}.
 #'   Because of missing objects and other reasons the method might nevertheless
 #'   fail.
 #' }
+#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #' @exportMethod "%q%"
 #' @export
 #~ @family getter-functions
@@ -2149,7 +2152,7 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' stopifnot(list(Experiment = c("First replicate", "Second replicate"),
 #'   Species = c("Escherichia coli", "Bacillus subtilis")) %q% vaas_1)
 #'
-#' stopifnot(list() %q% vaas_1) # Empty query
+#' stopifnot(list() %q% vaas_1) # empty query
 #'
 #' # Formulas for querying, compare with %Q%
 #' stopifnot((~ Experiment == "First replicate") %q% vaas_1)
@@ -2161,6 +2164,8 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' missing.name <- "abc"  # enclosing environment considered
 #' stopifnot(vaas_1 %q% ~ missing.name == "abc")
 #' rm(missing.name) # tidy up
+#'
+#' # examples for OPMS methods are given under subset()
 #'
 setGeneric("%q%", function(x, table) standardGeneric("%q%"))
 
@@ -2220,6 +2225,7 @@ setMethod("%q%", c("formula", WMD), function(x, table) {
 #'   only in the base environment. This is stricter than \code{\link{infix.q}}.
 #'   Because of missing objects and other reasons the method might fail.
 #' }
+#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #' @return Logical scalar.
 #' @exportMethod "%Q%"
 #' @export

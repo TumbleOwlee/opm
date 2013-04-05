@@ -79,6 +79,11 @@
   Sections are determined with patterns that match the
   start of a section.
 }
+\details{
+  This function is useful for splitting
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  multi-plate CSV files.  See \sQuote{Examples}.
+}
 \examples{
 # Splitting an old-style CSV file containing several plates
 (x <- grep("Multiple", opm_files("testdata"), value = TRUE, fixed = TRUE))

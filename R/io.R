@@ -364,7 +364,7 @@ read_microstation_opm <- function(filename) {
 #' @examples
 #' test.files <- opm_files("testdata")
 #' if (length(test.files) > 0) { # if the folder is found
-#'   x <- read_single_opm(test.files[1])
+#'   x <- read_single_opm(test.files[1]) # => 'OPM' object
 #'   class(x)
 #'   dim(x)
 #'   summary(x)
@@ -615,7 +615,7 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary")) {
 #'   \code{\link{read_single_opm}}. The \acronym{YAML} format is described in
 #'   detail under \code{\link{batch_opm_to_yaml}}.
 #'
-#' @note For splitting lists of \code{\link{OPM}} objects according to the plate
+#'   or splitting lists of \code{\link{OPM}} objects according to the plate
 #'   type, see \code{\link{plate_type}}, and consider the plate-type selection
 #'   options of \code{\link{opms}}.
 #'
@@ -696,12 +696,8 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 
 #' Input metadata
 #'
-#' The character method reads metadata from an input file and is only a thin
-#' wrapper for \code{read.delim} but contains some useful adaptations (such as
-#' \strong{not} converting strings to factors, and not modifying column names).
-#' The default method reads metadata from an object convertible to a data frame
-#' and is only a thin wrapper of \code{as.data.frame} but contains the same
-#' useful adaptations as the filename method.
+#' Create data frame holding potential \code{\link{OPM}} or \code{\link{OPMS}}
+#' object metadata.
 #'
 #' @param object Name of input file (character scalar), or any object
 #'   convertible to a data frame.
@@ -715,7 +711,14 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #' @param ... Optional other arguments for \code{read.delim} or
 #'   \code{as.data.frame}.
 #' @export
-#' @return Dataframe.
+#' @return Data frame.
+#' @details The character method reads metadata from an input file and is only a
+#'   thin wrapper for \code{read.delim} but contains some useful adaptations
+#'   (such as \strong{not} converting strings to factors, and not modifying
+#'   column names). The default method reads metadata from an object convertible
+#'   to a data frame and is only a thin wrapper of \code{as.data.frame} but
+#'   contains the same useful adaptations as the filename method.
+#'
 #' @family io-functions
 #' @keywords IO manip
 #' @seealso base::default.stringsAsFactors utils::read.delim base::as.data.frame
@@ -725,7 +728,7 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #' (x <- to_metadata(list(a = 7:8, `b c` = letters[1:2])))
 #' tmpfile <- tempfile()
 #' write.table(x, tmpfile, row.names = FALSE, sep = "\t")
-#' (x1 <- read.delim(tmpfile))
+#' (x1 <- read.delim(tmpfile)) # comparison with base R function
 #' (x2 <- to_metadata(tmpfile))
 #' stopifnot(identical(names(x2), names(x)), !identical(names(x1), names(x)))
 #'
@@ -898,18 +901,18 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #'
 #' # OPM method
 #' data(vaas_1)
-#' (x <- collect_template(vaas_1))
+#' (x <- collect_template(vaas_1)) # => data frame, one row per plate
 #' stopifnot(identical(dim(x), c(1L, 3L)))
 #' (x <- collect_template(vaas_1, add.cols = c("A", "B")))
-#' stopifnot(identical(dim(x), c(1L, 5L)))
+#' stopifnot(identical(dim(x), c(1L, 5L))) # => data frame with more columns
 #' # see include_metadata() for how to use this to add metadata information
 #'
 #' # OPMS method
 #' data(vaas_4)
-#' (x <- collect_template(vaas_4))
+#' (x <- collect_template(vaas_4)) # => data frame, one row per plate
 #' stopifnot(identical(dim(x), c(4L, 3L)))
 #' (x <- collect_template(vaas_4, add.cols = c("A", "B")))
-#' stopifnot(identical(dim(x), c(4L, 5L)))
+#' stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
 #' # again see include_metadata() for how to use this to add metadata
 #' # information
 #'
@@ -1110,7 +1113,7 @@ process_io <- function(files, io.fun, fun.args = list(),
 #' # in temporary files
 #' pf <- function(infile, outfile) write(readLines(infile, n = 1), outfile)
 #' infiles <- opm_files("testdata")
-#' if (length(infiles) > 0) {
+#' if (length(infiles) > 0) { # if the files are found
 #'   x <- batch_process(infiles, out.ext = "tmp", io.fun = pf,
 #'     outdir = tempdir())
 #'   stopifnot(is.matrix(x), identical(x[, 1], infiles))
@@ -1264,7 +1267,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #' @examples
 #' test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,
 #'   value = TRUE, fixed = TRUE)
-#' if (length(test.files) > 0) {
+#' if (length(test.files) > 0) { # if the files are found
 #'   num.files <- length(list.files(outdir <- tempdir()))
 #'   x <- batch_opm_to_yaml(test.files[1], outdir = outdir)
 #'   stopifnot(length(list.files(outdir)) == num.files + 1, is.matrix(x))
@@ -1411,6 +1414,10 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   newly generated files. The names of the list are the input filenames. The
 #'   list is returned invisibly.
 #'
+#' @details This function is useful for splitting
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} multi-plate CSV files.
+#'   See \sQuote{Examples}.
+#'
 #' @family io-functions
 #' @seealso base::split base::strsplit
 #' @keywords utilities
@@ -1507,6 +1514,9 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 #' @export
 #' @return Character vector, its names corresponding to the renamed old files,
 #'   values corresponding to the novel names, returned invisibly.
+#' @details This function might be useful for manageing
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} CSV files, which can
+#'   contain a lot of special characters.
 #' @family io-functions
 #' @keywords utilities
 #' @seealso base::file.rename
@@ -1517,10 +1527,10 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 #' stopifnot(length(x) == 0)
 #'
 #' # Example with temporary files
-#' (x <- tempfile(pattern = "cb& ahi+ si--"))
+#' (x <- tempfile(pattern = "cb& ahi+ si--")) # bad file name
 #' write("test", x)
 #' stopifnot(file.exists(x))
-#' (y <- clean_filenames(x))
+#' (y <- clean_filenames(x)) # file renamed
 #' stopifnot(!file.exists(x), file.exists(y))
 #' unlink(y) # tidy up
 #'

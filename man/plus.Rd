@@ -19,10 +19,10 @@
   objects are incompatible.
 }
 \examples{
-data(vaas_1)
-data(vaas_4)
-# the examples do not show particularly useful additions, as the plates
-# are either entirely or partially identical
+data(vaas_1, vaas_4)
+# The examples do not show particularly useful additions, as the plates
+# are either entirely or partially identical. Note the changes in the
+# dimensions.
 
 # OPM+OPM method
 summary(x <- vaas_1 + vaas_1)

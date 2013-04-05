@@ -513,6 +513,13 @@ setMethod("parse_time", c("character", "character"), function(object, format,
 #'   \code{TRUE}.
 #' @param ... Optional arguments passed between the methods.
 #' @export
+#' @details This function is useful if information coded in the elements of a
+#'   character vector is to be converted to a matrix or data frame. For
+#'   instance, file names created by a batch export conducted by a some software
+#'   are usually more or less regularly structured and contain content at
+#'   distinct possitions. In such situations, the correct splitting approach can
+#'   be recognized by yielding the same number of fields from each vector
+#'   element.
 #' @return Character matrix, its number of rows being equal to the length of
 #'   \code{object}, or data frame with the same number of rows as \code{object}
 #'   but potentially more columns. May be character vector of factor with
@@ -548,7 +555,7 @@ setMethod("parse_time", c("character", "character"), function(object, format,
 #' x <- data.frame(a = 1:2, b = c("a-b-cc", "a-ff-g"))
 #' (y <- separate(x, coerce = FALSE))
 #' stopifnot(identical(x, y))
-#' (y <- separate(x))
+#' (y <- separate(x)) # only character/factor columns are split
 #' stopifnot(is.data.frame(y), dim(y) == c(2, 4))
 #' stopifnot(sapply(y, class) == c("integer", "factor", "factor", "factor"))
 #' (y <- separate(x, keep.const = FALSE))
@@ -717,14 +724,16 @@ setMethod("separate", "data.frame", function(object, split = opm_opt("split"),
 #' @family auxiliary-functions
 #' @keywords character
 #' @seealso utils::glob2rx base::regex
-#' @note This is not normally directly called by an \pkg{opm} user because
+#' @details This is not normally directly called by an \pkg{opm} user because
 #'   particularly \code{\link{explode_dir}} and the IO functions calling that
-#'   function internally use \code{glob_to_regex} anyway.
-#' @details The here used globbing search patterns contain only two special
-#'   characters, \sQuote{?} and \sQuote{*}, and are thus more easy to master
-#'   than regular expressions. \sQuote{?} matches a single arbitrary character,
-#'   whereas \sQuote{*} matches zero to an arbitrary number of arbitrary
-#'   characters. Some examples:
+#'   function internally use \code{glob_to_regex} anyway. But some hints when
+#'   using globbing patterns are given in the following.
+#'
+#'   The here used globbing search patterns contain only two special characters,
+#'   \sQuote{?} and \sQuote{*}, and are thus more easy to master than regular
+#'   expressions. \sQuote{?} matches a single arbitrary character, whereas
+#'   \sQuote{*} matches zero to an arbitrary number of arbitrary characters.
+#'   Some examples:
 #'   \describe{
 #'     \item{a?c}{Matches \sQuote{abc}, \sQuote{axc}, \sQuote{a c} etc. but not
 #'       \sQuote{abbc}, \sQuote{abbbc}, \sQuote{ac} etc.}
@@ -750,6 +759,7 @@ setGeneric("glob_to_regex",
   function(object, ...) standardGeneric("glob_to_regex"))
 
 setMethod("glob_to_regex", "character", function(object) {
+  # TODO: one should perhaps also check for '|'
   x <- glob2rx(gsub("[+^$]", "\\\\1", object, perl = TRUE))
   attributes(x) <- attributes(object)
   x
@@ -1095,12 +1105,9 @@ prepare_class_names.character <- function(x) {
 
 #' Map values
 #'
-#' Map \sQuote{character} data using another \sQuote{character} vector, or
-#' recursively apply a mapping function to all \sQuote{character} values within
-#' a list, or non-recursively to a data frame. Optionally coerce other data
-#' types to \sQuote{character}; return remaining ones unchanged. It is also
-#' possible to map between classes using coercion functions. For convenience in
-#' programming, methods for the \sQuote{NULL} class are also available.
+#' Map values using a character vector, a function or a formula. This is not
+#' normally directly called by an \pkg{opm} user because
+#' \code{\link{map_metadata}} is available.
 #'
 #' @param object List (may be nested), data frame or character vector. If it has
 #'   names, they are preserved. \code{NULL} can also be given and yields
@@ -1150,8 +1157,14 @@ prepare_class_names.character <- function(x) {
 #'   base::storage.mode base::as.vector
 #' @family auxiliary-functions
 #' @keywords manip list
-#' @note This function is not normally directly called by an \pkg{opm} user
-#'   because \code{\link{map_metadata}} is available.
+#' @details Mapping of \sQuote{character} data using another \sQuote{character}
+#'   vector is possible, as well as recursively applying a mapping function to
+#'   all \sQuote{character} values within a list, or non-recursively to a data
+#'   frame. Optionally other data types are coerced to \sQuote{character}; the
+#'   remaining ones are returned unchanged. It is also possible to map between
+#'   classes using coercion functions. For convenience in programming, methods
+#'   for the \sQuote{NULL} class are also available.
+#'
 #' @examples
 #'
 #' # Character/character method
@@ -1469,7 +1482,8 @@ setMethod("map_values", c("NULL", "missing"), function(object, mapping) {
 #'
 #' Use a character vector or a function for recursively mapping list names, or
 #' mapping the \sQuote{colnames} and \sQuote{rownames} attributes of a data
-#' frame.
+#' frame. This function is not normally directly called by an \pkg{opm} user
+#' because \code{\link{map_metadata}} is available.
 #'
 #' @param object Any \R object. The default method applies the mapping to the
 #'   \sQuote{names} attribute. The behaviour is special for lists, which are
@@ -1500,8 +1514,6 @@ setMethod("map_values", c("NULL", "missing"), function(object, mapping) {
 #'   collected names are added as their own \code{names} attribute; this might
 #'   be useful if the result is later on used for some mapping (using this
 #'   function or \code{\link{map_values}}).
-#' @note This function is not normally directly called by an \pkg{opm} user
-#'   because \code{\link{map_metadata}} is available.
 #' @examples
 #'
 #' # List/function method
@@ -1813,8 +1825,9 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
 #'   list results in \code{TRUE}. Missing names in a non-empty query list result
 #'   in \code{FALSE}.
 #'
-#'   There is also an \code{\link{OPMS}} method, which tests whether an
-#'   \code{\link{OPM}} object is contained in an \code{\link{OPMS}} object.
+#'   There are also \code{\link{OPMS}} and \code{\link{OPM}} methods, which
+#'   test, for instance, whether an \code{\link{OPM}} object is contained in an
+#'   \code{\link{OPMS}} object.
 #' @family auxiliary-functions
 #' @seealso base::list base::as.list base::`[` base::`[[` base::match
 #' @seealso base::identity
