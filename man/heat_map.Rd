@@ -172,7 +172,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = topo.colors(120L),
+    col = opm_opt("heatmap.colors"),
     ...,
     use.fun = c("gplots", "stats")) 
 

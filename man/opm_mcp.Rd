@@ -117,7 +117,7 @@ data(vaas_4)
 # without computation of multiple comparisons of means
 summary(x <- opm_mcp(vaas_4, model = list("Species", "Strain"),
   do.mcp = FALSE))
-stopifnot(is.data.frame(x), dim(x) == c(384L, 6L))
+stopifnot(is.data.frame(x), dim(x) == c(384, 5))
 
 # comparison using specified model comparing 'Species' pooled over
 # complete plates
@@ -173,7 +173,7 @@ x <- extract(vaas_4, as.labels = list("Species", "Strain"), subset = "A",
 
 # without performing the MCP
 (y <- opm_mcp(x, do.mcp = FALSE, model = list("Species", "Strain")))
-stopifnot(is.data.frame(y), dim(y) == c(384L, 6L))
+stopifnot(is.data.frame(y), dim(y) == c(384, 5))
 
 # now with conducting the test
 (y <- opm_mcp(x, model = "Species", m.type = "lm",

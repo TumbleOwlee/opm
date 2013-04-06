@@ -18,6 +18,14 @@
   are used as predefined column names by functions such as
   \code{\link{flatten}}.
 }
+\details{
+  In addition to the results of
+  \code{param_names("reserved.md.names")}, it should be
+  avoided to use metadata keys that start with a dot, as
+  such keys might also be created intermediarily by methods
+  that have to compile metadata together with other
+  information.
+}
 \examples{
 (x <- param_names())
 stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))

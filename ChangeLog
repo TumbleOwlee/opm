@@ -19,6 +19,7 @@
 - to_metadata() gets methods for WMD and OPMS objects
 - do_disc() gets a 'subset' argument, disc_settings() is accordingly 
   expanded, and opm_opt() gets a 'disc.param' entry
+- opm_opt() gets a 'hm.colors' entry
 - param_names() gets a 'what' argument
 - added support (substrate name and other information) for plates PM21 to PM25
   and plate PM-M TOX01, and adapted plate_type() accordingly

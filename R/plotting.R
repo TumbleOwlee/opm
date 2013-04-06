@@ -1307,7 +1307,7 @@ setMethod("heat_map", "matrix", function(object,
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = topo.colors(120L),
+    col = opm_opt("heatmap.colors"),
     ...,
     use.fun = c("gplots", "stats")) {
 

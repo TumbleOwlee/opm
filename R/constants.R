@@ -195,6 +195,7 @@ OPM_OPTIONS$file.encoding <- ""
 OPM_OPTIONS$curve.param <- "A"
 OPM_OPTIONS$key.join <- "."
 OPM_OPTIONS$disc.param <- "A"
+OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 
 
 ################################################################################

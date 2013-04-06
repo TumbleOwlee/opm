@@ -22,7 +22,7 @@ test_that("opm_mcp runs without actually performing mcp", {
   # Without computation of multiple comparisons of means
   x <- opm_mcp(EXPL.DF, model = list("organism", "run"), do.mcp = FALSE)
   expect_is(x, "data.frame")
-  expect_equal(dim(x), c(384L, 6L))
+  expect_equal(dim(x), c(384L, 5L))
   y <- opm_mcp(EXPL.DF, model = ~ organism + run, do.mcp = FALSE)
   expect_equal(x, y)
   y <- opm_mcp(EXPL.OPMS, model = ~ organism + run, do.mcp = FALSE)

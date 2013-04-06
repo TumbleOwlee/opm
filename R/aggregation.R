@@ -171,6 +171,11 @@ summary.splines_bootstrap <- function (object, ...) {
 #'
 #' @param what Character scalar. Which kind of names to obtain.
 #' @return Character vector.
+#' @details In addition to the results of
+#'   \code{param_names("reserved.md.names")}, it should be avoided to use
+#'   metadata keys that start with a dot, as such keys might also be created
+#'   intermediarily by methods that have to compile metadata together with
+#'   other information.
 #' @export
 #' @family aggregation-functions
 #' @keywords utilities

@@ -105,7 +105,7 @@
 #' # without computation of multiple comparisons of means
 #' summary(x <- opm_mcp(vaas_4, model = list("Species", "Strain"),
 #'   do.mcp = FALSE))
-#' stopifnot(is.data.frame(x), dim(x) == c(384L, 6L))
+#' stopifnot(is.data.frame(x), dim(x) == c(384, 5))
 #'
 #' # comparison using specified model comparing 'Species' pooled over
 #' # complete plates
@@ -161,7 +161,7 @@
 #'
 #' # without performing the MCP
 #' (y <- opm_mcp(x, do.mcp = FALSE, model = list("Species", "Strain")))
-#' stopifnot(is.data.frame(y), dim(y) == c(384L, 6L))
+#' stopifnot(is.data.frame(y), dim(y) == c(384, 5))
 #'
 #' # now with conducting the test
 #' (y <- opm_mcp(x, model = "Species", m.type = "lm",
@@ -209,22 +209,6 @@ setMethod("opm_mcp", "data.frame", function(object, model,
       f
     }
     enforce_left_side(metadata_key(model, TRUE, ops = ops))
-#     if (inherits(model, "formula")) # user-defined formula
-#       return(enforce_left_side(model))
-#     if (!length(model))
-#       stop("'model' must not be empty")
-#     if (is.list(model))
-#       # convert the list to what would be expected if it had previously been
-#       # passed to extract() because by default it is the same than
-#       # 'as.labels';
-#       model <- names(metadata_key(model, FALSE)) # see metadata()
-#     else if (is.numeric(model) || is.logical(model))
-#       model <- as.labels[model]
-#     else if (!is.character(model))
-#       stop("'model' must either be a list, a vector or a formula")
-#     # TODO: currently only the first element of 'ops' is included
-#     as.formula(paste(RESERVED_NAMES[["value"]], "~",
-#       paste(sprintf("`%s`", model), collapse = ops)))
   }
 #   convert_and_check_labels <- function(as.labels, column.names) {
 #     if (is.list(as.labels))
@@ -303,6 +287,7 @@ setMethod("opm_mcp", "data.frame", function(object, model,
   rownames(object) <- NULL
   object[, RESERVED_NAMES[["well"]]] <- as.factor(
     object[, RESERVED_NAMES[["well"]]])
+  object$.ID <- NULL
 
   if (!do.mcp)
     return(object)

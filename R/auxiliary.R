@@ -2007,6 +2007,7 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{gen.iii}{Character scalar indicating whether \code{\link{read_opm}}
 #'       and other IO functions based on it automatically convert to this plate
 #'       type. If empty, nothing is changed.}
+#'     \item{heatmap.colors}{Colour palette used by \code{\link{heat_map}}}.
 #'     \item{html.attr}{Used by \code{\link{phylo_data}} for automatically
 #'       creating \acronym{HTML} \sQuote{title} and \sQuote{class} attributes.}
 #'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
@@ -2014,7 +2015,7 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'       queries (because the resulting object is \sQuote{flat}).}
 #'     \item{phylo.fmt}{Character scalar indicating the default output format
 #'       used by \code{\link{phylo_data}}.}
-#'     \item{split}{Character scalar indicating the default spliiting characters
+#'     \item{split}{Character scalar indicating the default splitting characters
 #'       used by \code{\link{separate}}.}
 #'     \item{time.zone}{Character scalar indicating the time zone to be used
 #'       when parsing \code{\link{setup_time}} entries. This is relevant for
