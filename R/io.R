@@ -700,7 +700,8 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #' object metadata.
 #'
 #' @param object Name of input file (character scalar), or any object
-#'   convertible to a data frame.
+#'   convertible to a data frame. Might also be \code{\link{WMD}} or
+#'   \code{\link{OPMS}} object.
 #' @param stringsAsFactors Logical scalar passed to \code{as.data.frame}.
 #' @param optional Logical scalar passed to \code{as.data.frame} or
 #'   \code{read.delim}.
@@ -718,6 +719,13 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #'   column names). The default method reads metadata from an object convertible
 #'   to a data frame and is only a thin wrapper of \code{as.data.frame} but
 #'   contains the same useful adaptations as the filename method.
+#'
+#'   The \code{\link{WMD}} and \code{\link{OPMS}} methods create a data frame
+#'   from the contained metadata, where necessary converting nested metadata
+#'   entries to data-frame columns of mode \sQuote{list}. The number of rows
+#'   of the resuling data frame corresponds to the length of \code{object}, the
+#'   number of columns to the size of the set created from all valid names at
+#'   the top level of the metadata entries.
 #'
 #' @family io-functions
 #' @keywords IO manip
@@ -738,12 +746,24 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #' (x2 <- to_metadata(x))
 #' stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
 #'
+#' # WMD method
+#' data(vaas_1)
+#' (x <- to_metadata(vaas_1)) # one row per OPM object
+#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
+#'
+#' # OPMS method
+#' data(vaas_4)
+#' (x <- to_metadata(vaas_4)) # one row per OPM object
+#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
+#'
 setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
 setMethod("to_metadata", "character", function(object,
-    sep = "\t", check.names = FALSE, strip.white = TRUE,
-    stringsAsFactors = FALSE, ...) {
+    sep = "\t", check.names = !optional, strip.white = TRUE,
+    stringsAsFactors = FALSE, optional = TRUE, ...) {
+  if (!missing(check.names))
+    warning("'check.names' is deprecated, use 'optional'")
   read.delim(L(object), sep = sep, check.names = check.names,
     strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
 }, sealed = SEALED)
@@ -752,6 +772,16 @@ setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
   as.data.frame(object, stringsAsFactors = stringsAsFactors,
     optional = optional, ...)
+}, sealed = SEALED)
+
+setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
+  md_data_frame(list(object@metadata), stringsAsFactors, optional, ...)
+}, sealed = SEALED)
+
+setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
+  md_data_frame(metadata(object), stringsAsFactors, optional, ...)
 }, sealed = SEALED)
 
 

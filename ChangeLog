@@ -16,6 +16,7 @@
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets
   new arguments accordingly
+- to_metadata() gets methods for WMD and OPMS objects
 - do_disc() gets a 'subset' argument, disc_settings() is accordingly 
   expanded, and opm_opt() gets a 'disc.param' entry
 - param_names() gets a 'what' argument

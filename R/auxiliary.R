@@ -63,6 +63,48 @@ last <- function(x, i = 1L) {
 ################################################################################
 
 
+#' Convert to metadata-like data frame
+#'
+#' A helper function for \code{\link{to_metadata}}.
+#'
+#' @param object Nested list
+#' @param stringsAsFactors Logical scalar.
+#' @param optonal Logical scalar.
+#' @return Data frame.
+#' @keywords internal
+#'
+md_data_frame <- function(object, stringsAsFactors, optional, ...) {
+  data_frameable <- function(x) {
+    oneify <- function(x) {
+      x[vapply(x, length, integer(1L)) == 0L] <- NA
+      x[bad] <- lapply(x[bad <- vapply(x, length, integer(1L)) != 1L], list)
+      x
+    }
+    if (any(bad <- is.na(names(x)) | !nzchar(names(x)))) {
+      warning("skipping elements with invalid names")
+      x <- x[!bad]
+    }
+    oneify(x)
+  }
+  x <- lapply(object, data_frameable)
+  keys <- unique.default(unlist(lapply(x, names), recursive = FALSE))
+  result <- matrix(NA, length(x), length(keys), dimnames = list(NULL, keys))
+  result <- as.data.frame(x = result, stringsAsFactors = FALSE,
+    optional = TRUE, ...)
+  for (i in seq_along(x))
+    result[i, names(x[[i]])] <- x[[i]]
+  if (stringsAsFactors)
+    for (i in which(vapply(result, typeof, character(1L)) == "character"))
+      result[, i] <- as.factor(result[, i])
+  if (!optional)
+    names(result) <- make.names(names(result))
+  result
+}
+
+
+################################################################################
+
+
 ## NOTE: not an S4 method because applicable to any objects
 
 #' Reduce an object

@@ -88,7 +88,8 @@ setMethod("include_metadata", OPM, function(object, md,
 }, sealed = SEALED)
 
 setMethod("include_metadata", OPMS, function(object, ...) {
-  new(OPMS, plates = lapply(object@plates, FUN = include_metadata, ...))
+  object@plates <- lapply(X = object@plates, FUN = include_metadata, ...)
+  object
 }, sealed = SEALED)
 
 

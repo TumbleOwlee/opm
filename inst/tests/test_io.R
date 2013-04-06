@@ -292,6 +292,28 @@ test_that("to_metadata converts objects in the right way", {
   expect_equivalent(c("factor", "factor"), sapply(x, class))
 })
 
+## to_metadata
+test_that("to_metadata converts OPMS objects in the right way", {
+  # 1
+  got <- to_metadata(OPMS.INPUT)
+  expect_is(got, "data.frame")
+  expect_equal(nrow(got), length(OPMS.INPUT))
+  expect_true(setequal(sapply(got, class), c("character", "integer")))
+  got <- to_metadata(OPMS.INPUT, stringsAsFactors = TRUE)
+  expect_true(setequal(sapply(got, class), c("factor", "integer")))
+  # 2 (nested metadata)
+  x <- OPM.1
+  metadata(x) <- list(A = 1:3, B = 7L, C = list('c1', 1:3))
+  y <- OPM.1
+  metadata(y) <- list(A = 1:3, 11, B = -1L, D = "?")
+  x <- c(x, y)
+  rm(y)
+  expect_warning(got <- to_metadata(x))
+  expect_equal(nrow(got), length(x))
+  expect_true(setequal(names(got), LETTERS[1:4]))
+  expect_true(setequal(sapply(got, class), c("list", "integer", "character")))
+})
+
 
 ################################################################################
 #
