@@ -498,6 +498,7 @@ Technically this combination of factors can be done using \code{interaction()} o
 
 \rcscom{
 But this is never explained, and it is left unclear at which stage and to which kind of object either function could be applied.
+Lea, please have a look into this.
 }
 
 The function \code{opm\_mcp()} internally reshapes the data into a ``flat'' data frame containing one column for the chosen parameter value, one column for the well (substrate) name and optionally additional columns for the selected metadata.
@@ -1335,12 +1336,7 @@ Compare this with Figure~\ref{fig:ci_plot_groups}.
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
-%\rcscom{
-%Vorschlag Johannes: Wir sollten hier ein plakatives Beispiel nehmen, in dem wir sowohl Gruppenvergleiche haben, die nicht verschieden voneinander sind, wie auch Gruppenvergleiche, die signifikant verschieden voneinander sind und bei denen man auch einen Unterschied in der effect size sehen kann. Daher sollten wir auf den \code{vaas\_et\_al} Datensatz zurueckgreifen, da dort eine Fuelle an Kurven zur Verfuegung steht.
-%Die beiden Beispiel-Figures von Lea \ref{fig:opm_mcp_CI_plotI}, \ref{fig:opm_mcp_CI_plotII}) halte ich nicht fuer so ideal, denn \ref{fig:opm_mcp_CI_plotI} beinhaltet nur einen paarweisen Vergleich, kein multiple comparison, und in \ref{fig:opm_mcp_CI_plotII} gibt es keinen Unterschied bei irgendeinem der paarweisen Vergleich - es wird dem Leser das Potential einer solchen Abbildung nicht vollstaendig klar.
-%}
-
-To demonstrate the use of \code{opm\_mcp()}, the function for conducting comparisons of group means directly on \proglang{OPMS} objects, we conduct a comparison of four distinct strains, each of which represented by ten replicates of GEN-III microplate measurements.
+To demonstrate the use of \code{opm\_mcp()}, the function for conducting comparisons of group means directly on \proglang{OPMS} objects, we compare four distinct strains, each of which represented by ten replicates of GEN-III microplate measurements.
 An experimental questions that could be addressed with these data might be ``Do these four bacteria differ in the mean value of curve parameter A on well G06'' (see Figure~\ref{fig:xy_plot_mcp})?
 An according subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
 
@@ -1374,7 +1370,7 @@ The x-axes show the measurement time in hours, the y-axes the measured colour in
 To solve the statistical question, we now perform a multiple comparison of group means using \code{opm\_mcp()}.
 The groups to be compared (and to be selected from the metadata beforehand) are defined by the argument \code{model}.
 The argument \code{m.type} specifies the type of model to be used for fitting, e.g., a linear model (\code{lm}), a generalized linear model (\code{glm}), or an analysis-of-variance model (\code{aov}).
-\textit{Via} the argument \code{mcp.def} the user can define the type of contrast matrix to be used for the multiple comparison. 
+\textit{Via} the argument \code{linfct} the user can define the type of contrast matrix to be used for the multiple comparison. 
 In principle, the contrast matrix defines which group means should be compared and how.
 In our example a Tukey-type contrast matrix is applied, indicating an all-against-all comparison. 
 This results in a set of six two-sided pairwise comparisons between all the four strain means (all possible pairs).
@@ -1382,28 +1378,43 @@ A more detailed explanation of contrast matrices is given below.
 
 <<results=hide, width=8>>=
 vaas.subset.mcp <- opm_mcp(vaas.subset, model = ~ Strain, m.type = "aov",
-  mcp.def = mcp(Strain = "Tukey"))
+  linfct = c(Tukey = 1))
 @
 
-\code{opm_mcp()} uses \code{glht()} from the package \pkg{multcomp} and returns an object of class \code{glht}.
+This kind of \code{linfct} argument, a numeric vector, refers to the positions of the variables within \code{model}.
+In that case the first and only term, ``Strain'', is selected.
+The names of such a \code{linfct} object indicate the type of contrast used.
+If names were missing, \code{opm_opt("contrast.type")} would be inserted.
+The way \code{opm\_mcp()} converts \code{linfct} arguments can be explored using \code{output = "linfct"}:
+
+
+<<results=hide, width=8>>=
+opm_mcp(vaas.subset, model = ~ Strain, m.type = "aov",
+  linfct = c(Tukey = 1), output = "linfct")
+@
+
+(Similarly, the conversions applied to the \code{model} argument, if any, can be tested using \code{output = "model"}.)
+But \code{linfct} can also be specified more explicitly, as detailed below.
+
+Per default, \code{opm_mcp()} uses \code{glht()} from the package \pkg{multcomp} and returns an object of class \code{glht}.
 As shown in Figure~\ref{fig:ci_plot_mcp}, the results of the performed statistical test can be plotted using the methods available for objects of that class (see \code{?multcomp::glht} for details).
 
 
 <<fig=FALSE, width=8>>=
-op <- par(no.readonly = TRUE) # default plotting settings
-par(mar = c(3, 15, 3, 2)) # adapt margins in the plot
+library(multcomp) # now needed
+old.mar <- par(mar = c(3, 15, 3, 2)) # adapt margins in the plot
 plot(vaas.subset.mcp)
-par(op) # reset to default plotting settings
+par(old.mar) # reset to default plotting settings
 @
 
 
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, width=8, height=3>>=
-op <- par(no.readonly = TRUE) # default plotting settings
-par(mar = c(3, 15, 3, 2))
+library(multcomp)
+old.mar <- par(mar = c(3, 15, 3, 2))
 plot(vaas.subset.mcp)
-par(op)
+par(old.mar)
 @
 }
 \caption{
@@ -1448,15 +1459,15 @@ A contrast is defined as a linear combination of two or more factor level means 
 To demonstrate the principle of a contrast matrix, an all-against-all comparison (a ``Tukey''-type contrast) of four groups is performed. 
 
 <<width=8>>=
-n <- c(10,20,30,40)
-names(n) <- paste("group", 1:4, sep="")
+n <- c(10, 20, 30, 40)
+names(n) <- paste("group", 1:4, sep = "")
 contrMat(n, type = "Tukey")
 @
 
 The output table reads as follows.
 In each line, a pair of group-wise comparisons is defined by the locations of the non-zero values.
 For instance, in the first line, the 1 and -1 values indicate that the means of \code{group1} are subtracted from the means of \code{group1}.
-The function \code{contrMat()} from \pkg{multcomp} (see \code{?multcomp::contrMat}) provides an overview of the predefined contrast types that can be used in the \code{opm\_mcp()} argument \code{mcp.def}.
+The function \code{contrMat()} from \pkg{multcomp} (see \code{?multcomp::contrMat}) provides an overview of the predefined contrast types that can be used in the \code{opm\_mcp()} argument \code{linfct}.
 
 In the example from above (see Figure~\ref{fig:ci_plot_mcp}), a ``Tukey''-type contrast was used to trigger the comparison of all groups against all others in the data set.
 The underlying contrast matrix used to set up the contrasts for Figure~\ref{fig:xy_plot_mcp} can be viewed by entering
@@ -1469,42 +1480,32 @@ mcp.summary$linfct
 Accordingly, the user is free to set up contrast matrices for \code{opm\_mcp()} that define the comparisons of interest.
 However, first a model must be set up that defines the factors that determine the groups and thus the possibilities for comparisons.
 As the next example, we will now compare the overall performance of the tested organisms on the first four wells A01 to A04. 
-Although the user typically expects these wells to be in order in an \proglang{OPMS} object, this actually have been changed by a previous well selection.
-Hence, some care is needed regarding the order of the elements when setting up a contrast matrix by hand:
+Although the user typically expects these wells to be in order in an \proglang{OPMS} object, this actually may have been changed by a previous well selection.
+Moreover, details of the the implementation of the conversion of \proglang{OPMS} objects to data frames, and of reshaping these data frames, can be subject to change, which might also affect the order of factor levels within the final data passed to \code{glht()}.
+Hence, it should be avoided to set up a contrast matrix fully by hand.
+Instead, \code{opm\_mcp(output = "contrast")} yields one to several template contrast matrices, which are guaranteed to match the used \proglang{OPMS} object.
+Such templates could the be further modified by the user.
 
+For instance, the following output would contain a contrast matrix with all possible comparisons (because ``Tukey'' is used) for \code{Well} as factor variable in the correct order for the first four wells of \code{vaas_4}:
+
+<<results=hide, width=8>>=
+contr <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, linfct = c(Tukey = 1),
+  output = "contrast")
+contr
+@
+
+The \code{contr} object is a named list of contrast matrices, with one matrix per factor selected.
+An according call of the \code{opm_mcp()} function after selecting some comparisons of interest would then be:
+
+<<results=hide, width=8>>=
+vaas4.mcp <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, m.type = "lm",
+  linfct = contr$Well[c(1:3, 6), ])
+@
+
+
+The correct set-up of the contrast matrix could be controlled after the fact by typing
 <<width=8>>=
-wells(vaas_4[, , 1:4], full = TRUE)
-@
-
-The following model will contain \code{Well} as factor variable and four possible comparisons of interest:
-
-<<results=hide, width=8>>=
-contr <- rbind(
-  "A01 (Negative Control) - A02 (Dextrin)" = c(1, -1, 0, 0),
-  "A01 (Negative Control) - A03 (D-Maltose)" = c(1, 0, -1, 0),
-  "A01 (Negative Control) - A04 (D-Trehalose)" = c(1, 0, 0, -1),
-  "A03 (D-Maltose) - A04 (D-Trehalose)" = c(0, 0, 1, -1))
-@
-
-
-\rcscom{
-We should look into automatically setting these labels, given an unnamed contrast matrix.
-Should not be impossible to implement that.
-This would not ensure that the right contrast were specified.
-But at least they'd have the right labels afterwards.
-}
-
-
-The resulting call of the \code{opm_mcp()} function would then be:
-<<results=hide, width=8>>=
-x <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, m.type = "lm", mcp.def = contr)
-@
-
-
-The correct setup of the contrast matrix can be controlled by typing
-<<results=hide, width=8>>=
-xy <- summary(x)
-xy$linfct
+summary(vaas4.mcp)$linfct
 @
 
 
@@ -1513,11 +1514,9 @@ As mentioned above, the outcome can be visualized using the \code{plot()} method
 \begin{figure}
 \scalebox{0.9}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
- # creating an informative plot
- op <- par(no.readonly = TRUE) # default plotting settings
- par(mar = c(3, 20, 3, 2))
- plot(x)
- par(op) # reset plotting settings
+ old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
+ plot(summary(vaas4.mcp))
+ par(old.mar) # reset plotting settings
 @
 }
 \caption{
@@ -1528,48 +1527,27 @@ Compare with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation 
 }
 \end{figure}
 
+
+\rcscom{
+Lea, we still need an example for the combination of factors using \code{interaction()} or \code{paste()}.
+}
+
 Note that the \code{model} statement defines the group means available for comparisons. 
-In the following example \code{Species} contains only two levels (``\textit{Pseudomonas aeruginosa}'' and ``\textit{Escherichia coli}''). 
+In the following example ``Species'' contains only two levels (``\textit{Pseudomonas aeruginosa}'' and ``\textit{Escherichia coli}''). 
 Thus, irrespective of the stated contrast type, only one comparison is possible.
 
 <<width=8>>=
-x <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
-  mcp.def = mcp(Species = "Dunnett"))
+vaas4.mcp <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
+  linfct = mcp(Species = "Dunnett"))
 @
 
-\rcscom{
-The options for more easily defining mcp.def are not explored in the chapter!
-}
-
-%<<results=hide, width=8>>=
-%op <- par(no.readonly = TRUE) # default plotting settings
-%par(mar = c(3, 20, 3, 2))
-%plot(x)
-%par(op)
-%@
-
-%\begin{figure}
-%\scalebox{0.9}{
-%<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
-%op <- par(no.readonly = TRUE) # default plotting settings
-%par(mar = c(3, 20, 3, 2))
-%plot(x)
-%par(op)
-%@
-%}
-%\caption{
-%\label{fig:opm_mcp_CI_plotI}
-%95\% confidence interval for comparison of group means between the species.
-%}
-%\end{figure}
-
-
 Finally, note that \code{opm\_mcp()} in an intermediary step reshapes the selected data into a ``flat'' data frame.
-This object can be returned (and the multiple comparisons omitted) by using \code{do.mcp = FALSE}:
+This object can be returned (and the multiple comparisons omitted) by using \code{output = "data"}:
 
 <<results=hide, width=8>>=
-x <- opm_mcp(vaas_4, model = ~ Species + Strain,
-  do.mcp = FALSE)
+vaas4.mcp <- opm_mcp(vaas_4, model = ~ Species + Strain,
+  output = "data")
+head(vaas4.mcp)
 @
 
 The resulting object might be of use in other analysis strategies, analogously to the function \code{flatten()}, which performs a similar reshaping for raw data.

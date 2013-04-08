@@ -386,9 +386,11 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
   if (length(x) == 1L && x %in% remove)
     return(NULL)
   if (to.formula)
-    create_formula("~ `%s`", paste(x, collapse = OPM_OPTIONS$key.join))
-  else
-    x
+    return(create_formula("~ `%s`",
+      paste(x, collapse = get("key.join", OPM_OPTIONS))))
+  if (is.null(names(x)))
+    names(x) <- x
+  x
 }
 
 #' @rdname metadata_key
@@ -397,7 +399,7 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
 metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
     ...) {
   join <- function(x) vapply(x, paste, character(1L),
-    collapse = OPM_OPTIONS$key.join)
+    collapse = get("key.join", OPM_OPTIONS))
   if (is.null(names(x <- flatten(x))))
     names(x) <- join(x)
   else
@@ -453,10 +455,10 @@ metadata_key.formula <- function(x, to.formula = FALSE, ...,
       x, switch(
     elem_type(x[[1L]]),
     as.name(paste(all.vars(apply_to_tail(x, rec_replace)),
-      collapse = OPM_OPTIONS$key.join)),
+      collapse = get("key.join", OPM_OPTIONS))),
     {
       x[[1L]] <- c.name
-      as.name(paste(eval(x, envir), collapse = OPM_OPTIONS$key.join))
+      as.name(paste(eval(x, envir), collapse = get("key.join", OPM_OPTIONS)))
     },
     apply_to_tail(x, rec_replace)
   ))
@@ -1987,6 +1989,8 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{color.borders}{Character vector with default color borders between
 #'       which \code{\link{level_plot}} interpolates to obtain a colour
 #'       palette.}
+#'     \item{contrast.type}{Character scalar indicating the default type of
+#'       contrast used by \code{\link{opm_mcp}}.}
 #'     \item{css.file}{Character scalar. Default \acronym{CSS} file linked by
 #'       \code{\link{phylo_data}} when producing \acronym{HTML} output. Ignored
 #'       if empty.}

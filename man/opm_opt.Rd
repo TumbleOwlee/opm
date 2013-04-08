@@ -30,6 +30,8 @@
   \item{color.borders}{Character vector with default color
   borders between which \code{\link{level_plot}}
   interpolates to obtain a colour palette.}
+  \item{contrast.type}{Character scalar indicating the
+  default type of contrast used by \code{\link{opm_mcp}}.}
   \item{css.file}{Character scalar. Default \acronym{CSS}
   file linked by \code{\link{phylo_data}} when producing
   \acronym{HTML} output. Ignored if empty.}

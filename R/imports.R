@@ -19,7 +19,7 @@ NULL
 #'
 NULL
 
-#' @importFrom stats lm glm aov
+#' @importFrom stats lm glm aov confint
 #'
 NULL
 

@@ -19,14 +19,15 @@
 - to_metadata() gets methods for WMD and OPMS objects
 - do_disc() gets a 'subset' argument, disc_settings() is accordingly 
   expanded, and opm_opt() gets a 'disc.param' entry
-- opm_opt() gets a 'hm.colors' entry
+- opm_opt() gets new entries 'hm.colors' and 'key.join', and better error
+  messages
 - param_names() gets a 'what' argument
 - added support (substrate name and other information) for plates PM21 to PM25
   and plate PM-M TOX01, and adapted plate_type() accordingly
-- opm_opt() gets a 'key.join' entry (and better error messages)
 - ci_plot() gets a 'split.at' argument
 - file_pattern() now deals with input file names if 'literally' is TRUE
-- novel opm_mcp() function for multcomp-based tests
+- novel opm_mcp() function for multcomp-based tests and according
+  'contrast.type' entry of opm_opt()
 - listing() methods return S3 objects with adapted print() and phylo_data()
   methods
 - safe_labels() gets a 'comment' argument

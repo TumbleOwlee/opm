@@ -130,7 +130,7 @@ test_that("we can convert formulas for use as metadata keys", {
 
   f <- Value ~ Well
   got <- metadata_key(f, FALSE)
-  expect_equal(got, "Well")
+  expect_equal(got, c(Well = "Well"))
   got <- metadata_key(f, FALSE, remove = RESERVED_NAMES)
   expect_equal(got, NULL)
 
@@ -158,6 +158,7 @@ test_that("we can convert lists for use as formulas", {
 ## metadata_key
 test_that("some edge cases are correctly handled", {
   x <- character()
+  names(x) <- character()
   expect_error(metadata_key(x, TRUE))
   expect_equal(x, metadata_key(x, FALSE))
   expect_equal(NULL, metadata_key(NULL, FALSE))
