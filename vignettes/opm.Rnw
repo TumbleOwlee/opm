@@ -355,6 +355,12 @@ Beside changing the metadata entries by using the \proglang{R} editor, the funct
 The replacement function \code{metadata()<-} enables the user to set the entire meta-information, or specific entries, directly.
 If a data frame is used on the right side of the assignment whose number of rows is identical to the number of plates within the  \proglang{OPMS} object on the left side, each data-frame row is specifically added to the corresponding plate.
 
+There are no restrictions regarding the stored metadata \textit{values} except for the fact that it usually makes not much sense to store factors.
+It is safer to store character vectors instead because otherwise conversions might easily result in integer vectors instead of factors.
+Where appropriate, factors would be created on-the-fly from character vectors by those methods that have to integrate metadata in data frames.
+With respect to the stored metadata \textit{names}, there are only very few restrictions, which are explained in Section~\ref{methods settings}.
+In contrast to data frames it is not advisable to access metadata entries by position instead of by name.
+
 
 \subsection[Aggregating data by estimating curve parameters]{Aggregating data by estimating curve parameters}\label{methods aggregating}
 
@@ -550,7 +556,8 @@ It is checked that the novel values inherit from the same class(es) than the old
 Usage examples are provided in several sections (e.g., Section~\ref{application discrete-table}).
 The function \code{param_names()} yields the spelling of the curve parameters used by \pkg{opm}.
 It also displays the set of names that are used by some methods that have to compile metadata entries with other columns.
-It is not impossible but discouraged to use these names as metadata keys.
+It is thus not impossible, but discouraged, to use these names as metadata keys.
+The same holds for (non-syntactical) names starting with an underscore and followed by capital letters, as such names are temporarily used by some methods in intermediary objects together with the metadata.
 
 
 \section[Program application]{Program application}\label{application}
@@ -1336,7 +1343,7 @@ Compare this with Figure~\ref{fig:ci_plot_groups}.
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
-To demonstrate the use of \code{opm\_mcp()}, the function for conducting comparisons of group means directly on \proglang{OPMS} objects, we compare four distinct strains, each of which represented by ten replicates of GEN-III microplate measurements.
+To demonstrate the use of \code{opm\_mcp()}, the function for conducting multiple comparisons of group means directly on \proglang{OPMS} objects, we compare four distinct strains, each of which represented by ten replicates of GEN-III microplate measurements.
 An experimental questions that could be addressed with these data might be ``Do these four bacteria differ in the mean value of curve parameter A on well G06'' (see Figure~\ref{fig:xy_plot_mcp})?
 An according subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
 
@@ -1456,7 +1463,7 @@ For a meaningful biological interpretation of the results it is therefore highly
 
 For performing the comparisons of interest, the user has to provide a contrast matrix.
 A contrast is defined as a linear combination of two or more factor level means (averages) whose coefficients add up to zero \citep{hochberg}. 
-To demonstrate the principle of a contrast matrix, an all-against-all comparison (a ``Tukey''-type contrast) of four groups is performed. 
+To demonstrate the principle of a contrast matrix, an all-against-all comparison (a ``Tukey''-type contrast) of four groups is performed using a toy-example. 
 
 <<width=8>>=
 n <- c(10, 20, 30, 40)
@@ -1466,7 +1473,7 @@ contrMat(n, type = "Tukey")
 
 The output table reads as follows.
 In each line, a pair of group-wise comparisons is defined by the locations of the non-zero values.
-For instance, in the first line, the 1 and -1 values indicate that the means of \code{group1} are subtracted from the means of \code{group1}.
+For instance, in the first line, the 1 and -1 values indicate that the means of \code{group1} are subtracted from the means of \code{group2}.
 The function \code{contrMat()} from \pkg{multcomp} (see \code{?multcomp::contrMat}) provides an overview of the predefined contrast types that can be used in the \code{opm\_mcp()} argument \code{linfct}.
 
 In the example from above (see Figure~\ref{fig:ci_plot_mcp}), a ``Tukey''-type contrast was used to trigger the comparison of all groups against all others in the data set.

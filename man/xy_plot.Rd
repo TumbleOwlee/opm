@@ -161,11 +161,11 @@ xy_plot(vaas_1) # note the default main title built from the plate type
 }
 
 x <- vaas_1[, 11:22]
-# Gives a warning message: we have deleted the default negative control:
+# Yields a warning message: we have deleted the default negative control.
 xy_plot(x)
 # Turn the baseline off => no warning:
 xy_plot(x, neg.ctrl = NULL)
-# Or guess a baseline
+# Or guess a baseline:
 xy_plot(x, neg.ctrl = 100)
 # Some like it ugly:
 xy_plot(x, neg.ctrl = 100, col = "pink", base.col = "yellow", main = "Ugly")

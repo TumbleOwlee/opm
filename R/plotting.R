@@ -658,11 +658,11 @@ default_color_regions <- function(colors, space, bias, n) {
 #' }
 #'
 #' x <- vaas_1[, 11:22]
-#' # Gives a warning message: we have deleted the default negative control:
+#' # Yields a warning message: we have deleted the default negative control.
 #' xy_plot(x)
 #' # Turn the baseline off => no warning:
 #' xy_plot(x, neg.ctrl = NULL)
-#' # Or guess a baseline
+#' # Or guess a baseline:
 #' xy_plot(x, neg.ctrl = 100)
 #' # Some like it ugly:
 #' xy_plot(x, neg.ctrl = 100, col = "pink", base.col = "yellow", main = "Ugly")
@@ -721,7 +721,7 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
     panel = function(...) {
       if (draw.grid)
         panel.grid(h = -1, v = -1)
-      if (!is.null(neg.ctrl))
+      if (length(neg.ctrl))
         panel.abline(neg.ctrl, 0, col = base.col, lwd = base.lwd)
       panel.xyplot(..., lwd = lwd)
     })
@@ -769,7 +769,7 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
   key.col <- col[seq_along(key.text)]
   col <- col[param]
 
-  names(data)[match(RESERVED_NAMES[["plate"]], names(data))] <- ".GROUPING"
+  names(data)[match(RESERVED_NAMES[["plate"]], names(data))] <- "_GROUPING"
 
   # Plot
   xyplot(
@@ -777,7 +777,7 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
     create_formula("`%s` ~ `%s` | `%s`",
       RESERVED_NAMES[c("value", "time", "well")]),
     data = data, type = "l", layout = layout,
-    as.table = TRUE, groups = .GROUPING,
+    as.table = TRUE, groups = `_GROUPING`,
     # Curve colours and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
@@ -794,7 +794,7 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
     panel = function(...) {
       if (draw.grid)
         panel.grid(h = -1, v = -1)
-      if (!is.null(neg.ctrl))
+      if (length(neg.ctrl))
         panel.abline(neg.ctrl, 0, col = base.col, lwd = base.lwd)
       panel.xyplot(..., lwd = lwd)
     }
@@ -829,12 +829,12 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
   pos <- match(groups, names(x))
   if (any(isna <- is.na(pos)))
     stop(sprintf("could not find '%s' in 'x'", groups[isna][1L]))
-  x$.GROUPING <- do.call(paste, c(x[, pos, drop = FALSE], sep = legend.sep))
-  x$.GROUPING <- as.factor(x$.GROUPING)
+  x$`_GROUPING` <- do.call(paste, c(x[, pos, drop = FALSE], sep = legend.sep))
+  x$`_GROUPING` <- as.factor(x$`_GROUPING`)
 
   # Assignment of colours
   col <- try_select_colors(col)
-  key.text <- levels(x$.GROUPING)
+  key.text <- levels(x$`_GROUPING`)
   if (length(key.text) > length(col))
     stop("number of colors must be at least as large as number of groups")
   key.col <- col[seq_along(key.text)]
@@ -851,7 +851,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
   xyplot(
     # Principally unchangeable arguments
     x = f, data = x, type = "l", layout = layout,
-    as.table = TRUE, groups = .GROUPING,
+    as.table = TRUE, groups = `_GROUPING`,
     # Curve colours (panel height is omitted)
     col = col,
     # Axis annotation

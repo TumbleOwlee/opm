@@ -237,7 +237,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     split.at = param_names("split.at")) {
 
   # helper functions
-  convert_and_check_model <- function(model, ops) {
+  convert_model <- function(model, ops) {
     enforce_left_side <- function(f) {
       if (length(f) < 3L) # f must be a formula
         f[[3L]] <- f[[2L]]
@@ -249,6 +249,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   convert_hypothesis_spec <- function(linfct, model) {
     if (!length(linfct))
       stop("hypothesis definition 'linfct' must not be empty")
+    # note that the glht() methods actually dispatch over 'linfct'...
     used.by.glht <- c("mcp", "matrix", "expression", "character", "means")
     if (inherits(linfct, used.by.glht))
       return(linfct)
@@ -298,16 +299,16 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   # conversions and early returns, if requested
   case(match.arg(output),
     data = return(convert_data(object, split.at)),
-    model = return(convert_and_check_model(model, ops)),
+    model = return(convert_model(model, ops)),
     linfct = return(convert_hypothesis_spec(linfct,
-      convert_and_check_model(model, ops))),
+      convert_model(model, ops))),
     contrast = return(contrast_matrices(
       convert_data(object, split.at),
-      convert_hypothesis_spec(linfct, convert_and_check_model(model, ops)))),
+      convert_hypothesis_spec(linfct, convert_model(model, ops)))),
     mcp = NULL
   )
   object <- convert_data(object, split.at)
-  model <- convert_and_check_model(model, ops)
+  model <- convert_model(model, ops)
   linfct <- convert_hypothesis_spec(linfct, model)
 
   # necessary at this stage because otherwise glht() does not find its

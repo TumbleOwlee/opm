@@ -183,7 +183,7 @@ test_that("the OPMS method xy_plot() works", {
 
 
 ## level_plot
-test_that("the OPMS methpd level_plot() works", {
+test_that("the OPMS method level_plot() works", {
   opms.input <- OPMS.INPUT[, 1L:10L]
   expect_is(opms.input, "OPMS")
   got <- level_plot(opms.input)

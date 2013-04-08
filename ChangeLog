@@ -6,13 +6,18 @@
 - fixed bug in argument treatment of do_disc() (best-cutoff discretization now
   possible with 'groups' set to FALSE)
 - fixed bug in aggregated() (wrong object returned)
+- fixed bug in helper xy_plot() that caused a missing negative-control well to
+  not only yield a warning but also an uninformative plot
 
+- much expanded and refreshed vignette and help pages
+- do_aggr() has a new option for the 'method' argument ('splines', which is 
+  recommended) and an according new helper function set_spline_options()
 - the infix operators now work with query formulas, and the two arguments can
   be swapped; likewise, subset() works with query formulas
 - in `[`(), wells(), measurements() and well_to_substrate(), wells can now be 
   indexed using formulas, thus allowing for sequences of well coordinates and 
   less code
-- metadata() and the functions depending on it can now use formuals for querying
+- metadata() and the functions depending on it can now use formulas for querying
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets
   new arguments accordingly
