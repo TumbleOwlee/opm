@@ -131,7 +131,7 @@ test_that("mcp with specified m.type and with linfct, version 3", {
 ## opm_mcp
 test_that("mcp with specified model", {
   # simple model statement, warning from glht()
-  expect_warning(x <- opm_mcp(EXPL.DF, model = list("run"),
+  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run"),
     linfct = multcomp::mcp(run = "Dunnett")))
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
@@ -144,7 +144,7 @@ test_that("mcp with specified model", {
 ## opm_mcp
 test_that("mcp with specified model as list #1", {
   # no op, warning from glht()
-  expect_warning(x <- opm_mcp(EXPL.DF, model = list("run", "Well"),
+  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run", "Well"),
     linfct = multcomp::mcp(run = "Dunnett")))
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
@@ -178,7 +178,7 @@ test_that("misspecified 'linfct' yields an error", {
 ## opm_mcp
 test_that("without model, linfct and glht.arg specified", {
   # very simple, warning from glht()
-  expect_warning(x <- opm_mcp(EXPL.DF, model = list("run"),
+  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run"),
     linfct = multcomp::mcp(run = "Dunnett"),
     glht.arg = list(alternative = "less")))
   expect_is(x, "glht")
