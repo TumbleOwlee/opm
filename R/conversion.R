@@ -580,29 +580,28 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
 setMethod("extract_columns", "data.frame", function(object, what,
     as.labels = NULL, as.groups = NULL, sep = " ",
     direct = inherits(what, "AsIs")) {
-  join <- function(x, what, sep) {
-    apply(x[, what, drop = FALSE], 1L, FUN = paste, collapse = sep)
-  }
+  join <- function(x, what, sep)
+    do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
   find_stuff <- function(x, what) {
-    x <- x[, vapply(x, inherits, logical(1L), what = what), drop = FALSE]
-    if (ncol(x))
-      return(as.matrix(x))
-    stop(sprintf("no data of class '%s' found", what))
+    x <- x[, vapply(x, inherits, logical(1L), what), drop = FALSE]
+    if (!ncol(x))
+      stop("no data of class(es) ", paste(what, collapse = "/"), " found")
+    as.matrix(x)
   }
   if (L(direct)) {
     result <- join(object, what, sep)
     if (length(as.labels))
-      names(result) <- join(object, what = as.labels, sep = sep)
+      names(result) <- join(object, as.labels, sep)
   } else {
-    result <- find_stuff(object, L(what))
+    result <- find_stuff(object, what)
     if (length(as.labels))
-      rownames(result) <- join(object, what = as.labels, sep = sep)
+      rownames(result) <- join(object, as.labels, sep)
   }
   if (length(as.groups))
-    attr(result, "row.groups") <- as.factor(
-      join(object, what = as.groups, sep = sep))
+    attr(result, "row.groups") <- as.factor(join(object, as.groups, sep))
   result
 }, sealed = SEALED)
+
 
 
 ################################################################################

@@ -106,7 +106,7 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #' @name metadata.set
 #' @aliases metadata<-
 #'
-#' @param object \code{\link{WMD}} or \code{\link{OPMS}} object..
+#' @param object \code{\link{WMD}} or \code{\link{OPMS}} object.
 #' @param key Missing, numeric scalar, character vector, factor, or list.
 #' \itemize{
 #'   \item If missing, replace all metadata by \code{value} (unless \code{value}
@@ -124,7 +124,8 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #'   \item The factor method calls the character method after converting
 #'   \code{key} to mode \sQuote{character}.
 #' }
-#' @param value Character vector, list, data frame or formula.
+#' @param value Character vector, list, data frame, formula, \code{\link{WMD}}
+#'   or \code{\link{OPMS}} object.
 #'   \itemize{
 #'   \item If \code{key} is a character vector, this can be arbitrary value(s)
 #'   to be included in the metadata (if \code{NULL}, this metadata entry is
@@ -138,7 +139,11 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #'   \item If \code{object} is of class \sQuote{OPMS}, \code{value} can be a
 #'   data frame whose number of rows must be equal to the number of plates.
 #'   Metadata to be set will then be selected from each individual row in turn
-#'   and in input order.
+#'   and in input order. This works analogously if \code{value} is an
+#'   \code{OPMS} object. The lengths of both objects must match. If \code{value}
+#'   is a \code{WMD} object, its metadata entries will be recycled.
+#'   \item If \code{object} is of class \sQuote{WMD}, \code{value} cannot be of
+#'   class \sQuote{OPMS}.
 #'   }
 #' @return \code{value}.
 #' @export
@@ -216,8 +221,12 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #'
 #' # OPMS/missing/list method
 #' copy <- vaas_4
-#' (metadata(copy) <- list(x = -99))
+#' (metadata(copy) <- list(x = -99)) # will replace all of them
 #' stopifnot(identical(unique(metadata(copy)), list(list(x = -99))))
+#'
+#' # OPMS/missing/WMD method
+#' (metadata(copy) <- vaas_1) # will also replace all of them
+#' stopifnot(identical(unique(metadata(copy)), list(metadata(vaas_1))))
 #'
 #' # OPMS/missing/formula method
 #' copy <- vaas_4
@@ -227,8 +236,13 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #'
 #' # OPMS/ANY/ANY method
 #' copy <- vaas_4
-#' (metadata(copy, "Species") <- "Bacillus subtilis")
+#' (metadata(copy, "Species") <- "Bacillus subtilis") # will set all of them
 #' stopifnot(identical(unique(metadata(copy, "Species")), "Bacillus subtilis"))
+#' stopifnot(!identical(metadata(copy), metadata(vaas_4)))
+#' (metadata(copy) <- vaas_4) # reset
+#' stopifnot(identical(metadata(copy), metadata(vaas_4)))
+#' (metadata(copy) <- vaas_1) # set everything to metadata of vaas_1
+#' stopifnot(identical(unique(metadata(copy)), list(metadata(vaas_1))))
 #'
 #' # OPMS/character/data frame method
 #' copy <- vaas_4
@@ -249,14 +263,16 @@ setGeneric("metadata<-",
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(WMD, "missing", "list"), function(object, value) {
+setMethod("metadata<-", c(WMD, "missing", "list"), function(object, key,
+    value) {
   object@metadata <- value
   object
 }, sealed = SEALED)
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(WMD, "missing", "formula"), function(object, value) {
+setMethod("metadata<-", c(WMD, "missing", "formula"), function(object, key,
+    value) {
   object@metadata <- map_values(object@metadata, value)
   object
 }, sealed = SEALED)
@@ -304,7 +320,7 @@ setMethod("metadata<-", c(WMD, "character", "ANY"), function(object, key,
 #'
 setMethod("metadata<-", c(WMD, "factor", "ANY"), function(object, key,
     value) {
-  metadata(object, as.character(key)) <- value
+  object@metadata[[as.character(key)]] <- value
   object
 }, sealed = SEALED)
 
@@ -312,35 +328,95 @@ setMethod("metadata<-", c(WMD, "factor", "ANY"), function(object, key,
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(OPMS, "missing", "list"), function(object, value) {
-  for (i in seq_along(object@plates))
-    metadata(object@plates[[i]]) <- value
+setMethod("metadata<-", c(WMD, "missing", WMD), function(object, key, value) {
+  object@metadata <- value@metadata
   object
 }, sealed = SEALED)
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(OPMS, "missing", "formula"), function(object, value) {
+setMethod("metadata<-", c(WMD, "ANY", WMD), function(object, key, value) {
+  metadata(object, key) <- value@metadata
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(WMD, "ANY", OPMS), function(object, key, value) {
+  stop("lengths of 'object' and 'value' do not fit")
+}, sealed = SEALED)
+
+#-------------------------------------------------------------------------------
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "missing", WMD), function(object, key, value) {
   for (i in seq_along(object@plates))
-    metadata(object@plates[[i]]) <- value
+    metadata(object@plates[[i]]) <- value@metadata
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "missing", "list"), function(object, key,
+    value) {
+  for (i in seq_along(object@plates))
+    object@plates[[i]]@metadata <- value
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "missing", "formula"), function(object, key,
+    value) {
+  for (i in seq_along(object@plates))
+    object@plates[[i]]@metadata <- map_values(object@plates[[i]]@metadata,
+      value)
   object
 }, sealed = SEALED)
 
 #' @name metadata.set
 #'
 setMethod("metadata<-", c(OPMS, "missing", "data.frame"), function(object,
-    value) {
+    key, value) {
   LL(object, .wanted = nrow(value))
   if (ncol(value) > 1L)
     for (i in seq_along(object@plates))
-      metadata(object@plates[[i]]) <- value[i, , drop = TRUE]
+      object@plates[[i]]@metadata <- value[i, , drop = TRUE]
   else
     for (i in seq_along(object@plates))
-      metadata(object@plates[[i]]) <- as.list(value[i, , drop = FALSE])
+      object@plates[[i]]@metadata <- as.list(value[i, , drop = FALSE])
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "missing", OPMS), function(object, key,
+    value) {
+  LL(object, .wanted = nrow(value))
+  for (i in seq_along(object@plates))
+    object@plates[[i]]@metadata <- value@plates[[i]]@metadata
   object
 }, sealed = SEALED)
 
 #-------------------------------------------------------------------------------
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "ANY", WMD), function(object, key, value) {
+  for (i in seq_along(object@plates))
+    metadata(object@plates[[i]], key) <- value@metadata
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(OPMS, "ANY", OPMS), function(object, key, value) {
+  LL(object, .wanted = length(value))
+  for (i in seq_along(object@plates))
+    metadata(object@plates[[i]], key) <- value@plates[[i]]@metadata
+  object
+}, sealed = SEALED)
 
 #' @name metadata.set
 #'
@@ -364,6 +440,16 @@ setMethod("metadata<-", c(OPMS, "ANY", "data.frame"), function(object, key,
 
 #' @name metadata.set
 #'
+setMethod("metadata<-", c(OPMS, "character", OPMS), function(
+    object, key, value) {
+  LL(object, .wanted = length(value))
+  for (i in seq_along(object@plates))
+    object@plates[[i]]@metadata[[key]] <- value@plates[[i]]@metadata
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
 setMethod("metadata<-", c(OPMS, "character", "data.frame"), function(
     object, key, value) {
   LL(object, .wanted = nrow(value))
@@ -371,13 +457,13 @@ setMethod("metadata<-", c(OPMS, "character", "data.frame"), function(
   if (!j %in% colnames(value))
     j <- TRUE
   for (i in seq_along(object@plates))
-    metadata(object@plates[[i]], key) <- value[i, j, drop = TRUE]
+    object@plates[[i]]@metadata[[key]] <- value[i, j, drop = TRUE]
   object
 }, sealed = SEALED)
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(OPMS, "factor", "data.frame"), function(
+setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
     object, key, value) {
   `metadata<-`(object, as.character(key), value)
 }, sealed = SEALED)

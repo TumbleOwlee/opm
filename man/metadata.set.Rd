@@ -4,7 +4,7 @@
 \title{Replace metadata}
 \arguments{
   \item{object}{\code{\link{WMD}} or \code{\link{OPMS}}
-  object..}
+  object.}
 
   \item{key}{Missing, numeric scalar, character vector,
   factor, or list. \itemize{ \item If missing, replace all
@@ -25,22 +25,27 @@
   calls the character method after converting \code{key} to
   mode \sQuote{character}. }}
 
-  \item{value}{Character vector, list, data frame or
-  formula.  \itemize{ \item If \code{key} is a character
-  vector, this can be arbitrary value(s) to be included in
-  the metadata (if \code{NULL}, this metadata entry is
-  deleted).  \item If \code{key} is otherwise, \code{value}
-  must be list of values to be prepended, appended or set
-  as metadata, either entirely or specifically, depending
-  on \code{key}.  \item Formulas can also be used as
-  \code{value}. In that case, the formula can specify the
-  key to be replaced. See the examples below and
-  \code{\link{map_values}} for details.  \item If
-  \code{object} is of class \sQuote{OPMS}, \code{value} can
-  be a data frame whose number of rows must be equal to the
-  number of plates.  Metadata to be set will then be
-  selected from each individual row in turn and in input
-  order.  }}
+  \item{value}{Character vector, list, data frame, formula,
+  \code{\link{WMD}} or \code{\link{OPMS}} object.
+  \itemize{ \item If \code{key} is a character vector, this
+  can be arbitrary value(s) to be included in the metadata
+  (if \code{NULL}, this metadata entry is deleted).  \item
+  If \code{key} is otherwise, \code{value} must be list of
+  values to be prepended, appended or set as metadata,
+  either entirely or specifically, depending on \code{key}.
+  \item Formulas can also be used as \code{value}. In that
+  case, the formula can specify the key to be replaced. See
+  the examples below and \code{\link{map_values}} for
+  details.  \item If \code{object} is of class
+  \sQuote{OPMS}, \code{value} can be a data frame whose
+  number of rows must be equal to the number of plates.
+  Metadata to be set will then be selected from each
+  individual row in turn and in input order. This works
+  analogously if \code{value} is an \code{OPMS} object. The
+  lengths of both objects must match. If \code{value} is a
+  \code{WMD} object, its metadata entries will be recycled.
+  \item If \code{object} is of class \sQuote{WMD},
+  \code{value} cannot be of class \sQuote{OPMS}.  }}
 }
 \value{
   \code{value}.
@@ -122,8 +127,12 @@ data(vaas_4)
 
 # OPMS/missing/list method
 copy <- vaas_4
-(metadata(copy) <- list(x = -99))
+(metadata(copy) <- list(x = -99)) # will replace all of them
 stopifnot(identical(unique(metadata(copy)), list(list(x = -99))))
+
+# OPMS/missing/WMD method
+(metadata(copy) <- vaas_1) # will also replace all of them
+stopifnot(identical(unique(metadata(copy)), list(metadata(vaas_1))))
 
 # OPMS/missing/formula method
 copy <- vaas_4
@@ -133,8 +142,13 @@ stopifnot(length(x) == length(metadata(vaas_4, "Organism")) + 4)
 
 # OPMS/ANY/ANY method
 copy <- vaas_4
-(metadata(copy, "Species") <- "Bacillus subtilis")
+(metadata(copy, "Species") <- "Bacillus subtilis") # will set all of them
 stopifnot(identical(unique(metadata(copy, "Species")), "Bacillus subtilis"))
+stopifnot(!identical(metadata(copy), metadata(vaas_4)))
+(metadata(copy) <- vaas_4) # reset
+stopifnot(identical(metadata(copy), metadata(vaas_4)))
+(metadata(copy) <- vaas_1) # set everything to metadata of vaas_1
+stopifnot(identical(unique(metadata(copy)), list(metadata(vaas_1))))
 
 # OPMS/character/data frame method
 copy <- vaas_4
@@ -170,24 +184,40 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata<-,WMD,character,ANY-method}
 \alias{metadata.set,WMD,factor,ANY-method}
 \alias{metadata<-,WMD,factor,ANY-method}
+\alias{metadata.set,WMD,missing,WMD-method}
+\alias{metadata<-,WMD,missing,WMD-method}
+\alias{metadata.set,WMD,ANY,WMD-method}
+\alias{metadata<-,WMD,ANY,WMD-method}
+\alias{metadata.set,WMD,ANY,OPMS-method}
+\alias{metadata<-,WMD,ANY,OPMS-method}
+\alias{metadata.set,OPMS,missing,WMD-method}
+\alias{metadata<-,OPMS,missing,WMD-method}
 \alias{metadata.set,OPMS,missing,list-method}
 \alias{metadata<-,OPMS,missing,list-method}
 \alias{metadata.set,OPMS,missing,formula-method}
 \alias{metadata<-,OPMS,missing,formula-method}
 \alias{metadata.set,OPMS,missing,data.frame-method}
 \alias{metadata<-,OPMS,missing,data.frame-method}
+\alias{metadata.set,OPMS,missing,OPMS-method}
+\alias{metadata<-,OPMS,missing,OPMS-method}
+\alias{metadata.set,OPMS,ANY,WMD-method}
+\alias{metadata<-,OPMS,ANY,WMD-method}
+\alias{metadata.set,OPMS,ANY,OPMS-method}
+\alias{metadata<-,OPMS,ANY,OPMS-method}
 \alias{metadata.set,OPMS,ANY,ANY-method}
 \alias{metadata<-,OPMS,ANY,ANY-method}
 \alias{metadata.set,OPMS,ANY,data.frame-method}
 \alias{metadata<-,OPMS,ANY,data.frame-method}
+\alias{metadata.set,OPMS,character,OPMS-method}
+\alias{metadata<-,OPMS,character,OPMS-method}
 \alias{metadata.set,OPMS,character,data.frame-method}
 \alias{metadata<-,OPMS,character,data.frame-method}
-\alias{metadata.set,OPMS,factor,data.frame-method}
-\alias{metadata<-,OPMS,factor,data.frame-method}
+\alias{metadata.set,OPMS,factor,ANY-method}
+\alias{metadata<-,OPMS,factor,ANY-method}
 \usage{
-  \S4method{metadata}{WMD,missing,list}(object) <- value
+  \S4method{metadata}{WMD,missing,list}(object, key) <- value
 
-  \S4method{metadata}{WMD,missing,formula}(object) <- value
+  \S4method{metadata}{WMD,missing,formula}(object, key) <- value
 
   \S4method{metadata}{WMD,numeric,list}(object, key) <- value
 
@@ -197,20 +227,38 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 
   \S4method{metadata}{WMD,factor,ANY}(object, key) <- value
 
-  \S4method{metadata}{OPMS,missing,list}(object) <- value
+  \S4method{metadata}{WMD,missing,WMD}(object, key) <- value
 
-  \S4method{metadata}{OPMS,missing,formula}(object) <- value
+  \S4method{metadata}{WMD,ANY,WMD}(object, key) <- value
 
-  \S4method{metadata}{OPMS,missing,data.frame}(object) <- value
+  \S4method{metadata}{WMD,ANY,OPMS}(object, key) <- value
+
+  \S4method{metadata}{OPMS,missing,WMD}(object, key) <- value
+
+  \S4method{metadata}{OPMS,missing,list}(object, key) <- value
+
+  \S4method{metadata}{OPMS,missing,formula}(object, key) <- value
+
+  \S4method{metadata}{OPMS,missing,data.frame}(object,
+    key) <- value
+
+  \S4method{metadata}{OPMS,missing,OPMS}(object, key) <- value
+
+  \S4method{metadata}{OPMS,ANY,WMD}(object, key) <- value
+
+  \S4method{metadata}{OPMS,ANY,OPMS}(object, key) <- value
 
   \S4method{metadata}{OPMS,ANY,ANY}(object, key) <- value
 
   \S4method{metadata}{OPMS,ANY,data.frame}(object, key) <- value
 
+  \S4method{metadata}{OPMS,character,OPMS}(
+    object, key) <- value
+
   \S4method{metadata}{OPMS,character,data.frame}(
     object, key) <- value
 
-  \S4method{metadata}{OPMS,factor,data.frame}(
+  \S4method{metadata}{OPMS,factor,ANY}(
     object, key) <- value
 
 }

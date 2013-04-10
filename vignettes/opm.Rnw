@@ -687,6 +687,7 @@ rm(many.plates) # tidy up
 
 This yields the data from plates with distinct plate types in a single object.
 Note that the objects for each encountered plate type can easily be accessed \textit{via} the names of the list.
+More example code is available \textit{via} \code{opm\_files("examples")}.
 
 A single plate could also be imported using \code{read\_single\_opm}.
 But this might only occasionally be useful, as \code{read\_opm} can cope with single files, too.
@@ -857,6 +858,16 @@ metadata(example.opm)
 
 So keep in mind that formulas are very flexible for modifying metadata entries.
 They would allow for any other operation (such as numerical calculations) provided it can be applied to the selected predefined metadata content.
+The replacement function can also be used to copy metadata between \proglang{OPM} and/or \proglang{OPMS} objects.
+
+Readers may have noted that \code{metadata()} always returns a list, not a data frame.
+This is because metadata need not contain the same entries, even within a single \proglang{OPMS} object, and can be nested.
+It is possible, however, to get the metadata as data frame by using \code{to\_metadata()}.
+Missing entries will be filled with \code{NA} values, and nested metadata entries will yield data-frame columns of the mode ``list''.
+This might or might not be suitable for further processing.
+For statistical analysis, the appropriate way is to extract only those metadata entries that are present in \textit{all} \proglang{OPMS} elements, and usually also only those that are not themselves lists.
+Methods such as \code{extract()} are based on this principle.
+
 
 The following code, making use of the \code{metadata.example} data frame generated above, adds a new metadata entry with the key ``Character'' containing the integer values from the metadata entry called ``Integer'' converted to character mode
 It then includes a new metadata entry with the key ``Times 10'' containing the entry ``Integer'' multiplied by 10.
@@ -1340,6 +1351,10 @@ Compare this with Figure~\ref{fig:ci_plot_groups}.
 }
 \end{figure}
 
+Additional example code on on visualizing curve parameters is available \textit{via} \code{opm\_files("examples")}.
+It is indeed easy to conduct principal-component analysis (PCA) with matrices created with \code{extract()}.
+Examples are given based on the \pkg{BiodiversityR} package \citep{Kindt2005}.
+
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
@@ -1811,7 +1826,7 @@ To summarize, we are convinced that the \pkg{opm} package already enables the us
 
 \section[Acknowledgements]{Acknowledgements}
 
-We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), and Stefan Ehrentraut (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
+We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), Pia W\"{u}st (DSMZ) and Stefan Ehrentraut (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
 We are also grateful to the maintainers of R-Forge and CRAN for providing the online resources used by this project.
 This work was supported by the German Research Foundation (DFG) SFB/TRR 51 and by the Microme project within the Framework 7 programme of the European Commission, which is gratefully acknowledged.
 JS gratefully acknowledges his support by DFG grant SI 1352/1-2.
@@ -1819,5 +1834,5 @@ JS gratefully acknowledges his support by DFG grant SI 1352/1-2.
 
 \bibliography{opm}
 
-
 \end{document}
+

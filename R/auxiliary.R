@@ -536,8 +536,10 @@ setMethod("parse_time", c("character", "character"), function(object, format,
 #'   }
 #' @param simplify Logical scalar indicating whether a resulting matrix with one
 #'   column should be simplified to a vector (or such a data frame to a factor).
+#'   If so, at least one matrix column is kept, even if \code{keep.const} is
+#'   \code{FALSE}.
 #' @param keep.const Logical scalar indicating whether constant columns should
-#'   be kept or removed. Ignored if only a single column is present.
+#'   be kept or removed.
 #' @param coerce Logical scalar indicating whether factors should be coerced to
 #'   \sQuote{character} mode and then also be attempted to be split. The
 #'   resulting columns will be coerced back to factors.
@@ -547,7 +549,7 @@ setMethod("parse_time", c("character", "character"), function(object, format,
 #'   index, thus creating unique column names (if the original ones were
 #'   unique).
 #' @param list.wise Logical scalar. Ignored if \code{split} is \code{TRUE}.
-#'   Otherwise, \code{object} is assumed to contains word lists separated by
+#'   Otherwise, \code{object} is assumed to contain word lists separated by
 #'   \code{split}. The result is a logical matrix in which the columns represent
 #'   these words and the fields indicate whether or not a word was present in a
 #'   certain item contained in \code{object}.
@@ -612,16 +614,15 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
     simplify = FALSE, keep.const = TRUE, list.wise = FALSE,
     strip.white = list.wise) {
 
-  strip_white <- function(x) {
-    for (pat in c("^\\s+", "\\s+$"))
-      x <- sub(pattern = pat, replacement = "", x = x, perl = TRUE)
-    x
-  }
+  strip_white <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE),
+    perl = TRUE)
 
-  simple_if <- function(x) {
+  p0 <- function(x) paste(x, collapse = "")
+
+  simple_if <- function(x, keep.const, simplify) {
     if (is.matrix(x)) {
-      if (!keep.const && ncol(x) > 1L) {
-        if (all(const <- is_constant(x, 2L)))
+      if (!keep.const) {
+        if (all(const <- is_constant(x, 2L)) && simplify)
           x <- x[, 1L, drop = FALSE]
         else
           x <- x[, !const, drop = FALSE]
@@ -635,21 +636,23 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
     else if (length(x))
       matrix(x)
     else
-      matrix(ncol = 0L, nrow = 0L, data = NA_character_)
+      matrix(NA_character_, 0L, 0L)
   }
 
-  p0 <- function(x) paste(x, collapse = "")
-
+  # create regexp for splitting
   char_group <- function(single, multiple) {
-    if (length(single)) {
+    if (length(single))
       if (length(multiple))
         sprintf("([%s]|[%s]+)", p0(single), p0(multiple))
       else
         sprintf("[%s]", p0(single))
-    } else
+    else if (length(multiple))
       sprintf("[%s]+", p0(multiple))
+    else
+      NA_character_ # does not split at all
   }
 
+  # splitting at positions that contain whitespace in all strings
   split_fixed <- function(x) {
     ws <- c(" ", "\t", "\v", "\r", "\n", "\b", "\a", "\f")
     x <- strsplit(x, split = "", fixed = TRUE)
@@ -657,68 +660,68 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
     x <- lapply(x, function(y) c(y, rep.int(" ", max.len - length(y))))
     x <- do.call(rbind, x)
     groups <- sections(apply(x, 2L, function(y) all(y %in% ws)))
-    x <- apply(x, 1L, split, f = groups)
+    x <- apply(x, 1L, split.default, groups)
     x <- lapply(x, function(y) strip_white(vapply(y, p0, character(1L))))
     do.call(rbind, x)
   }
 
-  yields_constant <- function(chars) {
-    splits_constant <- function(char, ...) {
-      is_constant(lapply(strsplit(object, char, ...), length))
-    }
-    vapply(chars, function(char) {
-      if (splits_constant(sprintf("[%s]+", char), perl = TRUE))
-        "multiple"
-      else if (splits_constant(char, fixed = TRUE))
-        "single"
-      else
-        "no"
-    }, character(1L))
+  yields_constant <- function(char, x) {
+    splits_constant <- function(char, x, ...)
+      is_constant(vapply(strsplit(x, char, ...), length, integer(1L)))
+    if (splits_constant(sprintf("[%s]+", char), x, perl = TRUE))
+      2L
+    else if (splits_constant(char, x, fixed = TRUE))
+      1L
+    else
+      0L
   }
 
-  lists_to_matrix <- function(x, split, strip.white) {
-    x <- strsplit(x, split = sprintf("[%s]", p0(split)), perl = TRUE)
+  # collect words after splitting and mark their occurrences
+  word_occurrences <- function(x, split, strip.white) {
+    x <- strsplit(x, sprintf("[%s]", p0(split)), perl = TRUE)
     if (strip.white)
       x <- lapply(x, strip_white)
-    chars <- unique(na.exclude(unlist(x)))
-    result <- matrix(nrow = length(x), ncol = length(chars), data = FALSE)
+    chars <- unlist(x, recursive = FALSE)
+    chars <- unique.default(chars[!is.na(chars)])
+    result <- matrix(FALSE, length(x), length(chars))
     colnames(result) <- sort.int(chars)
     rownames(result) <- names(x)
-    for (i in seq_along(x)) {
-      if (identical(entries <- x[[i]], NA_character_))
+    for (i in seq_along(x))
+      if (identical(x[[i]], NA_character_))
         result[i, ] <- NA
       else
-        result[i, entries] <- TRUE
-    }
+        result[i, x[[i]]] <- TRUE
     result
   }
 
   LL(list.wise, strip.white, simplify, keep.const)
 
   # Fixed-width splitting mode
-  if (isTRUE(split) || all(!nzchar(split <- na.exclude(as.character(split)))))
-    return(simple_if(split_fixed(object)))
+  if (identical(TRUE, split <- c(split)))
+    return(simple_if(split_fixed(object), keep.const, simplify))
+  split <- as.character(split)
+  if (all(!nzchar(split <- split[!is.na(split)])))
+    return(simple_if(split_fixed(object), keep.const, simplify))
 
   # Prepare split characters
-  split <- unique(unlist(strsplit(x = split, split = "", fixed = TRUE)))
-  if (length(split) == 0L)
-    return(simple_if(object))
+  split <- strsplit(split, "", fixed = TRUE)
+  split <- unique.default(unlist(split, recursive = FALSE))
+  if (!length(split))
+    return(simple_if(object, keep.const, simplify))
   split <- c(setdiff(split, "-"), intersect(split, "-"))
 
   # List-wise splitting
   if (list.wise)
-    return(simple_if(lists_to_matrix(object, split, strip.white)))
+    return(simple_if(word_occurrences(object, split, strip.white),
+      keep.const, simplify))
 
   # Check and apply split characters
-  yields.constant <- vapply(split, yields_constant, character(1L))
-  if (all(yields.constant == "no"))
-    return(simple_if(object))
-  split <- char_group(split[yields.constant == "single"],
-    split[yields.constant == "multiple"])
+  yields.const <- vapply(split, yields_constant, integer(1L), object)
+  split <- char_group(split[yields.const == 1L], split[yields.const == 2L])
   object <- do.call(rbind, strsplit(object, split, perl = TRUE))
   if (strip.white)
-    object <- strip_white(object)
-  simple_if(object)
+    object[] <- strip_white(object)
+  simple_if(object, keep.const, simplify)
 
 }, sealed = SEALED)
 
@@ -729,27 +732,32 @@ setMethod("separate", "factor", function(object, split = opm_opt("split"),
   if (L(simplify) && ncol(result) == 1L)
     as.factor(result[, 1L])
   else
-    as.data.frame(result, stringsAsFactors = TRUE)
+    as.data.frame(result, stringsAsFactors = TRUE, optional = TRUE)
 }, sealed = SEALED)
 
 setMethod("separate", "data.frame", function(object, split = opm_opt("split"),
-    keep.const = TRUE, coerce = TRUE, name.sep = ".", ...) {
-  LL(coerce, name.sep)
-  do.call(cbind, mapply(function(x, name) {
+    simplify = FALSE, keep.const = TRUE, coerce = TRUE, name.sep = ".", ...) {
+  LL(coerce, name.sep, simplify)
+  object <- do.call(cbind, mapply(function(x, name) {
     result <- if (is.character(x))
       as.data.frame(separate(x, split = split, keep.const = keep.const,
-        simplify = FALSE, ...), stringsAsFactors = FALSE)
+        simplify = FALSE, ...), stringsAsFactors = FALSE, optional = TRUE)
     else if (coerce && is.factor(x))
       separate(x, split = split, keep.const = keep.const,
         simplify = FALSE, ...)
     else
-      as.data.frame(x)
-    names(result) <- if ((nc <- ncol(result)) == 1L)
-      name
-    else
-      paste(name, seq_len(nc), sep = name.sep)
+      as.data.frame(x, stringsAsFactors = FALSE, optional = TRUE)
+    case(ncol(result),
+      if (keep.const)
+        result[, name] <- x,
+      names(result) <- name,
+      names(result) <- paste(name, seq_len(ncol(result)), sep = name.sep)
+    )
     result
   }, object, names(object), SIMPLIFY = FALSE, USE.NAMES = FALSE))
+  if (ncol(object) == 1L && simplify)
+    object <- object[, 1L]
+  object
 }, sealed = SEALED)
 
 

@@ -241,7 +241,7 @@ test_that("character vectors can be split regularly even if constant", {
   expect_identical(got, "x")
   got <- separate(x, keep.const = FALSE, split = " ", simplify = FALSE)
   expect_is(got, "matrix")
-  expect_equal(dim(got), c(1L, 1L))
+  expect_equal(dim(got), c(1L, 0L))
 
 })
 
@@ -271,6 +271,11 @@ test_that("character vectors can be split regularly in list-wise mode", {
   expect_equal(dim(got), c(4, 3))
   expect_equal(colnames(got), c("b", "c", "d"))
   expect_true(all(is.na(got[3L, ])))
+  expect_is(got, "matrix")
+  got <- separate(x, keep.const = TRUE, split = ",", simplify = TRUE,
+    list.wise = TRUE)
+  expect_equal(dim(got), c(4, 4))
+  expect_equal(colnames(got), c("a", "b", "c", "d"))
 })
 
 ## separate

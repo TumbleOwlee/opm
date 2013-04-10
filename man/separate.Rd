@@ -22,11 +22,12 @@
 
   \item{simplify}{Logical scalar indicating whether a
   resulting matrix with one column should be simplified to
-  a vector (or such a data frame to a factor).}
+  a vector (or such a data frame to a factor).  If so, at
+  least one matrix column is kept, even if
+  \code{keep.const} is \code{FALSE}.}
 
   \item{keep.const}{Logical scalar indicating whether
-  constant columns should be kept or removed. Ignored if
-  only a single column is present.}
+  constant columns should be kept or removed.}
 
   \item{coerce}{Logical scalar indicating whether factors
   should be coerced to \sQuote{character} mode and then
@@ -42,7 +43,7 @@
 
   \item{list.wise}{Logical scalar. Ignored if \code{split}
   is \code{TRUE}.  Otherwise, \code{object} is assumed to
-  contains word lists separated by \code{split}. The result
+  contain word lists separated by \code{split}. The result
   is a logical matrix in which the columns represent these
   words and the fields indicate whether or not a word was
   present in a certain item contained in \code{object}.}
@@ -140,6 +141,6 @@ stopifnot(sapply(y, class) == c("integer", "factor", "factor"))
     simplify = FALSE, keep.const = TRUE, ...) 
 
   \S4method{separate}{data.frame}(object, split = opm_opt("split"),
-    keep.const = TRUE, coerce = TRUE, name.sep = ".", ...) 
+    simplify = FALSE, keep.const = TRUE, coerce = TRUE, name.sep = ".", ...) 
 
 }
