@@ -456,6 +456,30 @@ test_that("values in lists can be mapped using character vectors", {
 })
 
 
+## map_values
+test_that("values in lists can be mapped using expressions", {
+  x <- list(a = 1:5, b = letters[1:3], K = list(K1 = 3, 89))
+  assign("z", 7.5, 1)
+  # 1
+  got <- map_values(x, expression(a <- a, u <- a + z))
+  expect_equal(got, c(x, list(u = x$a + z)))
+  # 2
+  expect_error(map_values(x, expression(u <- a + z), baseenv()))
+  # 3
+  got <- map_values(x, expression(u <- a + z, v <- u))
+  expect_equivalent(got, c(x, list(u = x$a + z, v = x$a + z)))
+  # 4
+  b <- 4
+  got <- map_values(x, expression(rm(b)))
+  x$b <- NULL
+  expect_equal(got, x)
+  expect_equal(b, 4)
+  # 5
+  got <- map_values(x, expression(b <- NULL))
+  expect_equal(got, c(x, list(b = NULL)))
+})
+
+
 ## map_names
 test_that("names in lists can be mapped and received", {
   x <- list(a = 99, b = list(xx = c(a = "NA", b = "99.5", c = "10e+06")),

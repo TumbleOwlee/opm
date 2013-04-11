@@ -96,8 +96,8 @@ for (i in 1:length(x)) {
 # it as default for HTML tables.
 #
 opm_opt(css.file = "opm_styles.css")
-file.copy(grep("[.]css$", opm_files("auxiliary"),
-  value = TRUE), opm_opt("css.file"), overwrite = TRUE)
+file.copy(grep("[.]css$", opm_files("auxiliary"), value = TRUE),
+  opm_opt("css.file"), overwrite = TRUE)
 
 # For each plate type, create each of the following files:
 #

@@ -16,10 +16,10 @@
 \seealso{
   methods::Methods base::matrix base::array
 
-  Other classes: \code{\link{OPM}}, \code{\link{OPMA}},
-  \code{\link{OPMD}}, \code{\link{OPMS}},
-  \code{\link{OPMX}}, \code{\link{WMD}},
-  \code{\link{YAML_VIA_LIST}}
+  Other classes: \code{\link{FOE}}, \code{\link{OPM}},
+  \code{\link{OPMA}}, \code{\link{OPMD}},
+  \code{\link{OPMS}}, \code{\link{OPMX}},
+  \code{\link{WMD}}, \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{methods}

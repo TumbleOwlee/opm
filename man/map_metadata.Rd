@@ -85,6 +85,8 @@ stopifnot(!identical(names(metadata(copy)), names(metadata(vaas_1))))
 copy <- map_metadata(vaas_1, Organism ~ paste(Species, Strain))
 (x <- setdiff(metadata_chars(copy), metadata_chars(vaas_1)))
 stopifnot(length(x) == 1, x == "Escherichia coli DSM30083T")
+stopifnot(identical(copy, # same result with expression
+  map_metadata(vaas_1, expression(Organism <- paste(Species, Strain)))))
 
 # OPMS method
 data(vaas_4)
@@ -123,7 +125,7 @@ stopifnot(length(x) == 4) # one entry per plate
 \alias{map_metadata-methods}
 \alias{map_metadata,WMD,function-method}
 \alias{map_metadata,WMD,character-method}
-\alias{map_metadata,WMD,formula-method}
+\alias{map_metadata,WMD,FOE-method}
 \alias{map_metadata,OPMS,ANY-method}
 \usage{
   \S4method{map_metadata}{WMD,function}(object, mapping,
@@ -132,7 +134,7 @@ stopifnot(length(x) == 4) # one entry per plate
   \S4method{map_metadata}{WMD,character}(object, mapping,
     values = TRUE, classes = "factor") 
 
-  \S4method{map_metadata}{WMD,formula}(object, mapping,
+  \S4method{map_metadata}{WMD,FOE}(object, mapping,
     values = parent.frame()) 
 
   \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 

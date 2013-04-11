@@ -73,6 +73,11 @@ stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
 data(vaas_4)
 (x <- to_metadata(vaas_4)) # one row per OPM object
 stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
+copy <- vaas_4
+metadata(copy) <- x
+stopifnot(identical(copy, vaas_4))
+# ... this works only in the special case of non-nested metadata that
+# have the same set of entries in all OPMS elements
 }
 \seealso{
   base::default.stringsAsFactors utils::read.delim

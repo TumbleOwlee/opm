@@ -1166,7 +1166,7 @@ prepare_class_names.character <- function(x) {
 #'   \code{NULL} or an empty named character vector (if \code{mapping} is
 #'   missing). \code{object} may also belong to the virtual class
 #'   \code{\link{MOA}}, comprising matrices and arrays.
-#' @param mapping Character vector, function, formula, or missing.
+#' @param mapping Character vector, function, formula, expression, or missing.
 #'   \itemize{
 #'   \item If a character vector used as a mapping from its names to its values.
 #'   Values from \code{object} are searched for in the \code{names} attribute of
@@ -1186,6 +1186,9 @@ prepare_class_names.character <- function(x) {
 #'   the \code{class} of \code{object}.
 #'   \item \code{mapping} can also be a formula, it is then used to compute on
 #'   lists. The see examples below.
+#'   \item If \code{mapping} is an expression, all sub-expressions will be
+#'   evualated in \code{object} represented as an environment, which after
+#'   conversion back to a list, is returned.
 #' }
 #' @param coerce The usage of this argument depends on \code{object}.
 #'   \itemize{
@@ -1279,6 +1282,9 @@ prepare_class_names.character <- function(x) {
 #' stopifnot(is.data.frame(y), dim(y) == c(5, 3))
 #' (z <- map_values(x, ~ a + b))
 #' stopifnot(identical(z, y$c))
+#' # same effect with an expression
+#' (z <- map_values(x, expression(c <- a + b)))
+#' stopifnot(identical(z, y))
 #'
 #' # Data frame/character method
 #' x <- data.frame(a = 1:3, b = letters[1:3])
@@ -1373,7 +1379,7 @@ setMethod("map_values", c("list", "function"), function(object, mapping,
     how = "replace", ...)
 }, sealed = SEALED)
 
-setMethod("map_values", c("list", "missing"), function(object,
+setMethod("map_values", c("list", "missing"), function(object, mapping,
     coerce = character()) {
   if (isTRUE(coerce)) {
     classes <- "ANY"
@@ -1399,6 +1405,19 @@ setMethod("map_values", c("list", "formula"), function(object, mapping,
     object
   } else
     eval(mapping[[2L]], object, coerce)
+}, sealed = SEALED)
+
+setMethod("map_values", c("list", "expression"), function(object, mapping,
+    coerce = parent.frame()) {
+  e <- list2env(object, NULL, coerce)
+  for (subexpr in mapping)
+    eval(subexpr, e)
+  e <- as.list(e) # return 'e' if the order of list elements doesn't matter
+  novel <- setdiff(names(e), names(object))
+  for (name in setdiff(names(object), names(e)))
+    object[[name]] <- NULL
+  object[novel] <- e[novel]
+  object
 }, sealed = SEALED)
 
 #-------------------------------------------------------------------------------

@@ -102,6 +102,7 @@ All functionality is exemplified using real-world data sets that are part of the
 % NOTE: Rstudio might insert a line '\SweaveOpts{concordance=TRUE}' after '\begin{document}', which is removed again by the build script, as it causes warning messages during R CMD check.
 % So please don't try to rescue that line, and don't rely on it being there.
 
+
 %% so far adding a TOC proved unsuccessful -- apparently the JSS style doesn't allow for a TOC
 %\tableofcontents
 %\newpage
@@ -159,6 +160,7 @@ Based on this meta-information, a variety of visual and statistical comparison t
 }
 \end{figure}
 
+
 The Phenotype MicroArray (PM) system is capable of measuring a large number of phenotypes in a high-throughput system that uses such as tetrazolium detection approach.
 About 2,000 distinct physiological challenges, such as the metabolism of single carbon sources for energy gain, the metabolism under varying osmolyte concentrations, and the response to varying growth-inhibitory substances are included in the PM microtiter plates \citep{bochner2001, bochner2009}.
 The OmniLog\textregistered \ PM system records the colour formation in an automated setting (every 15 minutes) throughout the duration of the experiment, which may last up to several days.
@@ -205,6 +207,7 @@ The work flows described below include the input of raw kinetic data and integra
 
 In the following the possible work flows (see Figure~\ref{fig:work_flow}) for generating an \proglang{R} object that contains the kinetic raw data from one to several OmniLog\textregistered \ plates along with the corresponding metadata of interest, and optionally the aggregated and potentially also discretized curve parameters, are described.
 It is explained how to analyse either raw data, metadata, aggregated data (curve parameters), or combinations of all of them, as stored in the respective \proglang{R} objects, by graphical and/or statistical approaches.
+
 
 % The following figure is first referred to in the section 'Overview'.
 % Make sure it remains mentioned there.
@@ -291,7 +294,6 @@ A number of \proglang{S3} helper classes are also used by several functions.
 Users come in direct contact only with the \proglang{OPM}, \proglang{OPMA}, \proglang{OPMD} and \proglang{OPMS} classes (see Figure~\ref{fig:overview}).
 
 
-
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
 
 To process and store huge numbers of raw data files, the function \code{batch\_opm\_to\_yaml()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} format.
@@ -345,7 +347,7 @@ Note particularly that \proglang{OPM}, which only contains raw data, csv data an
 These can usually co-occur in a single \proglang{OPMS} object but for some calculations the additional information in \proglang{OPMA} or \proglang{OPMD} objects is strictly required.
 The query functions \code{has\_aggr()} and \code{has\_disc()} are available for checking from which kinds of objects an \proglang{OPMS} is composed.
 See their help pages (e.g., \code{?has\_aggr}) and Section~\ref{application} for further details.
-The non-virtual classes in the upper part of the figure are either well-known in \proglang{R} (matrices and arrays) or not directly manipulated by the user (\proglang{CMAT}).
+The non-virtual classes in the upper part of the figure are either well-known in \proglang{R} (e.g., matrices) or not directly manipulated by the user (\proglang{CMAT}).
 }
 \end{figure}
 
@@ -364,14 +366,12 @@ In contrast to data frames it is not advisable to access metadata entries by pos
 
 \subsection[Aggregating data by estimating curve parameters]{Aggregating data by estimating curve parameters}\label{methods aggregating}
 
-
 Descriptive curve parameters from the kinetic raw data can be calculated and included in \proglang{OPM} and \proglang{OPMS} objects using the function \code{do\_aggr()}.
 Curve parameters can be extracted using a spline-based fitting procedure implemented in \pkg{opm}.
 (Extraction of curve parameters through the fit of sigmoid functions proved for several PM curve shapes to yield biologically unrealistic values \citep{vaas} and have therefore not been implemented.)
 Three different modelling alternatives for the splines exist:
 (low-rank) cubic smoothing splines \citep{Reinsch:1967} as implemented in \code{smooth.spline} from the  \pkg{base} package, thin plate splines \citep[a generalization of smoothing splines]{Wood2003} and P-splines \citep{eilers}.
 The latter two are implemented in the package \pkg{mgcv}.
-% mgcv seems to already be cited, as Wood2003 is listed among the package citations on CRAN
 Their settings have been specifically adapted for the application to PM data.
 It is also possible to access methods from the package \pkg{grofit} \citep{kahm} or to use a native  implementation which is faster but only estimates two of the four parameters.
 For historical reasons, ``grofit'' is the default but it is recommended to use the optimized ``splines'' methods.
@@ -428,7 +428,6 @@ Additionally, methods for metadata management, plotting the data in a customized
 
 
 \subsection[Plotting functions for raw data]{Plotting functions for raw data}\label{methods plotting}
-
 
 The function \code{xy\_plot()} displays the raw measurements on the y-axis in dependency on the time on the x-axis.
 For each well one sub-panel is drawn, and the user is free to colourize the plotted curves by either their affiliation to a specific plate or by a combination of metadata entries of choice.
@@ -547,7 +546,6 @@ If analysis with phylogenetic programs was of interest, in the case of an interm
 If intermediary values were coded as missing information they could be analysed under either Wagner or unordered (Fitch) maximum parsimony in \proglang{PAUP*} \citep{farris, fitch} or with the options for binary phenotypic characters in \proglang{RAxML} \citep{berger}, or corresponding settings in other programs.
 
 
-
 \subsection[Global settings]{Global settings}\label{methods settings}
 
 It is possible to modify settings that have an effect on multiple functions and/or on frequently used arguments globally using \code{opm\_opt()}.
@@ -560,16 +558,20 @@ It is thus not impossible, but discouraged, to use these names as metadata keys.
 The same holds for (non-syntactical) names starting with an underscore and followed by capital letters, as such names are temporarily used by some methods in intermediary objects together with the metadata.
 
 
+
 \section[Program application]{Program application}\label{application}
 
 
 \subsection[Overview]{Overview}\label{application overview}
 
+% Set some stuff up that makes the output nicer and guarantees that everything runs.
+% Think carefully before modifying anything here.
+%
 <<echo=FALSE>>=
 options(prompt = "R> ")
 options(continue = "   ")
 options(useFancyQuotes = FALSE)
-library("methods") # necessary?
+library("methods")
 @
 
 Before starting, the \pkg{opm} package should be loaded into an \proglang{R} session as follows:
@@ -771,9 +773,6 @@ metadata.example$Colour <- c("blue", "red", "yellow")
 metadata.example$Integer <- c(10L, 20L, 30L)
 @
 
-% R> is.integer(c(10, 20, 30)) 
-% # would be FALSE!
-
 Now the metadata are ready to be included into the previously generated \proglang{OPMS} object:
 
 <<>>=
@@ -847,6 +846,20 @@ metadata(example.opm)
 @
 
 Assigning \code{NULL} to a metadata key would remove that entry.
+We can achieve the same using an expression object:
+
+<<results=hide>>=
+metadata(example.opm) <- to_metadata(csv_data(example.opm))[, 
+  c("Strain Name", "Sample Number")] # reset
+metadata(example.opm)
+metadata(example.opm) <- expression(Organism <- `Sample Number`,
+  rm(`Sample Number`))
+metadata(example.opm)
+@
+
+Here, the assignment targets (names within the metadata) are specified directly using just the \code{<-} operator.
+Apparently arbitrarily complex code could be put in such a metadata-modifying expression.
+
 All metadata would be cleared by assigning an empty list, without specifying a key:
 
 <<results=hide>>=
@@ -856,7 +869,7 @@ metadata(example.opm) <- list()
 metadata(example.opm)
 @
 
-So keep in mind that formulas are very flexible for modifying metadata entries.
+So keep in mind that formulas and expressions are very flexible for modifying metadata entries.
 They would allow for any other operation (such as numerical calculations) provided it can be applied to the selected predefined metadata content.
 The replacement function can also be used to copy metadata between \proglang{OPM} and/or \proglang{OPMS} objects.
 

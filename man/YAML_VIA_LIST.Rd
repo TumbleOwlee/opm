@@ -12,9 +12,10 @@
 \seealso{
   methods::Methods
 
-  Other classes: \code{\link{MOA}}, \code{\link{OPM}},
-  \code{\link{OPMA}}, \code{\link{OPMD}},
-  \code{\link{OPMS}}, \code{\link{OPMX}}, \code{\link{WMD}}
+  Other classes: \code{\link{FOE}}, \code{\link{MOA}},
+  \code{\link{OPM}}, \code{\link{OPMA}},
+  \code{\link{OPMD}}, \code{\link{OPMS}},
+  \code{\link{OPMX}}, \code{\link{WMD}}
 }
 \keyword{classes}
 \keyword{methods}

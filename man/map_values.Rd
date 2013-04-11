@@ -9,16 +9,16 @@
   missing). \code{object} may also belong to the virtual
   class \code{\link{MOA}}, comprising matrices and arrays.}
 
-  \item{mapping}{Character vector, function, formula, or
-  missing.  \itemize{ \item If a character vector used as a
-  mapping from its names to its values.  Values from
-  \code{object} are searched for in the \code{names}
-  attribute of \code{mapping}; those found are replaced by
-  the corresponding values of \code{mapping}.  \item If
-  \code{mapping} is missing, a character vector is returned
-  (sorted and with duplicates removed) whose names are
-  identical to the values. This eases the construction of
-  mapping vectors specific for \code{object}. If
+  \item{mapping}{Character vector, function, formula,
+  expression, or missing.  \itemize{ \item If a character
+  vector used as a mapping from its names to its values.
+  Values from \code{object} are searched for in the
+  \code{names} attribute of \code{mapping}; those found are
+  replaced by the corresponding values of \code{mapping}.
+  \item If \code{mapping} is missing, a character vector is
+  returned (sorted and with duplicates removed) whose names
+  are identical to the values. This eases the construction
+  of mapping vectors specific for \code{object}. If
   \code{mapping} is missing, the \code{coerce} argument
   must be named.  \code{mapping} changes its usage if
   \code{coerce} is \code{TRUE}.  \item For
@@ -32,7 +32,10 @@
   used for mapping the \code{storage.mode}, not the
   \code{class} of \code{object}.  \item \code{mapping} can
   also be a formula, it is then used to compute on lists.
-  The see examples below. }}
+  The see examples below.  \item If \code{mapping} is an
+  expression, all sub-expressions will be evualated in
+  \code{object} represented as an environment, which after
+  conversion back to a list, is returned. }}
 
   \item{coerce}{The usage of this argument depends on
   \code{object}.  \itemize{ \item A character vector with
@@ -135,6 +138,9 @@ x <- data.frame(a = 1:5, b = 6:10)
 stopifnot(is.data.frame(y), dim(y) == c(5, 3))
 (z <- map_values(x, ~ a + b))
 stopifnot(identical(z, y$c))
+# same effect with an expression
+(z <- map_values(x, expression(c <- a + b)))
+stopifnot(identical(z, y))
 
 # Data frame/character method
 x <- data.frame(a = 1:3, b = letters[1:3])
@@ -218,6 +224,7 @@ stopifnot(levels(x) == y, names(y) == y)
 \alias{map_values,list,function-method}
 \alias{map_values,list,missing-method}
 \alias{map_values,list,formula-method}
+\alias{map_values,list,expression-method}
 \alias{map_values,data.frame,function-method}
 \alias{map_values,data.frame,character-method}
 \alias{map_values,data.frame,missing-method}
@@ -240,10 +247,13 @@ stopifnot(levels(x) == y, names(y) == y)
   \S4method{map_values}{list,function}(object, mapping,
     coerce = character(), ...) 
 
-  \S4method{map_values}{list,missing}(object,
+  \S4method{map_values}{list,missing}(object, mapping,
     coerce = character()) 
 
   \S4method{map_values}{list,formula}(object, mapping,
+    coerce = parent.frame()) 
+
+  \S4method{map_values}{list,expression}(object, mapping,
     coerce = parent.frame()) 
 
   \S4method{map_values}{data.frame,function}(object, mapping,

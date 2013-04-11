@@ -36,10 +36,10 @@
 \seealso{
   methods::Methods
 
-  Other classes: \code{\link{MOA}}, \code{\link{OPM}},
-  \code{\link{OPMA}}, \code{\link{OPMD}},
-  \code{\link{OPMS}}, \code{\link{OPMX}},
-  \code{\link{YAML_VIA_LIST}}
+  Other classes: \code{\link{FOE}}, \code{\link{MOA}},
+  \code{\link{OPM}}, \code{\link{OPMA}},
+  \code{\link{OPMD}}, \code{\link{OPMS}},
+  \code{\link{OPMX}}, \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{methods}

@@ -19,6 +19,7 @@
   indexed using formulas, thus allowing for sequences of well coordinates and 
   less code
 - metadata() and the functions depending on it can now use formulas for querying
+- novel expression methods for map_metadata() and `metadata<-`()
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets
   new arguments accordingly

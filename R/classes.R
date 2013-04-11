@@ -652,6 +652,32 @@ setAs(from = "matrix", to = CMAT, function(from) {
 ################################################################################
 
 
+#' FOE class
+#'
+#' This is a virtual class facilitating the implementation of functionality for
+#' both formulas and expressions. Methods defined for objects from the class can
+#' be applied to either kind of object, but this class is not directly dealt
+#' with by an \pkg{opm} user.
+#'
+#' @note \sQuote{FOE} is an acronym for \sQuote{formula or expression}.
+#'
+#' @name FOE
+#'
+#' @docType class
+#' @export
+#' @aliases FOE-class
+#' @seealso methods::Methods base::matrix base::array
+#' @family classes
+#' @keywords methods classes
+#'
+NULL
+
+setClassUnion(FOE, c("formula", "expression"))
+
+
+################################################################################
+
+
 #' MOA class
 #'
 #' This is a virtual class facilitating the implementation of functionality for

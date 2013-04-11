@@ -174,8 +174,8 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata.set-methods}
 \alias{metadata.set,WMD,missing,list-method}
 \alias{metadata<-,WMD,missing,list-method}
-\alias{metadata.set,WMD,missing,formula-method}
-\alias{metadata<-,WMD,missing,formula-method}
+\alias{metadata.set,WMD,missing,FOE-method}
+\alias{metadata<-,WMD,missing,FOE-method}
 \alias{metadata.set,WMD,numeric,list-method}
 \alias{metadata<-,WMD,numeric,list-method}
 \alias{metadata.set,WMD,list,list-method}
@@ -194,8 +194,8 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata<-,OPMS,missing,WMD-method}
 \alias{metadata.set,OPMS,missing,list-method}
 \alias{metadata<-,OPMS,missing,list-method}
-\alias{metadata.set,OPMS,missing,formula-method}
-\alias{metadata<-,OPMS,missing,formula-method}
+\alias{metadata.set,OPMS,missing,FOE-method}
+\alias{metadata<-,OPMS,missing,FOE-method}
 \alias{metadata.set,OPMS,missing,data.frame-method}
 \alias{metadata<-,OPMS,missing,data.frame-method}
 \alias{metadata.set,OPMS,missing,OPMS-method}
@@ -217,7 +217,7 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \usage{
   \S4method{metadata}{WMD,missing,list}(object, key) <- value
 
-  \S4method{metadata}{WMD,missing,formula}(object, key) <- value
+  \S4method{metadata}{WMD,missing,FOE}(object, key) <- value
 
   \S4method{metadata}{WMD,numeric,list}(object, key) <- value
 
@@ -237,7 +237,7 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 
   \S4method{metadata}{OPMS,missing,list}(object, key) <- value
 
-  \S4method{metadata}{OPMS,missing,formula}(object, key) <- value
+  \S4method{metadata}{OPMS,missing,FOE}(object, key) <- value
 
   \S4method{metadata}{OPMS,missing,data.frame}(object,
     key) <- value

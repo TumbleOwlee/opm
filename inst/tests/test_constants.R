@@ -43,6 +43,9 @@ expect_length <- function(actual, expected) {
 ## YAML_VIA_LIST
 ## UNTESTED
 
+## FOE
+## UNTESTED
+
 ## MOA
 ## UNTESTED
 

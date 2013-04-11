@@ -23,6 +23,7 @@ OPMS <- "OPMS"
 OPMX <- "OPMX"
 YAML_VIA_LIST <- "YAML_VIA_LIST"
 MOA <- "MOA"
+FOE <- "FOE"
 CMAT <- "CMAT"
 
 

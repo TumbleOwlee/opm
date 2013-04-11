@@ -271,7 +271,7 @@ setMethod("metadata<-", c(WMD, "missing", "list"), function(object, key,
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(WMD, "missing", "formula"), function(object, key,
+setMethod("metadata<-", c(WMD, "missing", FOE), function(object, key,
     value) {
   object@metadata <- map_values(object@metadata, value)
   object
@@ -367,7 +367,7 @@ setMethod("metadata<-", c(OPMS, "missing", "list"), function(object, key,
 
 #' @name metadata.set
 #'
-setMethod("metadata<-", c(OPMS, "missing", "formula"), function(object, key,
+setMethod("metadata<-", c(OPMS, "missing", FOE), function(object, key,
     value) {
   for (i in seq_along(object@plates))
     object@plates[[i]]@metadata <- map_values(object@plates[[i]]@metadata,
@@ -545,6 +545,8 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #' copy <- map_metadata(vaas_1, Organism ~ paste(Species, Strain))
 #' (x <- setdiff(metadata_chars(copy), metadata_chars(vaas_1)))
 #' stopifnot(length(x) == 1, x == "Escherichia coli DSM30083T")
+#' stopifnot(identical(copy, # same result with expression
+#'   map_metadata(vaas_1, expression(Organism <- paste(Species, Strain)))))
 #'
 #' # OPMS method
 #' data(vaas_4)
@@ -595,7 +597,7 @@ setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, "formula"), function(object, mapping,
+setMethod("map_metadata", c(WMD, FOE), function(object, mapping,
     values = parent.frame()) {
   object@metadata <- map_values(object@metadata, mapping, values)
   object
