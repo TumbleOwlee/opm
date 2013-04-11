@@ -13,6 +13,8 @@
 
 - extract() function for data frames changes its behaviour (see below)
 - the '-a' argument of the 'run_opm.R' changes its behaviour (see below)
+- additional dependencies on packages splines and mgcv
+- grofit >= 1.1 is now necessary because it is imported
 
 - do_aggr() has a new option for the 'method' argument ('splines', which is 
   recommended) and an according new helper function set_spline_options();

@@ -11,7 +11,7 @@
 #'
 NULL
 
-#' @importFrom grofit grofit.control grofit
+#' @import grofit
 #'
 NULL
 

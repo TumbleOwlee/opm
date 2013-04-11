@@ -17,6 +17,8 @@ Significant user-visible changes:
 
 - the '-a' argument of the 'run_opm.R' now works differently
 
+- two additional package dependencies, and dependency on newer grofit package
+
 New features:
 
 - three novel spline-fitting methods for estimating curve parameters, all of

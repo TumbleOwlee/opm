@@ -6,8 +6,7 @@ Author: Markus Goeker, with contributions by Lea A.I. Vaas, Benjamin
     Hofner, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
 Maintainer: Markus Goeker <markus.goeker@dsmz.de>
 Depends:
-    R (>= 2.10.0),
-    grofit
+    R (>= 2.10.0)
 Imports:
     methods,
     lattice,
@@ -18,7 +17,8 @@ Imports:
     Ckmeans.1d.dp,
     yaml (>= 2.1.5),
     splines,
-    mgcv
+    mgcv,
+    grofit (>= 1.1)
 Suggests:
     multicore,
     optparse,
