@@ -26,6 +26,15 @@ RESULT <- c(
   "Convert input OmniLog(R) CSV (or opm YAML) files to opm YAML."
 )
 names(RESULT) <- c("clean", "plot", "split", "template", "yaml")
+AGGREGATION <- c(
+  "No estimation of curve parameters.",
+  "Fast estimation (only two parameters).",
+  "Approach from grofit package.",
+  "Using p-splines.",
+  "Using smoothing splines.",
+  "Using thin-plate splines"
+)
+names(AGGREGATION) <- c("no", "fast", "grofit", "p", "smooth", "thin")
 
 
 ################################################################################
@@ -95,20 +104,28 @@ run_template_mode <- function(input, opt) {
 
 
 run_yaml_mode <- function(input, opt) {
-  if (opt$coarse || opt$fast) {
+  aggr_args <- function(opt, method, spline = NULL) {
+    x <- list(boot = opt$bootstrap, verbose = !opt$quiet, cores = opt$processes)
+    x$method <- method
+    if (length(spline))
+      x$options <- set_spline_options(type = spline)
+    x
+  }
+  if (opt$coarse || opt$aggregate == "fast") {
     proc <- opt$processes
     opt$processes <- 1L
   } else
     proc <- 1L
   if (!nzchar(opt$dir))
     opt$dir <- NULL
-  if (opt$aggregate) {
-    aggr.args <- list(boot = opt$bootstrap, verbose = !opt$quiet,
-      cores = opt$processes)
-    if (opt$fast)
-      aggr.args$method <- "opm-fast"
-  } else
-    aggr.args <- NULL
+  aggr.args <- case(match.arg(opt$aggregate, names(AGGREGATION)),
+    no = NULL,
+    fast = aggr_args(opt, "opm-fast"),
+    grofit = aggr_args(opt, "grofit"),
+    p = aggr_args(opt, "splines", "p.spline"),
+    smooth = aggr_args(opt, "splines", "smooth.spline"),
+    thin = aggr_args(opt, "splines", "tp.spline")
+  )
   if (opt$discretize)
     disc.args <- list(cutoff = opt$weak, plain = FALSE)
   else
@@ -132,11 +149,12 @@ run_yaml_mode <- function(input, opt) {
 
 option.parser <- OptionParser(option_list = list(
 
-  make_option(c("-a", "--aggregate"), action = "store_true", default = FALSE,
-    help = "Aggregate by estimating curve parameters [default: %default]"),
+  make_option(c("-a", "--aggregate"), type = "character", default = "no",
+    help = "Aggregate by estimating curve parameters [default: %default]",
+    metavar = "METHOD"),
 
   make_option(c("-b", "--bootstrap"), type = "integer", default = 100L,
-    help = "Number of bootstrap replicates when aggreating [default: %default]",
+    help = "# bootstrap replicates when aggregating [default: %default]",
     metavar = "NUMBER"),
 
   make_option(c("-c", "--coarse"), action = "store_true", default = FALSE,
@@ -148,9 +166,6 @@ option.parser <- OptionParser(option_list = list(
   make_option(c("-e", "--exclude"), type = "character", default = "",
     help = "File exclusion globbing pattern [default: <none>]",
     metavar = "PATTERN"),
-
-  make_option(c("-f", "--fast"), action = "store_true", default = FALSE,
-    help = "When aggregating, use fast method [default: %default]"),
 
   # A bug in Rscript causes '-g' to generate strange warning messages.
   # See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
@@ -235,6 +250,8 @@ if (is.null(opt$include))
 if (!length(input)) {
   print_help(option.parser)
   cat(listing(RESULT, header = "The output modes are:", footer = "",
+    prepend = 5L, indent = 10L), sep = "\n")
+  cat(listing(AGGREGATION, header = "The aggregation modes are:", footer = "",
     prepend = 5L, indent = 10L), sep = "\n")
   quit(status = 1L)
 }

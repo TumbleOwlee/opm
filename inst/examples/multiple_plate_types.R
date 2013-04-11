@@ -76,7 +76,8 @@ for (i in 1:length(x)) {
   # really have on your machine, and keep in mind that parallelization does not
   # work under Windows (for reasons caused by R itself).
   #
-  x[[i]] <- do_aggr(x[[i]], boot = 0, cores = 8)
+  x[[i]] <- do_aggr(x[[i]], boot = 0, cores = 8, method = "splines",
+    options = set_spline_options("smooth.spline"))
   
   # The discretization is using exact k-means partitioning, without estimation
   # of an intermediary state. This is OK if > 1 replicates are there and one can
@@ -85,7 +86,7 @@ for (i in 1:length(x)) {
   x[[i]] <- do_disc(x[[i]], cutoff = FALSE)
 
 }
-
+quit()
 
 ################################################################################
 #

@@ -3,48 +3,60 @@
 ################################################################################
 
 
-- fixed bug in argument treatment of do_disc() (best-cutoff discretization now
-  possible with 'groups' set to FALSE)
-- fixed bug in aggregated() (wrong object returned)
+2013-04-XX (the 9th release on CRAN)
+
 - fixed bug in helper xy_plot() that caused a missing negative-control well to
   not only yield a warning but also an uninformative plot
+- fixed bug in aggregated() (wrong object returned)
+- fixed bug in argument treatment of do_disc() (best-cutoff discretization now
+  possible with 'groups' set to FALSE)
 
-- novel `metadata<-`() methods with OPMS or WMD objects as 'value' arguments
-- much expanded and refreshed vignette and help pages
+- extract() function for data frames changes its behaviour (see below)
+- the '-a' argument of the 'run_opm.R' changes its behaviour (see below)
+
 - do_aggr() has a new option for the 'method' argument ('splines', which is 
-  recommended) and an according new helper function set_spline_options()
-- the infix operators now work with query formulas, and the two arguments can
-  be swapped; likewise, subset() works with query formulas
-- in `[`(), wells(), measurements() and well_to_substrate(), wells can now be 
-  indexed using formulas, thus allowing for sequences of well coordinates and 
-  less code
-- metadata() and the functions depending on it can now use formulas for querying
-- novel expression methods for map_metadata() and `metadata<-`()
+  recommended) and an according new helper function set_spline_options();
+  the 'run_opm.R' script is expanded accordingly
+- novel opm_mcp() function for multiple comparisons of means tests directly
+  applicable to OPMS objects, and according 'contrast.type' entry of opm_opt()
 - novel extract() method for data frames (for calculating means and confidence
   intervals); the old one has been integrated into extract_columns(), which gets
   new arguments accordingly
+- listing() methods get a 'html' argument and return S3 objects with adapted 
+  print() and phylo_data() methods, i.e. it is possible to generate
+  HTML-formatted text
+- do_disc() gets a 'subset' argument (for setting the curve parameter),
+  disc_settings() is accordingly expanded, and opm_opt() gets a 'disc.param'
+  entry
+
+- in `[`(), wells(), measurements() and well_to_substrate(), wells can now be 
+  indexed using formulas, thus allowing for sequences of well coordinates and 
+  less code
+- the infix operators now work with query formulas, and the two arguments can
+  be swapped; likewise, subset() works with query formulas
+- novel expression methods for map_metadata() and `metadata<-`()
 - to_metadata() gets methods for WMD and OPMS objects
-- do_disc() gets a 'subset' argument, disc_settings() is accordingly 
-  expanded, and opm_opt() gets a 'disc.param' entry
+- novel `metadata<-`() methods with OPMS or WMD objects as 'value' arguments
+
+- ci_plot() gets a 'split.at' argument
 - opm_opt() gets new entries 'hm.colors' and 'key.join', and better error
   messages
 - param_names() gets a 'what' argument
-- added support (substrate name and other information) for plates PM21 to PM25
-  and plate PM-M TOX01, and adapted plate_type() accordingly
-- ci_plot() gets a 'split.at' argument
 - file_pattern() now deals with input file names if 'literally' is TRUE
-- novel opm_mcp() function for multcomp-based tests and according
-  'contrast.type' entry of opm_opt()
-- listing() methods return S3 objects with adapted print() and phylo_data()
-  methods
+- 'what' argument of opm_files() gets more options
 - safe_labels() gets a 'comment' argument
-- improved print() methods for OPM(S/D)_Summary objects
 - substrate_info() gets new 'greek' and 'html' arguments
-- listing() gets 'html' argument
+
+- improved print() methods for OPM(S/D)_Summary objects
 - the data-frame method of separate() now deals with columns with only empty
   strings
+
+- added support (substrate name and other information) for plates PM21 to PM25
+  and plate PM-M TOX01, and adapted plate_type() accordingly
+
+- much expanded and refreshed vignette and help pages
 - documentation of the YAML format was improved
-- 'what' argument of opm_files() gets more options (new example-code directory)
+- new example-code directory
 
 
 ################################################################################
