@@ -1414,7 +1414,7 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   however.
 #'
 #' @param outdir Character scalar determining the output directory. If empty,
-#'   each file's input directory is used.
+#'   or containing empty strings, each file's input directory is used.
 #' @param demo Logical scalar. Do not create files, just return the usual list
 #'   containing all potentially created files. Note that in contrast to the
 #'   \code{demo} arguments of other IO functions, this requires the input files
@@ -1453,7 +1453,8 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   list is returned invisibly.
 #'
 #' @details This function is useful for splitting
-#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} multi-plate CSV files.
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} multi-plate CSV files
+#'   before inputting them with \code{\link{read_opm}}.
 #'   See \sQuote{Examples}.
 #'
 #' @family io-functions
@@ -1472,6 +1473,8 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
 #'   result <- unlist(result)
 #'   stopifnot(file.exists(result))
 #'   unlink(result) # tidy up
+#' } else {
+#'   warning("opm example files not found")
 #' }
 #' ## One could split new-style CSV as follows (if x is a vector of filenames):
 #' # split_files(x, pattern = '^"Data File",')
@@ -1490,7 +1493,7 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
     out.ext <- substring(files, nchar(out.base) + 2L)
     if (compressed)
       out.ext <- sub("\\.[^.]+$", "", out.ext, perl = TRUE)
-    if (nzchar(outdir))
+    if (length(outdir) && all(nzchar(outdir)))
       out.base <- file.path(outdir, basename(out.base))
     list(base = out.base, ext = out.ext)
   }

@@ -926,21 +926,30 @@ metadata(example.opm)
 This command will transform all entries in the table with the value "red" to "green".
 Other values, as well as the keys, should be unaffected.
 
-\rcsadd{In order to prepare the metadata for being able to set up a \textit{cell-means-model}(see Section~\ref{methods group-means} and ~ref{application group-means} for further details), factors used for defining groups of interest have to be merged. 
-This might be done at the initial step when setting up the metadata by using \code{interaction()} for concatenating existing levels of choosen factor-variables.}
+Frequently metadata entries will be used as factors in statistical models.
+This always requires that the chosen metadata entry is present in all considered \proglang{OPM} object and sometimes requires that entries have to be combined.
+For instance, for setting up a \textit{cell-means model} (see Section~\ref{methods group-means} and Section~ref{application group-means} for further details), factors used for defining the groups of interest have to be merged. 
+This might already be done during the initial step when setting up the metadata data frame \textit{before} including the metadata into an \proglang{OPM} or \proglang{OPMS} object using \code{include_metadata()}. 
+Here, the function \code{interaction()} could be used to concatenate columns (but it should be taken into account that metadata entries should better not be represented as factors).
+As a result, two metadata entries would be merged into a single one:
 
 <<results=hide, width=10>>=
-metadata.example$new.factor <- interaction(metadata.example$Colou, 
-  metadata.example$Position, sep = ".", drop = TRUE)
+metadata.example$Colour.Position <- as.character(interaction(metadata.example$Colour, 
+  metadata.example$Position, sep = ".", drop = TRUE))
 @
  
-However, most of metadata might not be a factor-variable and/or when initially setting up the metadata-table the user might not have yet decided which groups are finally of interest for comparisons and thus, which variable(s) should be used for group-definition.
-Using the more flexible framework of employing formulas and expressions for modification of  metadata together with \code{paste()} eases here the subsequently manipulation of metadata.
+This is not recommended, however, unless all statistical comparisons of interest, or at least the group definitions of interest, were already known at this stage.
+Even more tedious would be to go back to the initial metadata compilation add a later stage.
+Using the metadata mapping functions, metadata entries can instead by merged at any time \textit{after} including them into an \proglang{OPM} or \proglang{OPMS} with \code{include_metadata()}.
+For instance, the following code operates directly in the \proglang{OPMS} object, merging the . ``Colony colour'' (which had previously been renamed from ``Colour'', see above) and ``Integer'' entries into a new one:
 
 <<results=hide, width=8>>=
-metadata(example.opm) <-  new.Meta ~ paste(`Colony colour`, Integer, sep = ".")
+metadata(example.opm) <- Col.Int ~ paste(`Colony colour`, Integer, sep = ".")
 metadata(example.opm)
 @
+
+As result, a new metadata entry named ``Col.Int'' is created with the general string concatenation tool \code{paste()}.
+
 
 \subsection[Aggregating data by estimating curve parameters]{Aggregating data by estimating curve parameters}\label{application aggregating}
 
@@ -1560,7 +1569,7 @@ As mentioned above, the outcome can be visualized using the \code{plot()} method
 
 \begin{figure}
 \scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=3>>=
  old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
  plot(summary(vaas4.mcp))
  par(old.mar) # reset plotting settings
@@ -1595,53 +1604,61 @@ head(vaas4.mcp)
 The resulting object might be of use in other analysis strategies, analogously to the function \code{flatten()}, which performs a similar reshaping for raw data.
 See the \pkg{opm} manual for details, typing \code{?opm\_mcp} or \code{?flatten}.
 
-For the special case of the above mentioned \textit{cell-means-model} (see Section~\ref{application metadata} and \ref{methods group-means})it might be necessary to merge two or more metadata-variable and generate a single factor-variable which levels define the groups of interest. 
+%% BEGIN REVIEW NEEDED
+
+For the special case of the above mentioned \textit{cell-means-model} (see Section~\ref{application metadata} and \ref{methods group-means}) it might be necessary to merge two or more metadata-variable and generate a single factor-variable which levels define the groups of interest. 
 For metadata which are represented by factor-variables \code{interaction()} is directly applicable, while \code{paste()} provides a framework applicable on all types of metadata-variables.
 
 <<results=hide, width=8>>=
 vaas.G06 <- vaas_et_al[, , "G06"]
+metadata(vaas.G06)[114]
 # for factor-variables
-metadata(vaas.G06) <- new.MetaI ~ interaction(Strain, Experiment)
+metadata(vaas.G06) <- Str.Exp ~ interaction(Strain, Experiment)
 # all types of metadata 
-metadata(vaas.G06) <- new.Meta ~ paste(Strain, Experiment, sep = ".")
+metadata(vaas.G06) <- Str.Exp ~ paste(Strain, Experiment, sep = ".")
+metadata(vaas.G06)[114]
 @
 
-With the newly generated metadata-variable \code{new.Meta} comprehending \code{Species} and \code{Strain}, the multiple comparison procedure is straightforwardly processable:
+With the newly generated metadata-variable \code{Str.Exp} comprehending \code{Strain} and \code{Experiment}, the multiple comparison procedure is straightforwardly processable:
 
 <<results=hide, widht=8>>=
-vaas5.mcp <- opm_mcp(vaas.G06, model = ~ new.Meta, 
-  linfct = mcp(new.Meta = "Dunnett"))
+vaas5.mcp <- opm_mcp(vaas.G06, model = ~ Str.Exp, 
+  linfct = mcp(Str.Exp = "Dunnett"))
 @
 
-The corresponding visualisation of the CI is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-means}.
+The corresponding visualisation of the CI is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-meansI}.
 
 \begin{figure}
 \scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
- old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
+<<fig=TRUE, echo=FALSE, results=hide, width=8, height=4>>=
+ old.mar <- par(mar = c(3, 22, 3, 1)) # adapt plotting settings
  plot(summary(vaas5.mcp))
  par(old.mar) # reset plotting settings
 @
 }
 \caption{
-\label{fig:opm_mcp_CI_plot_cell-means}
+\label{fig:opm_mcp_CI_plot_cell-meansI}
 Point estimates and 95\% confidence intervals in Dunnett-type comparison of group means for a \textit{cell-means-model} from the \code{vaas.G06} exemplar object.
 Analogously to Figure~\ref{fig:opm_mcp_CI_plotII}, the picture was obtained by running \code{opm\_mcp()} and then the plotting function for the resulting object.
 Compare also with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation are given.
 }
 \end{figure}
 
-Finally the user has the full flexibility of defining groups of interest and compare them in sophisticated manner not only using single group means, but also averages of subgroups versus single groups or averages of other subgroups.
-When building a contrast-matrix, keep in mind that the levels of model-defining factor frame the columns in the same order as they occur in the underlying dataframe.
-Further, no restriction apply on the chosen numbers for coefficients except, that the sum of the coefficients of one contrast needs to be zero. 
+Finally, besides the multiple comparison of single group means as described above, it is also possible to compare averages of subgroups versus single groups or averages of other subgroups.
+For example, the user may be interested to compare the data shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-meansI} at the level of groups that may contain different data sets as subgroups. 
+When building a contrast-matrix, keep in mind that the levels of the model-defining factor needs to frame the columns of the contrast-matrix in the same order as they occur in the underlying dataframe. 
+It is therefore necessary to check level-names and order of the group defining factor.
+Further, the user is free to choose the values for coefficients except. 
+In the example below, the values 0, -1/4 , 1/4, and 1 are used. 
+However, the sum of the coefficients of one contrast must to be zero. 
 
 <<results=hide, width=8>>=
 # provide data for multiple comparison
-data <- opm_mcp(vaas.G06, model = ~ new.Meta, 
-  linfct = mcp(new.Meta = "Dunnett"), output = "data")
+data <- opm_mcp(vaas.G06, model = ~ Str.Exp, 
+  linfct = mcp(Str.Exp = "Dunnett"), output = "data")
 
 # check level-names and order of the group defining factor
-levels(data$new.Meta)
+levels(data$Str.Exp)
 
 # build contrast-matrix
 contr <- rbind(
@@ -1650,30 +1667,37 @@ contr <- rbind(
   "DSM1707.Fr - Second rep" = c(0, -1/4 , 1 , -1/4 , 0, -1/4, 0, 0, -1/4))
 
 # assign level-names as column-names and check entries 
-colnames(contr) <- levels(data$new.Meta) 
+colnames(contr) <- levels(data$Str.Exp) 
 contr
 
 # compute multiple-comparison based on the defined contrast-matrix
-vaas6.mcp <- opm_mcp(vaas.G06, model = ~ new.Meta, m.type = "lm",
-  linfct = mcp(new.Meta = contr))
+vaas6.mcp <- opm_mcp(vaas.G06, model = ~ Str.Exp, m.type = "lm",
+  linfct = mcp(Str.Exp = contr))
 @
+
+
 
 \begin{figure}
 \scalebox{0.9}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
- old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
+<<fig=TRUE, echo=FALSE, results=hide, width=8, height=3>>=
+ old.mar <- par(mar = c(3, 12, 3, 2)) # adapt plotting settings
  plot(summary(vaas6.mcp))
  par(old.mar) # reset plotting settings
 @
 }
 \caption{
-\label{fig:opm_mcp_CI_plot_cell-means}
+\label{fig:opm_mcp_CI_plot_cell-meansII}
 Point estimates and 95\% confidence intervals in user defined comparison of group means for a \textit{cell-means-model} from the \code{vaas.G06} exemplar object.
 Analogously to Figure~\ref{fig:opm_mcp_CI_plotII}, the picture was obtained by running \code{opm\_mcp()} and then the plotting function for the resulting object.
 Compare also with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation are given.
 }
 \end{figure}
 
+
+%% END REVIEW NEEDED
+
+
+The corresponding visualisation of this highly user-defined contrast-matrix is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-meansII}.
 
 
 \subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete-phylogeny}

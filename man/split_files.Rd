@@ -24,8 +24,8 @@
   of their own, however.}
 
   \item{outdir}{Character scalar determining the output
-  directory. If empty, each file's input directory is
-  used.}
+  directory. If empty, or containing empty strings, each
+  file's input directory is used.}
 
   \item{demo}{Logical scalar. Do not create files, just
   return the usual list containing all potentially created
@@ -82,7 +82,8 @@
 \details{
   This function is useful for splitting
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  multi-plate CSV files.  See \sQuote{Examples}.
+  multi-plate CSV files before inputting them with
+  \code{\link{read_opm}}.  See \sQuote{Examples}.
 }
 \examples{
 # Splitting an old-style CSV file containing several plates
@@ -97,6 +98,8 @@ if (length(x) > 0) {
   result <- unlist(result)
   stopifnot(file.exists(result))
   unlink(result) # tidy up
+} else {
+  warning("opm example files not found")
 }
 ## One could split new-style CSV as follows (if x is a vector of filenames):
 # split_files(x, pattern = '^"Data File",')

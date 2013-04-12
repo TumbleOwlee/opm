@@ -37,6 +37,15 @@ AGGREGATION <- c(
 names(AGGREGATION) <- c("no", "fast", "grofit", "p", "smooth", "thin")
 
 
+MAP_GRAPHICS_FORMAT <- c(
+  bitmap = "bmp",
+  mypdf = "pdf",
+  postscript = "ps",
+  cairo_pdf = "pdf",
+  cairo_ps = "ps"
+)
+
+
 ################################################################################
 #
 # Functions for each running mode
@@ -53,21 +62,21 @@ run_clean_mode <- function(input, opt) {
 
 
 run_plot_mode <- function(input, opt) {
-  if (!nzchar(opt$dir))
-    opt$dir <- NULL
   plot_fun <- if (opt$level)
     level_plot
   else
     xy_plot
-  io_fun <- function(infile, outfile) {
+  ext <- map_values(opt$format, MAP_GRAPHICS_FORMAT)
+  io_fun <- function(infile, outfile, file.format) {
     x <- read_opm(infile, gen.iii = opt$type)
-    postscript(outfile)
+    eval(call(name = file.format, file = outfile))
     print(plot_fun(x))
     dev.off()
   }
-  batch_process(names = input, proc = opt$processes, out.ext = "ps",
+  batch_process(names = input, proc = opt$processes, out.ext = ext,
     io.fun = io_fun, outdir = opt$dir, verbose = !opt$quiet,
-    overwrite = opt$overwrite, include = opt$include, exclude = opt$exclude)
+    overwrite = opt$overwrite, include = opt$include, exclude = opt$exclude,
+    fun.args = list(file.format = opt$format))
 }
 
 
@@ -116,8 +125,6 @@ run_yaml_mode <- function(input, opt) {
     opt$processes <- 1L
   } else
     proc <- 1L
-  if (!nzchar(opt$dir))
-    opt$dir <- NULL
   aggr.args <- case(match.arg(opt$aggregate, names(AGGREGATION)),
     no = NULL,
     fast = aggr_args(opt, "opm-fast"),
@@ -171,6 +178,9 @@ option.parser <- OptionParser(option_list = list(
   # See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
   #make_option(c("-G", "--Gen3"), action = "store_true", default = FALSE,
   #  help = "Change plate type to generation III [default: %default]"),
+
+  make_option(c("-f", "--format"), type = "character", default = "postscript",
+    help = "Graphics output format [default: %default]", metavar = "NAME"),
 
   # h
 
@@ -239,6 +249,8 @@ input <- opt$args
 opt <- opt$options
 if (is.null(opt$include))
   opt$include <- list()
+if (!nzchar(opt$dir))
+  opt$dir <- NULL
 
 
 ################################################################################
