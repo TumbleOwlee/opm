@@ -496,15 +496,13 @@ That is, if an increasing number of groups is compared to each other, conclusion
 Thus the so-called family-wise error-rate, which is essentially the probability of at least one false rejection among all the null hypotheses, needs to be controlled \citep{tukey}.
 The here internally employed functionality from the package \pkg{multcomp} provides solutions for all listed difficulties, since it allows for testing a user-defined set of contrasts based on a broad range of model types while internally controlling the family-wise error-rate.  
 
-Users of multiple-comparison procedures, especially of simultaneous multiple contrast-tests as applied here, are encouraged to have a look at the books by \citep{hochberg} and \citep{hsu}. 
-To evaluate the differences of treatment means where the groups are defined by more than one metadata entry and thus may result in quite complex models, we suggest to set up \textit{cell-means-models} (also known as \textit{pseudo-one-way-layouts} as discussed in \citep{schaarschmidt}). 
-In this approach estimators for treatment and variance are derived from a model with all treatments (here: metadata) combined in a single factor. 
-Technically this combination of factors can be done using \code{interaction()} or \code{paste()}.
+Users of multiple-comparison procedures, especially of simultaneous multiple contrast tests as applied here, are encouraged to have a look at the books by \citep{hochberg} and \citep{hsu}. 
 
-\rcscom{
-But this is never explained, and it is left unclear at which stage and to which kind of object either function could be applied.
-Lea, please have a look into this.
-}
+Especially in situations where groups are defined by more than one metadata entry the evaluation of differences of treatment means may result in quite complex models. 
+Then, the application of \textit{cell-means models} (also known as \textit{pseudo-one-way layouts}) as discussed in \citep{schaarschmidt}) is strongly encouraged.
+In this approach estimators for treatment and variance are derived from a model with all treatments combined in a single factor. 
+Technically, this necessitates to merge the defining metadata variables into a single.
+An according example is given in Section~\ref{application metadata}, whereas the computation of multiple comparisons using a \textit{cell-means model} is shown in Section~\ref{application group-means}.
 
 The function \code{opm\_mcp()} internally reshapes the data into a ``flat'' data frame containing one column for the chosen parameter value, one column for the well (substrate) name and optionally additional columns for the selected metadata.
 For performing the testing procedure, a model has to be stated that specifies the factor levels that determine the grouping \citep{searle, hothorn}.
@@ -928,7 +926,21 @@ metadata(example.opm)
 This command will transform all entries in the table with the value "red" to "green".
 Other values, as well as the keys, should be unaffected.
 
+\rcsadd{In order to prepare the metadata for being able to set up a \textit{cell-means-model}(see Section~\ref{methods group-means} and ~ref{application group-means} for further details), factors used for defining groups of interest have to be merged. 
+This might be done at the initial step when setting up the metadata by using \code{interaction()} for concatenating existing levels of choosen factor-variables.}
 
+<<results=hide, width=10>>=
+metadata.example$new.factor <- interaction(metadata.example$Colou, 
+  metadata.example$Position, sep = ".", drop = TRUE)
+@
+ 
+However, most of metadata might not be a factor-variable and/or when initially setting up the metadata-table the user might not have yet decided which groups are finally of interest for comparisons and thus, which variable(s) should be used for group-definition.
+Using the more flexible framework of employing formulas and expressions for modification of  metadata together with \code{paste()} eases here the subsequently manipulation of metadata.
+
+<<results=hide, width=8>>=
+metadata(example.opm) <-  new.Meta ~ paste(`Colony colour`, Integer, sep = ".")
+metadata(example.opm)
+@
 
 \subsection[Aggregating data by estimating curve parameters]{Aggregating data by estimating curve parameters}\label{application aggregating}
 
@@ -1562,11 +1574,6 @@ Compare with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation 
 }
 \end{figure}
 
-
-\rcscom{
-Lea, we still need an example for the combination of factors using \code{interaction()} or \code{paste()}.
-}
-
 Note that the \code{model} statement defines the group means available for comparisons. 
 In the following example ``Species'' contains only two levels (``\textit{Pseudomonas aeruginosa}'' and ``\textit{Escherichia coli}''). 
 Thus, irrespective of the stated contrast type, only one comparison is possible.
@@ -1587,6 +1594,86 @@ head(vaas4.mcp)
 
 The resulting object might be of use in other analysis strategies, analogously to the function \code{flatten()}, which performs a similar reshaping for raw data.
 See the \pkg{opm} manual for details, typing \code{?opm\_mcp} or \code{?flatten}.
+
+For the special case of the above mentioned \textit{cell-means-model} (see Section~\ref{application metadata} and \ref{methods group-means})it might be necessary to merge two or more metadata-variable and generate a single factor-variable which levels define the groups of interest. 
+For metadata which are represented by factor-variables \code{interaction()} is directly applicable, while \code{paste()} provides a framework applicable on all types of metadata-variables.
+
+<<results=hide, width=8>>=
+vaas.G06 <- vaas_et_al[, , "G06"]
+# for factor-variables
+metadata(vaas.G06) <- new.MetaI ~ interaction(Strain, Experiment)
+# all types of metadata 
+metadata(vaas.G06) <- new.Meta ~ paste(Strain, Experiment, sep = ".")
+@
+
+With the newly generated metadata-variable \code{new.Meta} comprehending \code{Species} and \code{Strain}, the multiple comparison procedure is straightforwardly processable:
+
+<<results=hide, widht=8>>=
+vaas5.mcp <- opm_mcp(vaas.G06, model = ~ new.Meta, 
+  linfct = mcp(new.Meta = "Dunnett"))
+@
+
+The corresponding visualisation of the CI is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-means}.
+
+\begin{figure}
+\scalebox{0.9}{
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
+ old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
+ plot(summary(vaas5.mcp))
+ par(old.mar) # reset plotting settings
+@
+}
+\caption{
+\label{fig:opm_mcp_CI_plot_cell-means}
+Point estimates and 95\% confidence intervals in Dunnett-type comparison of group means for a \textit{cell-means-model} from the \code{vaas.G06} exemplar object.
+Analogously to Figure~\ref{fig:opm_mcp_CI_plotII}, the picture was obtained by running \code{opm\_mcp()} and then the plotting function for the resulting object.
+Compare also with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation are given.
+}
+\end{figure}
+
+Finally the user has the full flexibility of defining groups of interest and compare them in sophisticated manner not only using single group means, but also averages of subgroups versus single groups or averages of other subgroups.
+When building a contrast-matrix, keep in mind that the levels of model-defining factor frame the columns in the same order as they occur in the underlying dataframe.
+Further, no restriction apply on the chosen numbers for coefficients except, that the sum of the coefficients of one contrast needs to be zero. 
+
+<<results=hide, width=8>>=
+# provide data for multiple comparison
+data <- opm_mcp(vaas.G06, model = ~ new.Meta, 
+  linfct = mcp(new.Meta = "Dunnett"), output = "data")
+
+# check level-names and order of the group defining factor
+levels(data$new.Meta)
+
+# build contrast-matrix
+contr <- rbind(
+  "First rep - Second rep" = c(1/4, -1/4 , 1/4 , -1/4 , 1/4, -1/4, 0, 1/4, -1/4),
+  "First rep - TimeS" = c(1/4, 0, 1/4 , 0, 1/4, 0, -1, 1/4, 0), 
+  "DSM1707.Fr - Second rep" = c(0, -1/4 , 1 , -1/4 , 0, -1/4, 0, 0, -1/4))
+
+# assign level-names as column-names and check entries 
+colnames(contr) <- levels(data$new.Meta) 
+contr
+
+# compute multiple-comparison based on the defined contrast-matrix
+vaas6.mcp <- opm_mcp(vaas.G06, model = ~ new.Meta, m.type = "lm",
+  linfct = mcp(new.Meta = contr))
+@
+
+\begin{figure}
+\scalebox{0.9}{
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=5>>=
+ old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
+ plot(summary(vaas6.mcp))
+ par(old.mar) # reset plotting settings
+@
+}
+\caption{
+\label{fig:opm_mcp_CI_plot_cell-means}
+Point estimates and 95\% confidence intervals in user defined comparison of group means for a \textit{cell-means-model} from the \code{vaas.G06} exemplar object.
+Analogously to Figure~\ref{fig:opm_mcp_CI_plotII}, the picture was obtained by running \code{opm\_mcp()} and then the plotting function for the resulting object.
+Compare also with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annotation are given.
+}
+\end{figure}
+
 
 
 \subsection[Discretization and phylogenetic data export]{Discretization and phylogenetic data export}\label{application discrete-phylogeny}
