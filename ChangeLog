@@ -59,6 +59,7 @@
 - improved print() methods for OPM(S/D)_Summary objects
 - the data-frame method of separate() now deals with columns with only empty
   strings
+- warning messages from radial_plot() occurring as of R 3.0.0 are now silenced
 
 - added support (substrate name and other information) for plates PM21 to PM25
   and plate PM-M TOX01, and adapted plate_type() accordingly

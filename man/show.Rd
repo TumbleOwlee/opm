@@ -24,7 +24,7 @@ vaas_1
 
 # OPMS method
 data(vaas_4)
-vaas_4
+vaas_4[1:2]
 }
 \seealso{
   methods::show base::print

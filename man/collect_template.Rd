@@ -85,7 +85,7 @@
 # Character method
 test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
   value = TRUE, perl = TRUE)
-if (length(test.files) > 0) {
+if (length(test.files) > 0) { # if the files are found
 
   # Without writing to a file
   (x <- collect_template(test.files))
@@ -103,6 +103,8 @@ if (length(test.files) > 0) {
   x <- collect_template(test.files, outfile = outfile)
   stopifnot(file.exists(outfile))
   unlink(outfile)
+} else {
+  warning("test files not found")
 }
 
 # OPM method

@@ -119,15 +119,15 @@ data(vaas_4)
 opm_opt("curve.param") # default parameter
 
 # generate matrix (containing the parameter given above)
-(x <- extract(vaas_4, as.labels = list("Species", "Strain")))
+(x <- extract(vaas_4, as.labels = list("Species", "Strain")))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.numeric(x))
 # Using a formula also works
-(y <- extract(vaas_4, as.labels = ~ Species + Strain))
+(y <- extract(vaas_4, as.labels = ~ Species + Strain))[, 1:3]
 stopifnot(identical(x, y))
 
 # generate data frame
 (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
-  dataframe = TRUE))
+  dataframe = TRUE))[, 1:3]
 stopifnot(is.data.frame(x), identical(dim(x), c(4L, 99L)))
 
 # put all parameters in a single data frame
@@ -136,7 +136,7 @@ x <- lapply(param_names(), function(name) extract(vaas_4, subset = name,
 x <- do.call(rbind, x)
 
 # get discretized data
-(x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))
+(x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
 
 ## data-frame method
@@ -144,7 +144,7 @@ stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
 # extract data from OPMS-object as primary data frame
 # second call to extract() then applied to this one
 (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
-  dataframe = TRUE))
+  dataframe = TRUE))[, 1:3]
 
 # no normalisation, but grouping for 'Species'
 y <- extract(x, as.groups = "Species",  norm.per = "none")

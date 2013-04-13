@@ -137,7 +137,7 @@ stopifnot(y == yy)
 data(vaas_4)
 x <- extract(vaas_4, as.labels = list("Species", "Strain"),
   in.parens = FALSE)
-head(y <- discrete(x, range = TRUE, gap = TRUE))
+(y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]
 stopifnot(c("0", "?", "1") \%in\% y)
 }
 \references{

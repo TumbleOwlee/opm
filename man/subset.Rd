@@ -109,28 +109,28 @@ mustbe(vaas_4[c(1, 3)],
 # note that particularly formulas can be used to set up very complex queries
 
 # select all plates that have aggregated values
-x <- subset(vaas_4, has_aggr(vaas_4))
+dim(x <- subset(vaas_4, has_aggr(vaas_4)))
 mustbe(x, vaas_4) # all have such values
 
 # select a common set of time points
-x <- subset(vaas_4, time = TRUE)
+dim(x <- subset(vaas_4, time = TRUE))
 mustbe(x, vaas_4) # the time points had already been identical
 # create unequal time points
-copy <- vaas_4[, list(1:10, 1:20, 1:15, 1:10)]
+dim(copy <- vaas_4[, list(1:10, 1:20, 1:15, 1:10)])
 mustbe(hours(copy), c(2.25, 4.75, 3.50, 2.25))
 # now restrict to common subset
-x <- subset(copy, time = TRUE)
+dim(x <- subset(copy, time = TRUE))
 mustbe(hours(x), rep(2.25, 4))
 # see also the example with split() given under "["
 
 # select all wells that have positive reactions
-summary(x <- subset(vaas_4, use = "p")) # in at least one plate
+dim(x <- subset(vaas_4, use = "p")) # in at least one plate
 stopifnot(dim(x)[3] < dim(vaas_4)[3])
-summary(y <- subset(vaas_4, use = "P")) # in all plates
+dim(y <- subset(vaas_4, use = "P")) # in all plates
 stopifnot(dim(y)[3] < dim(x)[3])
 
 # select all wells that have non-negative reactions in at least one plate
-summary(y <- subset(vaas_4, use = "N", invert = TRUE))
+dim(y <- subset(vaas_4, use = "N", invert = TRUE))
 stopifnot(dim(y)[3] > dim(x)[3])
 }
 \seealso{

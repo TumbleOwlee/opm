@@ -29,7 +29,7 @@
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' head(x <- measurements(vaas_1)) # => numeric matrix
+#' head(x <- measurements(vaas_1))[, 1:5] # => numeric matrix
 #' stopifnot(is.matrix(x), is.numeric(x))
 #' stopifnot(dim(x) == c(384, 97))
 #' head(x <- measurements(vaas_1, "B03"))
@@ -295,9 +295,9 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' head(x <- well(vaas_4, "B04")) # => numeric matrix
+#' head(x <- well(vaas_4, "B04"))[, 1:5] # => numeric matrix
 #' stopifnot(is.matrix(x), dim(x) == c(4, 384))
-#' head(y <- well(vaas_4, ~ B04)) # using a formula
+#' head(y <- well(vaas_4, ~ B04))[, 1:5] # using a formula
 #' stopifnot(identical(x, y)) # => same result
 #'
 setGeneric("well", function(object, ...) standardGeneric("well"))
@@ -626,15 +626,15 @@ setMethod("seq", OPMS, function(...) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- wells(vaas_1, full = FALSE))
-#' (y <- wells(vaas_1, full = TRUE))
-#' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))
+#' (x <- wells(vaas_1, full = FALSE))[1:10]
+#' (y <- wells(vaas_1, full = TRUE))[1:10]
+#' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))[1:10]
 #' # string lengths differ depending on selection
 #' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 #'
 #' # 'OPM' method
 #' data(vaas_4)
-#' (xx <- wells(vaas_4, full = FALSE))
+#' (xx <- wells(vaas_4, full = FALSE))[1:10]
 #' # wells are guaranteed to be uniform within OPMS objects
 #' stopifnot(identical(x, xx))
 #'
@@ -1132,18 +1132,18 @@ setMethod("summary", OPMS, function(object, ...) {
 #' # 'OPMA' method
 #' data(vaas_1)
 #' # Get full matrix
-#' summary(x <- aggregated(vaas_1))
+#' (x <- aggregated(vaas_1))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
 #' # Subsetting
-#' summary(x <- aggregated(vaas_1, "lambda"))
+#' (x <- aggregated(vaas_1, "lambda"))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), any(x < 0))
 #' # Now with lambda correction
-#' summary(x <- aggregated(vaas_1, "lambda", trim = "full"))
+#' (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- aggregated(vaas_4))
+#' summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
 #'
 setGeneric("aggregated", function(object, ...) standardGeneric("aggregated"))
@@ -1246,13 +1246,13 @@ setMethod("aggr_settings", OPMA, function(object) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- discretized(vaas_1)) # => logical vector
+#' (x <- discretized(vaas_1))[1:3] # => logical vector
 #' stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' (x <- discretized(vaas_4)) # => logical matrix
+#' (x <- discretized(vaas_4))[, 1:3] # => logical matrix
 #' stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 #' stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
 #'
@@ -1458,13 +1458,13 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
 #' # see also the example with split() given under "["
 #'
 #' # select all wells that have positive reactions
-#' summary(x <- select(vaas_4, use = "p")) # in at least one plate
+#' dim(x <- select(vaas_4, use = "p")) # in at least one plate
 #' stopifnot(dim(x)[3] < dim(vaas_4)[3])
-#' summary(y <- select(vaas_4, use = "P")) # in all plates
+#' dim(y <- select(vaas_4, use = "P")) # in all plates
 #' stopifnot(dim(y)[3] < dim(x)[3])
 #'
 #' # select all wells that have non-negative reactions in at least one plate
-#' summary(y <- select(vaas_4, use = "N", invert = TRUE))
+#' dim(y <- select(vaas_4, use = "N", invert = TRUE))
 #' stopifnot(dim(y)[3] > dim(x)[3])
 #'
 #' ## data-frame method
@@ -1582,28 +1582,28 @@ setMethod("select", "data.frame", function(object, query) {
 #' # note that particularly formulas can be used to set up very complex queries
 #'
 #' # select all plates that have aggregated values
-#' x <- subset(vaas_4, has_aggr(vaas_4))
+#' dim(x <- subset(vaas_4, has_aggr(vaas_4)))
 #' mustbe(x, vaas_4) # all have such values
 #'
 #' # select a common set of time points
-#' x <- subset(vaas_4, time = TRUE)
+#' dim(x <- subset(vaas_4, time = TRUE))
 #' mustbe(x, vaas_4) # the time points had already been identical
 #' # create unequal time points
-#' copy <- vaas_4[, list(1:10, 1:20, 1:15, 1:10)]
+#' dim(copy <- vaas_4[, list(1:10, 1:20, 1:15, 1:10)])
 #' mustbe(hours(copy), c(2.25, 4.75, 3.50, 2.25))
 #' # now restrict to common subset
-#' x <- subset(copy, time = TRUE)
+#' dim(x <- subset(copy, time = TRUE))
 #' mustbe(hours(x), rep(2.25, 4))
 #' # see also the example with split() given under "["
 #'
 #' # select all wells that have positive reactions
-#' summary(x <- subset(vaas_4, use = "p")) # in at least one plate
+#' dim(x <- subset(vaas_4, use = "p")) # in at least one plate
 #' stopifnot(dim(x)[3] < dim(vaas_4)[3])
-#' summary(y <- subset(vaas_4, use = "P")) # in all plates
+#' dim(y <- subset(vaas_4, use = "P")) # in all plates
 #' stopifnot(dim(y)[3] < dim(x)[3])
 #'
 #' # select all wells that have non-negative reactions in at least one plate
-#' summary(y <- subset(vaas_4, use = "N", invert = TRUE))
+#' dim(y <- subset(vaas_4, use = "N", invert = TRUE))
 #' stopifnot(dim(y)[3] > dim(x)[3])
 #'
 setGeneric("subset")

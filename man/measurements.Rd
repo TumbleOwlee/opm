@@ -30,7 +30,7 @@
 \examples{
 # 'OPM' method
 data(vaas_1)
-head(x <- measurements(vaas_1)) # => numeric matrix
+head(x <- measurements(vaas_1))[, 1:5] # => numeric matrix
 stopifnot(is.matrix(x), is.numeric(x))
 stopifnot(dim(x) == c(384, 97))
 head(x <- measurements(vaas_1, "B03"))

@@ -89,6 +89,8 @@ if (length(infiles) > 0) { # if the files are found
   stopifnot(is.matrix(x), identical(x[, 1], infiles))
   stopifnot(file.exists(x[, 2]))
   unlink(x[, 2])
+} else {
+  warning("test files not found")
 }
 }
 \seealso{

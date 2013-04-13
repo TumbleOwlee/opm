@@ -189,9 +189,9 @@ setMethod("plates", "list", function(object) {
 #' @seealso base::sapply
 #' @examples
 #' data(vaas_4)
-#' (x <- oapply(vaas_4, identity)) # trivial
+#' summary(x <- oapply(vaas_4, identity)) # trivial
 #' stopifnot(identical(x, vaas_4))
-#' (x <- oapply(vaas_4, identity, simplify = FALSE)) # => yields list
+#' summary(x <- oapply(vaas_4, identity, simplify = FALSE)) # => yields list
 #' stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 #'
 setGeneric("oapply", function(object, ...) standardGeneric("oapply"))
@@ -296,16 +296,16 @@ setMethod("thin_out", OPM, function(object, factor, drop = FALSE) {
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' summary(copy <- gen_iii(vaas_1))
+#' plate_type(copy <- gen_iii(vaas_1))
 #' stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
-#' summary(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
+#' plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
 #' stopifnot(!identical(vaas_1, copy))
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
-#' summary(copy <- gen_iii(vaas_4))
+#' plate_type(copy <- gen_iii(vaas_4))
 #' stopifnot(identical(vaas_4, copy)) # as above
-#' summary(copy <- gen_iii(vaas_4, "eco"))
+#' plate_type(copy <- gen_iii(vaas_4, "eco"))
 #' stopifnot(!identical(vaas_4, copy)) # as above
 #'
 setGeneric("gen_iii", function(object, ...) standardGeneric("gen_iii"))
@@ -745,20 +745,20 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
 #'
 #' ## 'OPMS' method
 #' data(vaas_4)
-#' (x <- unique(vaas_4))
+#' dim(x <- unique(vaas_4))
 #' stopifnot(identical(x, vaas_4))
-#' (x <- unique(c(vaas_4, vaas_4)))
+#' dim(x <- unique(c(vaas_4, vaas_4)))
 #' stopifnot(identical(x, vaas_4))
-#' (x <- unique(vaas_4, what = "Species")) # species are not unique
+#' dim(x <- unique(vaas_4, what = "Species")) # species are not unique
 #' stopifnot(dim(x)[1L] < dim(vaas_4)[1L])
-#' (x <- unique(vaas_4, what = list("Species", "Strain")))
+#' dim(x <- unique(vaas_4, what = list("Species", "Strain")))
 #' stopifnot(identical(x, vaas_4)) # organisms are unique
 #'
 #' ## 'OPM' method
 #' data(vaas_1)
-#' (x <- unique(vaas_1)) # trivial
+#' dim(x <- unique(vaas_1)) # trivial
 #' stopifnot(identical(x, vaas_1))
-#' (x <- unique(vaas_1, what = list("Species", "Strain")))
+#' dim(x <- unique(vaas_1, what = list("Species", "Strain")))
 #' stopifnot(identical(x, vaas_1))
 #'
 setGeneric("unique")
@@ -798,13 +798,13 @@ setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
 #'
 #' ## 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- rev(vaas_4))
+#' dim(x <- rev(vaas_4))
 #' stopifnot(dim(x) == dim(vaas_4), !identical(x, vaas_4))
 #' stopifnot(identical(rev(x), vaas_4))
 #'
 #' ## 'OPMS' method
 #' data(vaas_1)
-#' summary(x <- rev(vaas_1)) # trivial
+#' dim(x <- rev(vaas_1)) # trivial
 #' stopifnot(identical(x, vaas_1))
 #'
 setGeneric("rev")
@@ -841,19 +841,19 @@ setMethod("rev", OPMS, function(x) {
 #'
 #' ## 'OPMS' method
 #' data(vaas_4)
-#' summary(x <- rep(vaas_4))
+#' dim(x <- rep(vaas_4))
 #' stopifnot(identical(x, vaas_4))
-#' summary(x <- rep(vaas_4, times = 2))
+#' dim(x <- rep(vaas_4, times = 2))
 #' stopifnot(length(x) == length(vaas_4) * 2)
-#' summary(y <- rep(vaas_4, each = 2))
+#' dim(y <- rep(vaas_4, each = 2))
 #' stopifnot(length(y) == length(vaas_4) * 2, !identical(x, y))
 #' stopifnot(is.null(rep(vaas_4, 0)))
 #'
 #' ## 'OPM' method
 #' data(vaas_1)
-#' summary(x <- rep(vaas_1, 1))
+#' dim(x <- rep(vaas_1, 1))
 #' stopifnot(identical(x, vaas_1))
-#' summary(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
+#' dim(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
 #' stopifnot(length(x) == 2, is(x, "OPMS"))
 #' stopifnot(is.null(rep(vaas_4, 0)))
 #'
@@ -971,15 +971,15 @@ setMethod("rep", OPMS, function(x, ...) {
 #' opm_opt("curve.param") # default parameter
 #'
 #' # generate matrix (containing the parameter given above)
-#' (x <- extract(vaas_4, as.labels = list("Species", "Strain")))
+#' (x <- extract(vaas_4, as.labels = list("Species", "Strain")))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.numeric(x))
 #' # Using a formula also works
-#' (y <- extract(vaas_4, as.labels = ~ Species + Strain))
+#' (y <- extract(vaas_4, as.labels = ~ Species + Strain))[, 1:3]
 #' stopifnot(identical(x, y))
 #'
 #' # generate data frame
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
-#'   dataframe = TRUE))
+#'   dataframe = TRUE))[, 1:3]
 #' stopifnot(is.data.frame(x), identical(dim(x), c(4L, 99L)))
 #'
 #' # put all parameters in a single data frame
@@ -988,7 +988,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #' x <- do.call(rbind, x)
 #'
 #' # get discretized data
-#' (x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))
+#' (x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
 #'
 #' ## data-frame method
@@ -996,7 +996,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #' # extract data from OPMS-object as primary data frame
 #' # second call to extract() then applied to this one
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
-#'   dataframe = TRUE))
+#'   dataframe = TRUE))[, 1:3]
 #'
 #' # no normalisation, but grouping for 'Species'
 #' y <- extract(x, as.groups = "Species",  norm.per = "none")

@@ -217,13 +217,13 @@ to_sentence.logical <- function(x, html, ...) {
 #' data(vaas_4)
 #'
 #' # no grouping, no names (numbering used instead for row names)
-#' (y <- listing(vaas_4, as.groups = NULL))
-#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+#' (y <- listing(vaas_4[1:2], as.groups = NULL))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 #' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 #'
 #' # in effect no grouping, but names
-#' (y <- listing(vaas_4, as.groups = list("Species", "Strain")))
-#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+#' (y <- listing(vaas_4[1:2], as.groups = list("Species", "Strain")))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 #' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 #'
 #' # two groups
@@ -433,7 +433,9 @@ setMethod("find_substrate", "character", function(object,
 #' stopifnot(identical(y, x))
 #'
 #' # List method
-#' (x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose"))))
+#' x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
+#' x[[1]][1:3]
+#' x[[2]]
 #' stopifnot(length(x[[1]]) > length(x[[2]]))
 #'
 setGeneric("find_positions",

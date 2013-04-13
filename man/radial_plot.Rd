@@ -21,8 +21,17 @@
 
   \item{line.col}{Character or numeric vector.}
 
-  \item{...}{Optional arguments passed to
-  \code{plotrix::radial.plot}.}
+  \item{point.symbols}{Passed to \code{radial.plot} from
+  the \pkg{plotrix} package. See there for details.
+  Explicitly provided here to silence some
+  \code{radial.plot} warnings occurring as of \R 3.0.0.}
+
+  \item{point.col}{Also passed to that function.}
+
+  \item{poly.col}{Also passed to that function.}
+
+  \item{...}{Optional other arguments passed to that
+  function.}
 
   \item{draw.legend}{Logical scalar. Whether to draw a
   legend. Ignored unless \code{object} has row names
@@ -114,7 +123,8 @@ stopifnot(is.character(y), names(y) == paste(x$Species, x$Strain))
   \S4method{radial_plot}{matrix}(object, rp.type = "p",
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
-    x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(), ...) 
+    x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
+    point.symbols = NA, point.col = NA, poly.col = NA, ...) 
 
   \S4method{radial_plot}{data.frame}(object, as.labels, sep = " ",
     ...) 

@@ -61,7 +61,7 @@
 }
 \examples{
 data(vaas_1)
-summary(x <- fast_estimate(measurements(vaas_1)))
+(x <- fast_estimate(measurements(vaas_1)))[, 1:3]
 stopifnot(identical(dim(x), c(3L, 96L)))
 }
 \seealso{

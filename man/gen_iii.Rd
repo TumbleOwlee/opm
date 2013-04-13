@@ -39,16 +39,16 @@
 \examples{
 # 'OPM' method
 data(vaas_1)
-summary(copy <- gen_iii(vaas_1))
+plate_type(copy <- gen_iii(vaas_1))
 stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
-summary(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
+plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
 stopifnot(!identical(vaas_1, copy))
 
 # 'OPMS' method
 data(vaas_4)
-summary(copy <- gen_iii(vaas_4))
+plate_type(copy <- gen_iii(vaas_4))
 stopifnot(identical(vaas_4, copy)) # as above
-summary(copy <- gen_iii(vaas_4, "eco"))
+plate_type(copy <- gen_iii(vaas_4, "eco"))
 stopifnot(!identical(vaas_4, copy)) # as above
 }
 \seealso{

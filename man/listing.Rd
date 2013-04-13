@@ -73,13 +73,13 @@ stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
 data(vaas_4)
 
 # no grouping, no names (numbering used instead for row names)
-(y <- listing(vaas_4, as.groups = NULL))
-stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+(y <- listing(vaas_4[1:2], as.groups = NULL))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 
 # in effect no grouping, but names
-(y <- listing(vaas_4, as.groups = list("Species", "Strain")))
-stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(4, 3))
+(y <- listing(vaas_4[1:2], as.groups = list("Species", "Strain")))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
 stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 
 # two groups

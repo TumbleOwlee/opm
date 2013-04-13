@@ -42,12 +42,14 @@
 \examples{
 # Read the first line from each of the OPM test dataset files
 f <- opm_files("testdata")
-if (length(f) > 0L) {
+if (length(f) > 0) { # if the files are found
   x <- batch_collect(f, fun = readLines, fun.args = list(n = 1L))
   # yields a list with the input files as names and the result from each
   # file as values (exactly one line)
   stopifnot(is.list(x), identical(names(x), f))
   stopifnot(sapply(x, is.character), sapply(x, length) == 1L)
+} else {
+  warning("test files not found")
 }
 }
 \seealso{

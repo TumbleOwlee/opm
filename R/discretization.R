@@ -257,7 +257,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 #' data(vaas_4)
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"),
 #'   in.parens = FALSE)
-#' head(y <- discrete(x, range = TRUE, gap = TRUE))
+#' (y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]
 #' stopifnot(c("0", "?", "1") %in% y)
 #'
 setGeneric("discrete", function(x, ...) standardGeneric("discrete"))
@@ -460,14 +460,14 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' data(vaas_4)
 #'
 #' # arbitrary threshold, no ambiguity, no groups
-#' summary(x <- do_disc(vaas_4, cutoff = 100))
+#' x <- do_disc(vaas_4, cutoff = 100)
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "direct")
 #' mustbe(y$options, list(cutoffs = 100, datasets = 4L, parameter = "A"))
 #'
 #' # arbitrary threshold, no ambiguity, with groups, 1 plate per group
-#' summary(x <- do_disc(vaas_4, cutoff = 100, groups = TRUE))
+#' x <- do_disc(vaas_4, cutoff = 100, groups = TRUE)
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "direct")
@@ -475,7 +475,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'   list(cutoffs = 100, datasets = 1L, group = "1", parameter = "A"))
 #'
 #' # arbitrary threshold, no ambiguity, with specified groups
-#' summary(x <- do_disc(vaas_4, cutoff = 100, groups = "Species"))
+#' x <- do_disc(vaas_4, cutoff = 100, groups = "Species")
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "direct")
@@ -484,7 +484,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'     parameter = "A"))
 #'
 #' # using k-means, no ambiguity, with specified groups
-#' summary(x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species"))
+#' x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species")
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "kmeans")
@@ -494,7 +494,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'
 #' # using best_cutoff(), groups defined by species affiliation (makes not
 #' # much sense)
-#' summary(x <- do_disc(vaas_4, cutoff = NULL, groups = "Species"))
+#' x <- do_disc(vaas_4, cutoff = NULL, groups = "Species")
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "best-cutoff")
@@ -504,7 +504,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' stopifnot(c("cutoffs", "score") %in% names(y$options))
 #'
 #' # using best_cutoff(), single group for all plates (makes even less sense)
-#' summary(x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE))
+#' x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE)
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' mustbe(y$method, "best-cutoff")

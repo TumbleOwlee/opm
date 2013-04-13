@@ -65,13 +65,13 @@ mustbe(hours(x), rep(2.25, 4))
 # see also the example with split() given under "["
 
 # select all wells that have positive reactions
-summary(x <- select(vaas_4, use = "p")) # in at least one plate
+dim(x <- select(vaas_4, use = "p")) # in at least one plate
 stopifnot(dim(x)[3] < dim(vaas_4)[3])
-summary(y <- select(vaas_4, use = "P")) # in all plates
+dim(y <- select(vaas_4, use = "P")) # in all plates
 stopifnot(dim(y)[3] < dim(x)[3])
 
 # select all wells that have non-negative reactions in at least one plate
-summary(y <- select(vaas_4, use = "N", invert = TRUE))
+dim(y <- select(vaas_4, use = "N", invert = TRUE))
 stopifnot(dim(y)[3] > dim(x)[3])
 
 ## data-frame method

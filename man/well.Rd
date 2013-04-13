@@ -44,9 +44,9 @@ stopifnot(identical(x, y))
 
 # 'OPMS' method
 data(vaas_4)
-head(x <- well(vaas_4, "B04")) # => numeric matrix
+head(x <- well(vaas_4, "B04"))[, 1:5] # => numeric matrix
 stopifnot(is.matrix(x), dim(x) == c(4, 384))
-head(y <- well(vaas_4, ~ B04)) # using a formula
+head(y <- well(vaas_4, ~ B04))[, 1:5] # using a formula
 stopifnot(identical(x, y)) # => same result
 }
 \seealso{

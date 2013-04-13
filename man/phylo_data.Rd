@@ -176,7 +176,7 @@
 }
 \examples{
 # simple helper functions
-echo <- function(x) write(x, file = "")
+echo <- function(x) write(substring(x, 1, 250), file = "")
 is_html <- function(x) is.character(x) &&
   c("<html>", "<head>", "<body>", "</html>", "</head>", "</body>") \%in\% x
 longer <- function(x, y) any(nchar(x) > nchar(y)) &&
@@ -297,15 +297,15 @@ echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
 stopifnot(is.character(yy), length(yy) > 10)
 
 ## 'OPMD_listing' method
-(x <- phylo_data(listing(vaas_1)))
+echo(x <- phylo_data(listing(vaas_1)))
 stopifnot(is.character(x), length(x) == 1)
-(x <- phylo_data(listing(vaas_1, html = TRUE)))
+echo(x <- phylo_data(listing(vaas_1, html = TRUE)))
 stopifnot(is.character(x), length(x) > 1)
 
 ## 'OPMS_listing' method
-(x <- phylo_data(listing(vaas_4, as.groups = "Species")))
+echo(x <- phylo_data(listing(vaas_4, as.groups = "Species")))
 stopifnot(is.character(x), length(x) == 2, !is.null(names(x)))
-(x <- phylo_data(listing(vaas_4, as.groups = "Species", html = TRUE)))
+echo(x <- phylo_data(listing(vaas_4, as.groups = "Species", html = TRUE)))
 stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
 }
 \references{

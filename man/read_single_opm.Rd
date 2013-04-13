@@ -59,8 +59,9 @@ if (length(test.files) > 0) { # if the folder is found
   dim(x)
   summary(x)
   stopifnot(is(x, "OPM"), identical(dim(x), c(384L, 96L)))
-} else
+} else {
   warning("test-file folder not found")
+}
 # this can be repeated for the other input test files
 }
 \references{

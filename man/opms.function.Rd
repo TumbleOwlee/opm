@@ -63,25 +63,25 @@ data(vaas_1, vaas_4)
 (x <- opms())
 stopifnot(is.null(x))
 
-summary((x <- opms(vaas_1)))
+dim(x <- opms(vaas_1))
 stopifnot(identical(x, vaas_1))
 
-summary((x <- opms(vaas_4, group = plate_type(vaas_4))))
+dim(x <- opms(vaas_4, group = plate_type(vaas_4)))
 stopifnot(identical(x, vaas_4))
 
-summary((x <- opms(vaas_4, group = "PM01")))
+dim(x <- opms(vaas_4, group = "PM01"))
 stopifnot(is.null(x)) # no such plate type => empty object!
 
-summary(x <- opms(vaas_1, vaas_1))
+dim(x <- opms(vaas_1, vaas_1))
 stopifnot(is(x, "OPMS"), length(x) == 2L)
 
-summary(x <- opms(vaas_4, vaas_1))
+dim(x <- opms(vaas_4, vaas_1))
 stopifnot(is(x, "OPMS"), length(x) == 5L)
 
-summary(x <- opms(vaas_1, vaas_4))
+dim(x <- opms(vaas_1, vaas_4))
 stopifnot(is(x, "OPMS"), length(x) == 5L)
 
-summary(x <- opms(vaas_4, vaas_4))
+dim(x <- opms(vaas_4, vaas_4))
 stopifnot(is(x, "OPMS"), length(x) == 8L)
 }
 \seealso{

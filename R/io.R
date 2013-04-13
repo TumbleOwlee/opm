@@ -369,8 +369,9 @@ read_microstation_opm <- function(filename) {
 #'   dim(x)
 #'   summary(x)
 #'   stopifnot(is(x, "OPM"), identical(dim(x), c(384L, 96L)))
-#' } else
+#' } else {
 #'   warning("test-file folder not found")
+#' }
 #' # this can be repeated for the other input test files
 #'
 read_single_opm <- function(filename) {
@@ -637,7 +638,7 @@ opm_files <- function(
 #' @examples
 #' test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
 #'   value = TRUE, perl = TRUE)
-#' if (length(test.files) > 0L) { # if the folder is found
+#' if (length(test.files) > 0) { # if the folder is found
 #'   x <- read_opm(test.files, demo = TRUE) # check first what you would get
 #'   stopifnot(identical(test.files, x))
 #'   x <- read_opm(test.files[1:2]) # these two have the same plate type
@@ -645,6 +646,8 @@ opm_files <- function(
 #'   dim(x)
 #'   summary(x)
 #'   stopifnot(is(x, "OPMS"), identical(dim(x), c(2L, 384L, 96L)))
+#' } else {
+#'   warning("test files not found")
 #' }
 #' # This can be repeated for the other input test files. Instead of a several
 #' # file names one can also provide a single one, one to several directory
@@ -832,12 +835,14 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #' @examples
 #' # Read the first line from each of the OPM test dataset files
 #' f <- opm_files("testdata")
-#' if (length(f) > 0L) {
+#' if (length(f) > 0) { # if the files are found
 #'   x <- batch_collect(f, fun = readLines, fun.args = list(n = 1L))
 #'   # yields a list with the input files as names and the result from each
 #'   # file as values (exactly one line)
 #'   stopifnot(is.list(x), identical(names(x), f))
 #'   stopifnot(sapply(x, is.character), sapply(x, length) == 1L)
+#' } else {
+#'   warning("test files not found")
 #' }
 #'
 batch_collect <- function(names, fun, fun.args = list(), ...,
@@ -923,7 +928,7 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #' # Character method
 #' test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
 #'   value = TRUE, perl = TRUE)
-#' if (length(test.files) > 0) {
+#' if (length(test.files) > 0) { # if the files are found
 #'
 #'   # Without writing to a file
 #'   (x <- collect_template(test.files))
@@ -941,6 +946,8 @@ batch_collect <- function(names, fun, fun.args = list(), ...,
 #'   x <- collect_template(test.files, outfile = outfile)
 #'   stopifnot(file.exists(outfile))
 #'   unlink(outfile)
+#' } else {
+#'   warning("test files not found")
 #' }
 #'
 #' # OPM method
@@ -1163,6 +1170,8 @@ process_io <- function(files, io.fun, fun.args = list(),
 #'   stopifnot(is.matrix(x), identical(x[, 1], infiles))
 #'   stopifnot(file.exists(x[, 2]))
 #'   unlink(x[, 2])
+#' } else {
+#'   warning("test files not found")
 #' }
 #'
 batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
@@ -1474,7 +1483,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
 batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
     gen.iii = opm_opt("gen.iii"), ..., verbose = TRUE, demo = FALSE) {
-  warning("this function is deprecated; use batch_opm() instead")
+  message("this function is deprecated; use batch_opm() instead")
   batch_opm(names = names, md.args = md.args, aggr.args = aggr.args,
     force.aggr = force.aggr, disc.args = disc.args, force.disc = force.disc,
     gen.iii = gen.iii, ..., output = "yaml", verbose = verbose, demo = demo)

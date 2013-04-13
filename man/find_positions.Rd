@@ -34,7 +34,9 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 stopifnot(identical(y, x))
 
 # List method
-(x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose"))))
+x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
+x[[1]][1:3]
+x[[2]]
 stopifnot(length(x[[1]]) > length(x[[2]]))
 }
 \seealso{

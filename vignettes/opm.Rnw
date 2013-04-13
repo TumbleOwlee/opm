@@ -120,7 +120,6 @@ Readers who want to jump right into examples for applying \pkg{opm} to their dat
 Next, Figure~\ref{fig:overview} should be looked at, as it lists the names of the functions that can be used in each step of the possible \pkg{opm} work flows.
 Examples for each step would then be found in the according subsections of Section~\ref{application}.
 An overview of these sections is provided in Section~\ref{methods overview}.
-Since the complete code of this Vignette comes with the R-package in a file called \textit{opm.R} (can usually be found under \path{...\R\R-X.X.X\library\opm\doc}), application of the here given examples and demonstrations are straightforwardly processable. 
 
 The single most important problem users reported to us when applying \pkg{opm} was that the input files could not be read.
 This was uniformly due to the use of multi-plate CSV files.
@@ -267,6 +266,8 @@ Furthermore, substrate informations can be accessed, including CAS numbers, KEGG
 
 Finally, it is possible to modify settings that have an effect on multiple functions and/or on frequently used arguments. 
 See Section~\ref{methods settings} for details and Section~\ref{application discrete-table} for a code example.
+
+After a successful installation of \pkg{opm}, the complete \proglang{R} code extracted from this vignette (as well as all other vignette files) can be found \textit{via} \code{opm\_files("doc")}.
 
 
 \subsection[Data import]{Data import}\label{methods import}
@@ -568,7 +569,7 @@ The same holds for (non-syntactical) names starting with an underscore and follo
 % Set some stuff up that makes the output nicer and guarantees that everything runs.
 % Think carefully before modifying anything here.
 %
-<<echo=FALSE>>=
+<<label=chunk.setup, echo=FALSE>>=
 options(prompt = "R> ")
 options(continue = "   ")
 options(useFancyQuotes = FALSE)
@@ -577,7 +578,7 @@ library("methods")
 
 Before starting, the \pkg{opm} package should be loaded into an \proglang{R} session as follows:
 
-<<>>=
+<<label=load.library>>=
 library(opm)
 @
 
@@ -593,14 +594,14 @@ All biological and experimental details of this dataset have been described prev
 Two subsets of the data, \code{vaas\_1} and \code{vaas\_4}, are included in \pkg{opm}.
 Use \code{?vaas\_1} and \code{?vaas\_4} to view their help pages, and have a look at the objects as follows:
 
-<<results=hide>>=
+<<label=data.objects, results=hide>>=
 vaas_1
 vaas_4
 @
 
 The entire dataset, stored in the object \code{vaas\_et\_al}, comes with the supporting package \pkg{opmdata} and can (if that package is installed, of course) be loaded using:
 
-<<>>=
+<<label=big.data>>=
 data(vaas_et_al, package = "opmdata")
 @
 
@@ -628,7 +629,7 @@ But the package contains a function \code{split_files()}, which can be used to s
 To illustrate the file import step by step, a set of input CSV example files is provided with the package.
 Before starting, remember that the \pkg{opm} package must be loaded.
 Then use the built-in function \code{opm\_files()} to find the example files in your \proglang{R} installation:
-<<results=hide>>=
+<<label=files, results=hide>>=
 files <- opm_files("testdata")
 files
 @
@@ -639,7 +640,7 @@ One of these files contains multiple plates and acts as an example for \code{spl
 
 As a demonstration of file splitting, consider the following code, which creates single-plate CSV files from the multi-plate file that comes with \pkg{opm}:
 
-<<results=hide>>=
+<<label=file.splitting, results=hide>>=
 multi.plate.file <- grep("Multiple", files,
   value = TRUE, ignore.case = TRUE)
 multi.plate.file
@@ -651,7 +652,7 @@ list.files()
 Three additional files should be visible in the working directory, consecutively numbered but using the base name of the input file.
 These could now be read with \code{read\_opm()}, but we will use other files in the next paragraph and tidy up now:
 
-<<results=hide>>=
+<<label=tidy.up.I, results=hide>>=
 rm(multi.plate.file)
 unlink(grep("Multiple-0000", list.files(),
   value = TRUE, ignore.case = TRUE))
@@ -660,7 +661,7 @@ unlink(grep("Multiple-0000", list.files(),
 Using \code{read\_opm()}, from a given vector of file and/or directory names, files can be easily selected and deselected using globbing or regular-expression patterns.
 For instance, for reading the three example files in ``new style'' CSV format (see Section~\ref{methods import}), use the following code.
 
-<<results=hide>>=
+<<label=example.opm, results=hide>>=
 example.opm <- read_opm(files, include = "*Example_?.csv.xz")
 summary(example.opm)
 @
@@ -681,7 +682,7 @@ To read plates from several types at once, the \code{convert} argument is useful
 If one uses \code{read\_opm(..., convert = "grp")}, a named list is created with, as each list element, one \proglang{OPM} or \proglang{OPMS} object per plate type, depending on whether only a single plate of that plate type, or several such plates, have been found.
 For instance, for inputting all example files (except for the one with multiple plates), consider the following code:
 
-<<results=hide>>=
+<<label=many.plates, results=hide>>=
 many.plates <- read_opm(files, exclude = "*Multiple*", convert = "grp")
 summary(many.plates)
 summary(many.plates$PM01)
@@ -702,7 +703,7 @@ In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section\ref{ap
 This optionally includes aggregating the raw data by estimating curve parameters (Section~\ref{application aggregating}), discretizing these parameters (Section~\ref{application discrete-text}) and integrating metadata (Section~\ref{application metadata}). 
 Again there is a \textit{demo} mode to first investigate the attempted conversions:
 
-<<results=hide, width=10>>=
+<<label= batch.opm.I, results=hide, width=10>>=
 batch_opm(files, include = "*Example_?.csv.xz",
   aggr.args = list(boot = 100, method = "opm-fast"),
   outdir = ".", demo = TRUE)
@@ -713,7 +714,7 @@ Details on all three processes are given in the according sections, and for the 
 
 The following command would read three of the seven example input files, estimate two of the four curve parameters using the fast native method including 100 rounds of bootstrapping, and store the resulting \proglang{YAML} files (one per plate) in the current working directory (given by ``.''):
 
-<<results=hide, width=10>>=
+<<label=batch.opm.II, results=hide, width=10>>=
 batch.result <- batch_opm(files, include = "*Example_?.csv.xz",
   outdir = ".",
   aggr.args = list(boot = 100, method = "opm-fast"))
@@ -725,7 +726,7 @@ The return value, here assigned to the \code{batch.result} variable, also contai
 The ``run\_opm.R'' script distributed with the package is an \proglang{Rscript}-dependent command-line tool for non-interactively running such file conversions.
 Its location in the file system can be obtained using
 
-<<results=hide, width=10>>=
+<<label=scripts, results=hide, width=10>>=
 opm_files("scripts")
 @
 
@@ -742,12 +743,12 @@ These data must not be changed, ensuring that the package can later on link the 
 
 In the \pkg{opm} manual and help pages, most functions relevant for metadata manipulation are contained in a family called ``metadata-functions'' with according cross-references.
 For the collection of a metadata template in a data frame to be manipulated in \proglang{R}, use this command:
-<<width=9>>=
+<<label=collect.template.I, width=9>>=
 metadata.example <- collect_template(files, include = "*Example_?.csv.xz")
 @
 
 For the generation of a metadata template file, the following command can be used:
-<<width=9>>=
+<<label=collect.template.II, width=9>>=
 collect_template(files, include = "*Example_?.csv.xz",
   outfile = "example_metadata.csv")
 @
@@ -758,7 +759,7 @@ You can also provide the location of another previously created metadata file wi
 
 The generated CSV file could then be edited using external software; for the purpose of this tutorial, we load it directly and manipulate it in \proglang{R}.
 To avoid the usual changes in data format and header of the table during the import a customized import function was implemented as a wrapper for \code{read.delim()}:
-<<width=10>>=
+<<label=to.metadata.I, width=8>>=
 metadata.example <- to_metadata("example_metadata.csv")
 @
 Per default, this expects CSV columns separated by tabulators, with the fields protected by quotes.
@@ -769,19 +770,19 @@ New columns could be defined, or the existing metadata modified.
 But the first columns must remain unchanged because they are needed to identify individual PM plates for linking them to their meta-information.
 As an example, we here add an (arbitrary) \textit{Colour} column with the values ``blue'', ``red'' and ``yellow'' and another (arbitrary) \textit{Integer} column with the integer values 10, 20 and 30:
 
-<<width=10>>=
+<<label=add.meta.column, width=8>>=
 metadata.example$Colour <- c("blue", "red", "yellow")
 metadata.example$Integer <- c(10L, 20L, 30L)
 @
 
 Now the metadata are ready to be included into the previously generated \proglang{OPMS} object:
 
-<<>>=
+<<label=include.metadata.I, width=8>>=
 example.opm <- include_metadata(example.opm, md = metadata.example)
 @
 
 The metadata could then be received as follows:
-<<results=hide>>=
+<<label=metadata, results=hide>>=
 metadata(example.opm)
 @
 
@@ -789,7 +790,7 @@ This returns the entire metadata entries as a list.
 By default only the added metadata are included in the object, but not the identifiers used for assigning data-frame rows to plates.
 
 One might want to remove the file as it is not needed any more:
-<<width=10>>=
+<<label=tidy.up.II, width=8>>=
 unlink("example_metadata.csv")
 @
 
@@ -799,7 +800,7 @@ Setting a specific entry named \code{key} to a specific value \code{value} in al
 If the right side of the assignment is a data frame with the same length as the \proglang{OPMS} object, each row would be specifically assigned to the \proglang{OPM} object with the same index.
 This comes handy for adding the \code{csv\_data()} selected or all information from the OmniLog\textregistered \ CSV files to the metadata:
 
-<<results=hide>>=
+<<label=to.metadata.II, results=hide>>=
 metadata(example.opm)
 metadata(example.opm) <- to_metadata(csv_data(example.opm))[, 
   c("Strain Name", "Sample Number")]
@@ -812,7 +813,7 @@ In this and similar cases, modifying metadata in-place is of interest, which can
 This function would return a novel \proglang{OPMS} (or \proglang{OPM}) object.
 Its formula method is particularly powerful.
 
-<<results=hide>>=
+<<label=map.metadata.I, results=hide>>=
 metadata(example.opm)
 metadata(map_metadata(example.opm, Organism ~ `Sample Number`))
 @
@@ -828,7 +829,7 @@ Hence it is possible to define several keys at once.
 The right side, once evaluated, would be recycled accordingly.
 Thus we can clean up our metadata in a single line of code:
 
-<<results=hide>>=
+<<label=clean.metadata, results=hide, width=8>>=
 metadata(map_metadata(example.opm,
   Organism + `Sample Number` ~ list(`Sample Number`, NULL)))
 @
@@ -841,7 +842,7 @@ But we have not yet stored an \proglang{OPMS} object with the cleaned metadata.
 This could be done using \code{example.opm <- map\_metadata(example.opm, ...)}.
 In that case, however, direct assignment would also be possible:
 
-<<results=hide>>=
+<<label=OPMS.clean.metadata, results=hide, width=8>>=
 metadata(example.opm) <- Organism + `Sample Number` ~ 
   list(`Sample Number`, NULL)
 metadata(example.opm)
@@ -850,7 +851,7 @@ metadata(example.opm)
 Assigning \code{NULL} to a metadata entry would remove that entry.
 We can achieve the same using an expression object:
 
-<<results=hide>>=
+<<label=metadata.expression, results=hide, width=8>>=
 metadata(example.opm) <- to_metadata(csv_data(example.opm))[, 
   c("Strain Name", "Sample Number")] # reset
 metadata(example.opm)
@@ -864,7 +865,7 @@ Apparently, arbitrarily complex code could be put in such a metadata-modifying e
 
 All metadata would be cleared by assigning an empty list, without specifying a key:
 
-<<results=hide>>=
+<<label=empty.metadata, results=hide, width=8>>=
 metadata(example.opm, "Organism") <- NULL
 metadata(example.opm)
 metadata(example.opm) <- list()
@@ -887,7 +888,7 @@ Methods such as \code{extract()} are based on this principle.
 The following code, making use of the \code{metadata.example} data frame generated above, adds a new metadata entry with the key ``Character'' containing the integer values from the metadata entry called ``Integer'' converted to character mode
 It then includes a new metadata entry with the key ``Times 10'' containing the entry ``Integer'' multiplied by 10.
 
-<<results=hide>>=
+<<label=include.metadata.II, results=hide, width=8>>=
 example.opm <- include_metadata(example.opm, md = metadata.example)
 metadata(example.opm)
 example.opm <- map_metadata(example.opm, Character ~ as.character(Integer))
@@ -899,7 +900,7 @@ metadata(example.opm)
 Note that \code{map\_metadata()} can also be used with character vectors as mapping objects.
 Making use again of the exemplar generated above, the key \textit{Colour} could be changed to \textit{Colony colour} as follows:
 
-<<results=hide>>=
+<<label=metadata.chars, results=hide, width=8>>=
 example.opm <- include_metadata(example.opm, md = metadata.example)
 md.map <- metadata_chars(example.opm, values = FALSE)
 md.map
@@ -908,7 +909,7 @@ md.map
 This yields a character vector including itself as \code{names} attribute, thus implying an identity mapping.
 Next the new labels will be defined and will then be exchanged with the old ones using \code{map\_metadata()}.
 
-<<results=hide>>=
+<<label=map.metadata.II, results=hide, width=8>>=
 md.map["Colour"] <- "Colony colour"
 example.opm <- map_metadata(example.opm, md.map, values = FALSE)
 metadata(example.opm)
@@ -919,7 +920,7 @@ In addition to mapping based on character vectors, a mapping function could also
 By setting their argument \code{values} to \code{TRUE}, the functions \code{metadata\_chars()} and \code{map\_metadata()} could be used as well to modify values instead of key.
 For instance, assume any entries ``red'' in the field denoted \textit{Colony colour} should be changed to ``green'':
 
-<<results=hide, width=10>>=
+<<label=map.metadata.III, results=hide, width=8>>=
 md.map <- metadata_chars(example.opm, values = TRUE)
 md.map
 md.map["red"] <- "green"
@@ -932,13 +933,14 @@ Other values, as well as the keys, should be unaffected.
 
 Frequently metadata entries will be used as factors in statistical models.
 This always requires that the chosen metadata entry is present in all considered \proglang{OPM} object and sometimes requires that entries have to be combined.
-For instance, for setting up a \textit{cell-means model} (see Section~\ref{methods group-means} and Section~ref{application group-means} for further details), factors used for defining the groups of interest have to be merged. 
+For instance, for setting up a \textit{cell-means model} (see Section~\ref{methods group-means} and Section~\ref{application group-means} for further details), factors used for defining the groups of interest have to be merged. 
 This might already be done during the initial step when setting up the metadata data frame \textit{before} including the metadata into an \proglang{OPM} or \proglang{OPMS} object using \code{include_metadata()}. 
 Here, the function \code{interaction()} could be used to concatenate columns (but it should be taken into account that metadata entries should better not be represented as factors).
 As a result, two metadata entries would be merged into a single one:
 
-<<results=hide, width=10>>=
-metadata.example$Colour.Position <- as.character(interaction(metadata.example$Colour, 
+<<label=merge.metadata.I, results=hide, width=8>>=
+metadata.example$Colour.Position <- as.character(interaction(
+  metadata.example$Colour, 
   metadata.example$Position, sep = ".", drop = TRUE))
 @
  
@@ -947,7 +949,7 @@ Even more tedious would be to go back to the initial metadata compilation add a 
 Using the metadata mapping functions, metadata entries can instead by merged at any time \textit{after} including them into an \proglang{OPM} or \proglang{OPMS} with \code{include_metadata()}.
 For instance, the following code operates directly in the \proglang{OPMS} object, merging the . ``Colony colour'' (which had previously been renamed from ``Colour'', see above) and ``Integer'' entries into a new one:
 
-<<results=hide, width=8>>=
+<<label=merge.metadata.II, results=hide, width=8>>=
 metadata(example.opm) <- Col.Int ~ paste(`Colony colour`, Integer, sep = ".")
 metadata(example.opm)
 @
@@ -959,7 +961,7 @@ As result, a new metadata entry named ``Col.Int'' is created with the general st
 
 As mentioned above, the package brings along an \proglang{OPM} object, named \code{vaas\_1}, containing a full 96-well plate, aggregated data (curve parameters), and metadata:
 
-<<results=hide>>=
+<<label=load.data, results=hide>>=
 data(vaas_1)
 vaas_1
 @
@@ -969,7 +971,7 @@ Primarily \code{do\_aggr()} should be used for aggregation because it generates 
 \code{vaas\_1} already contains aggregated data but we will re-calculate some for demonstration purposes.
 For invoking the fast estimation method, use:
 
-<<results=hide, width=10>>=
+<<label=aggregation, results=hide, width=8>>=
 vaas_1.reaggr <- do_aggr(vaas_1, boot = 100, method = "opm-fast")
 @
 
@@ -977,14 +979,14 @@ This will only estimate two of the four parameters, namely A and AUC.
 (Screen messages output by \code{boot.ci()} might be annoying but can usually be ignored.)
 Information about the data aggregation settings is available \textit{via} \code{aggr\_settings()}:
 
-<<results=hide>>=
+<<label=aggregation.settings, results=hide>>=
 aggr_settings(vaas_1)
 aggr_settings(vaas_1.reaggr)
 @
 
 and the aggregated data can be extracted as a matrix \textit{via} \code{aggregated()}, e.g.:
 
-<<results=hide>>=
+<<label=aggregated, results=hide>>=
 summary(aggregated(vaas_1))
 summary(aggregated(vaas_1.reaggr))
 @
@@ -995,7 +997,7 @@ As this is a time-consuming intensive process (particularly if \pkg{grofit} is u
 One can also specify different spline fitting methods using \code{method = "spline"}, which is the recommended setting (for historical reasons, it is not the default).
 Options such as the spline type, the number of knots used for the spline and other options for the splines can be easily set using the function \code{set\_spline\_options} (which can only be used in conjunction with \code{method = "spline"}).
 To essentially reproduce the results from \code{method = "grofit"} we could use smoothing splines (and for the sake of computing time in this vignette we only use 10 bootstrap replicates to compute confidence intervals for the parameter estimates):
-<<smoothing_splines,results=hide>>=
+<<label=smoothing.splines, results=hide>>=
 op <- set_spline_options(type = "smooth.spline")
 vaas_1.aggr2 <- do_aggr(vaas_1, boot = 10, method = "spline", options = op)
 @
@@ -1012,7 +1014,7 @@ The function \code{dim()} provides the dimensions of an \proglang{OPMS} object a
 
 To extract, for example, only the data from wells G11 and H11 together with the negative-control well A01 from the dataset \code{vaas\_et\_al} the bracket operator defined for the \proglang{OPMS} class has to be invoked as follows:
 
-<<results=hide, width=10>>=
+<<label=data.vaas.small, results=hide, width=10>>=
 data("vaas_et_al", package = "opmdata")
 vaas.small <- vaas_et_al[, , c("A01", "G11", "H11")]
 dim(vaas.small)
@@ -1036,7 +1038,7 @@ This \proglang{OPMS} object contains a metadata key \textit{Experiment} with the
 Examples for questions that could be asked on these metadata are given in the following.
 Which plates within \code{vaas\_et\_al} have \textit{Experiment} as metadata key?
 
-<<results=hide>>=
+<<label=query.metadata.k.I, results=hide>>=
 "Experiment" %k% vaas_et_al
 vaas_et_al %k% "Experiment" # equivalent
 vaas_et_al %k% ~ Experiment # equivalent
@@ -1046,7 +1048,7 @@ vaas_et_al %k% ~ Experiment # equivalent
 Note that the arguments can be swapped and that a formula can be used.
 Next, which plates within \code{vaas\_et\_al} have \textit{Experiment} and \textit{Species} as metadata key?
 
-<<results=hide>>=
+<<label=query.metadata.k.II, results=hide>>=
 c("Experiment", "Species") %k% vaas_et_al
 vaas_et_al %k% ~ c(Experiment, Species) # equivalent
 @
@@ -1056,7 +1058,7 @@ For this reason, \code{vaas\_et\_al \%k\% ~ Experiment + Species} would fail bec
 
 Which plates within \code{vaas\_et\_al} have \textit{Experiment} and \textit{Species} as metadata key with the respective values \textit{First replicate} and \textit{Escherichia coli}?
 
-<<results=hide>>=
+<<label=query.metadata.q.I, results=hide>>=
 c(Experiment = "First replicate",
   Species = "Escherichia coli") %q% vaas_et_al
 vaas_et_al %q% ~ Experiment == "First replicate" & 
@@ -1068,7 +1070,7 @@ The formula method allows, in principle, for arbitrarily complex expressions.
 
 Which plates within \code{vaas\_et\_al} have \textit{Species} as metadata key associated with the value \textit{Escherichia coli} or the value \textit{Bacillus subtilis}?
 
-<<results=hide>>=
+<<label=query.metadata.q.II, results=hide>>=
 list(Species = c("Escherichia coli", "Bacillus subtilis")) %q% vaas_et_al
 vaas_et_al %q% ~ Species %in% c("Escherichia coli", "Bacillus subtilis")
 @
@@ -1079,7 +1081,7 @@ Within formulas, nested keys should be separated by the \code{\$} operator.
 The results of these infix operators are reported as logical vector with one value per plate; the usual \proglang{R} functions such as \code{all()}, \code{any()} or \code{which()} could be applied to work on these vectors.
 They could also be used directly as the first argument of the bracket operator for \proglang{OPMS} objects to create subsets:
 
-<<results=hide>>=
+<<label=query.metadata.q.III, results=hide>>=
 vaas.e.coli.1 <- vaas_et_al[c(Experiment = "First replicate",
   Species = "Escherichia coli") %q% vaas_et_al]
 summary(vaas.e.coli.1)
@@ -1089,14 +1091,14 @@ rm(vaas.e.coli.1) # tidy up
 Alternatively, the user may wish to subset a certain part of the data set using the function \code{subset()}, which is based on these kinds of querying for metadata keys and their values.
 Prior to this, the user could check the keys of the metadata:
 
-<<results=hide>>=
+<<label=check.metadata.key, results=hide>>=
 metadata_chars(vaas_et_al, values = FALSE)
 @
 
 The values in the metadata could be obtained by using \code{values = TRUE}.
 Additionally, the user can check the values of special keys in the metadata:
 
-<<results=hide>>=
+<<label=check.metadata.values, results=hide>>=
 metadata(vaas_et_al, "Species")
 @
 
@@ -1105,7 +1107,7 @@ The resulting vectors could then also be used for mapping old metadata keys or v
 The presented plotting results of \code{xy\_plot()} and \code{level\_plot()} (see Section~\ref{application plotting}) show selected subsets of \code{vaas\_et\_al}.
 In our example below, the function \code{subset()} extracts the plates which contain the value \textit{First replicate} in the metadata key \textit{Experiment} and the value \textit{6} in the key \textit{Plate number}, resulting in one representative technical repetition and thus four plates (because four strains were involved) from the data set \code{vaas\_et\_al}:
 
-<<results=hide>>=
+<<label=subset, results=hide>>=
 vaas.1.6 <- subset(vaas_et_al,
   query = list(Experiment = "First replicate", 'Plate number' = 6))
 summary(vaas.1.6)
@@ -1124,14 +1126,14 @@ The \pkg{opm} manual and help pages list them in a family of functions called ``
 For instance, the user may wish to explore the aggregated curve parameters (lag phase $\lambda$, steepness of the slope $\mu$, maximum curve height A, and area under the curve AUC).
 These may be exported either as matrix or data frame using \code{extract()}:
 
-<<results=hide>>=
+<<label=extract.simple, results=hide>>=
 vaas.mu <- extract(vaas_et_al, dataframe = TRUE,
   as.labels = NULL, subset = "mu")
 @
 
 To extract also the full or partial set of metadata, it is sufficient to add a list of desired metadata:
 
-<<results=hide>>=
+<<label=extract.complex, results=hide>>=
 vaas.mu <- extract(vaas_et_al, dataframe = TRUE,
   as.labels = list("Experiment","Number of sample time point",
     "Plate number", "Slot", "Species", "Strain", "Time point in min"),
@@ -1155,7 +1157,7 @@ In the \pkg{opm} manual and help pages, the functions relevant for plotting are 
 The function \code{xy\_plot()} displays the respiration curves as such (see Figure~\ref{fig:xy_plot}).
 In our example the selected \proglang{OPMS} object \code{vaas.1.6} is the subset of the dataset \code{vaas\_et\_al} constructed in Section~\ref{application manipulation}:
 
-<<fig=FALSE, width=8>>=
+<<label=xy.plot, fig=FALSE, width=8>>=
 xy_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain"))
 @
@@ -1189,7 +1191,7 @@ If more colours were needed, the user should set up a larger own colour vector a
 
 The plotting of sub-panels (see Figure~\ref{fig:xy_plot_2}) works as described above; the only difference is the previous manipulation of the dataset:
 
-<<fig=FALSE, width=8>>=
+<<label=xy.plot.II, fig=FALSE, width=8>>=
 xy_plot(vaas.1.6[, , c("A01", "G11", "H11")],
   main = "E. coli vs. P. aeruginosa", include = list("Species", "Strain"))
 @
@@ -1213,29 +1215,24 @@ The x-axes show the measurement time in hours, the y-axes the measured colour-va
 
 The function \code{level\_plot()} (see Figure~\ref{fig:level_plot}) provides false-colour level plots from the raw respiration measurements over time:
 
-<<results=hide, fig=FALSE, width=8>>=
+<<label=level.plot.I, results=hide, fig=FALSE, width=8>>=
 level_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain"))
 @
 
 \begin{figure}
-
 \scalebox{1.225}{
-
 <<fig=TRUE, echo=FALSE, width=18, height=12>>=
 print(level_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain")))
 @
-
 }
-
 \caption{
 \label{fig:level_plot}
 Visualization of PM curves using the function \code{level\_plot()}.
 Each respiration curve is displayed as a thin horizontal line, in which the curve height as measured in colour-value units is represented by color intensity (darker parts indicate higher curves).
 The x-axes correspond to the measurement time in hours.
 }
-
 \end{figure}
 
 Again, a main title can be set explicitly.
@@ -1253,7 +1250,7 @@ For instance, row groups can be automatically constructed from the metadata.
 
 The function \code{heat\_map()} could be applied to matrices or data frames constructed using the helper function \code{extract()}, but it is more convenient to apply it directly to \proglang{OPMS} objects:
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=heat.map.I, results=hide, fig=FALSE, width=10>>=
 vaas.1.6.A <- heat_map(vaas.1.6, as.labels = "Strain",
   as.groups = "Species")
 @
@@ -1282,7 +1279,7 @@ Figure~\ref{fig:ci_plot} provides an example of such a visualization.
 The parameter maximum height (A) is plotted for the three wells A01 (Negative Control), A02 (Dextrin) and A03 (D-Maltose) from one plate (the sixth plate of the first biological repetition from dataset \code{vaas_et_al}).
 The code is as follows:
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=ci.plot.I, results=hide, fig=FALSE, width=10>>=
 ci_plot.legend <- ci_plot(vaas.1.6[, , c("A01", "A02", "A03")],
   as.labels = list("Species", "Strain"), subset = "A",
   legend.field = NULL, x = 170, y = 3)
@@ -1308,7 +1305,7 @@ It can also apply normalisation beforehand, which might frequently be necessary 
 After the extraction of the values together with necessary metadata (argument \code{as.labels}) in a first call to \code{extract()}, the resulting data frame can be treated by \code{extract()} again for generating another data frame with numeric values grouped according to the \code{as.groups} argument and optionally normalisation applied, as triggered \textit{via} the argument \code{norm.per}.
 The first data frame would be created as follows:
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=extract.dataframe, results=hide, fig=FALSE, width=10>>=
 x <- extract(vaas_et_al, as.labels = list("Species", "Strain"),
   dataframe = TRUE)
 @
@@ -1319,7 +1316,7 @@ Using \code{norm.per = "none"} causes normalisation to be omitted.
 If \code{as.groups = TRUE} is used, all metadata that have been included in the first data frame are used to determine the groups.
 The result is shown in Fig~\ref{fig:ci_plot_groups}, after a further selection of columns from the second data frame to be passed to \code{ci\_plot()}.
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=ci.plot.II, results=hide, fig=FALSE, width=10>>=
 # without normalisation
 y <- extract(x, as.groups = TRUE,  norm.per = "none")
 ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 0)
@@ -1347,7 +1344,7 @@ Alternatively, well means can be subtracted (\code{norm.per = "column"}).
 Per default, this would subtract the mean of each well from each of its values (over all plates in which this well is present).
 Division instead of subtraction is also possible (\code{subtract = FALSE}).
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=normalisation, results=hide, fig=FALSE, width=10>>=
 # without normalisation (figure not shown)
 y <- extract(x, as.groups = TRUE,  norm.per = "none")
 ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 1)
@@ -1367,7 +1364,7 @@ See Figure~\ref{fig:ci_plot_norm} for an example of plotted confidence intervals
 Note that due to the structure of the data frame \code{norm.per = "row"} in combination with the \code{norm.by} argument has to be used.
 
 
-<<results=hide, fig=FALSE, width=10>>=
+<<label=norm.well.A10, results=hide, fig=FALSE, width=10>>=
 # normalisation by subtraction of the well means of well A10 only
 y <- extract(x, as.groups = TRUE,  norm.per = "row", norm.by = 10,
   subtract = TRUE)
@@ -1400,14 +1397,14 @@ To demonstrate the use of \code{opm\_mcp()}, the function for conducting multipl
 An experimental questions that could be addressed with these data might be ``Do these four bacteria differ in the mean value of curve parameter A on well G06'' (see Figure~\ref{fig:xy_plot_mcp})?
 An according subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
 
-<<results=hide, width=8>>=
+<<label=data.vaas.subset, results=hide, width=8>>=
 vaas.subset <- subset(vaas_et_al[, , "G06"], 
   list(Experiment = "First replicate"))
 @
 
 Now the dataset contains the four strains, each represented by the ten replicates shown in Figure~\ref{fig:xy_plot_mcp}. 
 
-<<fig=FALSE, width=10>>=
+<<label=plot.vaas.subset, fig=FALSE, width=10>>=
 xy_plot(vaas.subset, include = ~ Strain, neg.ctrl = FALSE,
   space = "right")
 @
@@ -1436,7 +1433,7 @@ In our example a Tukey-type contrast matrix is applied, indicating an all-agains
 This results in a set of six two-sided pairwise comparisons between all the four strain means (all possible pairs).
 A more detailed explanation of contrast matrices is given below.
 
-<<results=hide, width=8>>=
+<<label=opm.mcp.principle, results=hide, width=8>>=
 vaas.subset.mcp <- opm_mcp(vaas.subset, model = ~ Strain, m.type = "aov",
   linfct = c(Tukey = 1))
 @
@@ -1448,7 +1445,7 @@ If names were missing, \code{opm_opt("contrast.type")} would be inserted.
 The way \code{opm\_mcp()} converts \code{linfct} arguments can be explored using \code{output = "linfct"}:
 
 
-<<results=hide, width=8>>=
+<<label=opm.mcp.linfct, results=hide, width=8>>=
 opm_mcp(vaas.subset, model = ~ Strain, m.type = "aov",
   linfct = c(Tukey = 1), output = "linfct")
 @
@@ -1460,7 +1457,7 @@ Per default, \code{opm_mcp()} uses \code{glht()} from the package \pkg{multcomp}
 As shown in Figure~\ref{fig:ci_plot_mcp}, the results of the performed statistical test can be plotted using the methods available for objects of that class (see \code{?multcomp::glht} for details).
 
 
-<<fig=FALSE, width=8>>=
+<<label=plot.opm.mcp.linfct, fig=FALSE, width=8>>=
 library(multcomp) # now needed
 old.mar <- par(mar = c(3, 15, 3, 2)) # adapt margins in the plot
 plot(vaas.subset.mcp)
@@ -1491,7 +1488,7 @@ Note the differences between interpretation of this figure and the Figures obtai
 
 The main results can be obtained as follows:
 
-<<width=8>>=
+<<label=summary.opm.mcp, width=8>>=
 mcp.summary <- summary(vaas.subset.mcp)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
@@ -1518,7 +1515,7 @@ For performing the comparisons of interest, the user has to provide a contrast m
 A contrast is defined as a linear combination of two or more factor level means (averages) whose coefficients add up to zero \citep{hochberg}. 
 To demonstrate the principle of a contrast matrix, an all-against-all comparison (a ``Tukey''-type contrast) of four groups is performed using a toy-example. 
 
-<<width=8>>=
+<<label=contrMat, width=8>>=
 n <- c(10, 20, 30, 40)
 names(n) <- paste("group", 1:4, sep = "")
 contrMat(n, type = "Tukey")
@@ -1532,7 +1529,7 @@ The function \code{contrMat()} from \pkg{multcomp} (see \code{?multcomp::contrMa
 In the example from above (see Figure~\ref{fig:ci_plot_mcp}), a ``Tukey''-type contrast was used to trigger the comparison of all groups against all others in the data set.
 The underlying contrast matrix used to set up the contrasts for Figure~\ref{fig:xy_plot_mcp} can be viewed by entering
 
-<<width=8>>=
+<<label=mcp.summary.linfct, width=8>>=
 mcp.summary$linfct
 @
 
@@ -1548,7 +1545,7 @@ Such templates could the be further modified by the user.
 
 For instance, the following output would contain a contrast matrix with all possible comparisons (because ``Tukey'' is used) for \code{Well} as factor variable in the correct order for the first four wells of \code{vaas_4}:
 
-<<results=hide, width=8>>=
+<<label=contrast.matrix.I, results=hide, width=8>>=
 contr <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, linfct = c(Tukey = 1),
   output = "contrast")
 contr
@@ -1557,14 +1554,14 @@ contr
 The \code{contr} object is a named list of contrast matrices, with one matrix per factor selected.
 An according call of the \code{opm_mcp()} function after selecting some comparisons of interest would then be:
 
-<<results=hide, width=8>>=
+<<label=mcp.wells, results=hide, width=8>>=
 vaas4.mcp <- opm_mcp(vaas_4[, , 1:4], model = ~ Well, m.type = "lm",
   linfct = contr$Well[c(1:3, 6), ])
 @
 
 
 The correct set-up of the contrast matrix could be controlled after the fact by typing
-<<width=8>>=
+<<label= summary.mcp.wells, width=8>>=
 summary(vaas4.mcp)$linfct
 @
 
@@ -1591,7 +1588,7 @@ Note that the \code{model} statement defines the group means available for compa
 In the following example ``Species'' contains only two levels (``\textit{Pseudomonas aeruginosa}'' and ``\textit{Escherichia coli}''). 
 Thus, irrespective of the stated contrast type, only one comparison is possible.
 
-<<width=8>>=
+<<label=model.mcp, width=8>>=
 vaas4.mcp <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
   linfct = mcp(Species = "Dunnett"))
 @
@@ -1599,7 +1596,7 @@ vaas4.mcp <- opm_mcp(vaas_4, model = ~ Species, m.type = "lm",
 Finally, note that \code{opm\_mcp()} in an intermediary step reshapes the selected data into a ``flat'' data frame.
 This object can be returned (and the multiple comparisons omitted) by using \code{output = "data"}:
 
-<<results=hide, width=8>>=
+<<label=mcp.output.data, results=hide, width=8>>=
 vaas4.mcp <- opm_mcp(vaas_4, model = ~ Species + Strain,
   output = "data")
 head(vaas4.mcp)
@@ -1610,7 +1607,7 @@ See the \pkg{opm} manual for details, typing \code{?opm\_mcp} or \code{?flatten}
 
 For the special case of the above mentioned \textit{cell-means model} (see Section~\ref{application metadata} and Section~\ref{methods group-means}) it might be necessary to merge two or more metadata entries and generate a new one, whose levels (after automated conversion to a factor in a data frame) define the groups of interest:
 
-<<results=hide, width=8>>=
+<<label=data.G06, results=hide, width=8>>=
 vaas.G06 <- vaas_et_al[, , "G06"]
 metadata(vaas.G06)[114]
 metadata(vaas.G06) <- Str.Exp ~ paste(Strain, Experiment, sep = ".")
@@ -1619,7 +1616,7 @@ metadata(vaas.G06)[114]
 
 With the newly generated metadata entry \code{Str.Exp} that comprehends both \code{Strain} and \code{Experiment}, the multiple-comparison procedure can be conducted as follows:
 
-<<results=hide, width=8>>=
+<<label=mcp.G06, results=hide, width=8>>=
 vaas.G06.mcp <- opm_mcp(vaas.G06, model = ~ Str.Exp, 
   linfct = c(Dunnett = 1))
 @
@@ -1647,7 +1644,7 @@ For example, the user may be interested in comparing the data shown in Figure~\r
 When building a contrast matrix, keep in mind that the levels of the model-defining factor needs to match the columns of the contrast matrix, in order.
 For this reason, it is advantageous to work with a template contrast matrix generated with \code{opm\_mcp()} from the object under study and check the positioning of its column names prior to any modification:
 
-<<results=hide, width=8>>=
+<<label=mcp.G06.output.contrast, results=hide, width=8>>=
 contr <- opm_mcp(vaas.G06, model = ~ Str.Exp,
   linfct = c(Dunnett = 1), output = "contrast")$Str.Exp
 colnames(contr)
@@ -1658,7 +1655,7 @@ In the example below, the contrast matrix is reduced to three contrasts of inter
 The reader might have noted that the ``First replicate'' entries are in columns 1, 3, 5 and 8, whereas the ``Second replicate'' entries are in columns 2, 4, 6 and 9 and the ``Time series'' entries are in column 7 of the object \code{contr}.
 This information is sufficient to set up a correct contrast matrix for the following three contrasts of interest:
 
-<<results=hide, width=8>>=
+<<label=mcp.G06.user.def.contrasts, results=hide, width=8>>=
 contr <- contr[1:3, ] # keeps the column names
 rownames(contr) <- c(
   "First repl. - Second repl.",
@@ -1702,7 +1699,7 @@ By default it works on the A parameter (see Figure~\ref{fig:parameters}) but thi
 
 Restricting the \code{vaas\_et\_al} example dataset to the two biological replicates yields an orthogonal dataset with 2$\times$10 replicates for each of the four strains for which we can calculate discretized parameters:
 
-<<results=hide, width=8>>=
+<<label=discretize, results=hide, width=8>>=
 vaas.repl <- subset(vaas_et_al,
   query = list(Experiment = c("First replicate", "Second replicate")))
 vaas.repl <- do_disc(vaas.repl)
@@ -1722,7 +1719,7 @@ See the manual for further details, using \code{help(subset, package = "opm")}.
 
 The \code{listing()} methods of the \proglang{OPMD} and \proglang{OPMD} classes create textual descriptions of the discretization results suitable for the direct inclusion in scientific manuscripts.
 
-<<results=hide, width=8>>=
+<<label=list.discretize, results=hide, width=8>>=
 listing(vaas.repl, as.groups = NULL)
 listing(vaas.repl, as.groups = list("Species"))
 @
@@ -1734,14 +1731,14 @@ See the manual for details, using \code{help(listing, package = "opm")}.
 
 The \code{listing()} function returns a character vector or matrix with the \proglang{S3} class ``OPMD\_listing'' or ``OPMS\_listing'', allowing for a special \code{phylo\_data()} function that further formats these objects. Accordingly, the following code snippets
 
-<<results=hide, width=8>>=
+<<label=phylo.data.I, results=hide, width=8>>=
 phylo_data(listing(vaas.repl, as.groups = NULL))
 phylo_data(listing(vaas.repl, as.groups = list("Species")))
 @
 
 would yield character scalars better suitable for exporting into text files using \code{write}. It is also possible to generate \proglang{HTML} output, yielding formatted text. Try
 
-<<results=hide, width=8>>=
+<<label=phylo.data.II, results=hide, width=8>>=
 phylo_data(listing(vaas.repl, as.groups = NULL, html = TRUE))
 phylo_data(listing(vaas.repl, as.groups = list("Species"), html = TRUE))
 @
@@ -1770,13 +1767,13 @@ Rather, it is possible (and recommended) to link it to a \proglang{CSS} file.
 As the generated \proglang{HTML} is richly annotated with ``class'' attributes, which not only provide information on the structure of the file but also on the depicted data, very specific formatting can be obtained just by modifying one to several associated \proglang{CSS} files.
 For the following example, we set the default \proglang{CSS} file to be linked from the generated \proglang{HTML} to the file that comes with \pkg{opm}.
 
-<<results=hide, width=8>>=
+<<label=opm.css.file, results=hide, width=8>>=
 opm_opt(css.file = grep("[.]css$", opm_files("auxiliary"), value = TRUE))
 @
 
 One could now easily create an \proglang{HTML} table from the discretized data and write it to a file:
 
-<<results=hide, width=8>>=
+<<label=opm.html.file, results=hide, width=8>>=
 vaas.html <- phylo_data(vaas.repl, format = "html",
   as.labels = list("Species", "Strain"), outfile = "vaas.html")
 @
@@ -1785,7 +1782,7 @@ A practical problem is that the resulting \proglang{HTML} file is linked to its 
 The formatting would thus get lost once the \proglang{HTML} file was copied to another system, without a warning.
 So users might want to copy the predefined \proglang{CSS} file to the working directory and set it as default:
 
-<<results=hide, width=8>>=
+<<label=wd.css.file, results=hide, width=8>>=
 file.copy(grep("[.]css$", opm_files("auxiliary"), value = TRUE),
   "opm_styles.css", overwrite = TRUE)
 opm_opt(css.file = "opm_styles.css")
@@ -1812,7 +1809,7 @@ See the manual for further details, using \code{?html\_args}.
 One can also conduct discretization step-by-step by using the functions \code{best\_cutoff()} or \code{discrete()} after extracting matrices from the \proglang{OPMS} object.
 This offers more flexibility (such as additional discretization approaches, e.g. the creation of multiple-state characters) but is also more tedious than using \code{do\_disc()}.
 
-<<results=hide, width=8>>=
+<<label=prep.disc.data,results=hide, width=8>>=
 vaas.repl <- subset(vaas_et_al,
   query = list(Experiment = c("First replicate", "Second replicate")))
 vaas.repl <- extract(vaas.repl,
@@ -1821,21 +1818,21 @@ vaas.repl <- extract(vaas.repl,
 
 The A parameter (see Figure~\ref{fig:parameters}) can be discretized into (per default) 32 states using the theoretical range of 0 to 400 OmniLog\textregistered \ units (see Section~\ref{methods discrete-multistate}):
 
-<<width=12>>=
+<<label=disc.data.I, width=12>>=
 vaas.repl.disc <- discrete(vaas.repl, range = c(0, 400))
 @
 
 This yields (at most) 32 distinct character states corresponding to the 32 equal-width intervals within 0 and 400.
 Exporting the data in \textit{extended \proglang{PHYLIP} format} readable by \proglang{RAxML} \citep{stamatakis} would work as follows:
 
-<<width=10>>=
+<<label=phylo.data.III, width=10>>=
 phylo_data(vaas.repl.disc, outfile = "example_replicates.epf")
 @
 
 The other supported formats are \proglang{PHYLIP}, \proglang{NEXUS} and \proglang{TNT} \citep{goloboff}.
 For discretizing the data not in equally spaced intervals but into binary characters including missing data, or ternary characters with a third, intermediary state between "negative" and "positive" the gap mode of \code{discrete()} can be used:
 
-<<width=12>>=
+<<label=disc.data.II, width=12>>=
 vaas.repl.disc <- discrete(vaas.repl, range = c(120.2, 236.6), gap = TRUE)
 @
 
@@ -1845,7 +1842,7 @@ The values used above were determined by k-means partitioning of the A values fr
 The last command would result in the treatment of values within the given range as ``missing data'' (\code{NA} in \proglang{R}, ``?'' if exported).
 To treat them as a third, intermediary character state, set \code{middle.na} to \code{FALSE}:
 
-<<width=10>>=
+<<label=disc.data.III, width=10>>=
 vaas.repl.disc <- discrete(vaas.repl, range = c(120.2, 236.6),
   gap = TRUE, middle.na = FALSE)
 @
@@ -1861,7 +1858,7 @@ The \pkg{opm} package contains a number of functions suitable for accessing prec
 In the manual and help pages these functions are contained in the family ``naming-functions'' with according cross-references.
 One usually would start a search by determining the exact spelling of an internally used name with \code{find\_substrate()}:
 
-<<results=hide>>=
+<<label=find.substrate.I, results=hide>>=
 names <- find_substrate(c("Glutamine", "Glutamic acid"))
 names
 @
@@ -1871,14 +1868,14 @@ Surprisingly, nothing was found for ``Glutamic acid'' but several values for ``G
 The default \code{search} argument is ``exact'', which is exact (case-sensitive) matching  of \textit{substrings} of the names.
 One might want to use ``glob'' searching mode:
 
-<<results=hide>>=
+<<label=find.substrate.II, results=hide>>=
 names <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob")
 names
 @
 
 But with so-called wildcards, i.e. ``*'' for zero to many and ``?'' for a single arbitrary character the search is more flexible:
 
-<<results=hide>>=
+<<label=find.substrat.III, results=hide>>=
 names <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob")
 names
 @
@@ -1888,7 +1885,7 @@ Advanced users can apply the much more powerful ``regex'' and ``approx'' search 
 
 Once the internally used names have been found, information on the substrates can be queried such as their occurrences and positions on plates:
 
-<<results=hide>>=
+<<label=find.positions, results=hide>>=
 positions <- find_positions(names)
 positions
 @
@@ -1896,7 +1893,7 @@ positions
 This yields a nested list containing two-column matrices with plate names in the first and well coordinates in the second column.
 References to external data resources for each substrate name can be obtained using \code{substrate\_info()}:
 
-<<results=hide>>=
+<<label=substrate.info, results=hide>>=
 subst.info <- substrate_info(names)
 subst.info
 @

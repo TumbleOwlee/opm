@@ -117,17 +117,17 @@ setMethod("try_opms", "list", function(object, precomputed = TRUE,
 #' data(vaas_1, vaas_4)
 #'
 #' # Adding nothing
-#' summary(x <- c(vaas_1))
+#' dim(x <- c(vaas_1))
 #' stopifnot(identical(x, vaas_1))
-#' summary(x <- c(vaas_4))
+#' dim(x <- c(vaas_4))
 #' stopifnot(identical(x, vaas_4))
 #'
 #' # Not particularly useful: adding identical plates!
-#' summary(x <- c(vaas_1, vaas_1)) # yields a two-plate OPMS object
+#' dim(x <- c(vaas_1, vaas_1)) # yields a two-plate OPMS object
 #' stopifnot(identical(dim(x), c(2L, dim(vaas_1))))
 #'
 #' # Also not particularly useful: adding partially identical plates!
-#' summary(x <- c(vaas_4, vaas_1))
+#' dim(x <- c(vaas_4, vaas_1))
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 #'
 setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
@@ -164,27 +164,27 @@ setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
 #' # dimensions.
 #'
 #' # OPM+OPM method
-#' summary(x <- vaas_1 + vaas_1)
+#' dim(x <- vaas_1 + vaas_1)
 #' stopifnot(identical(dim(x), c(2L, dim(vaas_1))))
 #'
 #' # OPM+OPMS method
-#' summary(x <- vaas_1 + vaas_4)
+#' dim(x <- vaas_1 + vaas_4)
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 #'
 #' # OPM+list method
-#' summary(x <- vaas_1 + list(vaas_1, vaas_1))
+#' dim(x <- vaas_1 + list(vaas_1, vaas_1))
 #' stopifnot(identical(dim(x), c(3L, dim(vaas_1))))
 #'
 #' # OPMS+OPMS method
-#' summary(x <- vaas_4 + vaas_4)
+#' dim(x <- vaas_4 + vaas_4)
 #' stopifnot(identical(dim(x), c(8L, dim(vaas_4)[-1L])))
 #'
 #' # OPMS+OPM method
-#' summary(x <- vaas_4 + vaas_1)
+#' dim(x <- vaas_4 + vaas_1)
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 #'
 #' # OPMS+list method
-#' summary(x <- vaas_4 + list(vaas_1))
+#' dim(x <- vaas_4 + list(vaas_1))
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 #'
 setMethod("+", c(OPM, OPM), function(e1, e2) {
@@ -263,25 +263,25 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #' (x <- opms())
 #' stopifnot(is.null(x))
 #'
-#' summary((x <- opms(vaas_1)))
+#' dim(x <- opms(vaas_1))
 #' stopifnot(identical(x, vaas_1))
 #'
-#' summary((x <- opms(vaas_4, group = plate_type(vaas_4))))
+#' dim(x <- opms(vaas_4, group = plate_type(vaas_4)))
 #' stopifnot(identical(x, vaas_4))
 #'
-#' summary((x <- opms(vaas_4, group = "PM01")))
+#' dim(x <- opms(vaas_4, group = "PM01"))
 #' stopifnot(is.null(x)) # no such plate type => empty object!
 #'
-#' summary(x <- opms(vaas_1, vaas_1))
+#' dim(x <- opms(vaas_1, vaas_1))
 #' stopifnot(is(x, "OPMS"), length(x) == 2L)
 #'
-#' summary(x <- opms(vaas_4, vaas_1))
+#' dim(x <- opms(vaas_4, vaas_1))
 #' stopifnot(is(x, "OPMS"), length(x) == 5L)
 #'
-#' summary(x <- opms(vaas_1, vaas_4))
+#' dim(x <- opms(vaas_1, vaas_4))
 #' stopifnot(is(x, "OPMS"), length(x) == 5L)
 #'
-#' summary(x <- opms(vaas_4, vaas_4))
+#' dim(x <- opms(vaas_4, vaas_4))
 #' stopifnot(is(x, "OPMS"), length(x) == 8L)
 #'
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {

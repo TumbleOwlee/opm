@@ -27,7 +27,7 @@
 #'
 #' # OPMS method
 #' data(vaas_4)
-#' vaas_4
+#' vaas_4[1:2]
 #'
 setMethod("show", OPMX, function(object) {
   print(summary(object))
@@ -1415,7 +1415,12 @@ setMethod("heat_map", OPMS, function(object, as.labels,
 #' @param lwd Numeric scalar.
 #' @param mar Numeric vector of length 4.
 #' @param line.col Character or numeric vector.
-#' @param ... Optional arguments passed to \code{plotrix::radial.plot}.
+#' @param point.symbols Passed to \code{radial.plot} from the \pkg{plotrix}
+#'   package. See there for details. Explicitly provided here to silence
+#'   some \code{radial.plot} warnings occurring as of \R 3.0.0.
+#' @param point.col Also passed to that function.
+#' @param poly.col Also passed to that function.
+#' @param ... Optional other arguments passed to that function.
 #'
 #' @param draw.legend Logical scalar. Whether to draw a legend. Ignored unless
 #'   \code{object} has row names (because these are used to generate the
@@ -1479,14 +1484,19 @@ setGeneric("radial_plot", function(object, ...) standardGeneric("radial_plot"))
 setMethod("radial_plot", "matrix", function(object, rp.type = "p",
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
-    x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(), ...) {
+    x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
+    point.symbols = NA, point.col = NA, poly.col = NA, ...) {
   LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch)
   line.col <- try_select_colors(line.col)
-  on.exit(par(changed.par))
+  changed.par <- NULL
+  on.exit(if (!is.null(changed.par))
+    par(changed.par))
   changed.par <- radial.plot(lengths = object,
     labels = colnames(object), rp.type = rp.type, radlab = radlab,
     show.centroid = show.centroid, lwd = lwd, mar = mar,
-    show.grid.labels = show.grid.labels, line.col = line.col, ...)
+    show.grid.labels = show.grid.labels, line.col = line.col,
+    point.symbols = point.symbols, point.col = point.col, poly.col = poly.col,
+    ...)
   if (!is.null(rn <- rownames(object))) {
     if (draw.legend) {
       legend.args <- insert(as.list(legend.args), x = x, y = y, col = line.col,

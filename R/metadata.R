@@ -239,7 +239,8 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #' (metadata(copy, "Species") <- "Bacillus subtilis") # will set all of them
 #' stopifnot(identical(unique(metadata(copy, "Species")), "Bacillus subtilis"))
 #' stopifnot(!identical(metadata(copy), metadata(vaas_4)))
-#' (metadata(copy) <- vaas_4) # reset
+#' metadata(copy) <- vaas_4 # reset
+#' metadata(copy)
 #' stopifnot(identical(metadata(copy), metadata(vaas_4)))
 #' (metadata(copy) <- vaas_1) # set everything to metadata of vaas_1
 #' stopifnot(identical(unique(metadata(copy)), list(metadata(vaas_1))))

@@ -46,18 +46,18 @@
 # 'OPMA' method
 data(vaas_1)
 # Get full matrix
-summary(x <- aggregated(vaas_1))
+(x <- aggregated(vaas_1))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
 # Subsetting
-summary(x <- aggregated(vaas_1, "lambda"))
+(x <- aggregated(vaas_1, "lambda"))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), any(x < 0))
 # Now with lambda correction
-summary(x <- aggregated(vaas_1, "lambda", trim = "full"))
+(x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
 
 # 'OPMS' method
 data(vaas_4)
-summary(x <- aggregated(vaas_4))
+summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
 }
 \seealso{

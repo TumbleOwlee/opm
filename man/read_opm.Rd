@@ -83,7 +83,7 @@
 \examples{
 test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
   value = TRUE, perl = TRUE)
-if (length(test.files) > 0L) { # if the folder is found
+if (length(test.files) > 0) { # if the folder is found
   x <- read_opm(test.files, demo = TRUE) # check first what you would get
   stopifnot(identical(test.files, x))
   x <- read_opm(test.files[1:2]) # these two have the same plate type
@@ -91,6 +91,8 @@ if (length(test.files) > 0L) { # if the folder is found
   dim(x)
   summary(x)
   stopifnot(is(x, "OPMS"), identical(dim(x), c(2L, 384L, 96L)))
+} else {
+  warning("test files not found")
 }
 # This can be repeated for the other input test files. Instead of a several
 # file names one can also provide a single one, one to several directory
