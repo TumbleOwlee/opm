@@ -120,6 +120,7 @@ Readers who want to jump right into examples for applying \pkg{opm} to their dat
 Next, Figure~\ref{fig:overview} should be looked at, as it lists the names of the functions that can be used in each step of the possible \pkg{opm} work flows.
 Examples for each step would then be found in the according subsections of Section~\ref{application}.
 An overview of these sections is provided in Section~\ref{methods overview}.
+Since the complete code of this Vignette comes with the R-package in a file called \textit{opm.R} (can usually be found under \path{...\R\R-X.X.X\library\opm\doc}), application of the here given examples and demonstrations are straightforwardly processable. 
 
 The single most important problem users reported to us when applying \pkg{opm} was that the input files could not be read.
 This was uniformly due to the use of multi-plate CSV files.

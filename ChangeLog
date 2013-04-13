@@ -52,7 +52,7 @@
   messages
 - param_names() gets a 'what' argument
 - file_pattern() now deals with input file names if 'literally' is TRUE
-- 'what' argument of opm_files() gets more options
+- the 'what' argument of opm_files() gets more options
 - safe_labels() gets a 'comment' argument
 - substrate_info() gets new 'greek' and 'html' arguments
 
