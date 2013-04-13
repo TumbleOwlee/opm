@@ -11,6 +11,10 @@
 #'
 NULL
 
+#' @importFrom pkgutils mypdf
+#'
+NULL
+
 #' @import grofit
 #'
 NULL

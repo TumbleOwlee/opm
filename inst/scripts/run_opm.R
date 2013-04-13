@@ -20,12 +20,13 @@ invisible(lapply(c("optparse", "pkgutils", "opm"), library, quietly = TRUE,
 MD.OUTFILE <- "metadata.csv"
 RESULT <- c(
   "Clean filenames by removing non-word characters except dots and dashes.",
-  "Draw plots as postscript files, one per input file.",
+  "Draw level plots into graphics files, one per input file.",
   "Split OmniLog(R) CSV files into one file per plate.",
   "Collect a template for adding metadata.",
+  "Draw xy plots into graphics files, one per input file.",
   "Convert input OmniLog(R) CSV (or opm YAML) files to opm YAML."
 )
-names(RESULT) <- c("clean", "plot", "split", "template", "yaml")
+names(RESULT) <- c("clean", "levelplot", "split", "template", "xyplot", "yaml")
 AGGREGATION <- c(
   "No estimation of curve parameters.",
   "Fast estimation (only two parameters).",
@@ -37,18 +38,57 @@ AGGREGATION <- c(
 names(AGGREGATION) <- c("no", "fast", "grofit", "p", "smooth", "thin")
 
 
-MAP_GRAPHICS_FORMAT <- c(
-  bitmap = "bmp",
-  mypdf = "pdf",
-  postscript = "ps",
-  cairo_pdf = "pdf",
-  cairo_ps = "ps"
-)
+################################################################################
+#
+# Helper functions
+#
+
+
+make_md_args <- function(opt) {
+  if (is.null(opt$mdfile))
+    NULL
+  else
+    list(md = opt$mdfile, sep = opt$sep, replace = opt$exchange)
+}
+
+
+#-------------------------------------------------------------------------------
+
+
+make_disc_args <- function(opt) {
+  if (opt$discretize)
+    list(cutoff = opt$weak, plain = FALSE)
+  else
+    NULL
+}
+
+
+#-------------------------------------------------------------------------------
+
+
+make_aggr_args <- function(opt) {
+  aggr_args <- function(opt, method, spline) {
+    x <- list(boot = opt$bootstrap, verbose = !opt$quiet,
+      cores = opt$processes)
+    x$method <- method
+    if (length(spline))
+      x$options <- set_spline_options(type = spline)
+    x
+  }
+  case(match.arg(opt$aggregate, names(AGGREGATION)),
+    no = NULL,
+    fast = aggr_args(opt, "opm-fast", NULL),
+    grofit = aggr_args(opt, "grofit", NULL),
+    p = aggr_args(opt, "splines", "p.spline"),
+    smooth = aggr_args(opt, "splines", "smooth.spline"),
+    thin = aggr_args(opt, "splines", "tp.spline")
+  )
+}
 
 
 ################################################################################
 #
-# Functions for each running mode
+# Functions for each output mode
 #
 
 
@@ -62,21 +102,11 @@ run_clean_mode <- function(input, opt) {
 
 
 run_plot_mode <- function(input, opt) {
-  plot_fun <- if (opt$level)
-    level_plot
-  else
-    xy_plot
-  ext <- map_values(opt$format, MAP_GRAPHICS_FORMAT)
-  io_fun <- function(infile, outfile, file.format) {
-    x <- read_opm(infile, gen.iii = opt$type)
-    eval(call(name = file.format, file = outfile))
-    print(plot_fun(x))
-    dev.off()
-  }
-  batch_process(names = input, proc = opt$processes, out.ext = ext,
-    io.fun = io_fun, outdir = opt$dir, verbose = !opt$quiet,
-    overwrite = opt$overwrite, include = opt$include, exclude = opt$exclude,
-    fun.args = list(file.format = opt$format))
+  batch_opm(names = input, proc = opt$processes, disc.args = NULL,
+    aggr.args = NULL, md.args = make_md_args(opt), outdir = opt$dir,
+    verbose = !opt$quiet, overwrite = opt$overwrite, include = opt$include,
+    exclude = opt$exclude, gen.iii = opt$type, device = opt$format,
+    output = opt$result)
 }
 
 
@@ -113,38 +143,16 @@ run_template_mode <- function(input, opt) {
 
 
 run_yaml_mode <- function(input, opt) {
-  aggr_args <- function(opt, method, spline = NULL) {
-    x <- list(boot = opt$bootstrap, verbose = !opt$quiet, cores = opt$processes)
-    x$method <- method
-    if (length(spline))
-      x$options <- set_spline_options(type = spline)
-    x
-  }
   if (opt$coarse || opt$aggregate == "fast") {
-    proc <- opt$processes
+    proc <- opt$processes # this must be run before make_aggr_args()
     opt$processes <- 1L
   } else
     proc <- 1L
-  aggr.args <- case(match.arg(opt$aggregate, names(AGGREGATION)),
-    no = NULL,
-    fast = aggr_args(opt, "opm-fast"),
-    grofit = aggr_args(opt, "grofit"),
-    p = aggr_args(opt, "splines", "p.spline"),
-    smooth = aggr_args(opt, "splines", "smooth.spline"),
-    thin = aggr_args(opt, "splines", "tp.spline")
-  )
-  if (opt$discretize)
-    disc.args <- list(cutoff = opt$weak, plain = FALSE)
-  else
-    disc.args <- NULL
-  md.args <- if (is.null(opt$mdfile))
-    NULL
-  else
-    list(md = opt$mdfile, sep = opt$sep, replace = opt$exchange)
-  batch_opm_to_yaml(names = input, proc = proc, disc.args = disc.args,
-    aggr.args = aggr.args, md.args = md.args, outdir = opt$dir,
+  batch_opm(names = input, proc = proc, disc.args = make_disc_args(opt),
+    outdir = opt$dir, aggr.args = make_aggr_args(opt),
+    md.args = make_md_args(opt),
     verbose = !opt$quiet, overwrite = opt$overwrite, include = opt$include,
-    exclude = opt$exclude, gen.iii = opt$type)
+    exclude = opt$exclude, gen.iii = opt$type, output = "yaml")
 }
 
 
@@ -174,10 +182,9 @@ option.parser <- OptionParser(option_list = list(
     help = "File exclusion globbing pattern [default: <none>]",
     metavar = "PATTERN"),
 
-  # A bug in Rscript causes '-g' to generate strange warning messages.
-  # See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
-  #make_option(c("-G", "--Gen3"), action = "store_true", default = FALSE,
-  #  help = "Change plate type to generation III [default: %default]"),
+  ## A bug in Rscript causes '-g' to generate strange warning messages.
+  ## See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
+  # g
 
   make_option(c("-f", "--format"), type = "character", default = "postscript",
     help = "Graphics output format [default: %default]", metavar = "NAME"),
@@ -188,10 +195,7 @@ option.parser <- OptionParser(option_list = list(
     help = "File inclusion globbing pattern [default: <see package>]",
     metavar = "PATTERN"),
 
-  # j, k
-
-  make_option(c("-l", "--level"), action = "store_true", default = FALSE,
-    help = "When plotting, draw levelplot [default: %default]"),
+  # j, k, l
 
   make_option(c("-m", "--mdfile"), type = "character",
     default = NULL, metavar = "NAME",
@@ -274,7 +278,8 @@ invisible(opm_opt(file.encoding = opt$encoding))
 
 case(match.arg(opt$result, names(RESULT)),
   clean = run_clean_mode(input, opt),
-  plot = run_plot_mode(input, opt),
+  xyplot =,
+  levelplot = run_plot_mode(input, opt),
   split = run_split_mode(input, opt),
   template = run_template_mode(input, opt),
   yaml = run_yaml_mode(input, opt)

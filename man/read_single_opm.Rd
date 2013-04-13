@@ -49,7 +49,7 @@
   plate, see the example under \code{\link{split_files}}.
   In contrast, input \acronym{YAML} files can contain data
   from more than one plate. The format is described in
-  detail under \code{\link{batch_opm_to_yaml}}.
+  detail under \code{\link{batch_opm}}.
 }
 \examples{
 test.files <- opm_files("testdata")

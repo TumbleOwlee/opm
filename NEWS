@@ -13,11 +13,14 @@ Bug fixes:
 
 Significant user-visible changes:
 
+- batch_opm_to_yaml() is now deprecated in favour of batch_opm()
+
 - the extract() method for data frames now works differently
 
-- the '-a' argument of the 'run_opm.R' now works differently
+- the '-a' argument of the 'run_opm.R' script now works differently
 
-- two additional package dependencies, and dependency on newer grofit package
+- two additional package dependencies, and dependency on newer version of the
+  grofit package
 
 New features:
 
@@ -43,10 +46,12 @@ New features:
 
 - new expression methods for metadata mapping
 
-- new to_metadata() and `metadata<-`() methods
+- new map_metadata(), to_metadata() and `metadata<-`() methods
 
 - new arguments and/or options for ci_plot(), opm_opt(), param_names(),
   file_pattern(), opm_files(), safe_labels() and substrate_info()
+
+- batch_opm() replaces batch_opm_to_yaml() with more arguments
 
 - support for three more plate types
 

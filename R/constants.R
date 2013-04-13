@@ -106,8 +106,12 @@ KNOWN_METHODS <- list(
   discretization = c("direct", "kmeans", "best-cutoff")
 )
 
+# Used by batch_opm()
+#
+GRAPHICS_FORMAT_MAP <- c(bitmap = "bmp", mypdf = "pdf", postscript = "ps",
+  cairo_pdf = "pdf", cairo_ps = "ps")
 
-# used in the headers of HTML output
+# Used in the headers of HTML output
 #
 HTML_DOCTYPE <- paste('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"',
   '"http://www.w3.org/TR/html4/strict.dtd">', collapse = " ")

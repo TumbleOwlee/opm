@@ -57,7 +57,7 @@
 #'     install one of the newer versions of \pkg{yaml} (>= v2.1.5). These are
 #'     based on libyaml as parser instead of Syck, are faster and contain some
 #'     bug fixes. The \acronym{YAML}-related functions of \pkg{opm} are
-#'     \code{\link{to_yaml}} and \code{\link{batch_opm_to_yaml}}.}
+#'     \code{\link{to_yaml}} and \code{\link{batch_opm}}.}
 #'   \item{running time}{Computations on such high-dimensional data may take
 #'     some time. The limiting steps are aggregating (curve-parameter
 #'     estimation) and plotting many curves together. The former step can be

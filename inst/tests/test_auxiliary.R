@@ -457,6 +457,17 @@ test_that("values in lists can be mapped using character vectors", {
 
 
 ## map_values
+test_that("values in lists can be mapped by cleaning", {
+  x <- list(A = 13, B = list(B1 = NULL, B2 = -5), C = "z", character(),
+    D = list(D1 = NULL, D2 = list()))
+  got <- map_values(x, NULL)
+  expect_equal(got, list(A = 13, B = list(B2 = -5), C = "z"))
+  got <- map_values(x, NULL, "numeric")
+  expect_equal(got, list(A = "13", B = list(B2 = "-5"), C = "z"))
+})
+
+
+## map_values
 test_that("values in lists can be mapped using expressions", {
   x <- list(a = 1:5, b = letters[1:3], K = list(K1 = 3, 89))
   assign("z", 7.5, 1)

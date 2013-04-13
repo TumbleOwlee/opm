@@ -61,7 +61,7 @@
   on libyaml as parser instead of Syck, are faster and
   contain some bug fixes. The \acronym{YAML}-related
   functions of \pkg{opm} are \code{\link{to_yaml}} and
-  \code{\link{batch_opm_to_yaml}}.} \item{running
+  \code{\link{batch_opm}}.} \item{running
   time}{Computations on such high-dimensional data may take
   some time. The limiting steps are aggregating
   (curve-parameter estimation) and plotting many curves

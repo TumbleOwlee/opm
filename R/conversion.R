@@ -1204,7 +1204,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #'   Phenotype MicroArray measurements) can be much more compactly encoded.
 #'
 #'   Many PM datasets at once can be batch-converted into \acronym{YAML} format
-#'   using \code{\link{batch_opm_to_yaml}}. The output format for the child
+#'   using \code{\link{batch_opm}}. The output format for the child
 #'   classes is described in detail there, as well as other aspects relevant in
 #'   practice.
 #' @seealso yaml::as.yaml yaml::yaml.load_file

@@ -30,10 +30,10 @@
   measurements) can be much more compactly encoded.
 
   Many PM datasets at once can be batch-converted into
-  \acronym{YAML} format using
-  \code{\link{batch_opm_to_yaml}}. The output format for
-  the child classes is described in detail there, as well
-  as other aspects relevant in practice.
+  \acronym{YAML} format using \code{\link{batch_opm}}. The
+  output format for the child classes is described in
+  detail there, as well as other aspects relevant in
+  practice.
 }
 \examples{
 \dontrun{

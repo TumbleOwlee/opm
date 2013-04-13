@@ -142,6 +142,10 @@ test_that("the known method names are OK", {
 })
 
 
+## GRAPHICS_FORMAT_MAP
+## UNTESTED
+
+
 ## HTML_DOCTYPE
 ## UNTESTED
 

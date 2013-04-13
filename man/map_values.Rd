@@ -10,19 +10,19 @@
   class \code{\link{MOA}}, comprising matrices and arrays.}
 
   \item{mapping}{Character vector, function, formula,
-  expression, or missing.  \itemize{ \item If a character
-  vector used as a mapping from its names to its values.
-  Values from \code{object} are searched for in the
-  \code{names} attribute of \code{mapping}; those found are
-  replaced by the corresponding values of \code{mapping}.
-  \item If \code{mapping} is missing, a character vector is
-  returned (sorted and with duplicates removed) whose names
-  are identical to the values. This eases the construction
-  of mapping vectors specific for \code{object}. If
-  \code{mapping} is missing, the \code{coerce} argument
-  must be named.  \code{mapping} changes its usage if
-  \code{coerce} is \code{TRUE}.  \item For
-  \code{\link{MOA}} objects, if \code{mapping} was a
+  expression, \code{NULL} or missing.  \itemize{ \item If a
+  character vector used as a mapping from its names to its
+  values.  Values from \code{object} are searched for in
+  the \code{names} attribute of \code{mapping}; those found
+  are replaced by the corresponding values of
+  \code{mapping}.  \item If \code{mapping} is missing, a
+  character vector is returned (sorted and with duplicates
+  removed) whose names are identical to the values. This
+  eases the construction of mapping vectors specific for
+  \code{object}. If \code{mapping} is missing, the
+  \code{coerce} argument must be named.  \code{mapping}
+  changes its usage if \code{coerce} is \code{TRUE}.  \item
+  For \code{\link{MOA}} objects, if \code{mapping} was a
   function, it would be applied to \code{object} after
   conversion with \code{as.vector}, and it would be
   attempted to add the original attributes (particularly
@@ -35,7 +35,10 @@
   The see examples below.  \item If \code{mapping} is an
   expression, all sub-expressions will be evualated in
   \code{object} represented as an environment, which after
-  conversion back to a list, is returned. }}
+  conversion back to a list, is returned.  \item If
+  \code{mapping} is \code{NULL} and \code{object} is a
+  list, all contained objects of zero length are removed
+  recursively. }}
 
   \item{coerce}{The usage of this argument depends on
   \code{object}.  \itemize{ \item A character vector with
@@ -222,11 +225,13 @@ stopifnot(levels(x) == y, names(y) == y)
 \alias{map_values-methods}
 \alias{map_values,list,character-method}
 \alias{map_values,list,function-method}
+\alias{map_values,list,NULL-method}
 \alias{map_values,list,missing-method}
 \alias{map_values,list,formula-method}
 \alias{map_values,list,expression-method}
 \alias{map_values,data.frame,function-method}
 \alias{map_values,data.frame,character-method}
+\alias{map_values,data.frame,NULL-method}
 \alias{map_values,data.frame,missing-method}
 \alias{map_values,MOA,character-method}
 \alias{map_values,MOA,missing-method}
@@ -247,6 +252,9 @@ stopifnot(levels(x) == y, names(y) == y)
   \S4method{map_values}{list,function}(object, mapping,
     coerce = character(), ...) 
 
+  \S4method{map_values}{list,NULL}(object, mapping,
+    coerce = character()) 
+
   \S4method{map_values}{list,missing}(object, mapping,
     coerce = character()) 
 
@@ -261,6 +269,9 @@ stopifnot(levels(x) == y, names(y) == y)
 
   \S4method{map_values}{data.frame,character}(object, mapping,
     coerce = character()) 
+
+  \S4method{map_values}{data.frame,NULL}(object, mapping,
+    coerce = character(), ...) 
 
   \S4method{map_values}{data.frame,missing}(object,
     coerce = character()) 

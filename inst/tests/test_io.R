@@ -515,11 +515,10 @@ test_that("batch conversion works", {
 # Batch IO with OPM objects
 #
 
-## batch_opm_to_yaml
+## batch_opm
 test_that("batch conversion to yaml works", {
   infiles <- INFILES.2
-  expect_warning(got <- batch_opm_to_yaml(infiles, missing.error = FALSE,
-    demo = TRUE))
+  expect_warning(got <- batch_opm(infiles, missing.error = FALSE, demo = TRUE))
   infiles <- infiles[-4L]
   expect_is(got, "matrix")
   expect_equal(got[, 1L], infiles)
@@ -528,11 +527,13 @@ test_that("batch conversion to yaml works", {
   outdir <- tempdir()
   exp.outfile <- file.path(outdir, "Example_1.yml")
   expect_false(file.exists(exp.outfile))
-  got <- batch_opm_to_yaml(infiles, outdir = tempdir(), verbose = TRUE)
+  got <- batch_opm(infiles, outdir = tempdir(), verbose = TRUE)
   expect_true(file.exists(exp.outfile))
   unlink(exp.outfile)
 })
 
+## batch_opm_to_yaml
+## UNTESTED
 
 ################################################################################
 #

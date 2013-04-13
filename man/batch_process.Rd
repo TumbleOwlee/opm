@@ -76,7 +76,7 @@
 \description{
   Batch-convert data from infiles to data in outfiles. This
   is not normally directly called by an \pkg{opm} user
-  because \code{\link{batch_opm_to_yaml}} is available.
+  because \code{\link{batch_opm}} is available.
 }
 \examples{
 # Read the first line from each of the OPM test dataset files and store it
@@ -93,7 +93,7 @@ if (length(infiles) > 0) { # if the files are found
 }
 \seealso{
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm_to_yaml}},
+  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},

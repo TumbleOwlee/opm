@@ -355,7 +355,7 @@ read_microstation_opm <- function(filename) {
 #'   into one file per plate, see the example under \code{\link{split_files}}.
 #'   In contrast, input \acronym{YAML} files can contain data from more than one
 #'   plate. The format is described in detail under
-#'   \code{\link{batch_opm_to_yaml}}.
+#'   \code{\link{batch_opm}}.
 #'
 #' @references \url{http://www.yaml.org/}
 #' @references \url{http://www.biolog.com/}
@@ -616,7 +616,7 @@ opm_files <- function(
 #'
 #' @details Regarding the \acronym{CSV} format, see the remark to
 #'   \code{\link{read_single_opm}}. The \acronym{YAML} format is described in
-#'   detail under \code{\link{batch_opm_to_yaml}}.
+#'   detail under \code{\link{batch_opm}}.
 #'
 #'   or splitting lists of \code{\link{OPM}} objects according to the plate
 #'   type, see \code{\link{plate_type}}, and consider the plate-type selection
@@ -1115,7 +1115,7 @@ process_io <- function(files, io.fun, fun.args = list(),
 #' Convert infiles to outfiles
 #'
 #' Batch-convert data from infiles to data in outfiles. This is not normally
-#' directly called by an \pkg{opm} user because \code{\link{batch_opm_to_yaml}}
+#' directly called by an \pkg{opm} user because \code{\link{batch_opm}}
 #' is available.
 #'
 #' @inheritParams process_io
@@ -1198,7 +1198,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 
 ## NOTE: not an S4 method because conversion is done
 
-#' Batch-convert to YAML
+#' Batch-convert PM data
 #'
 #' Batch-convert from OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
 #' \acronym{CSV} (or previous \pkg{opm} \acronym{YAML}) to \pkg{opm}
@@ -1226,9 +1226,24 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   \acronym{YAML} input).
 #' @param force.disc Logical scalar. If \code{FALSE}, do not discretize already
 #'   discretized data (which can be present in \acronym{YAML} input).
+#' @param device Character scalar describing the graphics device used for
+#'   outputting plots. See \code{Devices} from the \pkg{grDevices} package and
+#'   \code{mypdf} from the \pkg{pkgutils} package for possible values. The
+#'   extension of the output files is created from the device name after a few
+#'   adaptations (such as converting \sQuote{postscript} to \sQuote{ps}).
+#' @param dev.args List. Passed as additional arguments to \code{device}.
+#' @param plot.args List. Passed as additional arguments to the plotting
+#'   function used.
 #' @param ... Optional arguments passed to \code{\link{batch_process}} in
 #'   addition to \code{verbose} and \code{demo}. Note that \code{out.ext},
 #'   \code{fun} and \code{fun.args} are set automatically.
+#' @param output Character scalar determining the main output mode. \describe{
+#'   \item{levelplot}{Create graphics files, one per input file, containing the
+#'   output of \code{\link{level_plot}}.}
+#'   \item{yaml}{Create \acronym{YAML} files, one per input file.}
+#'   \item{xyplot}{Create graphics files, one per input file, containing the
+#'   output of \code{\link{xy_plot}}.}
+#'   }
 #' @export
 #' @note This function is for batch-converting many files; for writing a single
 #'   object to a \acronym{YAML} file (or string), see \code{\link{to_yaml}}.
@@ -1237,7 +1252,8 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #' @family io-functions
 #' @references \url{http://www.yaml.org/}
 #' @references \url{http://www.biolog.com/}
-#' @seealso utils::read.csv yaml::yaml.load_file
+#' @seealso utils::read.csv yaml::yaml.load_file grDevices::Devices
+#' @seealso pkgutils::mypdf
 #' @keywords IO
 #'
 #' @details
@@ -1245,7 +1261,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   some type), \emph{sequences} (ordered collections of some values, without
 #'   names) and \emph{mappings} (collections assigning a name to each value),
 #'   in a variety of combinations (e.g., mappings of sequences). The output
-#'   of \code{batch_opm_to_yaml} is one \acronym{YAML} document \emph{per plate}
+#'   of \code{batch_opm} is one \acronym{YAML} document \emph{per plate}
 #'   which represents a mapping with the following components (key-value pairs):
 #'   \describe{
 #'     \item{metadata}{Arbitrarily nested mapping of arbitrary metadata
@@ -1283,7 +1299,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   Details of the contents should be obvious from the documentation of the
 #'   classes of the objects from which the \acronym{YAML} output is generated.
 #'   In the case of \acronym{YAML} input with several plates per file,
-#'   \code{batch_opm_to_yaml} generates \acronym{YAML} output files containing a
+#'   \code{batch_opm} generates \acronym{YAML} output files containing a
 #'   sequence of mappings as described above, one per plate, to keep a 1:1
 #'   relationship between input and output files.
 #'
@@ -1307,16 +1323,20 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   value = TRUE, fixed = TRUE)
 #' if (length(test.files) > 0) { # if the files are found
 #'   num.files <- length(list.files(outdir <- tempdir()))
-#'   x <- batch_opm_to_yaml(test.files[1], outdir = outdir)
+#'   x <- batch_opm(test.files[1], outdir = outdir)
 #'   stopifnot(length(list.files(outdir)) == num.files + 1, is.matrix(x))
 #'   stopifnot(file.exists(x[, "outfile"]))
 #'   stopifnot(test.files[1] == x[, "infile"])
 #'   unlink(x[, "outfile"])
+#' } else {
+#'   warning("opm example data files not found")
 #' }
 #'
-batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
+batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
-    gen.iii = opm_opt("gen.iii"), ..., verbose = TRUE, demo = FALSE) {
+    gen.iii = opm_opt("gen.iii"), device = "mypdf", dev.args = NULL,
+    plot.args = NULL, ..., output = c("yaml", "xyplot", "levelplot"),
+    verbose = TRUE, demo = FALSE) {
 
   convert_dataset <- function(data) {
     switch(mode(gen.iii),
@@ -1358,17 +1378,28 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
     data
   }
 
-  LL(force.aggr, force.disc, gen.iii)
-
-  convert_to_yaml <- function(infile, outfile) {
+  read_file <- function(infile) {
     data <- read_single_opm(infile)
-    # YAML input can result in lists of several OPM objects
-    data <- if (is.list(data))
+    if (is.list(data)) # YAML input can result in lists of several OPM objects
       lapply(lapply(data, FUN = convert_dataset), FUN = as, Class = "list")
     else
       convert_dataset(data)
-    write(to_yaml(data), outfile)
   }
+
+  convert_to_yaml <- function(infile, outfile) {
+    write(to_yaml(read_file(infile)), outfile)
+  }
+
+  create_plot <- function(infile, outfile) {
+    data <- read_file(infile)
+    if (is.list(data))
+      data <- do.call(c, data)
+    do.call(device, c(list(file = outfile), dev.args))
+    do.call(plot.type, c(list(x = data), plot.args))
+    dev.off()
+  }
+
+  LL(force.aggr, force.disc, gen.iii, device)
 
   # If a metadata filename is given, read it into data frame right now to
   # avoid opening the file each time in the batch_process() loop
@@ -1379,10 +1410,68 @@ batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
     md.args$md <- do.call(to_metadata, tmp)
   }
 
-  batch_process(names = names, out.ext = "yml", io.fun = convert_to_yaml,
+  case(output <- match.arg(output),
+    yaml = {
+      io.fun <- convert_to_yaml
+      out.ext <- "yml"
+    },
+    levelplot = {
+      disc.args <- aggr.args <- NULL
+      out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
+      io.fun <- create_plot
+      plot.type <- level_plot
+    },
+    xyplot = {
+      disc.args <- aggr.args <- NULL
+      out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
+      io.fun <- create_plot
+      plot.type <- xy_plot
+    }
+  )
+
+  batch_process(names = names, out.ext = out.ext, io.fun = io.fun,
     in.ext = "both", compressed = TRUE, literally = FALSE, ...,
     verbose = verbose, demo = demo)
 
+}
+
+
+################################################################################
+
+
+#' Batch-convert to YAML (deprecated)
+#'
+#' \strong{Deprecated} function to batch-convert from
+#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} (or
+#' previous \pkg{opm} \acronym{YAML}) to \pkg{opm} \acronym{YAML}. Use
+#' \code{\link{batch_opm}} instead.
+#'
+#' @inheritParams batch_opm
+#' @export
+#' @note This \strong{deprecated} function is for batch-converting many files;
+#'   for writing a single object to a \acronym{YAML} file (or string), see
+#'   \code{\link{to_yaml}}.
+#' @return The function invisibly returns a matrix which describes each
+#'   attempted file conversion. See \code{\link{batch_process}} for details.
+#' @family io-functions
+#' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.biolog.com/}
+#' @seealso utils::read.csv yaml::yaml.load_file
+#' @keywords IO
+#'
+#' @details
+#'   This function is \strong{deprecated}; use \code{\link{batch_opm}} instead.
+#'
+#' @examples
+#' # see batch_opm()
+#'
+batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
+    force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
+    gen.iii = opm_opt("gen.iii"), ..., verbose = TRUE, demo = FALSE) {
+  warning("this function is deprecated; use batch_opm() instead")
+  batch_opm(names = names, md.args = md.args, aggr.args = aggr.args,
+    force.aggr = force.aggr, disc.args = disc.args, force.disc = force.disc,
+    gen.iii = gen.iii, ..., output = "yaml", verbose = verbose, demo = demo)
 }
 
 

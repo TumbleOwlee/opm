@@ -67,7 +67,7 @@ last <- function(x, i = 1L) {
 #'
 #' A helper function for \code{\link{to_metadata}}.
 #'
-#' @param object Nested list
+#' @param object Nested list.
 #' @param stringsAsFactors Logical scalar.
 #' @param optonal Logical scalar.
 #' @return Data frame.
@@ -1166,7 +1166,8 @@ prepare_class_names.character <- function(x) {
 #'   \code{NULL} or an empty named character vector (if \code{mapping} is
 #'   missing). \code{object} may also belong to the virtual class
 #'   \code{\link{MOA}}, comprising matrices and arrays.
-#' @param mapping Character vector, function, formula, expression, or missing.
+#' @param mapping Character vector, function, formula, expression, \code{NULL}
+#'   or missing.
 #'   \itemize{
 #'   \item If a character vector used as a mapping from its names to its values.
 #'   Values from \code{object} are searched for in the \code{names} attribute of
@@ -1189,6 +1190,8 @@ prepare_class_names.character <- function(x) {
 #'   \item If \code{mapping} is an expression, all sub-expressions will be
 #'   evualated in \code{object} represented as an environment, which after
 #'   conversion back to a list, is returned.
+#'   \item If \code{mapping} is \code{NULL} and \code{object} is a list, all
+#'   contained objects of zero length are removed recursively.
 #' }
 #' @param coerce The usage of this argument depends on \code{object}.
 #'   \itemize{
@@ -1379,6 +1382,20 @@ setMethod("map_values", c("list", "function"), function(object, mapping,
     how = "replace", ...)
 }, sealed = SEALED)
 
+setMethod("map_values", c("list", "NULL"), function(object, mapping,
+    coerce = character()) {
+  clean_recursively <- function(x) {
+    if (!is.list(x))
+      return(x)
+    x <- lapply(x, clean_recursively)
+    x[vapply(x, length, integer(1L)) > 0L]
+  }
+  if (length(coerce))
+    object <- rapply(object, as.character, prepare_class_names(coerce), NULL,
+      "replace")
+  clean_recursively(object)
+}, sealed = SEALED)
+
 setMethod("map_values", c("list", "missing"), function(object, mapping,
     coerce = character()) {
   if (isTRUE(coerce)) {
@@ -1426,8 +1443,7 @@ setMethod("map_values", c("data.frame", "function"), function(object, mapping,
     coerce = character(), ...) {
   if (identical("ANY", coerce <- prepare_class_names(coerce)))
     coerce <- unique(unlist((lapply(object, class))))
-  for (i in which(vapply(object, function(x) any(class(x) %in% coerce),
-      logical(1L))))
+  for (i in which(vapply(object, inherits, logical(1L), coerce)))
     object[[i]] <- mapping(object[[i]], ...)
   object
 }, sealed = SEALED)
@@ -1443,17 +1459,24 @@ setMethod("map_values", c("data.frame", "character"), function(object, mapping,
   map_values(object, mapping = mapfun, coerce = coerce)
 }, sealed = SEALED)
 
+setMethod("map_values", c("data.frame", "NULL"), function(object, mapping,
+    coerce = character(), ...) {
+  if (identical("ANY", coerce <- prepare_class_names(coerce)))
+    coerce <- unique(unlist((lapply(object, class))))
+  for (i in which(vapply(object, inherits, logical(1L), coerce)))
+    object[[i]] <- as.character(object[[i]])
+  object
+}, sealed = SEALED)
+
 setMethod("map_values", c("data.frame", "missing"), function(object,
     coerce = character()) {
   if (isTRUE(coerce))
     result <- unlist(lapply(object, class))
   else {
     coerce <- prepare_class_names(coerce)
-    if (!"ANY" %in% coerce) {
-      wanted <- vapply(object, function(x) any(class(x) %in% coerce),
-        logical(1L))
-      object <- object[, wanted, drop = FALSE]
-    }
+    if (!"ANY" %in% coerce)
+      object <- object[, vapply(object, inherits, logical(1L), coerce),
+        drop = FALSE]
     result <- unlist(lapply(object, as.character))
   }
   map_values(result)
@@ -1510,7 +1533,7 @@ setMethod("map_values", c("character", "character"), function(object, mapping) {
 }, sealed = SEALED)
 
 setMethod("map_values", c("character", "missing"), function(object) {
-  object <- sort.int(unique(object))
+  object <- sort.int(unique.default(object))
   structure(.Data = object, .Names = object)
 }, sealed = SEALED)
 

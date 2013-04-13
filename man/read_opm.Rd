@@ -73,8 +73,7 @@
 \details{
   Regarding the \acronym{CSV} format, see the remark to
   \code{\link{read_single_opm}}. The \acronym{YAML} format
-  is described in detail under
-  \code{\link{batch_opm_to_yaml}}.
+  is described in detail under \code{\link{batch_opm}}.
 
   or splitting lists of \code{\link{OPM}} objects according
   to the plate type, see \code{\link{plate_type}}, and
@@ -114,7 +113,7 @@ x <- read_opm(".")
   utils::read.csv yaml::yaml.load_file
 
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm_to_yaml}},
+  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},

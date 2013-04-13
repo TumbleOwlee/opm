@@ -11,10 +11,13 @@
 - fixed bug in argument treatment of do_disc() (best-cutoff discretization now
   possible with 'groups' set to FALSE)
 
+- batch_opm_to_yaml() is deprecated, use batch_opm() instead
 - extract() function for data frames changes its behaviour (see below)
-- the '-a' argument of the 'run_opm.R' changes its behaviour (see below)
+- the '-a' argument of the 'run_opm.R' changes its behaviour (see below), and
+  '-l' is removed, whereas '-r' gets more options
 - additional dependencies on packages splines and mgcv
-- grofit >= 1.1 is now necessary because it is imported
+- grofit >= 1.1 is now necessary because it is imported (its older versions do
+  not contain a namespace)
 
 - do_aggr() has a new option for the 'method' argument ('splines', which is 
   recommended) and an according new helper function set_spline_options();
@@ -39,7 +42,11 @@
 - novel expression methods for map_metadata() and `metadata<-`()
 - to_metadata() gets methods for WMD and OPMS objects
 - novel `metadata<-`() methods with OPMS or WMD objects as 'value' arguments
+- novel map_metadata() method for missing 'mapping' arguments that conducts
+  metadata cleaning 
 
+- batch_opm(), the former batch_opm_to_yaml(), gets 'output' and other novel
+  arguments
 - ci_plot() gets a 'split.at' argument
 - opm_opt() gets new entries 'hm.colors' and 'key.join', and better error
   messages

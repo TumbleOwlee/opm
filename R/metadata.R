@@ -480,7 +480,7 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #' and returns an \code{\link{OPMS}} object with accordingly modified metadata.
 #'
 #' @param object \code{\link{WMD}} object or \code{\link{OPMS}} object.
-#' @param mapping Passed to \code{\link{map_values}}. \itemize{
+#' @param mapping In most cases passed to \code{\link{map_values}}. \itemize{
 #'   \item If a function, this is just a wrapper for \code{rapply}, with
 #'   \code{how} set to \sQuote{replace}, if \code{values} is \code{TRUE}. It is
 #'   applied to all non-list elements of \code{\link{metadata}}, which is
@@ -493,10 +493,16 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #'   entire metadata are replaced by the result, which is an error if the result
 #'   is not a list.
 #' }
-#' @param values Mostly a logical scalar. If \code{FALSE}, metadata names, not
-#'   values, are mapped, and \code{classes} is ignored (names are always of
-#'   class \sQuote{character}). For the formula method, it is the enclosing
-#'   environment used.
+#' @param values Mostly a logical scalar. \itemize{
+#'   \item For the function and character-vector methods, if \code{FALSE},
+#'   metadata names, not values, are mapped, and \code{classes} is ignored
+#'   (names are always of class \sQuote{character}).
+#'   \item For the formula method, \code{values} is the enclosing environment
+#'   used.
+#'   \item If \code{mapping} is missing, setting \code{values} to \code{TRUE}
+#'   causes all non-list entries that only comprise \code{NA} values to be
+#'   removed.
+#'   }
 #' @param classes Character vector or (for the character vector-based mapping)
 #'   \code{TRUE}. For the mapping with a function or vector, this specifies the
 #'   classes in addition to \sQuote{character} that are mapped (after converting
@@ -505,6 +511,10 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #'   If \code{classes} is \code{TRUE}, \code{mapping} is treated as a mapping
 #'   between class names, and the according conversions are applied. See the
 #'   \code{coerce} argument of \code{\link{map_values}} for details.
+#'
+#'   If \code{mapping} is missing, \code{classes} specifies classes that are
+#'   converted to character vectors.
+#'
 #' @param ... Optional argument passed to \code{mapping} if it is a function,
 #'   and from the \code{\link{OPMS}} method to the \code{\link{WMD}} method.
 #' @return \code{\link{WMD}} or \code{\link{OPMS}} object with modified
@@ -548,6 +558,10 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #' stopifnot(identical(copy, # same result with expression
 #'   map_metadata(vaas_1, expression(Organism <- paste(Species, Strain)))))
 #'
+#' # WMD+missing method
+#' (x <- metadata(map_metadata(vaas_1)))
+#' stopifnot(identical(x, metadata(vaas_1))) # nothing to modify in that case
+#'
 #' # OPMS method
 #' data(vaas_4)
 #'
@@ -575,6 +589,10 @@ setMethod("metadata<-", c(OPMS, "factor", "ANY"), function(
 #' (x <- setdiff(metadata_chars(copy), metadata_chars(vaas_4)))
 #' stopifnot(length(x) == 4) # one entry per plate
 #'
+#' # 'mapping' missing
+#' (x <- metadata(map_metadata(vaas_4)))
+#' stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
+#'
 setGeneric("map_metadata",
   function(object, mapping, ...) standardGeneric("map_metadata"))
 
@@ -600,6 +618,24 @@ setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
 setMethod("map_metadata", c(WMD, FOE), function(object, mapping,
     values = parent.frame()) {
   object@metadata <- map_values(object@metadata, mapping, values)
+  object
+}, sealed = SEALED)
+
+setMethod("map_metadata", c(WMD, "missing"), function(object, mapping,
+    values = TRUE, classes = "factor") {
+  if (L(values))
+    object@metadata <- rapply(object@metadata, function(x) if (all(is.na(x)))
+      NULL
+    else
+      x, "ANY", NULL, "replace")
+  object@metadata <- map_values(object@metadata, NULL, classes)
+  object
+}, sealed = SEALED)
+
+setMethod("map_metadata", c(OPMS, "missing"), function(object, mapping,
+    values = TRUE, classes = "factor") {
+  object@plates <- lapply(X = object@plates, FUN = map_metadata,
+    values = values, classes = classes)
   object
 }, sealed = SEALED)
 

@@ -51,7 +51,8 @@ if (length(f) > 0L) {
 }
 }
 \seealso{
-  Other io-functions: \code{\link{batch_opm_to_yaml}},
+  Other io-functions: \code{\link{batch_opm}},
+  \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
