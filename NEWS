@@ -48,8 +48,9 @@ New features:
 
 - new map_metadata(), to_metadata() and `metadata<-`() methods
 
-- new arguments and/or options for ci_plot(), opm_opt(), param_names(),
-  file_pattern(), opm_files(), safe_labels() and substrate_info()
+- new arguments and/or options for ci_plot(), radial_plot(), opm_opt(),
+  param_names(), file_pattern(), opm_files(), safe_labels() and
+  substrate_info()
 
 - batch_opm() replaces batch_opm_to_yaml() with more arguments
 

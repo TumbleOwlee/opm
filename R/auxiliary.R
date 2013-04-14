@@ -812,7 +812,7 @@ setGeneric("glob_to_regex",
 
 setMethod("glob_to_regex", "character", function(object) {
   # TODO: one should perhaps also check for '|'
-  x <- glob2rx(gsub("[+^$]", "\\\\1", object, perl = TRUE))
+  x <- glob2rx(gsub("([+^$])", "\\\\\\1", object, perl = TRUE))
   attributes(x) <- attributes(object)
   x
 }, sealed = SEALED)

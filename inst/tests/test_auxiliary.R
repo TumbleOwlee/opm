@@ -312,6 +312,9 @@ test_that("wildcards can be converted to regular expressions", {
     "^.*\\.", "^")
   got <- glob_to_regex(x)
   expect_equal(wanted, got)
+  x <- c("anc-+k", "+ushs+")
+  got <- glob_to_regex(x)
+  print(got)
 })
 
 
