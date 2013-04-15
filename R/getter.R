@@ -76,7 +76,8 @@ setMethod("measurements", OPM, function(object, i) {
 #' @param x \code{\link{OPM}}, \code{\link{OPMA}} or \code{\link{OPMS}} object.
 #' @param i Vector or missing. For the \code{\link{OPM}} and \code{\link{OPMA}}
 #'   method, the indexes of one to several time points. For the
-#'   \code{\link{OPMS}} method, the indexes of one to several plates.
+#'   \code{\link{OPMS}} method, the indexes of one to several plates. It is an
+#'   error to select plates that are not present.
 #' @param j Vector or missing. \itemize{
 #'   \item For the \code{\link{OPM}} and \code{\link{OPMA}} method, the indexes
 #'   or names of one to several wells. Can also be a formula, which allows for
@@ -236,8 +237,14 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     drop = FALSE) {
   if (!missing(...))
     stop("incorrect number of dimensions")
-  if (!length(y <- x@plates[i]))
-    return(NULL)
+  if (missing(i) || identical(i, TRUE))
+    y <- x@plates
+  else {
+    if (!length(y <- x@plates[i]))
+      return(NULL)
+    if (any(vapply(y, is.null, logical(1L))))
+      stop("index out of range")
+  }
   k <- well_index(k, colnames(y[[1L]]@measurements)[-1L])
   if (missing(j) || identical(j, TRUE)) {
     # no call of OPM method if j and k are missing/TRUE and drop is FALSE

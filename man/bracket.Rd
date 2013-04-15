@@ -8,7 +8,8 @@
   \item{i}{Vector or missing. For the \code{\link{OPM}} and
   \code{\link{OPMA}} method, the indexes of one to several
   time points. For the \code{\link{OPMS}} method, the
-  indexes of one to several plates.}
+  indexes of one to several plates. It is an error to
+  select plates that are not present.}
 
   \item{j}{Vector or missing. \itemize{ \item For the
   \code{\link{OPM}} and \code{\link{OPMA}} method, the
