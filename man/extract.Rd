@@ -17,7 +17,8 @@
   in the matrix. If it is \sQuote{disc}, discretized data
   are returned, and \code{ci} is ignored.}
 
-  \item{ci}{Logical scalar. Also return the CIs?}
+  \item{ci}{Logical scalar. Also return the confidence
+  intervals?}
 
   \item{trim}{Character scalar. See
   \code{\link{aggregated}} for details.}

@@ -895,7 +895,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #'
 #' @param subset Character vector. The parameter(s) to put in the matrix. If it
 #'   is \sQuote{disc}, discretized data are returned, and \code{ci} is ignored.
-#' @param ci Logical scalar. Also return the CIs?
+#' @param ci Logical scalar. Also return the confidence intervals?
 #' @param trim Character scalar. See \code{\link{aggregated}} for details.
 #' @param dataframe Logical scalar. Return data frame or matrix?
 #'

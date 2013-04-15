@@ -1272,7 +1272,7 @@ vaas.1.6.A <- heat_map(vaas.1.6, as.labels = "Strain",
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-print(heat_map(vaas.1.6, as.labels = "Strain", as.groups = "Species"))
+heat_map(vaas.1.6, as.labels = "Strain", as.groups = "Species")
 @
 }
 \caption{
@@ -1285,6 +1285,35 @@ The default colour setting uses topological colours, with deep violet and blue i
 The default can by set with \code{opm\_opt(hm.colors = ...)}.
 }
 \end{figure}
+
+
+The function \code{radial\_plot()} is able to plot numeric values as distances from the center of a circular field in directions defined by angles in radians.
+Some selection of wells should usually be applied beforehand for these plots to be useful.
+Figure~\ref{fig:radial_plot} provides an example of such a visualization.
+The parameter maximum height (A) is plotted for the wells A01 to A10 from dataset \code{vaas\_4}.
+Note also that the values for positioning the upper-left corner of the legend are oriented according to the axes of the plot.
+Hence, if the legend should be placed in the lower left part of the figure, negative values for x and y would be necessary.
+The code is as follows:
+
+<<label=radial.plot.I, results=hide, fig=FALSE, width=10>>=
+radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
+  x = 150, y = 200)
+@
+
+\begin{figure}
+\scalebox{1.225}{
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
+radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
+  x = 150, y = 200)
+@
+}
+\caption{
+\label{fig:radial_plot}
+Comparison of point estimates for the parameter maximum height (A) observed from four strains, using \code{radial\_plot()}.
+Shown are the results for estimating the maximum height of the single curves from wells A01 to A10.
+}
+\end{figure}
+
 
 The function \code{ci\_plot()} is able to visualize point estimates and corresponding 95\% confidence intervals for the parameters, derived \textit{via} bootstrapping during aggregation of raw kinetic data into curve parameters, or, in conjunction with \code{extract()}, from plate groups defined by the metadata.
 Thereby the bracket operator as described above (see Section~\ref{application manipulation}) facilitates the selection of subsets of interest. 
@@ -1310,34 +1339,6 @@ ci_plot(vaas.1.6[, , c("A01", "A02", "A03")], as.labels = list("Species", "Strai
 Comparison of point estimates and their 95\% confidence intervals for the parameter maximum height (A) observed from four strains, using \code{ci\_plot()}.
 Shown are the results for estimating the maximum height of the single curves on the three wells A01 (Negative Control), A02 (Dextrin) and A03 (D-Maltose) as indicated by the sub-plot titles. Point estimates that have no overlapping confidence intervals are regarded to be significantly different.
 But note that here the confidence intervals only indicate the uncertainty in parameter estimation from single curves.
-}
-\end{figure}
-
-
-The function \code{radial\_plot()} is able to plot numeric values as distances from the center of a circular field in directions defined by angles in radians.
-Some selection of wells should usually be applied beforehand for these plots to be useful.
-Figure~\ref{fig:radial_plot} provides an example of such a visualization.
-The parameter maximum height (A) is plotted for the wells A01 to A10 from dataset \code{vaas\_4}.
-Note also that the values for positioning the upper-left corner of the legend are oriented according to the axes of the plot.
-Hence, if the legend should be placed in the lower left part of the figure, negative values for x and y would be necessary.
-The code is as follows:
-
-<<label=radial.plot.I, results=hide, fig=FALSE, width=10>>=
-radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
-  x = 150, y = 200) 
-@
-
-\begin{figure}
-\scalebox{1.225}{
-<<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-radial_plot(vaas_4[,, 1:10], as.labels = list("Species", "Strain"),
-  x = 190, y = 190) 
-@
-}
-\caption{
-\label{fig:radial_plot}
-Comparison of point estimates for the parameter maximum height (A) observed from four strains, using \code{radial\_plot()}.
-Shown are the results for estimating the maximum height of the single curves from wells A01 to A10.
 }
 \end{figure}
 
@@ -1388,17 +1389,13 @@ Per default, this would subtract the mean of each well from each of its values (
 Division instead of subtraction is also possible (\code{subtract = FALSE}).
 
 <<label=normalisation, results=hide, fig=FALSE, width=10>>=
-# without normalisation (figure not shown)
-y <- extract(x, as.groups = TRUE,  norm.per = "none")
-ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 350, y = 1)
-
 # normalisation by plate means (figure not shown)
 y <- extract(x, as.groups = TRUE,  norm.per = "row")
-ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 130, y = 1)
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 150, y = 0)
 
 # normalisation by well means (figure not shown)
 y <- extract(x, as.groups = TRUE,  norm.per = "column")
-ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 20, y = 1)
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 150, y = 0)
 @
 
 Moreover, \textit{via} \code{norm.by} it is possible to use one to several selected wells or plates for the calculation of the means used for normalisation. 
@@ -1417,7 +1414,7 @@ ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 0, y = 0)
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=8>>=
-print(ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 0, y = 0))
+ci_plot(y[, c(1:7, 13)], legend.field = NULL, x = 0, y = 0)
 @
 }
 \caption{

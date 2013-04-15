@@ -1697,8 +1697,13 @@ clean_filenames <- function(x, overwrite = FALSE, demo = FALSE,
     unlist(lapply(x, FUN = paste, collapse = "."))
   }
   LL(overwrite, demo, empty.tmpl)
-  x <- unique(as.character(x))
-  result <- file.path(dirname(x), clean_basenames(basename(x)))
+  x <- unique.default(as.character(x))
+  if (any(bad <- !nzchar(x))) {
+    warning("removing invalid empty file name")
+    x <- x[!bad]
+  }
+  result <- clean_basenames(basename(x))
+  result <- ifelse(dirname(x) == ".", result, file.path(dirname(x), result))
   different <- result != x
   result <- structure(.Data = result[different], names = x[different])
   if (!overwrite) {
