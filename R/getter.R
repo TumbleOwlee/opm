@@ -66,7 +66,7 @@ setMethod("measurements", OPM, function(object, i) {
 #'
 #' Select a subset of the \code{\link{measurements}} (and, if present, of the
 #' \code{\link{aggregated}} data and the \code{\link{discretized}} data) or
-#' plates. Return this subset (or theses subsets) together with the other slots
+#' plates. Return this subset (or these subsets) together with the other slots
 #' (which are unchanged).
 #'
 #' @rdname bracket
@@ -240,10 +240,13 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   if (missing(i) || identical(i, TRUE))
     y <- x@plates
   else {
-    if (!length(y <- x@plates[i]))
+    y <- x@plates[i]
+    if (any(bad <- vapply(y, is.null, logical(1L)))) {
+      warning("plate indexes partially out of range")
+      y <- y[!bad]
+    }
+    if (!length(y))
       return(NULL)
-    if (any(vapply(y, is.null, logical(1L))))
-      stop("index out of range")
   }
   k <- well_index(k, colnames(y[[1L]]@measurements)[-1L])
   if (missing(j) || identical(j, TRUE)) {

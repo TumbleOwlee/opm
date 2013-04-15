@@ -299,11 +299,11 @@ read_microstation_opm <- function(filename) {
   names(x) <- c(CSV_NAMES[c("FILE", "PLATE_TYPE", "SETUP", "POS")], HOUR,
     norm_coords(sub(pat, "", wells, perl = TRUE)))
   pos <- seq.int(4L)
-  x <- to_opm_list(lapply(seq.int(nrow(x)), function(i) {
+  x <- to_opm_list.list(lapply(seq.int(nrow(x)), function(i) {
     list(csv_data = as.list(x[i, pos, drop = FALSE]),
       metadata = y[i, , drop = TRUE],
       measurements = as.list(x[i, -pos, drop = FALSE]))
-  }), precomputed = FALSE, skip = FALSE)
+  }), FALSE, FALSE, FALSE)
   if (!length(x))
     stop("MicroStation CSV file contained no interpretable data")
   x

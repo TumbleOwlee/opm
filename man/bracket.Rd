@@ -50,7 +50,7 @@
   Select a subset of the \code{\link{measurements}} (and,
   if present, of the \code{\link{aggregated}} data and the
   \code{\link{discretized}} data) or plates. Return this
-  subset (or theses subsets) together with the other slots
+  subset (or these subsets) together with the other slots
   (which are unchanged).
 }
 \details{

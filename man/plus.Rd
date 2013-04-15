@@ -49,8 +49,8 @@ dim(x <- vaas_4 + list(vaas_1))
 stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 }
 \seealso{
-  Other combination-functions: \code{\link{c}},
-  \code{\link{opms}}
+  Other combination-functions: \code{\link{[<-}},
+  \code{\link{c}}, \code{\link{opms}}
 }
 \keyword{manip}
 

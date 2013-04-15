@@ -39,8 +39,8 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \seealso{
   base::c
 
-  Other combination-functions: \code{\link{opms}},
-  \code{\link{plus}}
+  Other combination-functions: \code{\link{[<-}},
+  \code{\link{opms}}, \code{\link{plus}}
 }
 \keyword{manip}
 

@@ -38,6 +38,8 @@ New features:
 
 - do_disc() could now discretize any of the four curve parameters
 
+- indexed assigned has been introduced for OPMS objects
+
 - indexing wells now works with formulas, too, allowing for sequences of well
   coordinates
 

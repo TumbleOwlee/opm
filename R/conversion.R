@@ -158,7 +158,7 @@ setMethod("plates", OPM, function(object) {
 }, sealed = SEALED)
 
 setMethod("plates", "list", function(object) {
-  to_opm_list(object, precomputed = TRUE, skip = TRUE, group = FALSE)
+  to_opm_list.list(object, TRUE, TRUE, FALSE)
 }, sealed = SEALED)
 
 
@@ -204,7 +204,7 @@ setMethod("oapply", OPMS, function(object, fun, ..., simplify = TRUE) {
   result <- sapply(X = object@plates, FUN = fun, ..., simplify = simplify,
     USE.NAMES = FALSE)
   if (simplify && is.list(result))
-    result <- try_opms(result)
+    result <- try_opms.list(result)
   result
 }, sealed = SEALED)
 

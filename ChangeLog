@@ -34,6 +34,7 @@
   disc_settings() is accordingly expanded, and opm_opt() gets a 'disc.param'
   entry
 
+- indexed assigned '[<-'() introduced for OPMS objects
 - in `[`(), wells(), measurements() and well_to_substrate(), wells can now be 
   indexed using formulas, thus allowing for sequences of well coordinates and 
   less code

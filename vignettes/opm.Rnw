@@ -472,6 +472,9 @@ It is also possible to automatically construct row groups by selecting the same 
 It facilitates the selection of a clustering algorithm and the construction of row and column groups, and provides more appropriate default solutions for row and column descriptions sizes.
 (We suppose that in most situations the pictures produced by \code{heat\_map()} should not need to be manually adapted in these respects.)
 
+Finally, \pkg{opm} enables the user to plot aggregated values as radial plots using an eponymous function, which is mainly a wrapper for the \code{radial.plot()} function from the \pkg{plotrix} package adapted to the typical \pkg{opm} objects.
+\code{radial\_plot()} displays a plot of radial lines, polygons or symbols, or a combination of these, centred at the midpoint of the plot frame, the lengths, vertices or positions corresponding to the numeric magnitudes of the data values.
+
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{methods group-means}
 
@@ -876,10 +879,21 @@ So keep in mind that formulas and expressions are very flexible for modifying me
 They would allow for any other operation (such as numerical calculations) provided it can be applied to the selected predefined metadata content.
 The replacement function can also be used to copy metadata between \proglang{OPM} and/or \proglang{OPMS} objects.
 
+Metadata can also be assigned specifically for subsets of \proglang{OPMS} objects, using the indexed assignment available for those objects:
+
+<<label=assign.metadata, results=hide, width=8>>=
+metadata(example.opm[2]) <- list(Organism = "Elephas maximus",
+  Size = "3 meters")
+metadata(example.opm)
+metadata(example.opm[2]) <- list()
+metadata(example.opm)
+@
+
+
 Readers may have noted that \code{metadata()} always returns a list, not a data frame.
 This is because metadata need not contain the same entries, even within a single \proglang{OPMS} object, and can be nested.
 It is possible, however, to get the metadata as data frame by using \code{to\_metadata()}.
-Missing entries will be filled with \code{NA} values, and nested metadata entries will yield data-frame columns of the mode ``list''.
+Missing entries would then be filled with \code{NA} values, and nested metadata entries would yield data-frame columns of the mode ``list''.
 This might or might not be suitable for further processing.
 For statistical analysis, the appropriate way is to extract only those metadata entries that are present in \textit{all} \proglang{OPMS} elements, and usually also only those that are not themselves lists.
 Methods such as \code{extract()} are based on this principle.
@@ -1298,6 +1312,35 @@ Shown are the results for estimating the maximum height of the single curves on 
 But note that here the confidence intervals only indicate the uncertainty in parameter estimation from single curves.
 }
 \end{figure}
+
+
+The function \code{radial\_plot()} is able to plot numeric values as distances from the center of a circular field in directions defined by angles in radians.
+Some selection of wells should usually be applied beforehand for these plots to be useful.
+Figure~\ref{fig:radial_plot} provides an example of such a visualization.
+The parameter maximum height (A) is plotted for the wells A01 to A10 from dataset \code{vaas\_4}.
+Note also that the values for positioning the upper-left corner of the legend are oriented according to the axes of the plot.
+Hence, if the legend should be placed in the lower left part of the figure, negative values for x and y would be necessary.
+The code is as follows:
+
+<<label=radial.plot.I, results=hide, fig=FALSE, width=10>>=
+radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
+  x = 150, y = 200) 
+@
+
+\begin{figure}
+\scalebox{1.225}{
+<<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
+radial_plot(vaas_4[,, 1:10], as.labels = list("Species", "Strain"),
+  x = 190, y = 190) 
+@
+}
+\caption{
+\label{fig:radial_plot}
+Comparison of point estimates for the parameter maximum height (A) observed from four strains, using \code{radial\_plot()}.
+Shown are the results for estimating the maximum height of the single curves from wells A01 to A10.
+}
+\end{figure}
+
 
 Furthermore, the helper function \code{extract()} (more specifically, its data-frame method) can group curve parameters from \proglang{OPMS} objects according to selected metadata and calculate according point estimates (means) and confidence intervals.
 It can also apply normalisation beforehand, which might frequently be necessary to more easily recognize biological differences; see Section~\ref{methods plotting-aggregated}.

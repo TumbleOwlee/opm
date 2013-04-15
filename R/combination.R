@@ -22,10 +22,13 @@
 #' @return List.
 #' @keywords internal
 #'
-setGeneric("to_opm_list", function(object, ...) standardGeneric("to_opm_list"))
+to_opm_list <- function(object, ...) UseMethod("to_opm_list")
 
-setMethod("to_opm_list", "list", function(object, precomputed = TRUE,
-    skip = FALSE, group = FALSE) {
+#' @method to_opm_list list
+#' @rdname to_opm_list
+#'
+to_opm_list.list <- function(object, precomputed = TRUE, skip = FALSE,
+    group = FALSE) {
   LL(precomputed, skip, group)
   opmd.slots <- setdiff(slotNames(OPMD), opma.slots <- slotNames(OPMA))
   opma.slots <- setdiff(opma.slots, opm.slots <- slotNames(OPM))
@@ -64,6 +67,59 @@ setMethod("to_opm_list", "list", function(object, precomputed = TRUE,
   if (group)
     result <- split(result, vapply(result, plate_type, character(1L)))
   result
+}
+
+
+################################################################################
+
+
+#' Assign subset
+#'
+#' Assign subsets of \code{\link{OPMS}} objects.
+#'
+#' @param x \code{\link{OPMS}} object.
+#' @param i One to several plate indexes. Should be compatible with the length
+#'   of \code{value}.
+#' @param j Must \strong{not} be set. See the examples.
+#' @param value Value to be assigned. \code{NULL} causes the selected plates
+#'   to be removed. Alternatively, \code{\link{OPM}} or \code{\link{OPMS}}
+#'   objects can be assigned, subject to the restrictions explained in the help
+#'   entry of the \code{\link{OPMS}} class.
+#' @return \code{value}.
+#' @family combination-functions
+#' @keywords manip
+#' @rdname bracket.set
+#' @exportMethod "[<-"
+#' @export
+#' @examples
+#' data(vaas_4)
+#' copy <- vaas_4
+#' copy[5] <- NULL # has no effect
+#' stopifnot(identical(vaas_4, copy))
+#' length(copy)
+#' copy[2:3] <- NULL # removes these plates
+#' length(copy)
+#' stopifnot(length(vaas_4) == length(copy) + 2)
+#' copy[1:4] <- vaas_4 # set all plates to the plates from 'vaas_4'
+#' stopifnot(identical(vaas_4, copy))
+#' copy[3] <- copy[3] # no change
+#' stopifnot(identical(vaas_4, copy))
+#' copy[3] <- copy[2] # now assign other plate
+#' stopifnot(!identical(vaas_4, copy))
+#'
+setMethod("[<-", c(OPMS, "ANY", "missing", "NULL"), function(x, i, j, value) {
+  x@plates[i] <- NULL
+  case(length(x@plates), NULL, x@plates[[1L]], x) # no check necessary here
+}, sealed = SEALED)
+
+setMethod("[<-", c(OPMS, "ANY", "missing", OPM), function(x, i, j, value) {
+  x@plates[i] <- value
+  new(OPMS, plates = x@plates) # check needed
+}, sealed = SEALED)
+
+setMethod("[<-", c(OPMS, "ANY", "missing", OPMS), function(x, i, j, value) {
+  x@plates[i] <- value@plates
+  new(OPMS, plates = x@plates) # check needed
 }, sealed = SEALED)
 
 
@@ -82,13 +138,16 @@ setMethod("to_opm_list", "list", function(object, precomputed = TRUE,
 #'   input \code{object} (if conversions was unsuccessful).
 #' @keywords internal
 #'
-setGeneric("try_opms", function(object, ...) standardGeneric("try_opms"))
+try_opms <- function(object, ...) UseMethod("try_opms")
 
-setMethod("try_opms", "list", function(object, precomputed = TRUE,
-    skip = FALSE) {
-  tryCatch(new(OPMS, plates = to_opm_list(object, precomputed = precomputed,
-    skip = skip, group = FALSE)), error = function(e) object)
-}, sealed = SEALED)
+#' @method try_opms list
+#' @rdname try_opms
+#'
+try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
+  tryCatch(
+    new(OPMS, plates = to_opm_list.list(object, precomputed, skip, FALSE)),
+    error = function(e) object)
+}
 
 
 ################################################################################
@@ -133,7 +192,7 @@ setMethod("try_opms", "list", function(object, precomputed = TRUE,
 setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
   if (missing(..1))
     return(x)
-  try_opms(list(x, ...))
+  try_opms.list(list(x, ...))
 }, sealed = SEALED)
 
 
@@ -285,9 +344,8 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #' stopifnot(is(x, "OPMS"), length(x) == 8L)
 #'
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
-  opms_or_opm <- function(x) {
-    case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
-  }
+  opms_or_first_or_NULL <- function(x) case(length(x), NULL, x[[1L]],
+    new(OPMS, plates = x))
   if (is.character(group)) {
     wanted <- group
     group <- TRUE
@@ -295,15 +353,14 @@ opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
     wanted <- NULL
     group <- as.logical(group)
   }
-  result <- to_opm_list(list(...), precomputed = precomputed, skip = skip,
-    group = group)
+  result <- to_opm_list.list(list(...), precomputed, skip, group)
   if (is.null(wanted)) {
     if (group)
-      lapply(result, opms_or_opm)
+      lapply(result, opms_or_first_or_NULL)
     else
-      opms_or_opm(result)
+      opms_or_first_or_NULL(result)
   } else
-    opms_or_opm(result[[wanted]])
+    opms_or_first_or_NULL(result[[wanted]])
 }
 
 

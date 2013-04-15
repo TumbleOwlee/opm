@@ -223,6 +223,9 @@ setMethod("include_metadata", OPMS, function(object, ...) {
 #' copy <- vaas_4
 #' (metadata(copy) <- list(x = -99)) # will replace all of them
 #' stopifnot(identical(unique(metadata(copy)), list(list(x = -99))))
+#' metadata(copy[2]) <- list(x = 1) # will replace those of 2nd plate
+#' stopifnot(identical(unique(metadata(copy)),
+#'   list(list(x = -99), list(x = 1))))
 #'
 #' # OPMS/missing/WMD method
 #' (metadata(copy) <- vaas_1) # will also replace all of them
