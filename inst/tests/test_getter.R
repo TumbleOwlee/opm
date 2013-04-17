@@ -206,12 +206,12 @@ test_that("plate names can be normalized", {
   # Normal input arguments
   x <- c("<strange>", "PM-M3 A", "PM09", "pm10b", "pmM10D", "PM1")
   exp <- c("<strange>", "PM-M03-A", "PM09", "PM10-B", "PM-M10-D", "PM01")
-  got <- plate_type(x, TRUE)
+  got <- plate_type(x, subtype = TRUE)
   expect_equal(got, exp)
   # Microstation plates
   x <- c("<strange>", "ECO", "SFN2", "GP2", "SF-N2", "G-N2")
   exp <- c("<strange>", "ECO", "SF-N2", "SF-P2", "SF-N2", "SF-N2")
-  got <- plate_type(x, TRUE)
+  got <- plate_type(x, subtype = TRUE)
   expect_equal(got, exp)
   # The internally used names must already be normalized
   standard.names <- names(PLATE_MAP)

@@ -58,7 +58,8 @@ to_opm_list.list <- function(object, precomputed = TRUE, skip = FALSE,
     else if (skip)
       NULL
     else
-      stop("need object derived from ", OPM, " or ", OPMS)
+      stop("need object derived from ", OPM, " or ", OPMS, ", got ",
+        class(item)[1L])
   }
   result <- if (precomputed)
     rapply(object, f = get_plates, how = "unlist")
@@ -344,22 +345,24 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #' stopifnot(is(x, "OPMS"), length(x) == 8L)
 #'
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
-  opms_or_first_or_NULL <- function(x) case(length(x), NULL, x[[1L]],
-    new(OPMS, plates = x))
+  opms_or_first_or_NULL <- function(x) {
+    case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
+  }
   if (is.character(group)) {
-    wanted <- group
+    wanted <- plate_type(group) # for normalization
     group <- TRUE
   } else {
     wanted <- NULL
     group <- as.logical(group)
   }
+  # to_opm_list() checks the argument lengths
   result <- to_opm_list.list(list(...), precomputed, skip, group)
   if (is.null(wanted)) {
     if (group)
       lapply(result, opms_or_first_or_NULL)
     else
       opms_or_first_or_NULL(result)
-  } else
+  } else # group was TRUE in that case, and to_opm_list() split the list
     opms_or_first_or_NULL(result[[wanted]])
 }
 

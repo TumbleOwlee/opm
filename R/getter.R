@@ -769,6 +769,8 @@ setMethod("filename", OPM, function(object) {
 #' @param word.wise Logical scalar.
 #' @param paren.sep Character scalar.
 #' @param downcase Logical scalar.
+#' @param normalize Logical scalar. Attempt to normalize the plate-type string
+#'   before interpreting it?
 #' @param subtype Logical scalar. Keep the plate subtype indicator, if any? Only
 #'   relevant for the character or factor method.
 #' @param ... Optional arguments passed between the methods.
@@ -823,25 +825,60 @@ setMethod("filename", OPM, function(object) {
 #' stopifnot(identical(x, letters))
 #'
 #' # Something more realistic
-#' (x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), TRUE))
+#' (x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), subtype = TRUE))
 #' stopifnot(x != y)
 #'
 #' # Factor method
-#' (z <- plate_type(as.factor(y), TRUE))
+#' (z <- plate_type(as.factor(y), subtype = TRUE))
 #' stopifnot(is.factor(z), z == x) # same result after conversion
 #'
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))
 
-setMethod("plate_type", OPM, function(object, full = FALSE, in.parens = TRUE,
-    max = 100L, clean = TRUE, brackets = FALSE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE) {
-  LL(full, downcase, in.parens)
-  result <- object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]]
+setMethod("plate_type", OPM, function(object, ...) {
+  plate_type(object = object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]], ...,
+    normalize = FALSE, subtype = FALSE)
+}, sealed = SEALED)
+
+setMethod("plate_type", "character", function(object, full = FALSE,
+    in.parens = TRUE, max = 100L, clean = TRUE, brackets = FALSE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    normalize = TRUE, subtype = FALSE) {
+  do_normalize <- function(object, subtype) {
+    normalize_pm <- function(x, subtype) {
+      x <- sub("^PMM", "PM-M", x, perl = TRUE)
+      x <- sub("^PM-MTOX", "PM-M TOX", x, perl = TRUE)
+      x <- sub("([A-Z]+)$", if (subtype)
+        "-\\1"
+      else
+        "", x, perl = TRUE)
+      sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, perl = TRUE)
+    }
+    normalize_sf <- function(x, subtype) {
+      x <- if (subtype)
+        sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, perl = TRUE), perl = TRUE)
+      else
+        sub(SP_PATTERN, "\\1", x, perl = TRUE)
+      x <- sub("^(G|SF)([NP])", "SF-\\2", x, perl = TRUE)
+      sub("^GENIII", "Gen III", x, perl = TRUE)
+    }
+    result <- toupper(gsub("\\W", "", object, perl = TRUE))
+    pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, perl = TRUE)
+    result[pm] <- normalize_pm(result[pm], subtype)
+    sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], perl = TRUE)
+    result[sf] <- normalize_sf(result[sf], subtype)
+    result[bad] <- object[bad <- !(pm | sf)]
+    result
+  }
+  LL(full, downcase, in.parens, normalize, subtype)
+  result <- if (normalize)
+    do_normalize(object, subtype)
+  else
+    object
   if (!full)
     return(result)
   pos <- match(result, names(PLATE_MAP))
-  if (is.na(pos)) {
-    warning("cannot find full name of plate ", result)
+  if (any(bad <- is.na(pos))) {
+    warning("cannot find full name of plate ", result[bad][1L])
     return(result)
   }
   full.name <- PLATE_MAP[pos]
@@ -857,36 +894,8 @@ setMethod("plate_type", OPM, function(object, full = FALSE, in.parens = TRUE,
   result
 }, sealed = SEALED)
 
-setMethod("plate_type", "character", function(object, subtype = FALSE) {
-  normalize_pm <- function(x, subtype) {
-    x <- sub("^PMM", "PM-M", x, perl = TRUE)
-    x <- sub("^PM-MTOX", "PM-M TOX", x, perl = TRUE)
-    x <- sub("([A-Z]+)$", if (subtype)
-      "-\\1"
-    else
-      "", x, perl = TRUE)
-    sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, perl = TRUE)
-  }
-  normalize_sf <- function(x, subtype) {
-    x <- if (subtype)
-      sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, perl = TRUE), perl = TRUE)
-    else
-      sub(SP_PATTERN, "\\1", x, perl = TRUE)
-    x <- sub("^(G|SF)([NP])", "SF-\\2", x, perl = TRUE)
-    sub("^GENIII", "Gen III", x, perl = TRUE)
-  }
-  LL(subtype)
-  result <- toupper(gsub("\\W", "", object, perl = TRUE))
-  pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, perl = TRUE)
-  result[pm] <- normalize_pm(result[pm], subtype)
-  sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], perl = TRUE)
-  result[sf] <- normalize_sf(result[sf], subtype)
-  result[bad] <- object[bad <- !(pm | sf)]
-  result
-}, sealed = SEALED)
-
-setMethod("plate_type", "factor", function(object, subtype = FALSE) {
-  map_values(object, plate_type, subtype = subtype)
+setMethod("plate_type", "factor", function(object, ...) {
+  map_values(object = object, mapping = plate_type, ...)
 }, sealed = SEALED)
 
 

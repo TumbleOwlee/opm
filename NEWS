@@ -46,12 +46,14 @@ New features:
 - the infix operators can swap the arguments, and also work with formulas, just
   as subset()
 
+- opms() now normalizes plate-type names if used as 'group' argument
+
 - new expression methods for metadata mapping
 
 - new map_metadata(), to_metadata() and `metadata<-`() methods
 
 - new arguments and/or options for ci_plot(), radial_plot(), opm_opt(),
-  param_names(), file_pattern(), opm_files(), safe_labels() and
+  param_names(), file_pattern(), opm_files(), safe_labels(), plate_type(),
   substrate_info()
 
 - batch_opm() replaces batch_opm_to_yaml() with more arguments

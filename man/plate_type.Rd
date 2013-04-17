@@ -27,6 +27,9 @@
 
   \item{downcase}{Logical scalar.}
 
+  \item{normalize}{Logical scalar. Attempt to normalize the
+  plate-type string before interpreting it?}
+
   \item{subtype}{Logical scalar. Keep the plate subtype
   indicator, if any? Only relevant for the character or
   factor method.}
@@ -89,11 +92,11 @@ stopifnot(identical(x, xx))
 stopifnot(identical(x, letters))
 
 # Something more realistic
-(x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), TRUE))
+(x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), subtype = TRUE))
 stopifnot(x != y)
 
 # Factor method
-(z <- plate_type(as.factor(y), TRUE))
+(z <- plate_type(as.factor(y), subtype = TRUE))
 stopifnot(is.factor(z), z == x) # same result after conversion
 }
 \seealso{
@@ -124,13 +127,14 @@ stopifnot(is.factor(z), z == x) # same result after conversion
 \alias{plate_type,factor-method}
 \alias{plate_type,OPMS-method}
 \usage{
-  \S4method{plate_type}{OPM}(object, full = FALSE, in.parens = TRUE,
-    max = 100L, clean = TRUE, brackets = FALSE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE) 
+  \S4method{plate_type}{OPM}(object, ...) 
 
-  \S4method{plate_type}{character}(object, subtype = FALSE) 
+  \S4method{plate_type}{character}(object, full = FALSE,
+    in.parens = TRUE, max = 100L, clean = TRUE, brackets = FALSE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    normalize = TRUE, subtype = FALSE) 
 
-  \S4method{plate_type}{factor}(object, subtype = FALSE) 
+  \S4method{plate_type}{factor}(object, ...) 
 
   \S4method{plate_type}{OPMS}(object, ...) 
 

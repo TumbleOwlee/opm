@@ -46,6 +46,7 @@
 - novel map_metadata() method for missing 'mapping' arguments that conducts
   metadata cleaning 
 
+- the character method of plate_type() gets all arguments of the OPMX method
 - batch_opm(), the former batch_opm_to_yaml(), gets 'output' and other novel
   arguments
 - ci_plot() gets a 'split.at' argument
@@ -56,6 +57,7 @@
 - the 'what' argument of opm_files() gets more options
 - safe_labels() gets a 'comment' argument
 - substrate_info() gets new 'greek' and 'html' arguments
+- opms() now normalizes the 'group' argument (if a character string)
 
 - improved print() methods for OPM(S/D)_Summary objects
 - the data-frame method of separate() now deals with columns with only empty

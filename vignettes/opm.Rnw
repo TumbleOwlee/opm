@@ -38,11 +38,11 @@
 % authors, first page
 \author{Lea A.I. Vaas\\CBS-KNAW Fungal Biodiversity Centre \And
         Johannes Sikorski\\Leibniz Institute DSMZ  \AND
-        Benjamin Hofner\\Universit\"at Erlangen-N\"urnberg \And
+        Benjamin Hofner\\Universit\"{a}t Erlangen-N\"{u}rnberg \And
         Nora Buddruhs\\Leibniz Institute DSMZ \And
         Anne Fiebig\\Leibniz Institute DSMZ \AND
         Hans-Peter Klenk\\Leibniz Institute DSMZ \And
-        Markus G\"oker\\Leibniz Institute DSMZ}
+        Markus G\"{o}ker\\Leibniz Institute DSMZ}
 
 % title, first page
 \title{\pkg{opm}: An R Package for Analysing OmniLog\textregistered \ Phenotype MicroArray Data}
@@ -294,6 +294,8 @@ The function \code{read\_opm()} has an argument ``convert'' which controls how s
 The entire \proglang{S4} class hierarchy used by \pkg{opm} is shown in Figure~\ref{fig:class_hierarchy}.
 A number of \proglang{S3} helper classes are also used by several functions.
 Users come in direct contact only with the \proglang{OPM}, \proglang{OPMA}, \proglang{OPMD} and \proglang{OPMS} classes (see Figure~\ref{fig:overview}).
+Once such objects are created they could also be stored in files using \code{save()} and read again using \code{load()} but \textit{not} using \code{dump()} and \code{source()} instead, respectively.
+We would nevertheless recommend storage in \proglang{YAML} format.
 
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
