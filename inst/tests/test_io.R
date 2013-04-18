@@ -52,7 +52,7 @@ expect_path_equal <- function(actual, expected) {
 
 ## file_pattern
 test_that("file patterns can be constructed", {
-  default.pat <- "\\.(csv|ya?ml)(\\.(bz2|gz|lzma|xz))?$"
+  default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
   expect_equal(default.pat, file_pattern())
   expect_equal("\\.csv$", file_pattern(type = "csv", compressed = FALSE))
 })
@@ -60,7 +60,7 @@ test_that("file patterns can be constructed", {
 
 ##  extended_file_pattern
 test_that("extended file patterns can be constructed", {
-  default.pat <- "\\.(csv|ya?ml)(\\.(bz2|gz|lzma|xz))?$"
+  default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
   expect_equal(NULL, extended_file_pattern(NULL))
   expect_equal(default.pat, extended_file_pattern(list()))
   expect_error(extended_file_pattern("*.csv"))

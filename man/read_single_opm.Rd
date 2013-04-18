@@ -18,11 +18,12 @@
   Read single
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} or
   \pkg{opm} data file in either new- or old-style
-  \acronym{CSV} or \acronym{YAML} format.
+  \acronym{CSV} or \acronym{YAML} (including \acronym{JSON}
+  format.
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
   \acronym{CSV} are also understood, as well as files
   compressed using \command{gzip}, \command{bzip2},
-  \command{lzma} or \command{xz} are also understood.
+  \command{lzma} or \command{xz}.
 }
 \details{
   The expected \acronym{CSV} format is what is output by an
@@ -48,8 +49,9 @@
   and new-style \acronym{CSV} files into one file per
   plate, see the example under \code{\link{split_files}}.
   In contrast, input \acronym{YAML} files can contain data
-  from more than one plate. The format is described in
-  detail under \code{\link{batch_opm}}.
+  from more than one plate. The format (which includes
+  \acronym{JSON}) is described in detail under
+  \code{\link{batch_opm}}.
 }
 \examples{
 test.files <- opm_files("testdata")
@@ -67,10 +69,21 @@ if (length(test.files) > 0) { # if the folder is found
 \references{
   \url{http://www.yaml.org/}
 
+  \url{http://www.json.org/}
+
   \url{http://www.biolog.com/}
 }
 \seealso{
   utils::read.csv
+
+  Other io-functions: \code{\link{batch_collect}},
+  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
+  \code{\link{batch_process}},
+  \code{\link{clean_filenames}},
+  \code{\link{collect_template}},
+  \code{\link{explode_dir}}, \code{\link{file_pattern}},
+  \code{\link{opm_files}}, \code{\link{read_opm}},
+  \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{IO}
 

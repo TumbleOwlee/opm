@@ -661,12 +661,15 @@ setAs(from = "matrix", to = CMAT, function(from) {
 #'
 #' @note \sQuote{FOE} is an acronym for \sQuote{formula or expression}.
 #'
+#' @details See \code{\link{metadata.set}} and \code{\link{map_metadata}} for
+#'   usage examples.
+#'
 #' @name FOE
 #'
 #' @docType class
 #' @export
 #' @aliases FOE-class
-#' @seealso methods::Methods base::matrix base::array
+#' @seealso methods::Methods base::expression stats::formula
 #' @family classes
 #' @keywords methods classes
 #'
@@ -687,6 +690,9 @@ setClassUnion(FOE, c("formula", "expression"))
 #'
 #' @note \sQuote{MOA} is an acronym for \sQuote{matrix or array}.
 #'
+#' @details See \code{\link{map_values}} and \code{\link{map_names}} for
+#'   usage examples.
+#'
 #' @name MOA
 #'
 #' @docType class
@@ -706,12 +712,14 @@ setClassUnion(MOA, c("matrix", "array"))
 
 #' OPMX class
 #'
-#' This is a virtual class containing helper methods for plotting
+#' This is a virtual class containing helper methods mainly for plotting
 #' \code{\link{OPM}} and \code{\link{OPMS}} objects. It is not directly applied
 #' by an \pkg{opm} user.
 #'
 #' @note Regarding the name: \acronym{OPMX} stands for \sQuote{\acronym{OPM} or
 #'   \acronym{OPMS}}.
+#'
+#' @details See \code{\link{show}} and \code{\link{sort}} for usage examples.
 #'
 #' @name OPMX
 #'
@@ -735,11 +743,14 @@ setClassUnion(OPMX, c(OPM, OPMS))
 
 #' YAML_VIA_LIST class
 #'
-#' This is a virtual class facilitating the conversion to \acronym{YAML} format.
-#' It can currently be used by any class that can be coerced to a list, but it
-#' is not directly applied by an \pkg{opm} user.
+#' This is a virtual class facilitating the conversion to \acronym{YAML} format
+#' (or its subset, \acronym{JSON}). It can currently be used by any class that
+#' can be coerced to a list, but it is not directly applied by an \pkg{opm}
+#' user.
 #'
 #' @name YAML_VIA_LIST
+#'
+#' @details See \code{\link{to_yaml}} for a usage example.
 #'
 #' @docType class
 #' @export

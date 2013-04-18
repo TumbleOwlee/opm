@@ -6,7 +6,7 @@
     force.aggr = FALSE, disc.args = NULL,
     force.disc = FALSE, gen.iii = opm_opt("gen.iii"),
     device = "mypdf", dev.args = NULL, plot.args = NULL,
-    ..., output = c("yaml", "xyplot", "levelplot"),
+    ..., output = c("yaml", "json", "xyplot", "levelplot"),
     verbose = TRUE, demo = FALSE)
 }
 \arguments{
@@ -59,9 +59,10 @@
   \code{fun.args} are set automatically.}
 
   \item{output}{Character scalar determining the main
-  output mode. \describe{ \item{levelplot}{Create graphics
-  files, one per input file, containing the output of
-  \code{\link{level_plot}}.} \item{yaml}{Create
+  output mode. \describe{ \item{json}{Create \acronym{JSON}
+  files, one per input file.} \item{levelplot}{Create
+  graphics files, one per input file, containing the output
+  of \code{\link{level_plot}}.} \item{yaml}{Create
   \acronym{YAML} files, one per input file.}
   \item{xyplot}{Create graphics files, one per input file,
   containing the output of \code{\link{xy_plot}}.} }}
@@ -98,11 +99,12 @@
 \description{
   Batch-convert from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  \acronym{CSV} (or previous \pkg{opm} \acronym{YAML}) to
-  \pkg{opm} \acronym{YAML}. It is possible to add metadata
-  to each set of raw data and to aggregate the curves;
-  these additional data will then be included in the
-  \acronym{YAML} output file.
+  \acronym{CSV} (or previous \pkg{opm} \acronym{YAML} or
+  \acronym{JSON}) to \pkg{opm} \acronym{YAML} (or
+  \acronym{JSON}). It is possible to add metadata to each
+  set of raw data and to aggregate the curves; these
+  additional data will then be included in the output
+  files.
 }
 \details{
   A \acronym{YAML} document can comprise \emph{scalars}
@@ -169,13 +171,21 @@
   \sQuote{file.encoding} option of \code{\link{opm_opt}}
   for how to do this.
 
+  \acronym{JSON}, which is almost a subset of
+  \acronym{YAML}, can also be generated, but has more
+  restrictions. It is only recommended if a \acronym{YAML}
+  parser is unavailable. It is also more delicate regarding
+  the encoding of character strings.
+
   When inputting \acronym{YAML} files generated with the
   help of the \pkg{yaml} package (on which the \pkg{opm}
-  implementation is based) using other programming
-  languages, a potential problem is that they, and
-  \acronym{YAML} in general, lack a native representation
-  of \code{NA} values. Such entries are likely to be
-  misunderstood as \sQuote{NA} character scalars.
+  implementation is based), or \acronym{JSON} files
+  generated with the help of the \pkg{rjson} package, using
+  other programming languages, a potential problem is that
+  they, and \acronym{YAML} in general, lack a native
+  representation of \code{NA} values. Such entries are
+  likely to be misunderstood as \sQuote{NA} character
+  scalars.
 }
 \note{
   This function is for batch-converting many files; for
@@ -199,6 +209,8 @@ if (length(test.files) > 0) { # if the files are found
 \references{
   \url{http://www.yaml.org/}
 
+  \url{http://www.json.org/}
+
   \url{http://www.biolog.com/}
 }
 \seealso{
@@ -213,7 +225,8 @@ if (length(test.files) > 0) { # if the files are found
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{split_files}}, \code{\link{to_metadata}}
+  \code{\link{read_single_opm}}, \code{\link{split_files}},
+  \code{\link{to_metadata}}
 }
 \keyword{IO}
 

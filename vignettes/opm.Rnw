@@ -70,13 +70,13 @@ The raw kinetic data can be displayed with customized plotting functions.
 In addition to 95\% confidence plots and enhanced heat-map graphics for visual comparisons of the estimated curve parameters, the package includes customized functionality for user-defined simultaneous multiple comparisons of group means.
 It is also possible to discretize the curve parameters and to export them for reconstructing character evolution or inferring phylogenies with external programs.
 Tabular and textual summaries suitable for, e.g., taxonomic journals can also be automatically created and customized.
-Export and import in the \proglang{YAML} markup language facilitates the data exchange among labs.
+Export and import in the \proglang{YAML} (or \proglang{JSON}) markup language facilitates the data exchange among labs.
 All functionality is exemplified using real-world data sets that are part of the \pkg{opm} \proglang{R} package or are included in the accompanying data package \pkg{opmdata}.
 }
 
-\Keywords{Bootstrap, Cell Lines, \pkg{grofit}, Growth Curves, \pkg{lattice}, Metadata, Microbiology, Respiration Kinetics, Splines, \proglang{YAML}}
+\Keywords{Bootstrap, Cell Lines, \pkg{grofit}, Growth Curves, \pkg{lattice}, Metadata, Microbiology, Respiration Kinetics, Splines, \proglang{YAML}, \proglang{JSON}}
 
-\Plainkeywords{bootstrap, cell lines, grofit, growth curves, lattice, metadata, microbiology, respiration kinetics, splines, YAML}
+\Plainkeywords{bootstrap, cell lines, grofit, growth curves, lattice, metadata, microbiology, respiration kinetics, splines, YAML, JSON}
 
 \Address{
   Markus G\"{o}ker\\
@@ -165,7 +165,7 @@ The Phenotype MicroArray (PM) system is capable of measuring a large number of p
 About 2,000 distinct physiological challenges, such as the metabolism of single carbon sources for energy gain, the metabolism under varying osmolyte concentrations, and the response to varying growth-inhibitory substances are included in the PM microtiter plates \citep{bochner2001, bochner2009}.
 The OmniLog\textregistered \ PM system records the colour formation in an automated setting (every 15 minutes) throughout the duration of the experiment, which may last up to several days.
 Thus the experimenter ends up with high-dimensional sets of longitudinal data, the PM respiration kinetics.
-For a detailed introduction into the experimental setup for obtaining OmniLog\textregistered \ PM respiration kinetic data we refer to the OmniLog\textregistered \ website (http://www.biolog.com/) and the associated hardware and software manuals.
+For a detailed introduction into the experimental setup for obtaining OmniLog\textregistered \ PM respiration kinetic data we refer to the OmniLog\textregistered \ website (\url{http://www.biolog.com/}) and the associated hardware and software manuals.
 Briefly, 96-well microtiter plates with substrates, dye, and bacterial cells are loaded into the OmniLog\textregistered \ reader, a hardware device which provides the appropriate incubation conditions and also automatically reads the intensity of colour formation during tetrazolium reduction.
 The OmniLog\textregistered \ reader is driven by the \textit{Data Collection} software.
 The stored results files, which are in a proprietary format, are then imported into the \textit{Data Management}, \textit{File Management/Kinetic Analysis}, and \textit{Parametric Analysis} software packages for data analysis.
@@ -186,7 +186,8 @@ Based on a previous study \citep{vaas} the here presented \pkg{opm} package offe
 Using customized input functions, raw kinetic data can be transferred into \proglang{R}, stored as \proglang{S4} objects \citep{chambers} containing single or multiple OmniLog\textregistered \ PM plates and further processed.
 The package features the statistically robust calculation and attachment of aggregated curve parameters including their (bootstrapped) confidence intervals.
 Moreover, infrastructure is provided to merge this with any kind of additional metadata.
-These complex data bundles can then be exported in \proglang{YAML} format (http://www.yaml.org/), which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
+These complex data bundles can then be exported in \proglang{YAML} format (\url{http://www.yaml.org/}), which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
+Its subset, \proglang{JSON} (\url{http://www.json.org/}), can also be used, for instance if a proper \proglang{YAML} parser is unavailable.
 As \pkg{opm} is also able to generate \proglang{R} matrices and data frames, output in CSV (character-separated values) files would also be easy.
 
 Data evaluation includes the graphical display of the data such as the raw respiration curve kinetics or the confidence intervals of aggregated curve parameters.
@@ -235,7 +236,7 @@ The raw kinetic data can be exported by the proprietary OmniLog\textregistered \
 This is explained in detail in section Section~\ref{methods import}, whereas corresponding code examples are found in Section~\ref{application import}.
 
 Batch processing many files is also possible, even without starting an interactive \proglang{R} session.
-This includes storage of the \pkg{opm} data in the \proglang{YAML} format, as detailed in Section~\ref{methods batch}.
+This includes storage of the \pkg{opm} data in the \proglang{YAML} (or \proglang{JSON}) format, as detailed in Section~\ref{methods batch}.
 Example code is given in  Section~\ref{application batch}.
 
 All kinds of PM data can be enriched with metadata (see Figure~\ref{fig:data}).
@@ -284,7 +285,7 @@ Please contact your local representative of the vendor for the latest software v
 As of version 0.4-0, \pkg{opm} also supports the input of MicroStation\textregistered \ CSV files (frequently used in conjunction with EcoPlate\textregistered \ assay for microbial community analysis).
 These files contain only end-point measurements but potentially several plates, which can nevertheless be input together with their potentially also rich meta-information.
 
-The easiest way to load the raw kinetic data (as CSV files or as \proglang{YAML}) into \proglang{R} in a single step is using the function \code{read\_opm()} (see Figure~\ref{fig:work_flow}).
+The easiest way to load the raw kinetic data (as CSV files or as \proglang{YAML} or \proglang{JSON}) into \proglang{R} in a single step is using the function \code{read\_opm()} (see Figure~\ref{fig:work_flow}).
 If raw data from only one single-plate OmniLog\textregistered \ PM are imported, the resulting object belongs to the \proglang{S4} class \proglang{OPM}.
 This class for holding single-plate OmniLog\textregistered \ PM data originally only includes the (limited) meta-information read from the original input CSV files, but an arbitrary amount of metadata can be added later on (see Figure~\ref{fig:work_flow}).
 If multiple plates are imported, the resulting object automatically belongs to the \proglang{S4} class \proglang{OPMS}.
@@ -300,7 +301,7 @@ We would nevertheless recommend storage in \proglang{YAML} format.
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
 
-To process and store huge numbers of raw data files, the function \code{batch\_opm()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} format.
+To process and store huge numbers of raw data files, the function \code{batch\_opm()} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} (or \proglang{JSON}) format.
 It is possible to let \pkg{opm} automatically include metadata (Section~\ref{methods metadata}) and aggregated values (curve parameters) (Section~\ref{methods aggregating}) as well as discretized values (Section~\ref{methods discrete-binary}) during this conversion.
 Alternatively, graphics files containing the output of \code{xy\_plot()} or \code{level\_plot()} can be batch-produced; see Section~\ref{methods plotting} for Details.
 File selection and unselection using regular expressions or globbing patterns is integrated in the function.
@@ -427,7 +428,7 @@ But export in some useful file formats is also possible.
 }
 \caption{\label{fig:overview}
 This scheme provides a detailed overview of the possible strategies and appropriate functions for data analysis using the \pkg{opm} package.
-Beginning with one to several CSV files containing raw kinetic data exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis}, or YAML files that have been generated in previous \pkg{opm} runs, a variety of work flows are possible for setting up  \proglang{OPM} or \proglang{OPMS} objects.
+Beginning with one to several CSV files containing raw kinetic data exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis}, or \proglang{YAML} or \proglang{JSON} files that have been generated in previous \pkg{opm} runs, a variety of work flows are possible for setting up  \proglang{OPM} or \proglang{OPMS} objects.
 Additionally, methods for metadata management, plotting the data in a customized manner, querying and sub-setting the generated objects, statistical comparison of multiple group means, and data-conversion tools including discretization, report generation and output in files are provided.
 }
 \end{figure}
@@ -627,7 +628,7 @@ The following code describes the import of the OmniLog\textregistered \ CSV file
 In the \pkg{opm} manual and all help pages, all functions relevant for data import are contained in a family of functions called ``IO-functions'' with according cross-references.
 
 The CSV files with the OmniLog\textregistered \ raw data should be stored in one to several user-defined folders.
-Setting the working directory of \proglang{R} to the parent folder of these using \code{setwd()} frequently facilitates file selection, but in principle the user can provide any number of paths to input files and/or directories containing such files to the function \code{read\_opm()}, which can load several CSV files (and also \proglang{YAML} files generated by \pkg{opm}) at once.
+Setting the working directory of \proglang{R} to the parent folder of these using \code{setwd()} frequently facilitates file selection, but in principle the user can provide any number of paths to input files and/or directories containing such files to the function \code{read\_opm()}, which can load several CSV files (and also \proglang{YAML} or \proglang{JSON} files generated by \pkg{opm}) at once.
 A restriction of the input functions is that they can solely read CSV files that only contain the measurements from a single plate per file (either a PM plate or a single GEN-III plate measured in either PM- or identification modus).
 But the package contains a function \code{split_files()}, which can be used to split CSV files with multiple plates into one file per plate.
 
@@ -704,7 +705,7 @@ But this might only occasionally be useful, as \code{read\_opm} can cope with si
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
 
-In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML}) to \proglang{YAML} format, is also possible.
+In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML} or \proglang{JSON}) to \proglang{YAML} or \proglang{JSON} format, is also possible.
 This optionally includes aggregating the raw data by estimating curve parameters (Section~\ref{application aggregating}), discretizing these parameters (Section~\ref{application discrete-text}) and integrating metadata (Section~\ref{application metadata}). 
 Again there is a \textit{demo} mode to first investigate the attempted conversions:
 
@@ -1964,7 +1965,8 @@ In combination with the functionality for annotating the data with meta-informat
 
 But since the design of the \pkg{opm} objects is not intended to be limited to specific analysis frameworks, the \pkg{opm} package works as a data containment providing well organized and comprehensive PM data for further, more specialized analyses using methods from different \proglang{R} packages or other third-party software tools.
 Particularly the generation of \proglang{S4} objects featuring a rich set of methods as containers for either single or multiple OmniLog\textregistered \ PM plates enables not only the transfer of raw kinetic data into \proglang{R} but also eases their further processing.
-The complex data bundles can also be exported in \proglang{YAML} format (www.yaml.org), which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
+The complex data bundles can also be exported in \proglang{YAML} format, which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
+If a proper \proglang{YAML} parser was unavailable, its subset \proglang{JSON} could also be used.
 
 These features render the \pkg{opm} package the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
 Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
@@ -1975,7 +1977,7 @@ More substrate information could be integrated into the package, particularly fo
 
 Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
 The current version is entirely file-based, and whereas powerful selection mechanisms for both input files and container objects for previously imported PM plates have already been implemented, future version could directly include database access.
-In the meantime, however, the output \proglang{YAML} format is likely to facilitate the quick establishment of third-party software for importing PM data into a database.
+In the meantime, however, the output \proglang{YAML} format (or its subset, \proglang{JSON}) is likely to facilitate the quick establishment of third-party software for importing PM data into a database.
 
 To summarize, we are convinced that the \pkg{opm} package already enables the users to analyse OmniLog\textregistered \ PM data in rather unlimited exploratory directions.
 

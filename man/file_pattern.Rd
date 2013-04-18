@@ -2,7 +2,7 @@
 \alias{file_pattern}
 \title{File pattern}
 \usage{
-  file_pattern(type = c("both", "csv", "yaml", "any", "empty"),
+  file_pattern(type = c("both", "csv", "yaml", "json", "any", "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs"))
 }
 \arguments{
@@ -49,8 +49,8 @@ stopifnot(grepl(x, files, ignore.case = TRUE))
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{opm_files}},
-  \code{\link{read_opm}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+  \code{\link{read_opm}}, \code{\link{read_single_opm}},
+  \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{utilities}
 

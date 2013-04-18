@@ -53,11 +53,13 @@
 - opm_opt() gets new entries 'hm.colors' and 'key.join', and better error
   messages
 - param_names() gets a 'what' argument
-- file_pattern() now deals with input file names if 'literally' is TRUE
+- file_pattern() now deals with input file names if 'literally' is TRUE and
+  considers the 'json' file extension
 - the 'what' argument of opm_files() gets more options
 - safe_labels() gets a 'comment' argument
 - substrate_info() gets new 'greek' and 'html' arguments
 - opms() now normalizes the 'group' argument (if a character string)
+- to_yaml() can produce JSON, too
 
 - improved print() methods for OPM(S/D)_Summary objects
 - the data-frame method of separate() now deals with columns with only empty

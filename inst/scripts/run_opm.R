@@ -5,7 +5,7 @@
 #
 # run_opm.R -- R script for non-interactive use of the opm package
 #
-# (C) 2012 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
+# (C) 2013 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
 #
 # This script is distributed under the terms of the GPL. For further details
 # see the opm package.
@@ -24,9 +24,11 @@ RESULT <- c(
   "Split OmniLog(R) CSV files into one file per plate.",
   "Collect a template for adding metadata.",
   "Draw xy plots into graphics files, one per input file.",
-  "Convert input OmniLog(R) CSV (or opm YAML) files to opm YAML."
+  "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm YAML.",
+  "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm JSON."
 )
-names(RESULT) <- c("clean", "levelplot", "split", "template", "xyplot", "yaml")
+names(RESULT) <- c("clean", "levelplot", "split", "template", "xyplot",
+  "yaml", "json")
 AGGREGATION <- c(
   "No estimation of curve parameters.",
   "Fast estimation (only two parameters).",
@@ -150,9 +152,9 @@ run_yaml_mode <- function(input, opt) {
     proc <- 1L
   batch_opm(names = input, proc = proc, disc.args = make_disc_args(opt),
     outdir = opt$dir, aggr.args = make_aggr_args(opt),
-    md.args = make_md_args(opt),
-    verbose = !opt$quiet, overwrite = opt$overwrite, include = opt$include,
-    exclude = opt$exclude, gen.iii = opt$type, output = "yaml")
+    md.args = make_md_args(opt), verbose = !opt$quiet,
+    overwrite = opt$overwrite, include = opt$include,
+    exclude = opt$exclude, gen.iii = opt$type, output = opt$result)
 }
 
 
@@ -182,12 +184,12 @@ option.parser <- OptionParser(option_list = list(
     help = "File exclusion globbing pattern [default: <none>]",
     metavar = "PATTERN"),
 
+  make_option(c("-f", "--format"), type = "character", default = "postscript",
+    help = "Graphics output format [default: %default]", metavar = "NAME"),
+
   ## A bug in Rscript causes '-g' to generate strange warning messages.
   ## See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
   # g
-
-  make_option(c("-f", "--format"), type = "character", default = "postscript",
-    help = "Graphics output format [default: %default]", metavar = "NAME"),
 
   # h
 
@@ -282,6 +284,7 @@ case(match.arg(opt$result, names(RESULT)),
   levelplot = run_plot_mode(input, opt),
   split = run_split_mode(input, opt),
   template = run_template_mode(input, opt),
+  json =,
   yaml = run_yaml_mode(input, opt)
 )
 

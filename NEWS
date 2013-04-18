@@ -19,7 +19,7 @@ Significant user-visible changes:
 
 - the '-a' argument of the 'run_opm.R' script now works differently
 
-- two additional package dependencies, and dependency on newer version of the
+- three additional package dependencies, and dependency on newer version of the
   grofit package
 
 New features:
@@ -48,6 +48,9 @@ New features:
 
 - opms() now normalizes plate-type names if used as 'group' argument
 
+- in addition to YAML, JSON can be produced (a subset of YAML that is understood
+  by proper JSON parsers)
+
 - new expression methods for metadata mapping
 
 - new map_metadata(), to_metadata() and `metadata<-`() methods
@@ -56,7 +59,8 @@ New features:
   param_names(), file_pattern(), opm_files(), safe_labels(), plate_type(),
   substrate_info()
 
-- batch_opm() replaces batch_opm_to_yaml() with more arguments
+- batch_opm() replaces batch_opm_to_yaml() with more arguments and more output
+  options (JSON and graphics files)
 
 - support for three more plate types
 

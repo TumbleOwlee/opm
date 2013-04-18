@@ -11,6 +11,10 @@
   \item{line.sep}{Character scalar used as output line
   separator.}
 
+  \item{json}{Logical scalar. Create \acronym{JSON} instead
+  of \acronym{YAML}?  If so, \code{sep}, \code{line.sep}
+  and \code{...} are ignored.}
+
   \item{...}{Optional other arguments passed to
   \code{as.yaml} from the \pkg{yaml} package.}
 }
@@ -34,6 +38,11 @@
   output format for the child classes is described in
   detail there, as well as other aspects relevant in
   practice.
+
+  \acronym{JSON} is a subset of \acronym{YAML} and (in most
+  cases) can also be parsed by a \acronym{YAML} parser. For
+  generating \acronym{JSON}, the \code{toJSON} function
+  from the \pkg{rjson} package would be used.
 }
 \examples{
 \dontrun{
@@ -64,6 +73,6 @@ write(to_yaml(x), "out.yml")
 \alias{to_yaml,YAML_VIA_LIST-method}
 \usage{
   \S4method{to_yaml}{YAML_VIA_LIST}(object, sep = TRUE,
-    line.sep = "\n", ...) 
+    line.sep = "\n", json = FALSE, ...) 
 
 }

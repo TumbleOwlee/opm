@@ -10,12 +10,16 @@
   to either kind of object, but this class is not directly
   dealt with by an \pkg{opm} user.
 }
+\details{
+  See \code{\link{metadata.set}} and
+  \code{\link{map_metadata}} for usage examples.
+}
 \note{
   \sQuote{FOE} is an acronym for \sQuote{formula or
   expression}.
 }
 \seealso{
-  methods::Methods base::matrix base::array
+  methods::Methods base::expression stats::formula
 
   Other classes: \code{\link{MOA}}, \code{\link{OPM}},
   \code{\link{OPMA}}, \code{\link{OPMD}},

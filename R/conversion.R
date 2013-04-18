@@ -1191,6 +1191,8 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #' @param sep Logical scalar. Prepend \acronym{YAML} document separator
 #'   \verb{---}?
 #' @param line.sep Character scalar used as output line separator.
+#' @param json Logical scalar. Create \acronym{JSON} instead of \acronym{YAML}?
+#'   If so, \code{sep}, \code{line.sep} and \code{...} are ignored.
 #' @param ... Optional other arguments passed to \code{as.yaml} from the
 #'   \pkg{yaml} package.
 #' @export
@@ -1207,6 +1209,11 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #'   using \code{\link{batch_opm}}. The output format for the child
 #'   classes is described in detail there, as well as other aspects relevant in
 #'   practice.
+#'
+#'   \acronym{JSON} is a subset of \acronym{YAML} and (in most cases) can also
+#'   be parsed by a \acronym{YAML} parser. For generating \acronym{JSON}, the
+#'   \code{toJSON} function from the \pkg{rjson} package would be used.
+#'
 #' @seealso yaml::as.yaml yaml::yaml.load_file
 #'
 #' @examples \dontrun{
@@ -1219,13 +1226,17 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 setGeneric("to_yaml", function(object, ...) standardGeneric("to_yaml"))
 
 setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
-    line.sep = "\n", ...) {
-  result <- as.yaml(x = as(object, "list"), line.sep = L(line.sep), ...)
-  if (L(sep))
-    result <- sprintf(sprintf("---%s%%s%s", line.sep, line.sep), result)
+    line.sep = "\n", json = FALSE, ...) {
+  LL(sep, line.sep, json)
+  if (json)
+    result <- toJSON(as(object, "list"), "C")
+  else {
+    result <- as.yaml(x = as(object, "list"), line.sep = line.sep, ...)
+    if (sep)
+      result <- sprintf(sprintf("---%s%%s%s", line.sep, line.sep), result)
+  }
   result
 }, sealed = SEALED)
-
 
 
 ################################################################################

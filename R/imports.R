@@ -55,6 +55,10 @@ NULL
 #'
 NULL
 
+#' @importFrom rjson toJSON
+#'
+NULL
+
 #' @importFrom splines spline.des
 #'
 NULL

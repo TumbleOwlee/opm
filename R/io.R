@@ -39,7 +39,8 @@
 #' (x <- file_pattern(I(files))) # I() causes 'literally' to be TRUE
 #' stopifnot(grepl(x, files, ignore.case = TRUE))
 #'
-file_pattern <- function(type = c("both", "csv", "yaml", "any", "empty"),
+file_pattern <- function(
+    type = c("both", "csv", "yaml", "json", "any", "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs")) {
   make_pat <- function(x, compressed, enclose = "\\.%s$") {
     if (compressed)
@@ -62,8 +63,8 @@ file_pattern <- function(type = c("both", "csv", "yaml", "any", "empty"),
     case(length(type), stop("'type' must be non-empty"), type,
       sprintf("(%s)", paste(type, collapse = "|")))
   } else
-    case(match.arg(type), both = "(csv|ya?ml)", csv = "csv", yaml = "ya?ml",
-      any = "[^.]+", empty = "")
+    case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
+      yaml = "ya?ml", json = "json", any = "[^.]+", empty = "")
   make_pat(result, compressed)
 }
 
@@ -234,23 +235,25 @@ read_new_opm <- function(filename) {
 
 
 ## NOTE: not an S4 method because yaml.load_file() gives an adequate error
-##   message
+##       message
 
 #' Read opm YAML file
 #'
-#' Read \pkg{opm} data from a single \acronym{YAML} file. Arbitrary nesting
-#' levels are allowed, i.e. the \acronym{YAML} input results in either a list
-#' representing the slots of an \code{\link{OPM}} or \code{\link{OPMA}} object,
-#' or a list whose direct or indirect sublists represent such an object.
-#' However, it is an error if non-list elements are encountered when traversing
-#' such lists, and if no \code{\link{OPM}} or \code{\link{OPMA}} objects can be
-#' found at all.
+#' Read \pkg{opm} data from a single \acronym{YAML} (or \acronym{JSON}) file.
 #'
 #' @param filename Character scalar with the obvious meaning.
 #' @return \code{\link{OPM}}, \code{\link{OPMA}} or \code{\link{OPMD}} object,
 #'   depending on the presence of aggregated and discretized data. Can also be a
 #'   list of such objects.
+#' @details Arbitrary nesting levels are allowed, i.e. the \acronym{YAML} input
+#'   results in either a list representing the slots of an \code{\link{OPM}} or
+#'   \code{\link{OPMA}} object, or a list whose direct or indirect sublists
+#'   represent such an object. However, it is an error if non-list elements are
+#'   encountered when traversing such lists, and if no \code{\link{OPM}} or
+#'   \code{\link{OPMA}} objects can be found at all.
+#'
 #' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.json.org/}
 #' @keywords internal
 #'
 read_opm_yaml <- function(filename) {
@@ -318,10 +321,11 @@ read_microstation_opm <- function(filename) {
 #' Read single PM file
 #'
 #' Read single OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} or \pkg{opm}
-#' data file in either new- or old-style \acronym{CSV} or \acronym{YAML} format.
+#' data file in either new- or old-style \acronym{CSV} or \acronym{YAML}
+#' (including \acronym{JSON} format.
 #' MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)} \acronym{CSV} are
 #' also understood, as well as files compressed using \command{gzip},
-#' \command{bzip2}, \command{lzma} or \command{xz} are also understood.
+#' \command{bzip2}, \command{lzma} or \command{xz}.
 #'
 #' @param filename Character scalar, or convertible to such, with the obvious
 #'   meaning.
@@ -330,11 +334,6 @@ read_microstation_opm <- function(filename) {
 #'   might also be an \code{\link{OPMA}} object or a list of such objects, but
 #'   \strong{not} an \code{\link{OPMS}} object.
 #' @family io-functions
-#'
-#' \itemize{
-#'   \item Regarding the \acronym{CSV} format, see the remark to
-#'     \code{\link{read_single_opm}}.
-#'   \item
 #'
 #' @details The expected \acronym{CSV} format is what is output by an
 #'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
@@ -354,10 +353,11 @@ read_microstation_opm <- function(filename) {
 #'   than one plate. For splitting old-style and new-style \acronym{CSV} files
 #'   into one file per plate, see the example under \code{\link{split_files}}.
 #'   In contrast, input \acronym{YAML} files can contain data from more than one
-#'   plate. The format is described in detail under
-#'   \code{\link{batch_opm}}.
+#'   plate. The format (which includes \acronym{JSON}) is described in detail
+#'   under \code{\link{batch_opm}}.
 #'
 #' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.json.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv
 #' @keywords IO
@@ -632,6 +632,7 @@ opm_files <- function(
 #' @export
 #' @family io-functions
 #' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.json.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv yaml::yaml.load_file
 #' @keywords IO
@@ -672,7 +673,7 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     message(paste(names, collapse = "\n"))
     return(invisible(names))
   }
-  # The c() call is necessary to flatten lists from YAML input.
+  # The c() call is necessary to flatten lists from YAML/JSON input.
   result <- c(lapply(names, read_single_opm), recursive = TRUE)
   switch(mode(gen.iii),
     logical = if (gen.iii)
@@ -1216,10 +1217,10 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #' Batch-convert PM data
 #'
 #' Batch-convert from OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-#' \acronym{CSV} (or previous \pkg{opm} \acronym{YAML}) to \pkg{opm}
-#' \acronym{YAML}. It is possible to add metadata to each set of raw data and to
-#' aggregate the curves; these additional data will then be included in the
-#' \acronym{YAML} output file.
+#' \acronym{CSV} (or previous \pkg{opm} \acronym{YAML} or \acronym{JSON}) to
+#' \pkg{opm} \acronym{YAML} (or \acronym{JSON}). It is possible to add metadata
+#' to each set of raw data and to aggregate the curves; these additional data
+#' will then be included in the output files.
 #'
 #' @inheritParams read_opm
 #' @inheritParams batch_process
@@ -1253,6 +1254,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   addition to \code{verbose} and \code{demo}. Note that \code{out.ext},
 #'   \code{fun} and \code{fun.args} are set automatically.
 #' @param output Character scalar determining the main output mode. \describe{
+#'   \item{json}{Create \acronym{JSON} files, one per input file.}
 #'   \item{levelplot}{Create graphics files, one per input file, containing the
 #'   output of \code{\link{level_plot}}.}
 #'   \item{yaml}{Create \acronym{YAML} files, one per input file.}
@@ -1266,6 +1268,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   attempted file conversion. See \code{\link{batch_process}} for details.
 #' @family io-functions
 #' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.json.org/}
 #' @references \url{http://www.biolog.com/}
 #' @seealso utils::read.csv yaml::yaml.load_file grDevices::Devices
 #' @seealso pkgutils::mypdf
@@ -1326,9 +1329,15 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #'   used in these files; see the \sQuote{file.encoding} option of
 #'   \code{\link{opm_opt}} for how to do this.
 #'
+#'   \acronym{JSON}, which is almost a subset of \acronym{YAML}, can also be
+#'   generated, but has more restrictions. It is only recommended if a
+#'   \acronym{YAML} parser is unavailable. It is also more delicate regarding
+#'   the encoding of character strings.
+#'
 #'   When inputting \acronym{YAML} files generated with the help of the
-#'   \pkg{yaml} package (on which the \pkg{opm} implementation is based) using
-#'   other programming languages, a potential problem is that they, and
+#'   \pkg{yaml} package (on which the \pkg{opm} implementation is based), or
+#'   \acronym{JSON} files generated with the help of the \pkg{rjson} package,
+#'   using other programming languages, a potential problem is that they, and
 #'   \acronym{YAML} in general, lack a native representation of \code{NA}
 #'   values. Such entries are likely to be misunderstood as \sQuote{NA}
 #'   character scalars.
@@ -1350,7 +1359,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
     gen.iii = opm_opt("gen.iii"), device = "mypdf", dev.args = NULL,
-    plot.args = NULL, ..., output = c("yaml", "xyplot", "levelplot"),
+    plot.args = NULL, ..., output = c("yaml", "json", "xyplot", "levelplot"),
     verbose = TRUE, demo = FALSE) {
 
   convert_dataset <- function(data) {
@@ -1402,7 +1411,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   }
 
   convert_to_yaml <- function(infile, outfile) {
-    write(to_yaml(read_file(infile)), outfile)
+    write(to_yaml(read_file(infile), json = json), outfile)
   }
 
   create_plot <- function(infile, outfile) {
@@ -1428,16 +1437,22 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   case(output <- match.arg(output),
     yaml = {
       io.fun <- convert_to_yaml
+      json <- FALSE
       out.ext <- "yml"
     },
+    json = {
+      io.fun <- convert_to_yaml
+      json <- TRUE
+      out.ext <- "json"
+    },
     levelplot = {
-      disc.args <- aggr.args <- NULL
+      json <- disc.args <- aggr.args <- NULL
       out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
       io.fun <- create_plot
       plot.type <- level_plot
     },
     xyplot = {
-      disc.args <- aggr.args <- NULL
+      json <- disc.args <- aggr.args <- NULL
       out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
       io.fun <- create_plot
       plot.type <- xy_plot

@@ -4,9 +4,13 @@
 \alias{OPMX-class}
 \title{OPMX class}
 \description{
-  This is a virtual class containing helper methods for
-  plotting \code{\link{OPM}} and \code{\link{OPMS}}
+  This is a virtual class containing helper methods mainly
+  for plotting \code{\link{OPM}} and \code{\link{OPMS}}
   objects. It is not directly applied by an \pkg{opm} user.
+}
+\details{
+  See \code{\link{show}} and \code{\link{sort}} for usage
+  examples.
 }
 \note{
   Regarding the name: \acronym{OPMX} stands for

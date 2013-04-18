@@ -109,6 +109,8 @@ x <- read_opm(".")
 \references{
   \url{http://www.yaml.org/}
 
+  \url{http://www.json.org/}
+
   \url{http://www.biolog.com/}
 }
 \seealso{
@@ -120,8 +122,8 @@ x <- read_opm(".")
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
-  \code{\link{opm_files}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+  \code{\link{opm_files}}, \code{\link{read_single_opm}},
+  \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{IO}
 

@@ -10,6 +10,10 @@
   either kind of object, but this class is not directly
   dealt with by an \pkg{opm} user.
 }
+\details{
+  See \code{\link{map_values}} and \code{\link{map_names}}
+  for usage examples.
+}
 \note{
   \sQuote{MOA} is an acronym for \sQuote{matrix or array}.
 }
