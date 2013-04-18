@@ -102,9 +102,9 @@ stopifnot(identical(copy, vaas_4))
 \alias{to_metadata,WMD-method}
 \alias{to_metadata,OPMS-method}
 \usage{
-  \S4method{to_metadata}{character}(object,
-    sep = "\t", check.names = !optional, strip.white = TRUE,
-    stringsAsFactors = FALSE, optional = TRUE, ...) 
+  \S4method{to_metadata}{character}(object, sep = "\t",
+    check.names = !optional, strip.white = TRUE, stringsAsFactors = FALSE,
+    optional = TRUE, ...) 
 
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) 

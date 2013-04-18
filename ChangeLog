@@ -34,7 +34,7 @@
   disc_settings() is accordingly expanded, and opm_opt() gets a 'disc.param'
   entry
 
-- indexed assigned '[<-'() introduced for OPMS objects
+- indexed assignment '[<-'() introduced for OPMS objects
 - in `[`(), wells(), measurements() and well_to_substrate(), wells can now be 
   indexed using formulas, thus allowing for sequences of well coordinates and 
   less code
@@ -61,7 +61,7 @@
 - opms() now normalizes the 'group' argument (if a character string)
 - to_yaml() can produce JSON, too
 
-- improved print() methods for OPM(S/D)_Summary objects
+- improved print() methods for OPM(S)_Summary objects
 - the data-frame method of separate() now deals with columns with only empty
   strings
 - warning messages from radial_plot() occurring as of R 3.0.0 are now silenced
@@ -70,7 +70,7 @@
   and plate PM-M TOX01, and adapted plate_type() accordingly
 
 - much expanded and refreshed vignette and help pages
-- documentation of the YAML format was improved
+- documentation of the YAML/JSON format was improved
 - new example-code directory
 
 

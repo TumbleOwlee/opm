@@ -777,18 +777,18 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
-setMethod("to_metadata", "character", function(object,
-    sep = "\t", check.names = !optional, strip.white = TRUE,
-    stringsAsFactors = FALSE, optional = TRUE, ...) {
+setMethod("to_metadata", "character", function(object, sep = "\t",
+    check.names = !optional, strip.white = TRUE, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
   if (!missing(check.names))
     warning("'check.names' is deprecated, use 'optional'")
-  read.delim(L(object), sep = sep, check.names = check.names,
+  read.delim(file = L(object), sep = sep, check.names = check.names,
     strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
 }, sealed = SEALED)
 
 setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
-  as.data.frame(object, stringsAsFactors = stringsAsFactors,
+  as.data.frame(x = object, stringsAsFactors = stringsAsFactors,
     optional = optional, ...)
 }, sealed = SEALED)
 

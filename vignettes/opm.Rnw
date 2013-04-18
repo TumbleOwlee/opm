@@ -36,7 +36,7 @@
 %\VignetteIndexEntry{Using opm}
 
 % authors, first page
-\author{Lea A.I. Vaas\\CBS-KNAW Fungal Biodiversity Centre \And
+\author{Lea A.I. Vaas\\Leibniz Institute DSMZ \And
         Johannes Sikorski\\Leibniz Institute DSMZ  \AND
         Benjamin Hofner\\Universit\"{a}t Erlangen-N\"{u}rnberg \And
         Nora Buddruhs\\Leibniz Institute DSMZ \And
