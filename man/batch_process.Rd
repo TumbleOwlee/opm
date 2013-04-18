@@ -14,7 +14,9 @@
   outfile names (without the dot).}
 
   \item{proc}{Integer scalar. The number of processes to
-  spawn.}
+  spawn. Cannot be set to more than 1 core if running under
+  Windows. See the \code{cores} argument of
+  \code{\link{do_aggr}} for details.}
 
   \item{outdir}{Character vector. Directories in which to
   place the outfiles.  If \code{NULL} or only containing

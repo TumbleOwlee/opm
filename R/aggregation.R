@@ -214,8 +214,10 @@ param_names <- function(
 #'   to omit bootstrapping, resulting in \code{NA} entries for the CIs.
 #' @param verbose Logical scalar. Print progress messages?
 #' @param cores Integer scalar. Number of cores to use. Setting this to a value
-#'   > 1 requires the \pkg{multicore} package. Has no effect if
-#'   \sQuote{opm-fast} is chosen (see below).
+#'   > 1 requires that \code{mclapply} from the \pkg{parallel} package can be
+#'   run with more than 1 core, which is impossible under Windows. The
+#'   \code{cores} argument has no effect if \sQuote{opm-fast} is chosen (see
+#'   below).
 #' @param options List. For its use in \sQuote{grofit} mode, see
 #'   \code{grofit.control} in the \pkg{grofit} package. The \code{boot} and
 #'   \code{verbose} settings, as the most important ones, are added separately
@@ -332,6 +334,7 @@ param_names <- function(
 #'   aggregated(x)
 #'
 #'   # Calculate CIs with 100 bootstrap (BS) replicates, using 4 cores
+#'   # (do not try to use > 1 core on Windows)
 #'   x <- do_aggr(vaas_1, boot = 100, verbose = TRUE, cores = 4)
 #'   aggr_settings(x)
 #'   aggregated(x)
@@ -418,11 +421,11 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         control <- make_grofit_control(verbose, boot, add = options)
         grofit.time <- to_grofit_time(object)
         grofit.data <- to_grofit_data(object)
-        result <- traverse(as.list(seq.int(nrow(grofit.data))),
-          fun = function(row) {
+        result <- mclapply(X = as.list(seq.int(nrow(grofit.data))),
+          FUN = function(row) {
             run_grofit(grofit.time[row, , drop = FALSE],
               grofit.data[row, , drop = FALSE], control)
-          }, cores = cores)
+          }, mc.cores = cores)
         result <- do.call(cbind, result)
         attr(result, OPTIONS) <- unclass(control)
       },
@@ -449,11 +452,11 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         ## get well names
         wells <- wells(object)
         indx <- as.list(seq.int(length(wells)))
-        result <- traverse(indx,
-          fun = function(i) {
+        result <- mclapply(X = indx,
+          FUN = function(i) {
             run_mgcv(x = HOUR, y = wells[i], data = data, options = options,
               boot = boot)
-          }, cores = cores)
+          }, mc.cores = cores)
         options <- insert(as.list(options), boot = boot)
 
         if (options$save.models) {

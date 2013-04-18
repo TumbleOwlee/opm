@@ -1799,41 +1799,6 @@ setMethod("repair_na_strings", "list", function(object,
 #
 
 
-#' Traverse a list with a function
-#'
-#' Apply a function to all list elements in turn, optionally in parallel using
-#' the \pkg{multicore} package.
-#'
-#' @param object List.
-#' @param func Function to apply to each element of the list.
-#' @param cores Integer scalar. Number of cores to use. If more than one, a
-#'   warning is issued if the \pkg{multicore} package is not available, and the
-#'   number of cores is set back to 1.
-#' @param ... Optional arguments to \code{lapply} or \code{mclapply} (can be
-#'   arguments passed to \code{func}).
-#' @return List.
-#' @keywords internal
-#'
-setGeneric("traverse",
-  function(object, func, ...) standardGeneric("traverse"))
-
-setMethod("traverse", c("list", "function"), function(object, func, cores,
-    ...) {
-  if (L(cores) > 1L && !suppressWarnings(require(
-      multicore, quietly = TRUE, warn.conflicts = FALSE))) {
-    warning("'multicore' not available -- switching back to 1 core")
-    cores <- 1L
-  }
-  if (cores > 1L)
-    multicore::mclapply(X = object, FUN = func, mc.cores = cores, ...)
-  else
-    lapply(X = object, FUN = func, ...)
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 #' Insert a list in a list
 #'
 #' Insert all values from another list in a list, either by overwriting the

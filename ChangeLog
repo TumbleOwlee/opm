@@ -15,9 +15,12 @@
 - extract() function for data frames changes its behaviour (see below)
 - the '-a' argument of the 'run_opm.R' changes its behaviour (see below), and
   '-l' is removed, whereas '-r' gets more options
-- additional dependencies on packages splines and mgcv
+- additional dependencies on packages parallel, splines and mgcv
 - grofit >= 1.1 is now necessary because it is imported (its older versions do
   not contain a namespace)
+- it is now an error if do_aggr() and batch_opm()/batch_opm_to_yaml() are run
+  with > 1 core but this is impossible (as, e.g., under Windows)
+- a newer version of R is required
 
 - do_aggr() has a new option for the 'method' argument ('splines', which is 
   recommended) and an according new helper function set_spline_options();

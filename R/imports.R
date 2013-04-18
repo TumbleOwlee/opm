@@ -27,6 +27,10 @@ NULL
 #'
 NULL
 
+#' @importFrom parallel mclapply
+#'
+NULL
+
 #' @importFrom boot boot boot.ci norm.ci
 #'
 NULL

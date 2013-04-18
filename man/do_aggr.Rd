@@ -15,9 +15,11 @@
   \item{verbose}{Logical scalar. Print progress messages?}
 
   \item{cores}{Integer scalar. Number of cores to use.
-  Setting this to a value > 1 requires the \pkg{multicore}
-  package. Has no effect if \sQuote{opm-fast} is chosen
-  (see below).}
+  Setting this to a value > 1 requires that \code{mclapply}
+  from the \pkg{parallel} package can be run with more than
+  1 core, which is impossible under Windows. The
+  \code{cores} argument has no effect if \sQuote{opm-fast}
+  is chosen (see below).}
 
   \item{options}{List. For its use in \sQuote{grofit} mode,
   see \code{grofit.control} in the \pkg{grofit} package.
@@ -151,6 +153,7 @@ stopifnot(cor.test(auc.fast, auc.grofit)$estimate > 0.999)
   aggregated(x)
 
   # Calculate CIs with 100 bootstrap (BS) replicates, using 4 cores
+  # (do not try to use > 1 core on Windows)
   x <- do_aggr(vaas_1, boot = 100, verbose = TRUE, cores = 4)
   aggr_settings(x)
   aggregated(x)

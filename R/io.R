@@ -1136,7 +1136,9 @@ process_io <- function(files, io.fun, fun.args = list(),
 #' @inheritParams batch_collect
 #' @param out.ext Character scalar. The extension of the outfile names (without
 #'   the dot).
-#' @param proc Integer scalar. The number of processes to spawn.
+#' @param proc Integer scalar. The number of processes to spawn. Cannot be set
+#'   to more than 1 core if running under Windows. See the \code{cores}
+#'   argument of \code{\link{do_aggr}} for details.
 #' @param outdir Character vector. Directories in which to place the outfiles.
 #'   If \code{NULL} or only containing empty strings, each infile's directory is
 #'   used.
@@ -1198,7 +1200,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
   }
   fun.args <- as.list(fun.args)
   data <- mapply(c, infiles, outfiles, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-  result <- traverse(object = data, func = process_io, cores = proc,
+  result <- mclapply(X = data, FUN = process_io, mc.cores = proc,
     io.fun = io.fun, fun.args = fun.args, overwrite = overwrite,
     verbose = verbose)
   invisible(do.call(rbind, result))

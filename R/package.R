@@ -61,11 +61,11 @@
 #'   \item{running time}{Computations on such high-dimensional data may take
 #'     some time. The limiting steps are aggregating (curve-parameter
 #'     estimation) and plotting many curves together. The former step can be
-#'     conducted in parallel if the \pkg{multicore} package is available. It is
-#'     not required for the installation of \pkg{opm}. There is also a fast
-#'     estimation method for the parameters \sQuote{area under the curve} and
-#'     \sQuote{maximum height}. See \code{\link{do_aggr}} and the methods it
-#'     refers to for details.}
+#'     conducted in parallel if \code{mclapply} from the \pkg{parallel} package
+#'     can be run with more than 1 core (basically anywhere except for Windows).
+#'     There is also a fast estimation method for the parameters \sQuote{area
+#'     under the curve} and \sQuote{maximum height}. See \code{\link{do_aggr}}
+#'     and the methods it refers to for details.}
 #'   \item{advanced plotting}{The \pkg{gplots} package is also not required for
 #'     the installation of \pkg{opm} but can be used to draw more advanced
 #'     heatmaps. See \code{\link{heat_map}} and its accompanying methods for

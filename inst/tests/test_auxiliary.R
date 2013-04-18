@@ -575,17 +575,6 @@ test_that("NAs in a list can be repaired", {
 #
 
 
-## traverse
-test_that("a list can be traversed", {
-  x <- list(a = 9, b = 17, k = 88)
-  func <- function(x, y) x + y
-  got <- traverse(object = x, func = func, cores = 1L, y = 3)
-  expect_equal(got, list(a = 12, b = 20, k = 91))
-  got <- traverse(object = x, func = func, cores = 2L, y = 3)
-  expect_equal(got, list(a = 12, b = 20, k = 91))
-})
-
-
 ## insert
 test_that("a list can be inserted in a list", {
   x <- list(a = 9, b = 17, k = 88)

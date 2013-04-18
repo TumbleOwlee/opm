@@ -19,8 +19,11 @@ Significant user-visible changes:
 
 - the '-a' argument of the 'run_opm.R' script now works differently
 
-- three additional package dependencies, and dependency on newer version of the
-  grofit package
+- three additional package dependencies, and dependency on newer versions of the
+  grofit package and of R itself
+
+- it is now an error if more than a single core is requested but this is
+  impossible (as, e.g., under Windows).
 
 New features:
 

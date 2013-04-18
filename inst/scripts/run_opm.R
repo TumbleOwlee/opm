@@ -212,7 +212,7 @@ option.parser <- OptionParser(option_list = list(
     metavar = "MODE"),
 
   make_option(c("-p", "--processes"), type = "integer", default = 1L,
-    help = paste("Number of processes to spawn (>1 needs 'multicore')",
+    help = paste("Number of processes to spawn (>1 impossible under Windows)",
       "[default: %default]"),
     metavar = "NUMBER"),
 

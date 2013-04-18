@@ -308,6 +308,7 @@ File selection and unselection using regular expressions or globbing patterns is
 The result from each file conversion is reported in detail, and a \textit{demo} mode is available for viewing the attempted file selections and conversions before actually running the (potentially time consuming) conversion process.
 The package is accompanied by a command-line script ``run\_opm.R'', enabling the users to run the batch conversion without starting an interactive \proglang{R} session.
 This script is guaranteed to run at least under \proglang{UNIX}-like operating systems.
+On such systems it can also be run in parallel, making use of multi-core machines.
 
 
 \subsection[Integration of metadata]{Integration of metadata}\label{methods metadata}
@@ -705,7 +706,7 @@ But this might only occasionally be useful, as \code{read\_opm} can cope with si
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
 
-In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML} or \proglang{JSON}) to \proglang{YAML} or \proglang{JSON} format, is also possible.
+In addition to \code{read\_opm()} and \code{read\_single\_opm()} (Section~\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML} or \proglang{JSON}) to \proglang{YAML} or \proglang{JSON} format, is also possible.
 This optionally includes aggregating the raw data by estimating curve parameters (Section~\ref{application aggregating}), discretizing these parameters (Section~\ref{application discrete-text}) and integrating metadata (Section~\ref{application metadata}). 
 Again there is a \textit{demo} mode to first investigate the attempted conversions:
 
@@ -1009,7 +1010,7 @@ summary(aggregated(vaas_1.reaggr))
 @
 
 The default settings of \code{do\_aggr()} includes 100-fold bootstrapping of the data to obtain confidence intervals.
-As this is a time-consuming intensive process (particularly if \pkg{grofit} is used), it may be split over several cores on a multicore machine if the \pkg{multicore} \proglang{R} package is available by setting the cores argument to a value larger than one.
+As this is a time-consuming intensive process (particularly if \pkg{grofit} is used), it may be split over several cores on a multi-core machine if \code{mclapply()} from the \pkg{parallel} \proglang{R} package can be run with more than one core, which is possible on all operating systems except for Windows.
 
 One can also specify different spline fitting methods using \code{method = "spline"}, which is the recommended setting (for historical reasons, it is not the default).
 Options such as the spline type, the number of knots used for the spline and other options for the splines can be easily set using the function \code{set\_spline\_options} (which can only be used in conjunction with \code{method = "spline"}).
@@ -1293,27 +1294,27 @@ The default can by set with \code{opm\_opt(hm.colors = ...)}.
 The function \code{radial\_plot()} is able to plot numeric values as distances from the center of a circular field in directions defined by angles in radians.
 Some selection of wells should usually be applied beforehand for these plots to be useful.
 Figure~\ref{fig:radial_plot} provides an example of such a visualization.
-The parameter maximum height (A) is plotted for the wells A01 to A10 from dataset \code{vaas\_4}.
+The parameter maximum height (A) is plotted for the wells A01 to A05 and A10 from dataset \code{vaas\_4}.
 Note also that the values for positioning the upper-left corner of the legend are oriented according to the axes of the plot.
 Hence, if the legend should be placed in the lower left part of the figure, negative values for x and y would be necessary.
 The code is as follows:
 
 <<label=radial.plot.I, results=hide, fig=FALSE, width=10>>=
-radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
+radial_plot(vaas_4[, , c(1:5, 10)], as.labels = list("Species", "Strain"),
   x = 150, y = 200)
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
-radial_plot(vaas_4[, , 1:5], as.labels = list("Species", "Strain"),
+radial_plot(vaas_4[, , c(1:5, 10)], as.labels = list("Species", "Strain"),
   x = 150, y = 200)
 @
 }
 \caption{
 \label{fig:radial_plot}
 Comparison of point estimates for the parameter maximum height (A) observed from four strains, using \code{radial\_plot()}.
-Shown are the results for estimating the maximum height of the single curves from wells A01 to A10.
+Shown are the results for estimating the maximum height of the single curves from wells A01 to A05 and A10.
 }
 \end{figure}
 
