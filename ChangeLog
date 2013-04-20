@@ -3,7 +3,7 @@
 ################################################################################
 
 
-2013-04-XX (the 9th release on CRAN)
+2013-04-18 (the 9th release on CRAN)
 
 - fixed bug in helper xy_plot() that caused a missing negative-control well to
   not only yield a warning but also an uninformative plot
