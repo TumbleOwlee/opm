@@ -19,11 +19,22 @@ test_that("curve parameter names can be mapped", {
 })
 
 
+## clean_coords
+test_that("well names can be cleaned", {
+  x <- c("  Z07\t", "D\n11\r", " A06  ", " B7")
+  got <- clean_coords(x)
+  expect_equal(got, c("Z07", "D11", "A06", "B07"))
+})
+
+
 ## well_index
 test_that("well indices given as formula can be mapped", {
   expect_equal(well_index(1:10), 1:10)
   expect_equal(well_index(), TRUE)
-  expect_equal(well_index(letters), letters)
+  got <- well_index(letters)
+  expect_is(got, "character")
+  expect_equal(length(got), 26L)
+  expect_equal(toupper(got), got)
   expect_error(well_index(NULL ~ a:c))
   expect_equal(well_index(NULL ~ a:c, letters), 1:3)
   expect_equal(well_index(NULL ~ c(b, e:f), letters), c(2, 5, 6))

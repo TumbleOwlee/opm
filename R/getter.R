@@ -602,7 +602,9 @@ setMethod("seq", OPMS, function(...) {
 #' Optionally the full substrate names can be added in parentheses or brackets
 #' or used instead of the coordinate, and trimmed to a given length.
 #'
-#' @param object \code{\link{OPM}} object.
+#' @param object \code{\link{OPM}} object, \code{\link{OPMS}} object or well
+#'   name or index. If missing, defaults to the selection of all possible
+#'   wells.
 #' @param full Logical scalar. Return the full names of the wells (if available)
 #'   or just their coordinates on the plate? The following arguments have no
 #'   effect if \code{full} is \code{FALSE}.
@@ -625,12 +627,23 @@ setMethod("seq", OPMS, function(...) {
 #' @param downcase Logical scalar indicating whether full names should be
 #'   (carefully) converted to lower case. This uses \code{\link{substrate_info}}
 #'   in \sQuote{downcase} mode; see there for details.
+#' @param plate Name of the plate type. Several ones can be given unless
+#'   \code{object} is of class \code{\link{OPM}} or \code{\link{OPMS}}.
+#'   \code{\link{plate_type}} is applied before searching for the substrate
+#'   names, and partial matching is allowed.
 #' @param ... Optional arguments passed between the methods.
 #' @return Character vector.
 #' @export
 #' @family getter-functions
 #' @seealso base::strtrim base::abbreviate
 #' @keywords attribute
+#' @details The purpose of the \code{\link{OPM}} and \code{\link{OPMS}} methods
+#'   should be obvious. The default method is intended for providing a quick
+#'   overview of the substrates contained in one to several plates if
+#'   \code{full} is \code{TRUE}. If \code{full} is \code{FALSE}, it can be used
+#'   to study the effect of the well-index translation and well-name
+#'   normalization approaches as used by \pkg{opm}, particularly by the
+#'   subsetitting methods (see \code{\link{[}}).
 #' @note Do not confuse this with \code{\link{well}}.
 #' @examples
 #'
@@ -648,18 +661,56 @@ setMethod("seq", OPMS, function(...) {
 #' # wells are guaranteed to be uniform within OPMS objects
 #' stopifnot(identical(x, xx))
 #'
+#' # default method
+#' x <- c("A01", "B10")
+#' (y <- wells(x, plate = "PM1"))
+#' stopifnot(nchar(y) > nchar(x))
+#' (z <- wells(x, plate = "PM1", in.parens = TRUE))
+#' stopifnot(nchar(z) > nchar(y))
+#' # formula yields same result (except for row names)
+#' stopifnot(y == wells(~ c(A01, B10), plate = "PM1"))
+#' # using a sequence of well coordinates
+#' stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
+#' stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
+#'
 setGeneric("wells", function(object, ...) standardGeneric("wells"))
 
 setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
     max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE) {
+    paren.sep = " ", downcase = FALSE, plate = plate_type(object)) {
   result <- setdiff(colnames(measurements(object)), HOUR)
-  if (full)
-    map_well_names(result, plate_type(object), in.parens = in.parens,
+  if (L(full))
+    map_well_names(result, L(plate), in.parens = in.parens,
       max = max, brackets = brackets, clean = clean, word.wise = word.wise,
       paren.sep = paren.sep, downcase = downcase)
   else
     result
+}, sealed = SEALED)
+
+setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
+    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
+    paren.sep = " ", downcase = FALSE, plate = "PM01") {
+  result <- well_index(object, rownames(WELL_MAP))
+  if (!is.character(result))
+    result <- rownames(WELL_MAP)[result]
+  result <- do.call(cbind, rep.int(list(result), length(plate)))
+  pos <- pmatch(plate_type(plate), colnames(WELL_MAP))
+  colnames(result) <- plate
+  if (is.character(object))
+    rownames(result) <- object
+  if (!L(full))
+    return(result)
+  for (i in which(!is.na(pos)))
+    result[, i] <- map_well_names(result[, i], colnames(WELL_MAP)[pos[i]],
+      in.parens = in.parens, max = max, brackets = brackets, clean = clean,
+      word.wise = word.wise, paren.sep = paren.sep, downcase = downcase)
+  for (i in which(is.na(pos)))
+    result[, i] <- NA_character_
+  result
+}, sealed = SEALED)
+
+setMethod("wells", "missing", function(object, ...) {
+  wells(object = TRUE, ...)
 }, sealed = SEALED)
 
 
@@ -834,9 +885,10 @@ setMethod("filename", OPM, function(object) {
 #'
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))
 
-setMethod("plate_type", OPM, function(object, ...) {
+setMethod("plate_type", OPM, function(object, ..., normalize = FALSE,
+    subtype = FALSE) {
   plate_type(object = object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]], ...,
-    normalize = FALSE, subtype = FALSE)
+    normalize = normalize, subtype = subtype)
 }, sealed = SEALED)
 
 setMethod("plate_type", "character", function(object, full = FALSE,
@@ -1413,97 +1465,6 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
     sapply(key, fetch_fun, simplify = FALSE)
   else # should be a (character) vector
     fetch_fun(key)
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Select a subset of the plates (or time points) [deprecated]
-#'
-#' \strong{Deprecated} function to select a subset of the plates in an
-#' \code{\link{OPMS}} object based on the content of the metadata.
-#' Alternatively, select a common subset of time points from all plates. The
-#' data-frame method selects columns that belong to certain classes.
-#'
-#' @param object \code{\link{OPMS}} object.
-#' @param query Logical, numeric or character vector, or list (other objects can
-#'   be provided but are coerced to class \sQuote{character}). If a logical or
-#'   numeric vector, \code{query} is directly used as the first argument of
-#'   \code{\link{[}}, and all following arguments, if any, are ignored. If a
-#'   list or a character vector, it is used for conducting a query based on one
-#'   of the infix operators as described below. The data-frame method expects a
-#'   character vector containing class names.
-#' @param ... Optional arguments passed to \code{\link{subset}}.
-#' @export
-#' @return \code{NULL} or \code{\link{OPM}} or \code{\link{OPMS}} object. This
-#'   depends on how many plates are selected; see \code{\link{[}} for details.
-#'   The data-frame method returns a data frame.
-#' @note The use of this function is \strong{deprecated}. Please use
-#'   \code{\link{subset}} instead.
-#'
-#' @family getter-functions
-#' @keywords manip
-#' @seealso base::`[` base::`[[` base::subset
-#' @examples
-#'
-#' ## 'OPMS' method
-#' data(vaas_4)
-#' # simple object comparison function
-#' mustbe <- function(a, b) stopifnot(identical(a, b))
-#'
-#' # all plates have that entry: selection identical to original object
-#' mustbe(vaas_4, vaas_4["Species" %k% vaas_4, ])
-#' mustbe(vaas_4, select(vaas_4, list(Species = "Escherichia coli"),
-#'   values  = FALSE)) # equivalent
-#'
-#' # two plates also have that value: yielding OPMS object with only two plates
-#' mustbe(vaas_4[1:2], vaas_4[list(Species = "Escherichia coli") %q% vaas_4, ])
-#' mustbe(vaas_4[1:2], select(vaas_4, list(Species = "Escherichia coli")))
-#'
-#' # select all plates that have aggregated values
-#' x <- select(vaas_4, has_aggr(vaas_4))
-#' mustbe(x, vaas_4) # all have such values
-#'
-#' # select a common set of time points
-#' x <- select(vaas_4, time = TRUE)
-#' mustbe(x, vaas_4) # the time points had already been identical
-#' # create unequal time points
-#' copy <- vaas_4[, list(1:10, 1:20, 1:15, 1:10)]
-#' mustbe(hours(copy), c(2.25, 4.75, 3.50, 2.25))
-#' # now restrict to common subset
-#' x <- select(copy, time = TRUE)
-#' mustbe(hours(x), rep(2.25, 4))
-#' # see also the example with split() given under "["
-#'
-#' # select all wells that have positive reactions
-#' dim(x <- select(vaas_4, use = "p")) # in at least one plate
-#' stopifnot(dim(x)[3] < dim(vaas_4)[3])
-#' dim(y <- select(vaas_4, use = "P")) # in all plates
-#' stopifnot(dim(y)[3] < dim(x)[3])
-#'
-#' # select all wells that have non-negative reactions in at least one plate
-#' dim(y <- select(vaas_4, use = "N", invert = TRUE))
-#' stopifnot(dim(y)[3] > dim(x)[3])
-#'
-#' ## data-frame method
-#' x <- data.frame(a = 1:5, b = letters[1:5], c = LETTERS[1:5])
-#' (y <- select(x, "factor"))
-#' stopifnot(dim(y) == c(5, 2))
-#' (y <- select(x, "integer"))
-#' stopifnot(dim(y) == c(5, 1))
-#' (y <- select(x, c("factor", "integer")))
-#' mustbe(x, y)
-#'
-setGeneric("select", function(object, query, ...) standardGeneric("select"))
-
-setMethod("select", OPMS, function(object, query, ...) {
-  message("select() is deprecated -- use subset() instead")
-  subset(x = object, query = query, ...)
-}, sealed = SEALED)
-
-setMethod("select", "data.frame", function(object, query) {
-  object[, vapply(object, inherits, logical(1L), what = query), drop = FALSE]
 }, sealed = SEALED)
 
 

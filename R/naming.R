@@ -59,12 +59,36 @@ map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 ################################################################################
 
 
+#' Clean well coordinates
+#'
+#' Clean well coordinates given as character strings.
+#'
+#' @param x Character vector.
+#' @return Character vector of the length of \code{x}.
+#' @keywords internal
+#'
+clean_coords <- function(x) {
+  do_clean <- function(x) {
+    x <- sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE), perl = TRUE)
+    sprintf("%s%02i", toupper(substring(x, 1L, 1L)),
+      as.integer(sub("^[A-Za-z]+", "", x, perl = TRUE)))
+  }
+  if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, perl = TRUE)))
+    x[bad] <- do_clean(x[bad])
+  x
+}
+
+
+################################################################################
+
+
 ## NOTE: not an S4 method because manual dispatch
 
 
 #' Translate well coordinates
 #'
-#' Translate well coordinates to numeric indexes
+#' Translate well coordinates to numeric indexes, or clean well indexes given
+#' as character vector.
 #'
 #' @param x Vector, formula or missing. Basically any \R object.
 #' @param names Character vector. Ignored unless \code{x} is a formula.
@@ -76,8 +100,10 @@ map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 well_index <- function(x, names) {
   if (missing(x))
     TRUE
+  else if (is.character(x))
+    clean_coords(x)
   else if (inherits(x, "formula"))
-    eval(x[[length(x)]], structure(as.list(seq_along(names)), .Names = names))
+    eval(x[[length(x)]], structure(as.list(seq_along(names)), names = names))
   else
     x
 }
@@ -280,7 +306,8 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
 #' Map well names to substrates
 #'
 #' Translate well names (which are basically their coordinates on the plate) to
-#' substrate names, given the name of the plate.
+#' substrate names, given the name of the plate. This function is
+#' \strong{deprecated}; use \code{\link{wells}} instead.
 #'
 #' @param plate Character vector or factor. The type(s) of the plate(s). See
 #'   \code{\link{plate_type}}. \code{\link{plate_type}} is applied before
@@ -298,21 +325,15 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
 #' x <- c("A01", "B10")
 #' (y <- well_to_substrate("PM1", x))
 #' stopifnot(nchar(y) > nchar(x))
-#' # formula yields same result
-#' stopifnot(identical(y, well_to_substrate("PM1", ~ c(A01, B10))))
+#' # formula yields same result (except for row names)
+#' stopifnot(y == well_to_substrate("PM1", ~ c(A01, B10)))
 #' # using a sequence of well coordinates
 #' stopifnot(nrow(well_to_substrate("PM1", ~ C02:C06)) == 5) # well sequence
 #' stopifnot(nrow(well_to_substrate("PM1")) == 96) # all wells by default
 #'
 well_to_substrate <- function(plate, well = TRUE) {
-  well <- well_index(well, rownames(WELL_MAP))
-  pos <- pmatch(plate_type(plate), colnames(WELL_MAP))
-  found <- !is.na(pos)
-  result <- WELL_MAP[well, pos[found], drop = FALSE]
-  others <- matrix(data = NA_character_, nrow = nrow(result),
-    ncol = length(plate[!found]),
-    dimnames = list(rownames(result), plate[!found]))
-  cbind(result, others)[]
+  warning("well_to_substrate() is deprecated -- use wells() instead")
+  wells(object = well, full = TRUE, plate = plate)
 }
 
 

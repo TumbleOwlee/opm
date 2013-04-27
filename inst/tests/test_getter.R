@@ -381,10 +381,6 @@ test_that("the OPMS metadata can be queried", {
 ################################################################################
 
 
-## select
-## UNTESTED
-
-
 ## subset
 test_that("the plates can be subset based on the metadata", {
   query <- list(organism = ORGN, run = 3L)

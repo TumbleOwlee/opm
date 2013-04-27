@@ -283,10 +283,6 @@ read_opm_yaml <- function(filename) {
 #' @keywords internal
 #'
 read_microstation_opm <- function(filename) {
-  norm_coords <- function(x) {
-    x <- do.call(rbind, strsplit(x, "\\s+", perl = TRUE))
-    sprintf("%s%02i", x[, 1L], must(as.integer(x[, 2L])))
-  }
   x <- read.table(filename, sep = ",", comment.char = "", header = TRUE,
     check.names = FALSE, stringsAsFactors = FALSE, quote = "",
     fileEncoding = opm_opt("file.encoding"))
@@ -300,7 +296,7 @@ read_microstation_opm <- function(filename) {
   x <- x[, wanted, drop = FALSE]
   x <- cbind(filename, x, stringsAsFactors = FALSE)
   names(x) <- c(CSV_NAMES[c("FILE", "PLATE_TYPE", "SETUP", "POS")], HOUR,
-    norm_coords(sub(pat, "", wells, perl = TRUE)))
+    clean_coords(sub(pat, "", wells, perl = TRUE)))
   pos <- seq.int(4L)
   x <- to_opm_list.list(lapply(seq.int(nrow(x)), function(i) {
     list(csv_data = as.list(x[i, pos, drop = FALSE]),
