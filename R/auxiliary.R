@@ -1760,36 +1760,46 @@ setMethod("map_names", c("ANY", "missing"), function(object) {
 #'
 #' Replace \sQuote{NA} by \code{NA_character_}. When reading \acronym{YAML}
 #' input previously output by \R, \sQuote{NA} values cause numeric vectors to be
-#' interpreted as character. This function fixes this problem and also takes
-#' care of misinterpreted numbers in exponential notation.
+#' interpreted as character. This function fixes this problem.
 #'
 #' @param object Character vector or list.
 #' @param type Character scalar denoting the type to which input character
 #'   vectors shall be tried to be converted.
 #' @return Character vector or list.
 #' @seealso utils::type.convert
+#' @details This problem does not occur anymore with the \pkg{yaml} package of
+#'   at least version 2.1.7, but for legacy \acronym{YAML} (and \acronym{JSON})
+#'   files it is necessary to conduct the conversions implemented here.
 #' @keywords internal
 #' @references \url{http://www.yaml.org/}
 #'
-setGeneric("repair_na_strings",
-  function(object, ...) standardGeneric("repair_na_strings"))
+repair_na_strings <- function(object, ...) UseMethod("repair_na_strings")
 
-setMethod("repair_na_strings", "character", function(object) {
-  object[grepl("^\\s*NA$", object, perl = TRUE)] <- NA_character_
+#' @rdname repair_na_strings
+#' @method repair_na_strings character
+#'
+repair_na_strings.character <- function(object, ...) {
+  object[grepl("^(\\s*NA|\\.na(\\.(real|integer|character))?)$", object,
+    perl = TRUE)] <- NA_character_
   object
-}, sealed = SEALED)
+}
 
-setMethod("repair_na_strings", "list", function(object,
-    type = c("double", "integer", "complex", "logical")) {
+#' @rdname repair_na_strings
+#' @method repair_na_strings list
+#'
+repair_na_strings.list <- function(object,
+    type = c("double", "integer", "complex", "logical", "character"), ...) {
   type <- match.arg(type)
-  rapply(object, f = function(x) {
-    tryCatch({
-      x <- repair_na_strings(x)
+  mapfun <- if (type == "character")
+    repair_na_strings.character
+  else
+    function(x) tryCatch({
+      x <- repair_na_strings.character(x)
       storage.mode(x) <- type
       x
     }, warning = function(w) x)
-  }, classes = "character", how = "replace")
-}, sealed = SEALED)
+  rapply(object, mapfun, "character", NULL, "replace")
+}
 
 
 ################################################################################

@@ -538,16 +538,21 @@ test_that("names in lists with missing names can be mapped", {
 
 ## repair_na_strings
 test_that("NAs in a character vectors can be repaired", {
+  # old style
   x <- c("abc", " ", "NA", " NA", "           NA", "123", "NA ")
   got <- repair_na_strings(x)
   expect_equal(got, c("abc", " ", NA, NA, NA, "123", "NA "))
+  # new style (YAML >= 2.1.7)
+  x <- c("abc", " ", ".na.real", ".na.character", ".na", "123", ".na.integer")
+  got <- repair_na_strings(x)
+  expect_equal(got, c("abc", " ", NA, NA, NA, "123", NA))
 })
 
 ## repair_na_strings
 test_that("NAs in a list can be repaired", {
 
   x <- list(a = 99, b = list(xx = c("NA", "99.5", "1e+06")), c = 8,
-    d = c("NA", "Z"))
+    d = c(".na.real", "Z"))
   wanted <- list(a = 99, b = list(xx = c(NA_real_, 99.5, 1000000)), c = 8,
     d = c(NA, "Z"))
 

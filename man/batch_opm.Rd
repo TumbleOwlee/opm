@@ -185,7 +185,14 @@
   they, and \acronym{YAML} in general, lack a native
   representation of \code{NA} values. Such entries are
   likely to be misunderstood as \sQuote{NA} character
-  scalars.
+  scalars (if the \pkg{json} package or the \pkg{yaml}
+  package prior to version 2.1.7 are used) or as
+  \sQuote{.na}, \sQuote{.na.real}, \sQuote{.na.logical} or
+  \sQuote{.na.character} character scalars (if more recent
+  versions of the \pkg{yaml} package are used). Input
+  functions in other programming languages should conduct
+  according conversions. \pkg{opm} translates these values
+  when converting a list to a \code{\link{OPM}} object.
 }
 \note{
   This function is for batch-converting many files; for

@@ -5,11 +5,14 @@
 
 2013-XX-XX (the 10th release on CRAN)
 
+- ensured compatibility with yaml >= 2.1.7 regarding treatment of NA values
+  and added according conversion of metadata from YAML/JSON input files
 
 - removed deprecated select() function
 - well_to_substrate() is now deprecated in favour of new wells() methods
 
-- character-string well names used for indexing are now cleaned automatically
+- character-string well names used for indexing are now automatically cleaned
+  (e.g. "A1" yields "A01")
 
 
 ################################################################################

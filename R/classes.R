@@ -236,7 +236,8 @@ setAs(from = "list", to = OPM, function(from) {
       sort.int(colnames(mat)[-hour.pos]))
     mat[, sorted.names, drop = FALSE]
   }
-  new(OPM, csv_data = unlist(from$csv_data), metadata = as.list(from$metadata),
+  new(OPM, csv_data = unlist(from$csv_data),
+    metadata = repair_na_strings.list(as.list(from$metadata), "character"),
     measurements = convert_measurements(from$measurements))
 })
 
@@ -380,8 +381,7 @@ setAs(from = OPMA, to = "list", function(from) {
 
 setAs(from = "list", to = OPMA, function(from) {
   convert_aggregated <- function(mat) {
-    mat <- repair_na_strings(mat)
-    mat <- as.matrix(as.data.frame(lapply(mat, unlist)))
+    mat <- as.matrix(as.data.frame(lapply(repair_na_strings(mat), unlist)))
     mat[, sort.int(colnames(mat)), drop = FALSE]
   }
   opm <- as(from, OPM)
@@ -496,10 +496,9 @@ setAs(from = OPMD, to = "list", function(from) {
 })
 
 setAs(from = "list", to = OPMD, function(from) {
-  convert_discretized <- function(x) unlist(repair_na_strings(x, "logical"))
   opma <- as(from, OPMA)
   settings <- update_settings_list(as.list(from$disc_settings))
-  discretized <- convert_discretized(from$discretized)
+  discretized <- unlist(repair_na_strings(from$discretized, "logical"))
   new(OPMD, csv_data = csv_data(opma), measurements = measurements(opma),
     metadata = metadata(opma), aggr_settings = aggr_settings(opma),
     aggregated = aggregated(opma), discretized = discretized,

@@ -16,7 +16,7 @@ Imports:
     plotrix,
     Ckmeans.1d.dp,
     pkgutils (>= 0.3-0),
-    yaml (>= 2.1.5),
+    yaml (>= 2.1.7),
     splines,
     mgcv,
     grofit (>= 1.1),
