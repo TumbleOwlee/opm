@@ -463,8 +463,8 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
             opm_models <- lapply(result, function(x) x$model)
             names(opm_models) <- wells
             if (is.null(options$filename))
-              options$filename <- paste("opm_models_",
-                format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData", sep = "")
+              options$filename <- paste0("opm_models_",
+                format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData")
             save("opm_models", file = options$filename)
             cat("Models saved as 'opm_models' on disk in file\n  ",
               getwd(), "/", options$filename, "\n\n", sep = "")

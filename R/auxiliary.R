@@ -863,7 +863,7 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
   str[long] <- do_trim(str[long])
   if (clean)
     long <- long & nzchar(str)
-  str[long] <- paste(str[long], append, sep = "")
+  str[long] <- paste0(str[long], append)
   str
 }
 
@@ -939,9 +939,9 @@ list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
       n[!nzchar(n)] <- sprintf(fmt, level)
     n <- ifelse(nzchar(n), safe_labels(n, "html"), NA_character_)
     x <- vapply(x, list2html, character(1L), level = level + 1L, fmt = fmt)
-    x <- paste(x, indent, sep = "")
+    x <- paste0(x, indent)
     x <- hmakeTag("div", x, class = n, title = n, newline = TRUE)
-    paste(indent, x, sep = "", collapse = "")
+    paste0(indent, x, collapse = "")
   } else {
     if (is.character(x) && !inherits(x, "AsIs"))
       x <- safe_labels(x, "html")
@@ -949,7 +949,7 @@ list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
       n <- ifelse(nzchar(n), safe_labels(n, "html"), NA_character_)
       x <- hmakeTag("span", x, class = n, title = n)
     }
-    paste(indent, paste(x, collapse = " "), "\n", sep = "")
+    paste0(indent, paste0(x, collapse = " "), "\n")
   }
 }
 

@@ -544,7 +544,7 @@ setMethod("substrate_info", "character", function(object,
     bad <- vapply(x, length, integer(1L)) < vapply(y, length, integer(1L))
     x[bad] <- lapply(x[bad], function(value) c(value, ""))
     x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
-    mapply(paste, y, x, MoreArgs = list(sep = "", collapse = ""))
+    mapply(paste0, y, x, MoreArgs = list(collapse = ""))
   }
   convert_greek <- function(x, how) {
     map_words(x, fun = map_values, mapping = GREEK_LETTERS[, how])

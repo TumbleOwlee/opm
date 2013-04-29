@@ -355,7 +355,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
   phylo_footer <- function(how, indent, paup.block) {
     nexus_footer <- function(indent, paup.block) {
       if (paup.block) {
-        block <- paste(indent, paup_cmds(), sep = "")
+        block <- paste0(indent, paup_cmds())
         block <- c("begin paup;", block, "end;", "")
       } else
         block <- NULL
@@ -426,7 +426,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
           warning("character states not indicated")
 
       if (L(html.args$legend.dot))
-        legend <- paste(legend, ".", sep = "")
+        legend <- paste0(legend, ".")
 
       div_class(legend, "table-legend")
     }
