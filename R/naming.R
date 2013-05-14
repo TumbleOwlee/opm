@@ -200,23 +200,25 @@ to_sentence.logical <- function(x, html, ...) {
 #' microarray results in a scientific manuscript.
 #'
 #' @param x \code{\link{OPMD}} or \code{\link{OPMS}} object.
+#' @param as.groups List or \code{NULL}. If a list, passed as \sQuote{key}
+#'   argument to \code{\link{metadata}}. The extracted metadata define groups
+#'   for which the discretized data are aggregated. Ignored if \code{x} is an
+#'   \code{\link{OPMD}} object.
+#' @param cutoff Numeric scalar used if \sQuote{as.groups} is a list. If the
+#'   relative frequency of the most frequent entry within the discretized values
+#'   to be joined is below that cutoff, \code{NA} is used. Ignored if \code{x}
+#'   is an \code{\link{OPMD}} object.
 #' @param downcase Logical scalar passed to \code{\link{wells}}.
 #' @param full Logical scalar passed to \code{\link{wells}}.
 #' @param in.parens Logical scalar passed to \code{\link{wells}}.
-#' @param as.groups List or \code{NULL}. If a list, passed as \sQuote{key}
-#'   argument to \code{\link{metadata}}. The extracted metadata define groups
-#'   for which the discretized data are aggregated.
-#' @param cutoff Numeric scalar used if \sQuote{as.groups} is a list. If the
-#'   relative frequency of the most frequent entry within the discretized values
-#'   to be joined is below that cutoff, \code{NA} is used.
-#' @param sep Character scalar used for joining the \sQuote{as.groups} entries
-#'   (if any).
-#' @param exact Logical scalar passed to \code{\link{metadata}}.
-#' @param strict Logical scalar also passed to \code{\link{metadata}}.
 #' @param html Logical scalar. Convert to \acronym{HTML}? This involves Greek
 #'   letters and paragraph (\sQuote{div}) tags.
+#' @param sep Character scalar used for joining the \sQuote{as.groups} entries
+#'   (if any).
 #' @param ... Optional arguments passed between the methods or to
 #'   \code{\link{wells}}.
+#' @param exact Logical scalar passed to \code{\link{metadata}}.
+#' @param strict Logical scalar also passed to \code{\link{metadata}}.
 #' @return Character vector or matrix with additional class atribute
 #'   \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the examples for
 #'   details.
@@ -259,8 +261,8 @@ to_sentence.logical <- function(x, html, ...) {
 #'
 setGeneric("listing")
 
-setMethod("listing", OPMD, function(x, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, html = FALSE, ...) {
+setMethod("listing", OPMD, function(x, as.groups, cutoff,
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep, ...) {
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
@@ -270,9 +272,9 @@ setMethod("listing", OPMD, function(x, downcase = TRUE, full = TRUE,
   res
 }, sealed = SEALED)
 
-setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5, sep = " ",
-    exact = TRUE, strict = TRUE, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, html = FALSE, ...) {
+setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5,
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
+    ..., exact = TRUE, strict = TRUE) {
   add_stuff <- function(x, html) {
     class(x) <- "OPMS_Listing"
     attr(x, "html") <- html

@@ -202,6 +202,8 @@ OPM_OPTIONS$key.join <- "."
 OPM_OPTIONS$disc.param <- "A"
 OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$contrast.type <- "Tukey"
+OPM_OPTIONS$comb.key.join <- "."
+OPM_OPTIONS$comb.value.join <- " "
 
 
 ################################################################################

@@ -398,7 +398,7 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
 #'
 metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
     ...) {
-  join <- function(x) vapply(x, paste, character(1L),
+  join <- function(x) vapply(x, paste0, character(1L),
     collapse = get("key.join", OPM_OPTIONS))
   if (is.null(names(x <- flatten(x))))
     names(x) <- join(x)
@@ -415,20 +415,48 @@ metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
 #' @rdname metadata_key
 #' @method metadata_key formula
 #'
-metadata_key.formula <- function(x, to.formula = FALSE, ...,
+metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL, ...,
     full.eval = !to.formula, envir = parent.frame()) {
   elem_type <- function(name) switch(as.character(name),
     `::` =, `:::` =, `$` =, `@` = 1L, # operators with highest precedence
     `I` = 2L, # protected formula elements
-    3L # anything else
+    `J` = 3L, # causing on-the-fly joining of metadata elements
+    4L # anything else
   )
   apply_to_tail <- function(x, fun) {
     for (i in seq_along(x)[-1L])
       x[[i]] <- fun(x[[i]])
     x
   }
+  combine <- new.env(parent = emptyenv())
+  comb_list <- function(...) {
+    if (length(keys <- flatten(x <- list(...))) > 1L) {
+      keys <- vapply(keys, paste0, character(1L),
+        collapse = get("key.join", OPM_OPTIONS))
+      combine[[paste0(keys,
+        collapse = get("comb.key.join", OPM_OPTIONS))]] <- keys
+    }
+    x
+  }
+  comb_names <- function(x) {
+    x <- all.vars(x)
+    key <- paste0(x, collapse = get("comb.key.join", OPM_OPTIONS))
+    if (length(x) > 1L)
+      combine[[key]] <- x
+    as.name(key)
+  }
+  final_comb_list <- function(x, remove) {
+    x <- as.list(x)
+    if (length(remove))
+      x <- x[!vapply(x, function(y) any(y %in% remove), logical(1L))]
+    if (length(x))
+      x
+    else
+      NULL
+  }
   c.name <- as.name("c")
   list.name <- as.name("list")
+  comblist.name <- as.name("comb_list")
   rec_listify <- function(x) case(length(x), NULL, if (is.call(x))
       NULL
     else if (is.name(x))
@@ -445,6 +473,10 @@ metadata_key.formula <- function(x, to.formula = FALSE, ...,
       eval(x, envir)
     },
     {
+      x[[1L]] <- comblist.name
+      apply_to_tail(x, rec_listify)
+    },
+    {
       x[[1L]] <- list.name
       apply_to_tail(x, rec_listify)
     }
@@ -454,22 +486,30 @@ metadata_key.formula <- function(x, to.formula = FALSE, ...,
     else
       x, switch(
     elem_type(x[[1L]]),
-    as.name(paste(all.vars(apply_to_tail(x, rec_replace)),
+    as.name(paste0(all.vars(apply_to_tail(x, rec_replace)),
       collapse = get("key.join", OPM_OPTIONS))),
     {
       x[[1L]] <- c.name
-      as.name(paste(eval(x, envir), collapse = get("key.join", OPM_OPTIONS)))
+      as.name(paste0(eval(x, envir), collapse = get("key.join", OPM_OPTIONS)))
     },
+    comb_names(apply_to_tail(x, rec_replace)),
     apply_to_tail(x, rec_replace)
   ))
-  result <- (if (to.formula)
-      rec_replace
-    else
-      rec_listify)(x[[length(x)]])
-  if (full.eval)
-    return(metadata_key(x = eval(result, envir), ...))
-  x[[length(x)]] <- result
-  x
+  result <- if (to.formula)
+    rec_replace(x[[length(x)]])
+  else
+    rec_listify(x[[length(x)]])
+  if (full.eval) {
+    result <- metadata_key(x = eval(result, enclos = envir), remove = remove,
+      ...)
+    if (length(result))
+      attr(result, "combine") <- final_comb_list(combine, remove)
+    result
+  } else {
+    x[[length(x)]] <- result
+    attr(x, "combine") <- final_comb_list(combine, remove)
+    x
+  }
 }
 
 
@@ -2014,6 +2054,14 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{color.borders}{Character vector with default color borders between
 #'       which \code{\link{level_plot}} interpolates to obtain a colour
 #'       palette.}
+#'     \item{comb.key.join}{Used by functions that support combination of
+#'       metadata entries converted to data-frame columns immediately after
+#'       their selection. Sets the character string that is used when joining
+#'       old names to new name.}
+#'     \item{comb.value.join}{Used by functions that support combination of
+#'       metadata entries converted to data-frame columns immediately after
+#'       their selection. Sets the character string that is used when joining
+#'       old values to new values.}
 #'     \item{contrast.type}{Character scalar indicating the default type of
 #'       contrast used by \code{\link{opm_mcp}}.}
 #'     \item{css.file}{Character scalar. Default \acronym{CSS} file linked by

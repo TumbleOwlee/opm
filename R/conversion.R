@@ -485,19 +485,32 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' @param object \code{\link{OPMS}} object or data frame.
 #' @param what For the \code{\link{OPMS}} method, a list of metadata keys to
 #'   consider, or single such key; passed to \code{\link{metadata}}. A formula
-#'   is also possible; see there for details.
+#'   is also possible; see there for details. A peculiarity of
+#'   \code{extract_columns} is that including \code{J} as a pseudo-function call
+#'   in the formula triggers the combination of metadata entries to new factors
+#'   immediately after selecting them, as long as \code{join} is \code{FALSE}.
 #'
 #'   For the data-frame method, just the names of the columns to extract, or
-#'   their indices, as vector; alternatively, the name of the class to extract
-#'   from the data frame to form the matrix values.
+#'   their indices, as vector, if \code{direct} is \code{TRUE}. Alternatively,
+#'   the name of the class to extract from the data frame to form the matrix
+#'   values.
+#'
+#'   In the \sQuote{direct} mode, \code{what} can also be a named list of
+#'   vectors used for indexing. In that case a data frame is returned that
+#'   contains the columns from \code{object} together with new columns that
+#'   result from pasting the selected columns together.
 #' @param join Logical scalar. Join each row together to yield a character
 #'   vector? Otherwise it is just attempted to construct a data frame.
 #' @param sep Character scalar. Used as separator between the distinct metadata
 #'   entries if these are to be pasted together. Ignored unless \code{join} is
-#'   \code{TRUE}. The data-frame method always joins the data.
+#'   \code{TRUE}. The data-frame method always joins the data unless \code{what}
+#'   is a list.
 #' @param dups Character scalar specifying what to do in the case of duplicate
 #'   labels: either \sQuote{warn}, \sQuote{error} or \sQuote{ignore}. Ignored
 #'   unless \code{join} is \code{TRUE}.
+#' @param factors Logical scalar determining whether strings should be converted
+#'   to factors. Note that this would only affect newly created data-frame
+#'   columns.
 #' @param exact Logical scalar. Also passed to \code{\link{metadata}}.
 #' @param strict Logical scalar. Also passed to \code{\link{metadata}}.
 #' @param as.labels Character vector. See \code{\link{extract}}.
@@ -510,10 +523,12 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #'   can be used for testing the applied metadata selections beforehand.
 #'
 #'   The data-frame method is partially trivial (extract the selected columns
-#'   and join them to form a character vector), partially more useful (extract
-#'   columns with data of a specified class).
-#' @return Data frame or character vector, depending on the \code{join}
-#'   argument. The data-frame method always returns a character vector.
+#'   and join them to form a character vector or new data-frame columns),
+#'   partially more useful (extract columns with data of a specified class).
+#' @return For the \code{OPMS} method, a data frame or character vector,
+#'   depending on the \code{join} argument. The data-frame method returns a
+#'   character vector or a data frame, too, but depending on the \code{what}
+#'   argument.
 #' @family conversion-functions
 #' @keywords dplot manip
 #' @seealso base::data.frame base::as.data.frame base::cbind
@@ -524,9 +539,12 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #'
 #' # Create data frame
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(4L, 2L)))
+#' stopifnot(is.data.frame(x), dim(x) == c(4, 2))
 #' (y <- extract_columns(vaas_4, what = ~ Species + Strain))
 #' stopifnot(identical(x, y)) # same result using a formula
+#' (y <- extract_columns(vaas_4, what = ~ J(Species + Strain)))
+#' stopifnot(is.data.frame(y), dim(y) == c(4, 3)) # additional column created
+#' stopifnot(identical(x, y[, -3]))
 #'
 #' # Create a character vector
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
@@ -552,15 +570,16 @@ setGeneric("extract_columns",
   function(object, ...) standardGeneric("extract_columns"))
 
 setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
-    sep = " ", dups = c("warn", "error", "ignore"), exact = TRUE,
-    strict = TRUE) {
+    sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
+    exact = TRUE, strict = TRUE) {
+  what <- metadata_key(what, FALSE, NULL)
   result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
     lapply(result, rapply, f = as.character)
   else
     as.list(as.character(result))
   if (L(join)) {
-    result <- unlist(lapply(result, FUN = paste, collapse = sep))
+    result <- unlist(lapply(result, FUN = paste0, collapse = sep))
     msg <- if (is.dup <- anyDuplicated(result))
       paste("duplicated label:", result[is.dup])
     else
@@ -569,17 +588,19 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
       case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
   } else {
     result <- must(do.call(rbind, result))
-    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = TRUE)
+    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = factors)
     if (ncol(result) > length(colnames(result)))
-      colnames(result) <- paste(metadata_key(what, FALSE),
-        collapse = OPM_OPTIONS$key.join)
+      colnames(result) <- paste(what, collapse = get("key.join", OPM_OPTIONS))
+    if (is.list(attr(what, "combine")))
+      result <- extract_columns(result, attr(what, "combine"),
+        factors = factors, direct = TRUE)
   }
   result
 }, sealed = SEALED)
 
 setMethod("extract_columns", "data.frame", function(object, what,
-    as.labels = NULL, as.groups = NULL, sep = " ",
-    direct = inherits(what, "AsIs")) {
+    as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
+    factors = is.list(what), direct = inherits(what, "AsIs")) {
   join <- function(x, what, sep)
     do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
   find_stuff <- function(x, what) {
@@ -588,10 +609,28 @@ setMethod("extract_columns", "data.frame", function(object, what,
       stop("no data of class(es) ", paste(what, collapse = "/"), " found")
     as.matrix(x)
   }
-  if (L(direct)) {
-    result <- join(object, what, sep)
-    if (length(as.labels))
-      names(result) <- join(object, as.labels, sep)
+  LL(direct, factors)
+  if (direct) {
+    if (is.list(what)) {
+      if (is.null(names(what)))
+        stop("if 'what' is a list, it must have names")
+      result <- object
+      what <- what[!match(names(what), colnames(result), 0L)]
+      if (factors)
+        for (i in seq_along(what))
+          result[, names(what)[i]] <- as.factor(join(object, what[[i]], sep))
+      else
+        for (i in seq_along(what))
+          result[, names(what)[i]] <- join(object, what[[i]], sep)
+      if (length(as.labels))
+        rownames(result) <- join(object, as.labels, sep)
+    } else {
+      result <- join(object, what, sep)
+      if (length(as.labels))
+        names(result) <- join(object, as.labels, sep)
+      if (factors)
+        result <- as.factor(result)
+    }
   } else {
     result <- find_stuff(object, what)
     if (length(as.labels))
@@ -601,7 +640,6 @@ setMethod("extract_columns", "data.frame", function(object, what,
     attr(result, "row.groups") <- as.factor(join(object, as.groups, sep))
   result
 }, sealed = SEALED)
-
 
 
 ################################################################################
@@ -893,6 +931,11 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   be joined and used as row names (if \code{dataframe} is \code{FALSE}) or
 #'   additional columns (if otherwise). Ignored if \code{NULL}.
 #'
+#'   If a \code{as.labels} is a formula and \code{dataframe} is \code{TRUE}, the
+#'   pseudo-function \code{J} within the formula can be used to trigger
+#'   combination of factors immediately after selecting them as data-frame
+#'   columns, much like \code{as.groups}.
+#'
 #' @param subset Character vector. The parameter(s) to put in the matrix. If it
 #'   is \sQuote{disc}, discretized data are returned, and \code{ci} is ignored.
 #' @param ci Logical scalar. Also return the confidence intervals?
@@ -904,6 +947,11 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   \sQuote{row.groups} attribute of the output matrix. See
 #'   \code{\link{heat_map}} for its usage. Ignored if \code{NULL} and if
 #'   \code{dataframe} is \code{FALSE}.
+#'
+#'   If a \code{as.groups} is a formula and \code{dataframe} is \code{TRUE}, the
+#'   pseudo-function \code{J} within the formula can be used to trigger
+#'   combination of factors immediately after selecting them as data-frame
+#'   columns, much like \code{as.labels}.
 #'
 #'   For the data-frame method, a logical, character or numeric vector
 #'   indicating according to which columns (before the \code{split.at} column)
@@ -972,15 +1020,23 @@ setMethod("rep", OPMS, function(x, ...) {
 #'
 #' # generate matrix (containing the parameter given above)
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain")))[, 1:3]
-#' stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.numeric(x))
-#' # Using a formula also works
+#' stopifnot(is.matrix(x), dim(x) == c(4, 96), is.numeric(x))
+#' # using a formula also works
 #' (y <- extract(vaas_4, as.labels = ~ Species + Strain))[, 1:3]
 #' stopifnot(identical(x, y))
 #'
 #' # generate data frame
 #' (x <- extract(vaas_4, as.labels = list("Species", "Strain"),
 #'   dataframe = TRUE))[, 1:3]
-#' stopifnot(is.data.frame(x), identical(dim(x), c(4L, 99L)))
+#' stopifnot(is.data.frame(x), dim(x) == c(4, 99))
+#' # using a formula
+#' (y <- extract(vaas_4, as.labels = ~ Species + Strain,
+#'   dataframe = TRUE))[, 1:3]
+#' stopifnot(identical(x, y))
+#' # using a formula, with joining into new columns
+#' (y <- extract(vaas_4, as.labels = ~ J(Species + Strain),
+#'   dataframe = TRUE))[, 1:3]
+#' stopifnot(identical(x, y[, -3]))
 #'
 #' # put all parameters in a single data frame
 #' x <- lapply(param_names(), function(name) extract(vaas_4, subset = name,

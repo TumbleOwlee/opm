@@ -115,22 +115,55 @@ test_that("rows can be picked", {
 
 
 ## metadata_key
-test_that("we can convert formulas for use as metadata keys", {
+test_that("we can convert formulas to formulas for use as metadata keys", {
 
   var <- c("A", "B")
   f <- ~ a $ b $ c + I(var) * ("d" + e) + c("f", "g", "h") | i$"j"
   got <- metadata_key(f, TRUE)
   expect_equal(got, ~ a.b.c + A.B * (d + e) + c(f, g, h) | i.j)
+
+  f <- ~ a $ b $ c + I(var) * J("d" + e) + c("f", "g", "h") | i$"j"
+  got <- metadata_key(f, TRUE)
+  expect_equal(attr(got, "combine"), list(d.e = c("d", "e")))
+  expect_equal(got, ~ a.b.c + A.B * d.e + c(f, g, h) | i.j)
+
+  f <- ~ a $ b $ c + I(var) * J("d", e$r) + c("f", "g", "h") | i$"j"
+  old <- opm_opt(comb.key.join = "#")
+  got <- metadata_key(f, TRUE)
+  expect_equal(attr(got, "combine"), list(`d#e.r` = c("d", "e.r")))
+  expect_equal(got, ~ a.b.c + A.B * `d#e.r` + c(f, g, h) | i.j)
+  opm_opt(comb.key.join = old$comb.key.join)
+
+})
+
+
+## metadata_key
+test_that("we can convert formulas to lists for use as metadata keys", {
+  var <- c("A", "B")
+  f <- ~ a $ b $ c + I(var) * ("d" + e) + c("f", "g", "h") | i$"j"
+
   got <- metadata_key(f, FALSE)
-  expect_equal(got, list(a.b.c = c("a", "b", "c"), A.B = c("A", "B"),
-    d = "d", e = "e", f = "f", g = "g", h = "h", i.j = c("i", "j")))
+  wanted <- list(a.b.c = c("a", "b", "c"), A.B = c("A", "B"),
+    d = "d", e = "e", f = "f", g = "g", h = "h", i.j = c("i", "j"))
+  expect_equal(got, wanted)
+
   got <- metadata_key(f, FALSE, remove = c("A.B", "i.j"))
-  expect_equal(got, list(a.b.c = c("a", "b", "c"),
-    d = "d", e = "e", f = "f", g = "g", h = "h"))
+  wanted <- list(a.b.c = c("a", "b", "c"),
+    d = "d", e = "e", f = "f", g = "g", h = "h")
+  expect_equal(got, wanted)
+
+  f <- ~ a $ b $ c + I(var) * J("d" + e + E$F) + c("f", "g", "h") | i$"j"
+  got <- metadata_key(f, FALSE)
+  wanted <- list(a.b.c = c("a", "b", "c"), A.B = c("A", "B"),
+    d = "d", e = "e", E.F = c("E", "F"), f = "f", g = "g", h = "h",
+    i.j = c("i", "j"))
+  attr(wanted, "combine") <- list(d.e.E.F = c("d", "e", "E.F"))
+  expect_equal(got, wanted)
 
   f <- Value ~ Well
   got <- metadata_key(f, FALSE)
-  expect_equal(got, c(Well = "Well"))
+  wanted <- c(Well = "Well")
+  expect_equal(got, wanted)
   got <- metadata_key(f, FALSE, remove = RESERVED_NAMES)
   expect_equal(got, NULL)
 

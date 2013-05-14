@@ -30,15 +30,23 @@
   \item{color.borders}{Character vector with default color
   borders between which \code{\link{level_plot}}
   interpolates to obtain a colour palette.}
-  \item{contrast.type}{Character scalar indicating the
-  default type of contrast used by \code{\link{opm_mcp}}.}
-  \item{css.file}{Character scalar. Default \acronym{CSS}
-  file linked by \code{\link{phylo_data}} when producing
-  \acronym{HTML} output. Ignored if empty.}
-  \item{csv.keys}{Character vector with names of entries of
-  \code{\link{csv_data}} be used by
-  \code{\link{include_metadata}}.  Should be kept a subset
-  of \code{opm_opt("csv.selection")}.}
+  \item{comb.key.join}{Used by functions that support
+  combination of metadata entries converted to data-frame
+  columns immediately after their selection. Sets the
+  character string that is used when joining old names to
+  new name.} \item{comb.value.join}{Used by functions that
+  support combination of metadata entries converted to
+  data-frame columns immediately after their selection.
+  Sets the character string that is used when joining old
+  values to new values.} \item{contrast.type}{Character
+  scalar indicating the default type of contrast used by
+  \code{\link{opm_mcp}}.} \item{css.file}{Character scalar.
+  Default \acronym{CSS} file linked by
+  \code{\link{phylo_data}} when producing \acronym{HTML}
+  output. Ignored if empty.} \item{csv.keys}{Character
+  vector with names of entries of \code{\link{csv_data}} be
+  used by \code{\link{include_metadata}}.  Should be kept a
+  subset of \code{opm_opt("csv.selection")}.}
   \item{csv.selection}{Character vector with names of
   entries of \code{\link{csv_data}} (must be a valid
   \sQuote{keys} argument) to be extracted by

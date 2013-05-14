@@ -124,7 +124,7 @@ An overview of these sections is provided in Section~\ref{methods overview}.
 The single most important problem users reported to us when applying \pkg{opm} was that the input files could not be read.
 This was uniformly due to the use of multi-plate CSV files.
 But the most recent versions of the OmniLog\textregistered \ software can batch-export one plate per CSV file, and \pkg{opm} can split multi-plate CSV into files that can be input by the package.
-See Section~\ref{methods import} for details and Section \ref{application import} for a usage example.
+See Section~\ref{methods import} for details and Section~\ref{application import} for a usage example.
 
 Details on the scientific background could well be skipped during a first reading.
 The interested user would nevertheless find them in Section~\ref{scientific introduction}, including references for important functionality.
@@ -512,8 +512,11 @@ Users of multiple-comparison procedures, especially of simultaneous multiple con
 Especially in situations where groups are defined by more than one metadata entry the evaluation of differences of treatment means may result in quite complex models. 
 Then, the application of \textit{cell-means models} (also known as \textit{pseudo-one-way layouts}) as discussed in \citep{schaarschmidt}) is strongly encouraged.
 In this approach estimators for treatment and variance are derived from a model with all treatments combined in a single factor. 
-Technically, this necessitates to merge the defining metadata variables into a single.
-An according example is given in Section~\ref{application metadata}, whereas the computation of multiple comparisons using a \textit{cell-means model} is shown in Section~\ref{application group-means}.
+Technically, this requires the merging of several defining metadata variables into a single one.
+This can be done by creating new metadata entries from given ones and storing them back in an \proglang{OPM} or \proglang{OPMS} object.
+An according example is given in Section~\ref{application metadata}.
+Alternatively, merging can be done when selecting metadata for creating data frames.
+The computation of multiple comparisons using a \textit{cell-means model} is shown in Section~\ref{application group-means}.
 
 The function \code{opm\_mcp()} internally reshapes the data into a ``flat'' data frame containing one column for the chosen parameter value, one column for the well (substrate) name and optionally additional columns for the selected metadata.
 For performing the testing procedure, a model has to be stated that specifies the factor levels that determine the grouping \citep{searle, hothorn}.
@@ -1161,6 +1164,16 @@ vaas.mu <- extract(vaas_et_al, dataframe = TRUE,
 This only works if this meta-information is present for the plates under study.
 Once a data frame is exported, these metadata will be contained in additional columns; once a matrix is exported, they will be used to construct the row names.
 The metadata could also be selected using a formula; see the help pages for details, particularly \code{?metadata}.
+A peculiarity of \code{extract()} is that formulas can be used to trigger the joining of selected metadata entries (converted to data-frame columns) into new ones, using the pseudo-function \code{J()} within the formula.
+For instance, the following code would create a new entry called ``Species.Strain'':
+
+<<label=extract.with.joining, results=hide>>=
+vaas.mu <- extract(vaas_et_al, dataframe = TRUE,
+  as.labels = ~ J(Species, Strain), subset = "mu")
+@
+
+This is applied by \code{opm\_mcp()}, see Section~\ref{application group-means}.
+The behaviour during joining of factors is modified using \code{opm\_opt(comb.key.join = ...)} and \code{opm\_opt(comb.value.join = ...)}.
 The default curve parameter returned by \code{extract()} can be set with \code{opm\_opt(curve.param = ...)}.
 
 Finally, note that methods for a variety of generic \proglang{R} functions such as \code{unique}, \code{sort}, \code{duplicated}, \code{anyDuplicated} and \code{merge} are available for \proglang{OPMS} objects.

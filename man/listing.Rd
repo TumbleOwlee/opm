@@ -5,6 +5,18 @@
   \item{x}{\code{\link{OPMD}} or \code{\link{OPMS}}
   object.}
 
+  \item{as.groups}{List or \code{NULL}. If a list, passed
+  as \sQuote{key} argument to \code{\link{metadata}}. The
+  extracted metadata define groups for which the
+  discretized data are aggregated. Ignored if \code{x} is
+  an \code{\link{OPMD}} object.}
+
+  \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
+  is a list. If the relative frequency of the most frequent
+  entry within the discretized values to be joined is below
+  that cutoff, \code{NA} is used. Ignored if \code{x} is an
+  \code{\link{OPMD}} object.}
+
   \item{downcase}{Logical scalar passed to
   \code{\link{wells}}.}
 
@@ -14,31 +26,21 @@
   \item{in.parens}{Logical scalar passed to
   \code{\link{wells}}.}
 
-  \item{as.groups}{List or \code{NULL}. If a list, passed
-  as \sQuote{key} argument to \code{\link{metadata}}. The
-  extracted metadata define groups for which the
-  discretized data are aggregated.}
-
-  \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
-  is a list. If the relative frequency of the most frequent
-  entry within the discretized values to be joined is below
-  that cutoff, \code{NA} is used.}
+  \item{html}{Logical scalar. Convert to \acronym{HTML}?
+  This involves Greek letters and paragraph (\sQuote{div})
+  tags.}
 
   \item{sep}{Character scalar used for joining the
   \sQuote{as.groups} entries (if any).}
+
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{wells}}.}
 
   \item{exact}{Logical scalar passed to
   \code{\link{metadata}}.}
 
   \item{strict}{Logical scalar also passed to
   \code{\link{metadata}}.}
-
-  \item{html}{Logical scalar. Convert to \acronym{HTML}?
-  This involves Greek letters and paragraph (\sQuote{div})
-  tags.}
-
-  \item{...}{Optional arguments passed between the methods
-  or to \code{\link{wells}}.}
 }
 \value{
   Character vector or matrix with additional class atribute
@@ -101,11 +103,11 @@ stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
 \alias{listing,OPMD-method}
 \alias{listing,OPMS-method}
 \usage{
-  \S4method{listing}{OPMD}(x, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, html = FALSE, ...) 
+  \S4method{listing}{OPMD}(x, as.groups, cutoff,
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep, ...) 
 
-  \S4method{listing}{OPMS}(x, as.groups, cutoff = 0.5, sep = " ",
-    exact = TRUE, strict = TRUE, downcase = TRUE, full = TRUE,
-    in.parens = FALSE, html = FALSE, ...) 
+  \S4method{listing}{OPMS}(x, as.groups, cutoff = 0.5,
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
+    ..., exact = TRUE, strict = TRUE) 
 
 }
