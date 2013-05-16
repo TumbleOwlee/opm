@@ -33,7 +33,7 @@
 #' @return Character vector.
 #' @family phylogeny-functions
 #' @keywords character
-#' @seealso base::gsub
+#' @seealso base::gsu
 #' @examples
 #' # Some animals you might know
 #' x <- c("Elephas maximus", "Loxodonta africana", "Giraffa camelopardalis")
@@ -862,13 +862,13 @@ html_args <- function(
 #'   discrete.args = NULL))
 #' stopifnot(is.character(yy), length(yy) > 10)
 #'
-#' ## 'OPMD_listing' method
-#' echo(x <- phylo_data(listing(vaas_1)))
+#' ## 'OPMD_Listing' method
+#' echo(x <- phylo_data(listing(vaas_1, NULL)))
 #' stopifnot(is.character(x), length(x) == 1)
-#' echo(x <- phylo_data(listing(vaas_1, html = TRUE)))
+#' echo(x <- phylo_data(listing(vaas_1, NULL, html = TRUE)))
 #' stopifnot(is.character(x), length(x) > 1)
 #'
-#' ## 'OPMS_listing' method
+#' ## 'OPMS_Listing' method
 #' echo(x <- phylo_data(listing(vaas_4, as.groups = "Species")))
 #' stopifnot(is.character(x), length(x) == 2, !is.null(names(x)))
 #' echo(x <- phylo_data(listing(vaas_4, as.groups = "Species", html = TRUE)))

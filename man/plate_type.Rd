@@ -100,7 +100,7 @@ stopifnot(x != y)
 stopifnot(is.factor(z), z == x) # same result after conversion
 }
 \seealso{
-  base::strtrim base::abbreviate base::gsub
+  base::strtrim base::abbreviate base::gsu
 
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{anyDuplicated}},

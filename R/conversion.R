@@ -943,15 +943,21 @@ setMethod("rep", OPMS, function(x, ...) {
 #' @param dataframe Logical scalar. Return data frame or matrix?
 #'
 #' @param as.groups For the \code{\link{OPMS}} method, a list, character vector
-#'   or formula indicating the metadata to be joined and used as
-#'   \sQuote{row.groups} attribute of the output matrix. See
-#'   \code{\link{heat_map}} for its usage. Ignored if \code{NULL} and if
-#'   \code{dataframe} is \code{FALSE}.
+#'   or formula indicating the metadata to be joined and either used as
+#'   \sQuote{row.groups} attribute of the output matrix or as additional columns
+#'   of the output data frame. See \code{\link{heat_map}} for its usage. Ignored
+#'   if empty.
 #'
 #'   If a \code{as.groups} is a formula and \code{dataframe} is \code{TRUE}, the
 #'   pseudo-function \code{J} within the formula can be used to trigger
 #'   combination of factors immediately after selecting them as data-frame
 #'   columns, much like \code{as.labels}.
+#'
+#'   If \code{as.groups} is a logical scalar, \code{TRUE} yields a trivial group
+#'   that contains all elements, \code{FALSE} yields one group per element, and
+#'   \code{NA} yields an error. The column name in which this factor is placed
+#'   if \code{dataframe} is \code{TRUE} is determined using
+#'   \code{opm_opt("group.name")}.
 #'
 #'   For the data-frame method, a logical, character or numeric vector
 #'   indicating according to which columns (before the \code{split.at} column)
@@ -1086,6 +1092,32 @@ setMethod("extract", OPMS, function(object, as.labels,
     extract_columns(object, what = what, join = join, sep = sep, dups = dups,
       exact = exact, strict = strict)
   }
+  create_groups <- function(x, join, ci) {
+    numeric_groups <- function(how) {
+      if (L(how))
+        rep.int(1L, length(object))
+      else
+        seq.int(length(object))
+    }
+    if (join) {
+      result <- if (is.logical(x))
+        numeric_groups(x)
+      else
+        do_extract(x, join = TRUE)
+      result <- as.factor(result)
+      if (ci)
+        result <- rep(result, each = 3L)
+    } else {
+      if (is.logical(x)) {
+        result <- as.data.frame(numeric_groups(x))
+        rownames(result) <- get("group.name", OPM_OPTIONS)
+      } else
+        result <- do_extract(x, join = FALSE)
+      if (ci)
+        result <- result[rep(seq.int(nrow(result)), each = 3L), , drop = FALSE]
+    }
+    result
+  }
 
   # Collect parameters in a matrix
   subset <- match.arg(subset, c(unlist(map_grofit_names(plain = TRUE)), "disc"))
@@ -1116,12 +1148,8 @@ setMethod("extract", OPMS, function(object, as.labels,
       result <- cbind(params, result)
       colnames(result)[1L] <- RESERVED_NAMES[["parameter"]]
     }
-    if (length(as.groups)) {
-      to.add <- do_extract(as.groups, join = FALSE)
-      if (ci)
-        to.add <- to.add[rep(seq.int(nrow(to.add)), each = 3L), , drop = FALSE]
-      result <- cbind(result, to.add)
-    }
+    if (length(as.groups))
+      result <- cbind(result, create_groups(as.groups, FALSE, ci))
 
   } else {
 
@@ -1138,12 +1166,8 @@ setMethod("extract", OPMS, function(object, as.labels,
       else
         seq.int(nrow(result))
     }
-    if (length(as.groups)) {
-      rg <- "row.groups"
-      attr(result, rg) <- as.factor(do_extract(as.groups, join = TRUE))
-      if (ci)
-        attr(result, rg) <- rep(attr(result, rg), each = 3L)
-    }
+    if (length(as.groups))
+      attr(result, "row.groups") <- create_groups(as.groups, TRUE, ci)
   }
 
   result

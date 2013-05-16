@@ -395,6 +395,10 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'   Note that if \code{cutoff} is empty and \code{groups} is \code{TRUE}, an
 #'   error is raised since \code{\link{best_cutoff}} needs groups with more than
 #'   a single element.
+#'
+#'   If \code{object} is not of class \code{\link{OPMS}}, \code{groups} is
+#'   ignored, with a warning.
+#'
 #' @param plain Logical scalar indicating whether or not an \code{\link{OPMD}}
 #'   or \code{\link{OPMS}} object should be created.
 #' @param subset Character scalar passed to \code{\link{extract}}. It is
@@ -515,10 +519,16 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'
 setGeneric("do_disc", function(object, ...) standardGeneric("do_disc"))
 
-setMethod("do_disc", OPMA, function(object, cutoff, plain = FALSE,
-    subset = opm_opt("disc.param")) {
+setMethod("do_disc", OPMA, function(object, cutoff, groups = FALSE,
+    plain = FALSE, subset = opm_opt("disc.param")) {
   if (!length(cutoff))
-    stop("'cutoff' must be a non-empty vector if applied to OPMA objects")
+    stop(sprintf(
+      "'cutoff' must be a non-empty vector if applied to %s objects",
+      class(object)))
+  if (!missing(groups))
+    warning(sprintf(
+      "the 'groups' argument is ignored if applied to %s objects",
+      class(object)))
   x <- aggregated(object, subset = map_grofit_names(subset, ci = FALSE)[[1L]],
     ci = FALSE)[1L, ]
   x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")

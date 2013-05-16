@@ -444,7 +444,7 @@ read_single_opm <- function(filename) {
 #'   normal running mode.
 #'
 #' @export
-#' @seealso base::list.files base::Sys.glob
+#' @seealso base::list.files base::Sys.glo
 #' @family io-functions
 #' @keywords IO character
 #' @examples

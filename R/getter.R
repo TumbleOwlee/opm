@@ -844,7 +844,7 @@ setMethod("filename", OPM, function(object) {
 #'
 #' @export
 #' @family getter-functions
-#' @seealso base::strtrim base::abbreviate base::gsub
+#' @seealso base::strtrim base::abbreviate base::gsu
 #' @keywords attribute utilities character
 #' @examples
 #'
@@ -1386,7 +1386,7 @@ setMethod("disc_settings", OPMD, function(object) {
 #'   \item If a non-empty list, treated as list of keys. Return value would be
 #'   the list of corresponding metadata values. Here, character vectors of
 #'   length > 1 can be used to query nested metadata lists.
-#'   \item If neither empty nor a list nior a formula (i.e. usually a character
+#'   \item If neither empty nor a list nor a formula (i.e. usually a character
 #'   or numeric vector), \code{key} is treated as a single list key. Factors are
 #'   converted to \sQuote{character} mode.
 #'   \item Formulas can also be used and are converted to a list or character or
@@ -1411,10 +1411,10 @@ setMethod("disc_settings", OPMD, function(object) {
 #'   an \code{as.labels} or \code{as.groups} argument.
 #'
 #'   Even though it is not technically impossible per se, it is usually a bad
-#'   idea to select metadata entries using numeric (positional) keys. The
-#'   problem is that, in contrast to, e.g., data frames, their is no guarantee
-#'   that metadata entries with the same name occur in the same position, even
-#'   if they belong to \code{\link{OPM}} objects within a single
+#'   idea to select metadata entries using numeric (positional) or logical keys.
+#'   The problem is that, in contrast to, e.g., data frames, their is no
+#'   guarantee that metadata entries with the same name occur in the same
+#'   position, even if they belong to \code{\link{OPM}} objects within a single
 #'   \code{\link{OPMS}} object.
 #'
 #'   Formulas passed as \code{key} argument are treated by ignoring the left

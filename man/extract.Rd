@@ -34,16 +34,23 @@
 
   \item{as.groups}{For the \code{\link{OPMS}} method, a
   list, character vector or formula indicating the metadata
-  to be joined and used as \sQuote{row.groups} attribute of
-  the output matrix. See \code{\link{heat_map}} for its
-  usage. Ignored if \code{NULL} and if \code{dataframe} is
-  \code{FALSE}.
+  to be joined and either used as \sQuote{row.groups}
+  attribute of the output matrix or as additional columns
+  of the output data frame. See \code{\link{heat_map}} for
+  its usage. Ignored if empty.
 
   If a \code{as.groups} is a formula and \code{dataframe}
   is \code{TRUE}, the pseudo-function \code{J} within the
   formula can be used to trigger combination of factors
   immediately after selecting them as data-frame columns,
   much like \code{as.labels}.
+
+  If \code{as.groups} is a logical scalar, \code{TRUE}
+  yields a trivial group that contains all elements,
+  \code{FALSE} yields one group per element, and \code{NA}
+  yields an error. The column name in which this factor is
+  placed if \code{dataframe} is \code{TRUE} is determined
+  using \code{opm_opt("group.name")}.
 
   For the data-frame method, a logical, character or
   numeric vector indicating according to which columns

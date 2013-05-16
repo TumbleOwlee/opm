@@ -200,14 +200,22 @@ to_sentence.logical <- function(x, html, ...) {
 #' microarray results in a scientific manuscript.
 #'
 #' @param x \code{\link{OPMD}} or \code{\link{OPMS}} object.
-#' @param as.groups List or \code{NULL}. If a list, passed as \sQuote{key}
-#'   argument to \code{\link{metadata}}. The extracted metadata define groups
-#'   for which the discretized data are aggregated. Ignored if \code{x} is an
-#'   \code{\link{OPMD}} object.
+#' @param as.groups Vector or \code{NULL}. If non-empty, passed as eponymous
+#'   argument to \code{\link{extract}}. Thus \code{TRUE} and \code{FALSE} can be
+#'   used, creating either a single group or one per plate. The extracted
+#'   metadata define groups for which the discretized data are aggregated.
+#'
+#'   If \code{x} is an \code{\link{OPMD}} object and \code{as.groups} is not
+#'   empty, it is used to create the row name of the single row of the resulting
+#'   \sQuote{OPMS_Listing} object. Otherwise an \sQuote{OPMD_Listing} object is
+#'   produced. It is currently possible but \strong{deprecated} to not set
+#'   \code{as.groups} explicitly.
+#'
 #' @param cutoff Numeric scalar used if \sQuote{as.groups} is a list. If the
 #'   relative frequency of the most frequent entry within the discretized values
 #'   to be joined is below that cutoff, \code{NA} is used. Ignored if \code{x}
-#'   is an \code{\link{OPMD}} object.
+#'   is an \code{\link{OPMD}} object but added to the result if \code{as.groups}
+#'   is non-empty.
 #' @param downcase Logical scalar passed to \code{\link{wells}}.
 #' @param full Logical scalar passed to \code{\link{wells}}.
 #' @param in.parens Logical scalar passed to \code{\link{wells}}.
@@ -232,12 +240,17 @@ to_sentence.logical <- function(x, html, ...) {
 #' data(vaas_1)
 #'
 #' # this yields one sentence for each kind of reaction:
-#' (x <- listing(vaas_1))
+#' (x <- listing(vaas_1, NULL))
 #' stopifnot(inherits(x, "OPMD_Listing"), is.character(x), length(x) == 3,
 #'   !is.null(names(x)))
 #'
+#' # create an 'OPMS_Listing' object
+#' (y <- listing(vaas_1, ~ Species + Strain))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(1, 3),
+#'   y == x, colnames(y) == names(x), !is.null(rownames(y)))
+#'
 #' # including HTML tags
-#' (y <- listing(vaas_1, html = TRUE))
+#' (y <- listing(vaas_1, NULL, html = TRUE))
 #' stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
 #'   !is.null(names(x)))
 #'
@@ -245,29 +258,46 @@ to_sentence.logical <- function(x, html, ...) {
 #' data(vaas_4)
 #'
 #' # no grouping, no names (numbering used instead for row names)
-#' (y <- listing(vaas_4[1:2], as.groups = NULL))
-#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
-#' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
+#' (x <- listing(vaas_4[1:2], as.groups = NULL))
+#' stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+#' stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+#' (y <- listing(vaas_4[1:2], as.groups = FALSE)) # alternative
+#' stopifnot(identical(x, y))
 #'
 #' # in effect no grouping, but names
-#' (y <- listing(vaas_4[1:2], as.groups = list("Species", "Strain")))
-#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
-#' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
+#' (x <- listing(vaas_4[1:2], as.groups = list("Species", "Strain")))
+#' stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+#' stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+#'
+#' # only single group for all plates
+#' (y <- listing(vaas_4[1:2], as.groups = TRUE))
+#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(1, 3))
+#' stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 #'
 #' # two groups
-#' (y <- listing(vaas_4, as.groups = list("Species")))
-#' stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(2, 3))
-#' stopifnot(!is.null(rownames(y)), !is.null(colnames(y)))
+#' (x <- listing(vaas_4, as.groups = list("Species")))
+#' stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+#' stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 #'
 setGeneric("listing")
 
-setMethod("listing", OPMD, function(x, as.groups, cutoff,
-    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep, ...) {
+setMethod("listing", OPMD, function(x, as.groups = NULL, cutoff = 0.5,
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
+    ..., exact = TRUE, strict = TRUE) {
+  if (missing(as.groups))
+    warning("'as.groups' will be mandatory in future versions")
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
   res <- to_sentence(res, html)
-  class(res) <- "OPMD_Listing"
+  if (length(as.groups)) {
+    res <- matrix(res, 1L, length(res), FALSE, list(NULL, names(res)))
+    rownames(res) <- paste0(metadata(x, as.groups, exact, strict),
+      collapse = L(sep))
+    attr(res, "cutoff") <- L(cutoff)
+    class(res) <- "OPMS_Listing"
+  } else
+    class(res) <- "OPMD_Listing"
   attr(res, "html") <- html
   res
 }, sealed = SEALED)
@@ -275,28 +305,28 @@ setMethod("listing", OPMD, function(x, as.groups, cutoff,
 setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5,
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) {
-  add_stuff <- function(x, html) {
+  add_stuff <- function(x, html, cutoff) {
     class(x) <- "OPMS_Listing"
     attr(x, "html") <- html
+    attr(x, "cutoff") <- cutoff
     x
   }
   LL(cutoff, sep)
   if (!length(as.groups)) {
     res <- do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
-      downcase = downcase, full = full, in.parens = in.parens, ...))
+      downcase = downcase, full = full, in.parens = in.parens,
+      as.groups = NULL, ...))
     rownames(res) <- seq.int(nrow(res))
-    return(add_stuff(res, html))
+    return(add_stuff(res, html, cutoff))
   }
-  disc <- extract(object = x, subset = "disc", as.groups = as.groups,
+  res <- extract(object = x, subset = "disc", as.groups = as.groups,
     sep = sep, exact = exact, strict = strict, downcase = downcase,
     full = full, in.parens = in.parens, dataframe = FALSE, as.labels = NULL,
     ...)
-  groups <- attr(disc, "row.groups")
-  add_stuff(t(vapply(levels(groups), function(group) {
-      y <- disc[groups == group, , drop = FALSE]
-      y <- apply(y, 2L, reduce_to_mode, cutoff = cutoff, use.na = TRUE)
-      to_sentence(y, html)
-    }, character(3L))), html)
+  res <- vapply(split.default(seq_len(nrow(res)), attr(res, "row.groups")),
+    function(idx) to_sentence(apply(res[idx, , drop = FALSE], 2L,
+      reduce_to_mode, cutoff = cutoff, use.na = TRUE), html), character(3L))
+  add_stuff(t(res), html, cutoff)
 }, sealed = SEALED)
 
 

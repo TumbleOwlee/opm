@@ -393,6 +393,16 @@ test_that("aggregated parameters can be extracted as matrix", {
   expect_equal(as.factor(gn), attr(mat, "row.groups"))
   expect_equal(rn, rownames(mat))
 
+  mat2 <- extract(THIN.AGG, as.labels = list("organism", "run"),
+    subset = "lambda", as.groups = TRUE, sep = "||")
+  expect_equivalent(mat, mat2)
+  expect_equal(as.factor(rep(1L, length(THIN.AGG))), attr(mat2, "row.groups"))
+
+  mat2 <- extract(THIN.AGG, as.labels = list("organism", "run"),
+    subset = "lambda", as.groups = FALSE, sep = "||")
+  expect_equivalent(mat, mat2)
+  expect_equal(as.factor(seq(length(THIN.AGG))), attr(mat2, "row.groups"))
+
 })
 
 

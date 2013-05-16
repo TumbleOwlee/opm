@@ -204,6 +204,7 @@ OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$contrast.type <- "Tukey"
 OPM_OPTIONS$comb.key.join <- "."
 OPM_OPTIONS$comb.value.join <- " "
+OPM_OPTIONS$group.name <- "Group"
 
 
 ################################################################################

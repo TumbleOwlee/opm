@@ -8,10 +8,14 @@
 - ensured compatibility with yaml >= 2.1.7 regarding treatment of NA values
   and added according conversion of metadata from YAML/JSON input files
 
-- order of arguments of listing() has been slightly changed
 - removed deprecated select() function
 - well_to_substrate() is now deprecated in favour of new wells() methods
+- order of arguments of listing() has been slightly changed, and it is
+  deprecated to not set the 'as.groups' argument in the OPMD method
 
+- more opm_opt() entries
+- OPMD listing() method can also produce 'OPMS_Listing' objects
+- logical scalars can now be passed as 'as.groups' argument to extract()
 - extract(), extract_columns() and opm_mcp() now support on-the-fly combination
   of data-frame columns, yielding new factors
 - novel 'factors' argument for extract_columns() as well as option to provide

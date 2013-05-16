@@ -24,7 +24,10 @@
   Note that if \code{cutoff} is empty and \code{groups} is
   \code{TRUE}, an error is raised since
   \code{\link{best_cutoff}} needs groups with more than a
-  single element.}
+  single element.
+
+  If \code{object} is not of class \code{\link{OPMS}},
+  \code{groups} is ignored, with a warning.}
 
   \item{plain}{Logical scalar indicating whether or not an
   \code{\link{OPMD}} or \code{\link{OPMS}} object should be
@@ -170,8 +173,8 @@ stopifnot(c("cutoffs", "score") \%in\% names(y$options))
 \alias{do_disc,OPMA-method}
 \alias{do_disc,OPMS-method}
 \usage{
-  \S4method{do_disc}{OPMA}(object, cutoff, plain = FALSE,
-    subset = opm_opt("disc.param")) 
+  \S4method{do_disc}{OPMA}(object, cutoff, groups = FALSE,
+    plain = FALSE, subset = opm_opt("disc.param")) 
 
   \S4method{do_disc}{OPMS}(object, cutoff = TRUE, groups = FALSE,
     plain = FALSE, subset = opm_opt("disc.param"), ...) 

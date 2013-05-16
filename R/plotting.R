@@ -73,7 +73,7 @@ print.OPMD_Listing <- function(x, ...) {
 print.OPMS_Listing <- function(x, ...) {
   for (name in rownames(x)) {
     cat(name, gsub(".", "-", name, perl = TRUE), sep = "\n")
-    cat(formatDL(x = x[name, ], ...), sep = "\n")
+    cat(formatDL(x[name, ], ...), sep = "\n")
     cat("\n")
   }
   invisible(x)
