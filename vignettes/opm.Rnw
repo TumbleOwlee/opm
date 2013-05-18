@@ -181,7 +181,7 @@ Its calculation of curve parameters is rather crude \citep{vaas, biologInc}.
 The statistical treatment of raw kinetic data and curve parameters would involve cumbersome manual and hence error-prone manipulations of data in typical spreadsheet applications before they may be imported into appropriate statistical software.
 Finally, the amount of organismic or experimental metadata that can be added to the raw data is extremely limited.
 
-Based on a previous study \citep{vaas} the here presented \pkg{opm} package offers functionalities for a fast, robust and comprehensive evaluation of PM respiration kinetics suitable for a wide range of experimental questions.
+Based on a previous study \citep{vaas} the here presented \pkg{opm} package \citep{Vaas2013} offers functionalities for a fast, robust and comprehensive evaluation of PM respiration kinetics suitable for a wide range of experimental questions.
 
 Using customized input functions, raw kinetic data can be transferred into \proglang{R}, stored as \proglang{S4} objects \citep{chambers} containing single or multiple OmniLog\textregistered \ PM plates and further processed.
 The package features the statistically robust calculation and attachment of aggregated curve parameters including their (bootstrapped) confidence intervals.
