@@ -59,31 +59,7 @@ test_that("well indices given as formula can be mapped", {
 
 
 ## well_to_substrate
-test_that("substrate names can be translated", {
-
-  plate.1 <- "PM01"
-  exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
-  got <- well_to_substrate(plate.1, c("A01", "A02"))
-
-  plates.2 <- c(plate.1, "PM02")
-  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
-  exp.2 <- cbind(exp.1, exp.2)
-  colnames(exp.2) <- plates.2
-  got <- well_to_substrate(plates.2, c("A01", "A02"))
-  expect_equal(got, exp.2)
-
-  # Partial matching is allowed
-  plates.2 <- c(plate.1, "PM02")
-  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
-  exp.2 <- cbind(exp.1, exp.2)
-  colnames(exp.2) <- c(plates.2[1L], "PM02")
-  got <- well_to_substrate(plates.2, c("A01", "A02"))
-  expect_equal(got, exp.2)
-
-})
-
-
-################################################################################
+## UNTESTED
 
 
 ## find_substrate
