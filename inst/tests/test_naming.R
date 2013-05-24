@@ -66,13 +66,13 @@ test_that("well indices given as formula can be mapped", {
 test_that("substrate names can be searched", {
 
   found <- find_substrate("Fructose", search = "exact")
-  expect_is(found, "list")
+  expect_is(found, "substrate_match")
   expect_equal(1L, length(found))
   expect_equal("Fructose", names(found))
   expect_equal(c("D-Fructose", "D-Fructose-6-Phosphate"), found[[1L]])
 
   found <- find_substrate("Fructose", search = "approx")
-  expect_is(found, "list")
+  expect_is(found, "substrate_match")
   expect_equal(1L, length(found))
   expect_equal("Fructose", names(found))
   expect_equal(c("D-Fructose", "D-Fructose-6-Phosphate", "D-Fucose",
@@ -86,7 +86,7 @@ test_that("substrate names can be searched with patterns", {
 
   glob.pat <- c("ampic*", "penic*", "random*")
   found <- find_substrate(glob.pat, search = "glob")
-  expect_is(found, "list")
+  expect_is(found, "substrate_match")
   expect_equal(3L, length(found))
   expect_equal(glob.pat, names(found))
   expect_equal("Ampicillin", found[[1L]])

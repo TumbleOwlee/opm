@@ -22,6 +22,7 @@
   a list as 'what' argument
 - character-string well names used for indexing are now automatically cleaned
   (e.g. "A1" yields "A01")
+- find_substrate() returns dedicated S3 objects with nicer print() method
 
 
 ################################################################################

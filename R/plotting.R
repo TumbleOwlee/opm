@@ -106,6 +106,15 @@ print.OPMS_Summary <- function(x, ...) {
   invisible(x)
 }
 
+#' @rdname print
+#' @method print print_easy
+#' @export
+#'
+print.print_easy <- function(x, ...) {
+  cat(as.yaml(x))
+  invisible(x)
+}
+
 
 ################################################################################
 ################################################################################

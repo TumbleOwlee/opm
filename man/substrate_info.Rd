@@ -2,7 +2,8 @@
 \alias{substrate_info}
 \title{Provide information on substrates}
 \arguments{
-  \item{object}{Query character vector or query list.}
+  \item{object}{Query character vector, factor or list, or
+  S3 object of class \sQuote{substrate_match}.}
 
   \item{what}{Character scalar indicating which kind of
   information to output.  See the references for the
@@ -77,11 +78,15 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 \docType{methods}
 \alias{substrate_info-methods}
 \alias{substrate_info,character-method}
+\alias{substrate_info,substrate_match-method}
 \alias{substrate_info,list-method}
 \alias{substrate_info,factor-method}
 \usage{
   \S4method{substrate_info}{character}(object,
-    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html")) 
+    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html"),
+    ...) 
+
+  \S4method{substrate_info}{substrate_match}(object, ...) 
 
   \S4method{substrate_info}{list}(object, ...) 
 

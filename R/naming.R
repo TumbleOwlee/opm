@@ -131,7 +131,7 @@ well_index <- function(x, names) {
 #'   and \code{\link{trim_string}}.
 #' @return Character vector.
 #' @keywords internal
-#' @note The user-level function is \code{\link{well_to_substrate}}.
+#' @note The user-level function is \code{\link{wells}}.
 #'
 map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     paren.sep = " ", downcase = FALSE, ...) {
@@ -399,31 +399,32 @@ well_to_substrate <- function(plate, well = TRUE) {
 #'   \code{search} argument).
 #' @param ... Optional arguments passed between the methods.
 #' @export
-#' @return List of character vectors (empty if nothing was found), with
-#'   duplicates removed and the rest sorted. The names of the list correspond to
-#'   \code{names}.
+#' @return An S3 object of class \sQuote{substrate_match}; basically a list of
+#'   character vectors (empty if nothing was found), with duplicates removed and
+#'   the rest sorted. The names of the list correspond to \code{names}.
 #' @note See \code{\link{glob_to_regex}} for a description of globbing patterns.
 #' @seealso base::grep base::agrep
 #' @family naming-functions
 #' @keywords character utilities
 #' @examples
 #' # Note that 'exact' search matches parts of the names, whereas globbing
-#' # matches entire strings if there are no wildcards
-#' (x <- find_substrate("a-D-Glucose", search = "exact"))
-#' (y <- find_substrate("a-D-Glucose", search = "glob"))
+#' # matches entire strings if there are no wildcards (which wouldn't make much
+#' # sense)
+#' (x <- find_substrate("D-Glucose", search = "exact"))
+#' (y <- find_substrate("D-Glucose", search = "glob"))
 #' stopifnot(length(x[[1]]) > length(y[[1]]))
 #'
 #' # 'pmatch' matching matches partially at the beginning and returns at most
 #' # one match (the first one)
-#' (y <- find_substrate("a-D-Glucose", search = "pmatch"))
+#' (y <- find_substrate("D-Glucose", search = "pmatch"))
 #' stopifnot(length(x[[1]]) > length(y[[1]]))
 #'
 #' # Now allowing mismatches
-#' (z <- find_substrate("a-D-Glucose", search = "approx"))
+#' (z <- find_substrate("D-Glucose", search = "approx"))
 #' stopifnot(length(z[[1]]) > length(x[[1]]))
 #'
 #' # Factor method
-#' (zz <- find_substrate(as.factor("a-D-Glucose"), search = "approx"))
+#' (zz <- find_substrate(as.factor("D-Glucose"), search = "approx"))
 #' stopifnot(identical(z, zz))
 #'
 setGeneric("find_substrate",
@@ -431,18 +432,21 @@ setGeneric("find_substrate",
 
 setMethod("find_substrate", "character", function(object,
     search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) {
+  su <- function(x) lapply(lapply(x, unique.default), sort.int)
   find_name <- function(patterns, ...) {
-    sapply(X = patterns, FUN = grep, x = WELL_MAP, value = TRUE,
-      useBytes = TRUE, ..., simplify = FALSE)
+    su(sapply(X = patterns, FUN = grep, x = WELL_MAP, value = TRUE,
+      useBytes = TRUE, ..., simplify = FALSE))
   }
   find_approx <- function(pattern, ...) {
-    sapply(X = pattern, FUN = agrep, x = WELL_MAP, ignore.case = TRUE,
-      value = TRUE, useBytes = TRUE, ..., simplify = FALSE)
+    su(sapply(X = pattern, FUN = agrep, x = WELL_MAP, ignore.case = TRUE,
+      value = TRUE, useBytes = TRUE, ..., simplify = FALSE))
   }
   find_partial <- function(pattern) {
-    found <- pmatch(x = pattern, table = WELL_MAP, duplicates.ok = TRUE)
+    # next step necessary because multiple <partial> matches are never allowed
+    table <- unique.default(WELL_MAP)
+    found <- table[pmatch(pattern, table, NA_integer_, TRUE)]
     names(found) <- pattern
-    lapply(as.list(WELL_MAP[found]), na.exclude)
+    lapply(lapply(as.list(found), na.exclude), sort.int)
   }
   result <- case(match.arg(search),
     exact = find_name(object, fixed = TRUE),
@@ -452,8 +456,12 @@ setMethod("find_substrate", "character", function(object,
     approx = find_approx(object, max.distance = max.dev),
     pmatch = find_partial(object)
   )
-  lapply(result, function(x) sort.int(unique(x)))
+  class(result) <- c("substrate_match", "print_easy")
+  result
 }, sealed = SEALED)
+
+
+setOldClass("substrate_match")
 
 
 ################################################################################
@@ -464,7 +472,8 @@ setMethod("find_substrate", "character", function(object,
 #' Identify the positions of substrates, i.e. the plate(s) and well(s) in which
 #' they occur.
 #'
-#' @param object Query character vector or query list.
+#' @param object Query character vector, factor or list, or S3 object of class
+#'   \sQuote{substrate_match}.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @return The character method returns a list of character matrices (empty if
@@ -494,7 +503,7 @@ setMethod("find_substrate", "character", function(object,
 setGeneric("find_positions",
   function(object, ...) standardGeneric("find_positions"))
 
-setMethod("find_positions", "character", function(object) {
+setMethod("find_positions", "character", function(object, ...) {
   plates <- colnames(WELL_MAP)
   sapply(object, FUN = function(name) {
     result <- which(WELL_MAP == name, arr.ind = TRUE)
@@ -503,9 +512,13 @@ setMethod("find_positions", "character", function(object) {
   }, simplify = FALSE)
 }, sealed = SEALED)
 
-setMethod("find_positions", "list", function(object) {
+setMethod("find_positions", "substrate_match", function(object, ...) {
+  rapply(object, f = find_positions, "character", how = "list", ...)
+}, sealed = SEALED)
+
+setMethod("find_positions", "list", function(object, ...) {
   rapply(object, f = find_positions, classes = c("character", "factor"),
-    how = "list")
+    how = "list", ...)
 }, sealed = SEALED)
 
 
@@ -520,7 +533,8 @@ setMethod("find_positions", "list", function(object) {
 #' translating relevant characters from the Greek alphabet, or only translate
 #' to Greek letters, optionally formatted with \acronym{HTML} tags.
 #'
-#' @param object Query character vector or query list.
+#' @param object Query character vector, factor or list, or S3 object of class
+#'   \sQuote{substrate_match}.
 #' @param what Character scalar indicating which kind of information to output.
 #'   See the references for the background of each possible value.
 #'   \sQuote{downcase}, \sQuote{greek} and \sQuote{html} are special; see above.
@@ -567,7 +581,8 @@ setGeneric("substrate_info",
   function(object, ...) standardGeneric("substrate_info"))
 
 setMethod("substrate_info", "character", function(object,
-    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html")) {
+    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html"),
+    ...) {
   map_words <- function(x, fun, ...) {
     y <- strsplit(x, "\\w+", perl = TRUE)
     x <- strsplit(x, "\\W+", perl = TRUE)
@@ -602,8 +617,14 @@ setMethod("substrate_info", "character", function(object,
   result
 }, sealed = SEALED)
 
+setMethod("substrate_info", "substrate_match", function(object, ...) {
+  rapply(object = object, f = substrate_info, classes = "character",
+    how = "list", ...)
+}, sealed = SEALED)
+
 setMethod("substrate_info", "list", function(object, ...) {
-  rapply(object = object, f = substrate_info, how = "replace", ...)
+  rapply(object = object, f = substrate_info,
+    classes = c("character", "factor"), how = "list", ...)
 }, sealed = SEALED)
 
 

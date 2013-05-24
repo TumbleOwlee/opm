@@ -2,7 +2,8 @@
 \alias{find_positions}
 \title{Identify positions of substrates}
 \arguments{
-  \item{object}{Query character vector or query list.}
+  \item{object}{Query character vector, factor or list, or
+  S3 object of class \sQuote{substrate_match}.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -49,12 +50,15 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 \docType{methods}
 \alias{find_positions-methods}
 \alias{find_positions,character-method}
+\alias{find_positions,substrate_match-method}
 \alias{find_positions,list-method}
 \alias{find_positions,factor-method}
 \usage{
-  \S4method{find_positions}{character}(object) 
+  \S4method{find_positions}{character}(object, ...) 
 
-  \S4method{find_positions}{list}(object) 
+  \S4method{find_positions}{substrate_match}(object, ...) 
+
+  \S4method{find_positions}{list}(object, ...) 
 
   \S4method{find_positions}{factor}(object, ...) 
 
