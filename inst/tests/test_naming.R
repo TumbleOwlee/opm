@@ -65,13 +65,13 @@ test_that("well indices given as formula can be mapped", {
 ## find_substrate
 test_that("substrate names can be searched", {
 
-  found <- find_substrate("Fructose", search = "exact")
+  found <- find_substrate(c(wanted = "Fructose"), search = "exact")
   expect_is(found, "substrate_match")
   expect_equal(1L, length(found))
   expect_equal("Fructose", names(found))
   expect_equal(c("D-Fructose", "D-Fructose-6-Phosphate"), found[[1L]])
 
-  found <- find_substrate("Fructose", search = "approx")
+  found <- find_substrate(c(wanted = "Fructose"), search = "approx")
   expect_is(found, "substrate_match")
   expect_equal(1L, length(found))
   expect_equal("Fructose", names(found))
@@ -84,18 +84,18 @@ test_that("substrate names can be searched", {
 ## find_substrate
 test_that("substrate names can be searched with patterns", {
 
-  glob.pat <- c("ampic*", "penic*", "random*")
+  glob.pat <- c(A = "ampic*", B = "penic*", C = "random*")
   found <- find_substrate(glob.pat, search = "glob")
   expect_is(found, "substrate_match")
   expect_equal(3L, length(found))
-  expect_equal(glob.pat, names(found))
+  expect_equivalent(glob.pat, names(found))
   expect_equal("Ampicillin", found[[1L]])
   expect_equal("Penicillin G", found[[2L]])
   expect_equal(character(), found[[3L]])
 
-  reg.pat <- c("^ampic.*", "^penic.*", "^random.*")
+  reg.pat <- c(A = "^ampic.*", B = "^penic.*", C = "^random.*")
   found.2 <- find_substrate(reg.pat, search = "regex")
-  expect_equal(reg.pat, names(found.2))
+  expect_equivalent(reg.pat, names(found.2))
   names(found.2) <- glob.pat
   expect_equal(found, found.2)
 

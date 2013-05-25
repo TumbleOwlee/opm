@@ -111,7 +111,14 @@ print.OPMS_Summary <- function(x, ...) {
 #' @export
 #'
 print.print_easy <- function(x, ...) {
-  cat(as.yaml(x))
+  to_map <- function(items) if (is.null(names(items)))
+    items
+  else
+    as.list(items)
+  cat(as.yaml(if (is.list(x))
+    rapply(x, to_map, "ANY", NULL, "replace")
+  else
+    to_map(x)))
   invisible(x)
 }
 

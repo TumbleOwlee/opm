@@ -434,12 +434,12 @@ setMethod("find_substrate", "character", function(object,
     search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) {
   su <- function(x) lapply(lapply(x, unique.default), sort.int)
   find_name <- function(patterns, ...) {
-    su(sapply(X = patterns, FUN = grep, x = WELL_MAP, value = TRUE,
-      useBytes = TRUE, ..., simplify = FALSE))
+    su(lapply(X = patterns, FUN = grep, x = WELL_MAP, value = TRUE,
+      useBytes = TRUE, ...))
   }
   find_approx <- function(pattern, ...) {
-    su(sapply(X = pattern, FUN = agrep, x = WELL_MAP, ignore.case = TRUE,
-      value = TRUE, useBytes = TRUE, ..., simplify = FALSE))
+    su(lapply(X = pattern, FUN = agrep, x = WELL_MAP, ignore.case = TRUE,
+      value = TRUE, useBytes = TRUE, ...))
   }
   find_partial <- function(pattern) {
     # next step necessary because multiple <partial> matches are never allowed
@@ -456,6 +456,7 @@ setMethod("find_substrate", "character", function(object,
     approx = find_approx(object, max.distance = max.dev),
     pmatch = find_partial(object)
   )
+  names(result) <- object
   class(result) <- c("substrate_match", "print_easy")
   result
 }, sealed = SEALED)
@@ -472,16 +473,20 @@ setOldClass("substrate_match")
 #' Identify the positions of substrates, i.e. the plate(s) and well(s) in which
 #' they occur.
 #'
-#' @param object Query character vector, factor or list, or S3 object of class
-#'   \sQuote{substrate_match}.
+#' @param object Query character vector, factor or list, S3 object of class
+#'   \sQuote{substrate_match}, \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @return The character method returns a list of character matrices (empty if
 #'   nothing was found), with one row per position found, the plate name in the
 #'   first column and the well name in the second. The names of this list
-#'   correspond to \code{names}. The list method returns lists of such lists.
+#'   correspond to \code{names}. The \code{\link{OPM}} and \code{\link{OPMS}}
+#'   methods do the same, using their own substrates. The list and
+#'   \sQuote{substrate_match} methods return lists of such lists.
 #' @details  The query names must be written exactly as used in the stored plate
 #'   annotations. To determine their spelling, use \code{\link{find_substrate}}.
+#'   This spelling is not guaranteed to be stable between distinct \pkg{opm}
+#'   releases.
 #' @family naming-functions
 #' @keywords utilities
 #' @examples
@@ -521,6 +526,10 @@ setMethod("find_positions", "list", function(object, ...) {
     how = "list", ...)
 }, sealed = SEALED)
 
+setMethod("find_positions", OPM, function(object, ...) {
+  find_positions(wells(object, full = TRUE, in.parens = FALSE), ...)
+}, sealed = SEALED)
+
 
 ################################################################################
 
@@ -528,29 +537,59 @@ setMethod("find_positions", "list", function(object, ...) {
 #' Provide information on substrates
 #'
 #' Return information on substrates such as their \acronym{CAS} number or
-#' \acronym{KEGG} ID. Alternatively, convert substrate names to lower case,
-#' protecting one-letter specifiers, acronyms and chemical symbols, and
-#' translating relevant characters from the Greek alphabet, or only translate
-#' to Greek letters, optionally formatted with \acronym{HTML} tags.
+#' other database ID or convert substrate names.
 #'
-#' @param object Query character vector, factor or list, or S3 object of class
-#'   \sQuote{substrate_match}.
+#' @param object Query character vector, factor or list, S3 object of class
+#'   \sQuote{substrate_match}, \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param what Character scalar indicating which kind of information to output.
-#'   See the references for the background of each possible value.
-#'   \sQuote{downcase}, \sQuote{greek} and \sQuote{html} are special; see above.
+#'   \describe{
+#'     \item{all}{Create object of S3 class \sQuote{substrate_data} containing
+#'     all available information and useful for display.}
+#'     \item{cas}{\acronym{CAS} registry number.}
+#'     \item{chebi}{\acronym{ChEBI} database ID.}
+#'     \item{downcase}{Substrate name converted to lower case, protecting
+#'     one-letter specifiers, acronyms and chemical symbols, and translating
+#'     relevant characters from the Greek alphabet.}
+#'     \item{drug}{\acronym{KEGG} drug database ID.}
+#'     \item{greek}{Substrate name after translation of relevant characters to
+#'     Greek letters.}
+#'     \item{html}{Like \sQuote{greek}, but use \acronym{HTML} tags.}
+#'     \item{kegg}{\acronym{KEGG} compound database ID.}
+#'     \item{mesh}{\acronym{MeSH} database ID.}
+#'     \item{metacyc}{\acronym{MetaCyc} database ID.}
+#'   }
+#'   See the references for information on the databases.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @return The character method returns a character vector with \code{object}
 #'   used as names and either a matched entry or \code{NA} as value. The factor
 #'   method does the same, whereas the list method traverses a list and calls
-#'   \code{substrate_info} on its elements.
+#'   \code{substrate_info} on its elements. The \code{\link{OPM}} and
+#'   \code{\link{OPMS}} methods work like the character method, using their own
+#'   substrates.
 #' @family naming-functions
 #' @keywords utilities
 #' @references Bochner, B. R., pers. comm.
 #' @references \url{http://en.wikipedia.org/wiki/CAS_registry_number}
 #' @references \url{http://www.genome.jp/kegg/}
+#' @references Kanehisa, M., Goto, S., Furumichi, M., Tanabe, M., and Hirakawa,
+#'   M. 2010 KEGG for representation and analysis of molecular networks
+#'   involving diseases and drugs. \emph{Nucleic Acids Research} \strong{38}:
+#'   D355--D360.
 #' @references \url{http://metacyc.org/}
+#' @references Caspi, R., Altman, T., Dreher, K., Fulcher, C.A., Subhraveti,
+#'   P., Keseler, I.M., Kothari, A., Krummenacker, M., Latendresse, M.,
+#'   Mueller, L.A., Ong, Q., Paley, S., Pujar, A., Shearer, A.G., Travers, M.,
+#'   Weerasinghe, D., Zhang, P., Karp, P.D. 2012 The MetaCyc database of
+#'   metabolic pathways and enzymes and the BioCyc collection of pathway/genome
+#'   databases. \emph{Nucleic Acids Research} \strong{40}: D742--D753.
 #' @references \url{http://www.ncbi.nlm.nih.gov/mesh}
+#' @references \url{http://www.ebi.ac.uk/chebi/}
+#' @references Hastings, J., de Matos, P., Dekker, A., Ennis, M., Harsha, B.,
+#'   Kale, N., Muthukrishnan, V., Owen, G., Turner, S., Williams, M.,
+#'   Steinbeck, C. 2013 The ChEBI reference database and ontology for
+#'   biologically relevant chemistry: enhancements for 2013. \emph{Nucleic
+#'   Acids Research} \strong{41}: D456--D463.
 #' @details The query names must be written exactly as used in the stored plate
 #'   annotations. To determine their spelling, use \code{\link{find_substrate}}.
 #'
@@ -577,12 +616,20 @@ setMethod("find_positions", "list", function(object, ...) {
 #' (x <- substrate_info(find_substrate(c("D-Glucose", "D-Gloucose"))))
 #' stopifnot(length(x[[1]]) > length(x[[2]]))
 #'
+#' # OPM and OPMS methods
+#' data(vaas_1)
+#' (x <- substrate_info(vaas_1[, 1:3], "all"))
+#' stopifnot(inherits(x, "substrate_data"))
+#' data(vaas_4)
+#' (y <- substrate_info(vaas_4[, , 1:3], "all"))
+#' stopifnot(identical(x, y))
+#'
 setGeneric("substrate_info",
   function(object, ...) standardGeneric("substrate_info"))
 
 setMethod("substrate_info", "character", function(object,
-    what = c("cas", "kegg", "metacyc", "mesh", "downcase", "greek", "html"),
-    ...) {
+    what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
+      "greek", "html", "all"), ...) {
   map_words <- function(x, fun, ...) {
     y <- strsplit(x, "\\w+", perl = TRUE)
     x <- strsplit(x, "\\W+", perl = TRUE)
@@ -606,11 +653,23 @@ setMethod("substrate_info", "character", function(object,
     }
     map_words(x, function(y) map_values(good_case(y), GREEK_LETTERS[, "plain"]))
   }
+  all_information <- function(x) {
+    result <- SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), ,
+      drop = FALSE]
+    colnames(result) <- map_values(colnames(result), c(METACYC = "MetaCyc",
+      MESH = "MeSH", CHEBI = "ChEBI", KEGG = "KEGG compound",
+      DRUG = "KEGG drug"))
+    result <- split.data.frame(result, seq.int(nrow(result)))
+    result <- lapply(result, function(y) y[, !is.na(y), drop = TRUE])
+    class(result) <- c("substrate_data", "print_easy")
+    result
+  }
   result <- case(what <- match.arg(what),
+    all = all_information(object),
     downcase = safe_downcase(object),
     greek = convert_greek(object, "plain"),
     html = convert_greek(object, "html"),
-    kegg =, metacyc =, mesh =,
+    chebi =, drug =, kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
   )
   names(result) <- object
@@ -625,6 +684,10 @@ setMethod("substrate_info", "substrate_match", function(object, ...) {
 setMethod("substrate_info", "list", function(object, ...) {
   rapply(object = object, f = substrate_info,
     classes = c("character", "factor"), how = "list", ...)
+}, sealed = SEALED)
+
+setMethod("substrate_info", OPM, function(object, ...) {
+  substrate_info(wells(object, full = TRUE, in.parens = FALSE), ...)
 }, sealed = SEALED)
 
 
@@ -648,6 +711,19 @@ lapply(c(
 
 
 ################################################################################
+#
+# Automatically generated OPMS methods
+#
+lapply(c(
+    #+
+    find_positions,
+    substrate_info
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, OPMS, function(object, ...) {
+    func_(object@plates[[1L]], ...)
+  }, sealed = SEALED)
+})
 
 
 

@@ -23,6 +23,9 @@
 - character-string well names used for indexing are now automatically cleaned
   (e.g. "A1" yields "A01")
 - find_substrate() returns dedicated S3 objects with nicer print() method
+- substrate_info() now yields KEGG drug IDs and ChEBI IDs and objects of class
+  'substrate_data' for displaying all available information
+- novel substrate_info() and find_position() methods for OPM and OPMS classes
 
 
 ################################################################################

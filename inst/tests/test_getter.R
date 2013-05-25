@@ -245,7 +245,7 @@ test_that("plate names can be normalized", {
   standard.names <- names(PLATE_MAP)
   expect_equal(plate_type(standard.names), standard.names)
   appended <- paste(standard.names, letters)
-  cat(appended[plate_type(appended) != standard.names])
+  #cat(appended[plate_type(appended) != standard.names])
   expect_equal(plate_type(appended), standard.names)
   expect_equal(names(PLATE_MAP), colnames(WELL_MAP))
 })
