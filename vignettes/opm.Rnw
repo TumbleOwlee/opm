@@ -1916,34 +1916,34 @@ In the manual and help pages these functions are contained in the family ``namin
 One usually would start a search by determining the exact spelling of an internally used name with \code{find\_substrate()}:
 
 <<label=find.substrate.I, results=hide>>=
-names <- find_substrate(c("Glutamine", "Glutamic acid"))
-names
+substrates <- find_substrate(c("Glutamine", "Glutamic acid"))
+substrates
 @
 
-The results is a list containing character vectors with the results for each query name as values.
+The results is a list (of the \proglang{S3} class ``substrate\_match'') containing character vectors with the results for each query name as values.
 Surprisingly, nothing was found for ``Glutamic acid'' but several values for ``Glutamine''.
 The default \code{search} argument is ``exact'', which is exact (case-sensitive) matching  of \textit{substrings} of the names.
 One might want to use ``glob'' searching mode:
 
 <<label=find.substrate.II, results=hide>>=
-names <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob")
-names
+substrates <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob")
+substrates
 @
 
 But with so-called wildcards, i.e. ``*'' for zero to many and ``?'' for a single arbitrary character the search is more flexible:
 
 <<label=find.substrat.III, results=hide>>=
-names <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob")
-names
+substrates <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob")
+substrates
 @
 
 This fetches all terms that end in either query character string, and does so case-insensitively.
 Advanced users can apply the much more powerful ``regex'' and ``approx'' search modes; see the manual for details, entry \code{?find\_substrate}.
 
-Once the internally used names have been found, information on the substrates can be queried such as their occurrences and positions on plates:
+Once the internally used names (which are not guaranteed to be stable between distinct \pkg{opm} releases) have been found, information on the substrates can be queried such as their occurrences and positions on plates:
 
 <<label=find.positions, results=hide>>=
-positions <- find_positions(names)
+positions <- find_positions(substrates)
 positions
 @
 
@@ -1951,11 +1951,19 @@ This yields a nested list containing two-column matrices with plate names in the
 References to external data resources for each substrate name can be obtained using \code{substrate\_info()}:
 
 <<label=substrate.info, results=hide>>=
-subst.info <- substrate_info(names)
+subst.info <- substrate_info(substrates)
 subst.info
 @
 
-By default this yields CAS numbers, but MeSH, KEGG and Metacyc IDs have also been collected for the majority of the substrates.
+By default this yields CAS numbers, but MeSH, ChEBI \citep{Hastings01012013}, KEGG compound, KEGG drug \citep{Kanehisa01012010} and MetaCyc \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
+It is possible to nicely display all available information at once:
+
+<<label=substrate.info, results=hide>>=
+subst.info <- substrate_info(substrates, "all")
+subst.info
+@
+
+
 Another use of \code{substrate\_info()} is to convert substrate names to lower case but protecting name components such as abbreviations or chemical symbols.
 See the manual for further details, help page \code{?substrate\_info}.
 
