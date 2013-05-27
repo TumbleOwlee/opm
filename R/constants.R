@@ -205,6 +205,7 @@ OPM_OPTIONS$contrast.type <- "Tukey"
 OPM_OPTIONS$comb.key.join <- "."
 OPM_OPTIONS$comb.value.join <- " "
 OPM_OPTIONS$group.name <- "Group"
+OPM_OPTIONS$file.split.tmpl <- "%s-%05i.%s"
 
 
 ################################################################################

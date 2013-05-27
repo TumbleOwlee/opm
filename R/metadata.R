@@ -346,6 +346,32 @@ setMethod("metadata<-", c(WMD, "ANY", WMD), function(object, key, value) {
 
 #' @name metadata.set
 #'
+setMethod("metadata<-", c(WMD, "missing", "data.frame"), function(object,
+    key, value) {
+  if (nrow(value) != 1L)
+    stop("need data frame with one row")
+  if (ncol(value) > 1L)
+    object@metadata <- value[1L, , drop = TRUE]
+  else
+    object@metadata <- as.list(value[1L, , drop = FALSE])
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
+setMethod("metadata<-", c(WMD, "ANY", "data.frame"), function(object,
+    key, value) {
+  if (nrow(value) != 1L)
+    stop("need data frame with one row")
+  metadata(object, key) <- if (ncol(value) > 1L)
+    value[1L, , drop = TRUE]
+  else
+    as.list(value[1L, , drop = FALSE])
+  object
+}, sealed = SEALED)
+
+#' @name metadata.set
+#'
 setMethod("metadata<-", c(WMD, "ANY", OPMS), function(object, key, value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)

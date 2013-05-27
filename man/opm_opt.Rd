@@ -60,6 +60,8 @@
   digits used by some functions generating output text.}
   \item{file.encoding}{Character scalar. Character encoding
   in input files as assumed by \code{\link{read_opm}}.}
+  \item{file.split.tmpl}{Character scalar. Template used as
+  \sQuote{format} argument by \code{\link{split_files}}.}
   \item{gen.iii}{Character scalar indicating whether
   \code{\link{read_opm}} and other IO functions based on it
   automatically convert to this plate type. If empty,

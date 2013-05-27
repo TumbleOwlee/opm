@@ -192,6 +192,10 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata<-,WMD,missing,WMD-method}
 \alias{metadata.set,WMD,ANY,WMD-method}
 \alias{metadata<-,WMD,ANY,WMD-method}
+\alias{metadata.set,WMD,missing,data.frame-method}
+\alias{metadata<-,WMD,missing,data.frame-method}
+\alias{metadata.set,WMD,ANY,data.frame-method}
+\alias{metadata<-,WMD,ANY,data.frame-method}
 \alias{metadata.set,WMD,ANY,OPMS-method}
 \alias{metadata<-,WMD,ANY,OPMS-method}
 \alias{metadata.set,OPMS,missing,WMD-method}
@@ -234,6 +238,12 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
   \S4method{metadata}{WMD,missing,WMD}(object, key) <- value
 
   \S4method{metadata}{WMD,ANY,WMD}(object, key) <- value
+
+  \S4method{metadata}{WMD,missing,data.frame}(object,
+    key) <- value
+
+  \S4method{metadata}{WMD,ANY,data.frame}(object,
+    key) <- value
 
   \S4method{metadata}{WMD,ANY,OPMS}(object, key) <- value
 
