@@ -104,7 +104,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
   if (combined) {
     if (all)
       cbind(cutoff = cutoffs <- all_cutoffs(x),
-        score = vapply(cutoffs, opt_fun, numeric(1L)))
+        score = vapply(cutoffs, opt_fun, 1))
     else
       unlist(optimize(f = opt_fun, maximum = TRUE, lower = lower,
         upper = upper))
@@ -112,7 +112,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
     lapply(y, function(i) {
       cutoffs <- all_cutoffs(m <- x[i, , drop = FALSE])
       cbind(cutoff = cutoffs,
-        score = vapply(cutoffs, opt_fun_2, numeric(1L), x = m))
+        score = vapply(cutoffs, opt_fun_2, 1, x = m))
     })
   else
     do.call(rbind, lapply(y, function(i) {

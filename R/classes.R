@@ -574,12 +574,12 @@ setMethod("opms_problems", "list", function(object) {
     errs <- c(errs, "less than two plates submitted")
     return(errs) # further checks are useless in that case
   }
-  if (length(no.opm <- which(!vapply(object, is, logical(1L), OPM))) > 0L) {
+  if (length(no.opm <- which(!vapply(object, is, NA, OPM))) > 0L) {
     bad.classes <- unlist(lapply(object[no.opm], class))
     errs <- c(errs, paste("wrong class:", bad.classes))
     return(errs) # further checks are impossible in that case
   }
-  if (!isTRUE(isuni <- is_uniform(vapply(object, plate_type, character(1L)))))
+  if (!isTRUE(isuni <- is_uniform(vapply(object, plate_type, ""))))
     errs <- c(errs, paste("plate types are not uniform:",
       paste(isuni, collapse = " <=> ")))
   if (!isTRUE(is_uniform(lapply(object, wells))))
@@ -626,10 +626,10 @@ setClass(CMAT,
       errs <- c(errs, "missing row names")
     mode <- typeof(object)
     if (mode == "list") {
-      mode <- unique.default(vapply(object, typeof, character(1L)))
+      mode <- unique.default(vapply(object, typeof, ""))
       if (length(mode) > 1L)
         errs <- c(errs, "non-uniform list elements contained")
-      if (any(vapply(object, length, integer(1L)) < 1L))
+      if (any(vapply(object, length, 0L) < 1L))
         errs <- c(errs, "empty list elements contained")
     }
     if (!all(mode %in% c("character", "integer", "double", "logical")))

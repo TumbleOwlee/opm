@@ -151,30 +151,31 @@ setMethod("repair_oth", "matrix", function(x) {
 #'
 read_old_opm <- function(filename) {
 
-  fold_comments <- function(x) {
-    dlen <- length(data <- x[c(FALSE, TRUE)])
-    llen <- length(labels <- x[c(TRUE, FALSE)])
-    if (dlen != llen)
-      warning("odd number of comment fields -- you might experience problems")
-    pos <- seq.int(1L, min(dlen, llen))
-    structure(.Data = data[pos], names = labels[pos])
+  strip <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE),
+    perl = TRUE)
+
+  prepare_comments <- function(x, filename) {
+    ok <- nzchar(n <- strip(vapply(x, `[[`, "", 1L)))
+    n[n == "Set up Time"] <- CSV_NAMES[["SETUP"]]
+    x <- strip(vapply(lapply(x, `[`, -1L), paste0, "", collapse = ","))
+    structure(c(filename, x[ok]), names = c(CSV_NAMES[["FILE"]], n[ok]))
   }
 
-  # Read data and determine HOUR field in proper CSV header
-  data <- scan(file = filename, sep = ",", what = "character", quiet = TRUE,
-    comment.char = "#", strip.white = TRUE,
-    fileEncoding = opm_opt("file.encoding"))
-  pos <- which(data == HOUR)
+  con <- file(description = filename, encoding = opm_opt("file.encoding"))
+  data <- readLines(con = con, warn = FALSE)
+  close(con)
+  data <- strsplit(data, ",", fixed = TRUE)
+  data <- data[vapply(data, length, 0L) > 0L]
+
+  # determine position of first field of data header, then split lines into
+  # comments and data fields accordingly
+  pos <- which(strip(vapply(data, `[[`, "", 1L)) == HOUR)
   if (length(pos) != 1L)
     stop("uninterpretable header (maybe because there is not 1 plate per file)")
   pos <- seq_len(pos - 1L)
+  comments <- prepare_comments(data[pos], filename)
 
-  # Process comments
-  comments <- fold_comments(c(CSV_NAMES[["FILE"]], filename, data[pos]))
-  names(comments)[names(comments) == "Set up Time"] <- CSV_NAMES[["SETUP"]]
-
-  # Process data
-  data <- data[-pos]
+  data <- strip(unlist(data[-pos]))
   data <- data[nzchar(data)]
   ncol <- 97L
   if (length(data) %% ncol != 0L)
@@ -182,7 +183,7 @@ read_old_opm <- function(filename) {
   data <- matrix(as.numeric(data[-seq(ncol)]), ncol = ncol, byrow = TRUE,
     dimnames = list(NULL, data[seq(ncol)]))
 
-  # Repair OTH
+  # Repair OTH (this affects both data and comments)
   if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
     comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
     data <- repair_oth(data)
@@ -660,7 +661,7 @@ opm_files <- function(
 #'
 read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     gen.iii = opm_opt("gen.iii"), include = list(), ..., demo = FALSE) {
-  do_split <- function(x) split(x, vapply(x, plate_type, character(1L)))
+  do_split <- function(x) split(x, vapply(x, plate_type, ""))
   do_opms <- function(x) case(length(x), , x[[1L]], new(OPMS, plates = x))
   convert <- match.arg(convert)
   LL(gen.iii, demo)
@@ -1390,7 +1391,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     x <- to_metadata(x)
     spec <- flatten(list(spec))
     spec <- rapply(spec, as.character, "factor", NULL, "replace")
-    if (any(!vapply(spec, inherits, logical(1L), c("character", "function"))))
+    if (any(!vapply(spec, inherits, NA, c("character", "function"))))
       stop("can only apply character vector, factor or function to CSV data")
     for (approach in spec)
       if (is.character(approach)) {
@@ -1734,7 +1735,7 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 
   invisible(mapply(function(infile, out.base, out.ext) {
     con <- file(description = infile, encoding = opm_opt("file.encoding"))
-    data <- readLines(con = con)
+    data <- readLines(con = con, warn = FALSE)
     close(con)
     data <- sections(x = data, pattern = pattern, invert = invert,
       include = include, ...)

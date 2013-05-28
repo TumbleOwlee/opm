@@ -76,8 +76,8 @@ last <- function(x, i = 1L) {
 md_data_frame <- function(object, stringsAsFactors, optional, ...) {
   data_frameable <- function(x) {
     oneify <- function(x) {
-      x[vapply(x, length, integer(1L)) == 0L] <- NA
-      x[bad] <- lapply(x[bad <- vapply(x, length, integer(1L)) != 1L], list)
+      x[vapply(x, length, 0L) == 0L] <- NA
+      x[bad] <- lapply(x[bad <- vapply(x, length, 0L) != 1L], list)
       x
     }
     if (any(bad <- is.na(names(x)) | !nzchar(names(x)))) {
@@ -94,7 +94,7 @@ md_data_frame <- function(object, stringsAsFactors, optional, ...) {
   for (i in seq_along(x))
     result[i, names(x[[i]])] <- x[[i]]
   if (stringsAsFactors)
-    for (i in which(vapply(result, typeof, character(1L)) == "character"))
+    for (i in which(vapply(result, typeof, "") == "character"))
       result[, i] <- as.factor(result[, i])
   if (!optional)
     names(result) <- make.names(names(result))
@@ -209,7 +209,7 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
   zero_sd <- function(y) !identical(!sd(y, na.rm = na.rm), FALSE)
   list_remove_na <- function(y) {
     y <- lapply(y, na.exclude)
-    y[!!vapply(y, length, integer(1L))]
+    y[!!vapply(y, length, 0L)]
   }
   uniq_list_const <- function(y) {
     if (na.rm)
@@ -228,8 +228,8 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
     TRUE
   }
   all_distrib_overlap <- function(x, fac) {
-    x <- cbind(vapply(x, mean, numeric(1L), na.rm = na.rm),
-      vapply(x, sd, numeric(1L), na.rm = na.rm))
+    x <- cbind(vapply(x, mean, 0, na.rm = na.rm),
+      vapply(x, sd, 0, na.rm = na.rm))
     x[, 2L] <- fac * x[, 2L]
     x <- cbind(x[, 1L] - x[, 2L], x[, 1L] + x[, 2L])
     for (i in seq.int(nrow(x)))
@@ -398,7 +398,7 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
 #'
 metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
     ...) {
-  join <- function(x) vapply(x, paste0, character(1L),
+  join <- function(x) vapply(x, paste0, "",
     collapse = get("key.join", OPM_OPTIONS))
   if (is.null(names(x <- flatten(x))))
     names(x) <- join(x)
@@ -431,7 +431,7 @@ metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL, ...,
   combine <- new.env(parent = emptyenv())
   comb_list <- function(...) {
     if (length(keys <- flatten(x <- list(...))) > 1L) {
-      keys <- vapply(keys, paste0, character(1L),
+      keys <- vapply(keys, paste0, "",
         collapse = get("key.join", OPM_OPTIONS))
       combine[[paste0(keys,
         collapse = get("comb.key.join", OPM_OPTIONS))]] <- keys
@@ -448,7 +448,7 @@ metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL, ...,
   final_comb_list <- function(x, remove) {
     x <- as.list(x)
     if (length(remove))
-      x <- x[!vapply(x, function(y) any(y %in% remove), logical(1L))]
+      x <- x[!vapply(x, function(y) any(y %in% remove), NA)]
     if (length(x))
       x
     else
@@ -696,18 +696,18 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
   split_fixed <- function(x) {
     ws <- c(" ", "\t", "\v", "\r", "\n", "\b", "\a", "\f")
     x <- strsplit(x, split = "", fixed = TRUE)
-    max.len <- max(vapply(x, length, integer(1L)))
+    max.len <- max(vapply(x, length, 0L))
     x <- lapply(x, function(y) c(y, rep.int(" ", max.len - length(y))))
     x <- do.call(rbind, x)
     groups <- sections(apply(x, 2L, function(y) all(y %in% ws)))
     x <- apply(x, 1L, split.default, groups)
-    x <- lapply(x, function(y) strip_white(vapply(y, p0, character(1L))))
+    x <- lapply(x, function(y) strip_white(vapply(y, p0, "")))
     do.call(rbind, x)
   }
 
   yields_constant <- function(char, x) {
     splits_constant <- function(char, x, ...)
-      is_constant(vapply(strsplit(x, char, ...), length, integer(1L)))
+      is_constant(vapply(strsplit(x, char, ...), length, 0L))
     if (splits_constant(sprintf("[%s]+", char), x, perl = TRUE))
       2L
     else if (splits_constant(char, x, fixed = TRUE))
@@ -756,7 +756,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
       keep.const, simplify))
 
   # Check and apply split characters
-  yields.const <- vapply(split, yields_constant, integer(1L), object)
+  yields.const <- vapply(split, yields_constant, 0L, object)
   split <- char_group(split[yields.const == 1L], split[yields.const == 2L])
   object <- do.call(rbind, strsplit(object, split, perl = TRUE))
   if (strip.white)
@@ -978,7 +978,7 @@ list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
     else
       n[!nzchar(n)] <- sprintf(fmt, level)
     n <- ifelse(nzchar(n), safe_labels(n, "html"), NA_character_)
-    x <- vapply(x, list2html, character(1L), level = level + 1L, fmt = fmt)
+    x <- vapply(x, list2html, "", level = level + 1L, fmt = fmt)
     x <- paste0(x, indent)
     x <- hmakeTag("div", x, class = n, title = n, newline = TRUE)
     paste0(indent, x, collapse = "")
@@ -1031,7 +1031,7 @@ html_head <- function(title, css, meta) {
     css[is.abs.path] <- sprintf("file://%s", css[is.abs.path])
     css <- vapply(css, function(y) {
       single_tag("link", rel = "stylesheet", type = "text/css", href = y)
-    }, character(1L))
+    }, "")
     css <- c(html_comment("user-defined CSS file(s)"), unname(css))
   } else
     css <- NULL
@@ -1046,7 +1046,7 @@ html_head <- function(title, css, meta) {
       if (is.null(names(y)))
         stop("HTML meta entry without names")
       do.call(single_tag, c(list(x = "meta"), as.list(y)))
-    }, character(1L))
+    }, "")
     meta <- c(html_comment("user-defined metadata"), unname(meta))
   } else
     meta <- NULL
@@ -1428,7 +1428,7 @@ setMethod("map_values", c("list", "NULL"), function(object, mapping,
     if (!is.list(x))
       return(x)
     x <- lapply(x, clean_recursively)
-    x[vapply(x, length, integer(1L)) > 0L]
+    x[vapply(x, length, 0L) > 0L]
   }
   if (length(coerce))
     object <- rapply(object, as.character, prepare_class_names(coerce), NULL,
@@ -1483,7 +1483,7 @@ setMethod("map_values", c("data.frame", "function"), function(object, mapping,
     coerce = character(), ...) {
   if (identical("ANY", coerce <- prepare_class_names(coerce)))
     coerce <- unique(unlist((lapply(object, class))))
-  for (i in which(vapply(object, inherits, logical(1L), coerce)))
+  for (i in which(vapply(object, inherits, NA, coerce)))
     object[[i]] <- mapping(object[[i]], ...)
   object
 }, sealed = SEALED)
@@ -1503,7 +1503,7 @@ setMethod("map_values", c("data.frame", "NULL"), function(object, mapping,
     coerce = character(), ...) {
   if (identical("ANY", coerce <- prepare_class_names(coerce)))
     coerce <- unique(unlist((lapply(object, class))))
-  for (i in which(vapply(object, inherits, logical(1L), coerce)))
+  for (i in which(vapply(object, inherits, NA, coerce)))
     object[[i]] <- as.character(object[[i]])
   object
 }, sealed = SEALED)
@@ -1515,7 +1515,7 @@ setMethod("map_values", c("data.frame", "missing"), function(object,
   else {
     coerce <- prepare_class_names(coerce)
     if (!"ANY" %in% coerce)
-      object <- object[, vapply(object, inherits, logical(1L), coerce),
+      object <- object[, vapply(object, inherits, NA, coerce),
         drop = FALSE]
     result <- unlist(lapply(object, as.character))
   }
@@ -2011,7 +2011,7 @@ setMethod("contains", c(OPMS, OPMS), function(object, other, ...) {
         return(TRUE)
     FALSE
   }
-  vapply(other@plates, single_contained, logical(1L))
+  vapply(other@plates, single_contained, NA)
 }, sealed = SEALED)
 
 setMethod("contains", c(OPM, OPMS), function(object, other, ...) {

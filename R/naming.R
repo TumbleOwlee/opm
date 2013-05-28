@@ -633,9 +633,9 @@ setMethod("substrate_info", "character", function(object,
   map_words <- function(x, fun, ...) {
     y <- strsplit(x, "\\w+", perl = TRUE)
     x <- strsplit(x, "\\W+", perl = TRUE)
-    bad <- !vapply(x, function(value) nzchar(value[1L]), logical(1L))
+    bad <- !vapply(x, function(value) nzchar(value[1L]), NA)
     x[bad] <- lapply(x[bad], `[`, i = -1L)
-    bad <- vapply(x, length, integer(1L)) < vapply(y, length, integer(1L))
+    bad <- vapply(x, length, 0L) < vapply(y, length, 0L)
     x[bad] <- lapply(x[bad], function(value) c(value, ""))
     x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
     mapply(paste0, y, x, MoreArgs = list(collapse = ""))

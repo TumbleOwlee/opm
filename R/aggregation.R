@@ -550,7 +550,7 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
   if (nrow(x$t)) {
     cis <- lapply(seq_along(x$t0), FUN = boot.ci, boot.out = x, conf = ci,
       type = type, ...)
-    ok <- !vapply(cis, is.null, logical(1L))
+    ok <- !vapply(cis, is.null, NA)
     cis[!ok] <- list(c(NA_real_, NA_real_))
     cis[ok] <- lapply(cis[ok], `[[`, type, exact = FALSE)
     cis[ok] <- lapply(cis[ok], FUN = last, i = 2L)

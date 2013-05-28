@@ -71,7 +71,7 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
     to.add <- c(0, must(cumsum(tp[-nrow(tp), ncol(tp), drop = FALSE]) + y))
     m[, 1L] <- as.vector(t(tp + to.add))
   } else if (is.list(tp)) {
-    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], last, numeric(1L))) + y))
+    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], last, 1)) + y))
     m[, 1L] <- unlist(mapply(`+`, tp, to.add, SIMPLIFY = FALSE,
       USE.NAMES = FALSE))
   } else
@@ -604,7 +604,7 @@ setMethod("extract_columns", "data.frame", function(object, what,
   join <- function(x, what, sep)
     do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
   find_stuff <- function(x, what) {
-    x <- x[, vapply(x, inherits, logical(1L), what), drop = FALSE]
+    x <- x[, vapply(x, inherits, NA, what), drop = FALSE]
     if (!ncol(x))
       stop("no data of class(es) ", paste(what, collapse = "/"), " found")
     as.matrix(x)
@@ -735,7 +735,7 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
     keys <- lapply(X = by, FUN = metadata, object = x, exact = exact,
       strict = strict)
     if (!strict)
-      if (!length(keys <- keys[!vapply(keys, is.null, logical(1L))]))
+      if (!length(keys <- keys[!vapply(keys, is.null, NA)]))
         return(x)
   } else if (is.character(by))
     keys <- case(length(by),

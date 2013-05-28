@@ -126,7 +126,7 @@ calinski.Ckmeans.1d.dp <- function(x, y, ...) {
 #' @export
 #'
 calinski.kmeanss <- function(x, ...) {
-  vapply(X = x, FUN = calinski, FUN.VALUE = numeric(1L), ...)
+  vapply(X = x, FUN = calinski, FUN.VALUE = 1, ...)
 }
 
 #' @rdname calinski

@@ -241,7 +241,7 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     y <- x@plates
   else {
     y <- x@plates[i]
-    if (any(bad <- vapply(y, is.null, logical(1L)))) {
+    if (any(bad <- vapply(y, is.null, NA))) {
       warning("plate indexes partially out of range")
       y <- y[!bad]
     }
@@ -435,7 +435,7 @@ setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
 }, sealed = SEALED)
 
 setMethod("max", OPMS, function(x, ..., na.rm = FALSE) {
-  max(vapply(x@plates, FUN = max, numeric(1L), ..., na.rm = na.rm),
+  max(vapply(x@plates, FUN = max, 1, ..., na.rm = na.rm),
     na.rm = na.rm)
 }, sealed = SEALED)
 
@@ -480,7 +480,7 @@ setMethod("minmax", OPM, function(x, ..., na.rm = FALSE) {
 }, sealed = SEALED)
 
 setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
-  min(vapply(x@plates, FUN = minmax, numeric(1L), ..., na.rm = na.rm))
+  min(vapply(x@plates, FUN = minmax, 1, ..., na.rm = na.rm))
 }, sealed = SEALED)
 
 
@@ -1635,7 +1635,7 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
     tp <- hours(x, what = "all")
     if (is.matrix(tp))
       tp <- lapply(seq.int(nrow(tp)), function(i) tp[i, ])
-    if (length(maxs <- unique.default(vapply(tp, max, numeric(1L)))) < 2L)
+    if (length(maxs <- unique.default(vapply(tp, max, 1))) < 2L)
       return(x)
     min.max <- min(maxs)
     tp <- lapply(tp, function(x) which(x <= min.max))
@@ -1823,10 +1823,9 @@ lapply(c(
   ), FUN = function(func_) {
   setMethod(func_, OPMS, function(object, ...) {
     simplify_conditionally <- function(x) { # instead of sapply()
-      if (any(vapply(x, is.list, logical(1L))) ||
-          any(vapply(x, is.matrix, logical(1L))))
+      if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
         return(x)
-      if (length(n <- unique(vapply(x, length, integer(1L)))) > 1L)
+      if (length(n <- unique(vapply(x, length, 0L))) > 1L)
         return(x)
       if (n > 1L)
         do.call(rbind, x)
@@ -2259,7 +2258,7 @@ setMethod("%Q%", c("character", WMD), function(x, table) {
   if (length(keys <- names(x)) == 0L && length(x) > 0L)
     return(FALSE)
   all(vapply(keys, function(key) identical(x[[key]], table@metadata[[key]]),
-    logical(1L)))
+    NA))
 }, sealed = SEALED)
 
 setMethod("%Q%", c("list", WMD), function(x, table) {
@@ -2307,7 +2306,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("list", OPMS), function(x, table) {
-    vapply(table@plates, func_, logical(1L), x = x, USE.NAMES = FALSE)
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -2320,7 +2319,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("character", OPMS), function(x, table) {
-    vapply(table@plates, func_, logical(1L), x = x, USE.NAMES = FALSE)
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -2333,7 +2332,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("factor", OPMS), function(x, table) {
-    vapply(table@plates, func_, logical(1L), x = x, USE.NAMES = FALSE)
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -2346,7 +2345,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("formula", OPMS), function(x, table) {
-    vapply(table@plates, func_, logical(1L), x = x, USE.NAMES = FALSE)
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
