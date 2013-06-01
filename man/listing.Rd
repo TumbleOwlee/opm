@@ -125,11 +125,12 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \alias{listing,OPMD-method}
 \alias{listing,OPMS-method}
 \usage{
-  \S4method{listing}{OPMD}(x, as.groups = NULL, cutoff = 0.5,
-    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
-    ..., exact = TRUE, strict = TRUE) 
+  \S4method{listing}{OPMD}(x, as.groups = NULL,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) 
 
-  \S4method{listing}{OPMS}(x, as.groups, cutoff = 0.5,
+  \S4method{listing}{OPMS}(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) 
 

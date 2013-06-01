@@ -281,11 +281,12 @@ to_sentence.logical <- function(x, html, ...) {
 #'
 setGeneric("listing")
 
-setMethod("listing", OPMD, function(x, as.groups = NULL, cutoff = 0.5,
-    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
-    ..., exact = TRUE, strict = TRUE) {
+setMethod("listing", OPMD, function(x, as.groups = NULL,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) {
   if (missing(as.groups))
-    warning("'as.groups' will be mandatory in future versions")
+    warning("providing 'as.groups' will be mandatory in future versions")
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
@@ -302,7 +303,7 @@ setMethod("listing", OPMD, function(x, as.groups = NULL, cutoff = 0.5,
   res
 }, sealed = SEALED)
 
-setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5,
+setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) {
   add_stuff <- function(x, html, cutoff) {
@@ -316,7 +317,7 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5,
     res <- do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
       downcase = downcase, full = full, in.parens = in.parens,
       as.groups = NULL, ...))
-    rownames(res) <- seq.int(nrow(res))
+    rownames(res) <- seq_len(nrow(res))
     return(add_stuff(res, html, cutoff))
   }
   res <- extract(object = x, subset = "disc", as.groups = as.groups,
@@ -324,8 +325,8 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = 0.5,
     full = full, in.parens = in.parens, dataframe = FALSE, as.labels = NULL,
     ...)
   res <- vapply(split.default(seq_len(nrow(res)), attr(res, "row.groups")),
-    function(idx) to_sentence(apply(res[idx, , drop = FALSE], 2L,
-      reduce_to_mode, cutoff = cutoff, use.na = TRUE), html), character(3L))
+    function(idx) to_sentence(reduce_to_mode.matrix(res[idx, , drop = FALSE],
+      cutoff, TRUE), html), character(3L))
   add_stuff(t(res), html, cutoff)
 }, sealed = SEALED)
 
@@ -659,7 +660,7 @@ setMethod("substrate_info", "character", function(object,
     colnames(result) <- map_values(colnames(result), c(METACYC = "MetaCyc",
       MESH = "MeSH", CHEBI = "ChEBI", KEGG = "KEGG compound",
       DRUG = "KEGG drug"))
-    result <- split.data.frame(result, seq.int(nrow(result)))
+    result <- split.data.frame(result, seq_len(nrow(result)))
     result <- lapply(result, function(y) y[, !is.na(y), drop = TRUE])
     class(result) <- c("substrate_data", "print_easy")
     result

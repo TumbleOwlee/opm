@@ -111,7 +111,8 @@ md_data_frame <- function(object, stringsAsFactors, optional, ...) {
 #'
 #' Reduce a countable object to the most frequent element(s).
 #'
-#' @param x An \R object to which \code{table} can be applied.
+#' @param x An \R object to which \code{table} can be applied. The matrix method
+#'   reduces the columns.
 #' @param cutoff Numeric scalar. Relative frequency below which elements are
 #'   discarded.
 #' @param use.na Logical scalar indicating whether ambiguous results should be
@@ -119,15 +120,27 @@ md_data_frame <- function(object, stringsAsFactors, optional, ...) {
 #' @return Vector of the same storage mode than \code{x}.
 #' @keywords internal
 #'
-reduce_to_mode <- function(x, cutoff, use.na = TRUE) {
+reduce_to_mode <- function(x, cutoff, use.na) UseMethod("reduce_to_mode")
+
+#' @rdname reduce_to_mode
+#' @method reduce_to_mode default
+#'
+reduce_to_mode.default <- function(x, cutoff, use.na = TRUE) {
   counts <- table(x, useNA = "always")
-  counts <- counts[counts > length(x) * cutoff]
+  counts <- counts[counts >= length(x) * cutoff]
   result <- case(length(counts), NA_character_, names(counts), if (use.na)
     NA_character_
   else
     names(counts))
   storage.mode(result) <- storage.mode(x)
   result
+}
+
+#' @rdname reduce_to_mode
+#' @method reduce_to_mode matrix
+#'
+reduce_to_mode.matrix <- function(x, cutoff, use.na = TRUE) {
+  apply(x, 2L, reduce_to_mode.default, cutoff, use.na)
 }
 
 
@@ -232,7 +245,7 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
       vapply(x, sd, 0, na.rm = na.rm))
     x[, 2L] <- fac * x[, 2L]
     x <- cbind(x[, 1L] - x[, 2L], x[, 1L] + x[, 2L])
-    for (i in seq.int(nrow(x)))
+    for (i in seq_len(nrow(x)))
       if (any(x[i, 2L] < x[-i, 1L] | x[i, 1L] > x[-i, 2L], na.rm = TRUE))
         return(FALSE)
     TRUE
@@ -2095,10 +2108,17 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
 #'       that must be in sync with it for joining metadata keys used in nested
 #'       queries (because the resulting object is \sQuote{flat}).}
+#'     \item{min.mode}{Used when making discretization results uniform within a
+#'       group. The minimum proportion the most frequent value much reach to be
+#'       used for representing all values (if less, frequent, \code{NA} is
+#'       used). Must be a numeric scalar between 0 and 1.}
 #'     \item{phylo.fmt}{Character scalar indicating the default output format
 #'       used by \code{\link{phylo_data}}.}
 #'     \item{split}{Character scalar indicating the default splitting characters
 #'       used by \code{\link{separate}}.}
+#'     \item{strict.OPMD}{Logical scalar indicating whether \code{\link{OPMD}}
+#'       objects can only be created if the discretized data are consistent with
+#'       the parameter from which they have been estimated.}
 #'     \item{time.zone}{Character scalar indicating the time zone to be used
 #'       when parsing \code{\link{setup_time}} entries. This is relevant for
 #'       \code{\link{merge}}, which by default attempts to sort by parsed setup

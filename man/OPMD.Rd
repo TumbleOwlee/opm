@@ -16,6 +16,16 @@
   \code{\link{read_opm}} if these files already contain
   discretized data.
 
+  The discretized data are considered as
+  \sQuote{consistent} with the curve parameter from which
+  they have been estimated if no \code{FALSE} value
+  corresponds to curve parameter larger than the curve
+  parameter of any \code{TRUE} value; \code{NA} values are
+  not considered when checking consistency. The
+  \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
+  determines whether an error or only a warning is issued
+  in the case of inconsistency.
+
   For further details see the parent class,
   \code{\link{OPMA}}.
 }

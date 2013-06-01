@@ -27,6 +27,6 @@
 \usage{
   \S4method{opmd_problems}{list}(object) 
 
-  \S4method{opmd_problems}{matrix}(object, disc) 
+  \S4method{opmd_problems}{matrix}(object, disc, param) 
 
 }

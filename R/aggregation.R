@@ -421,7 +421,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         control <- make_grofit_control(verbose, boot, add = options)
         grofit.time <- to_grofit_time(object)
         grofit.data <- to_grofit_data(object)
-        result <- mclapply(X = as.list(seq.int(nrow(grofit.data))),
+        result <- mclapply(X = as.list(seq_len(nrow(grofit.data))),
           FUN = function(row) {
             run_grofit(grofit.time[row, , drop = FALSE],
               grofit.data[row, , drop = FALSE], control)
@@ -451,7 +451,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         data <- as.data.frame(measurements(object))
         ## get well names
         wells <- wells(object)
-        indx <- as.list(seq.int(length(wells)))
+        indx <- as.list(seq_len(length(wells)))
         result <- mclapply(X = indx,
           FUN = function(i) {
             run_mgcv(x = HOUR, y = wells[i], data = data, options = options,

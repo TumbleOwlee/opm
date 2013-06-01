@@ -184,28 +184,30 @@ MEMOIZED <- new.env(parent = emptyenv())
 OPM_OPTIONS <- new.env(parent = emptyenv())
 OPM_OPTIONS$color.borders <- c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E",
   "#993404")
+OPM_OPTIONS$colors <- "w3c"
+OPM_OPTIONS$comb.key.join <- "."
+OPM_OPTIONS$comb.value.join <- " "
+OPM_OPTIONS$contrast.type <- "Tukey"
 OPM_OPTIONS$css.file <- ""
 OPM_OPTIONS$csv.keys <- unname(CSV_NAMES[c("SETUP", "POS")])
 OPM_OPTIONS$csv.selection <- unname(CSV_NAMES[c("SETUP", "POS", "FILE")])
+OPM_OPTIONS$curve.param <- "A"
+OPM_OPTIONS$digits <- 4L
+OPM_OPTIONS$disc.param <- "A"
+OPM_OPTIONS$file.encoding <- ""
+OPM_OPTIONS$file.split.tmpl <- "%s-%05i.%s"
 OPM_OPTIONS$gen.iii <- ""
+OPM_OPTIONS$group.name <- "Group"
+OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$html.class <- "section-level-%i"
+OPM_OPTIONS$key.join <- "."
+OPM_OPTIONS$min.mode <- 0.5
 OPM_OPTIONS$phylo.fmt <- "epf"
+OPM_OPTIONS$split <- "/.-_"
+OPM_OPTIONS$strict.OPMD <- FALSE
 OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
   "%d.%m.%Y %H:%M:%S")
 OPM_OPTIONS$time.zone <- ""
-OPM_OPTIONS$colors <- "w3c"
-OPM_OPTIONS$split <- "/.-_"
-OPM_OPTIONS$digits <- 4L
-OPM_OPTIONS$file.encoding <- ""
-OPM_OPTIONS$curve.param <- "A"
-OPM_OPTIONS$key.join <- "."
-OPM_OPTIONS$disc.param <- "A"
-OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
-OPM_OPTIONS$contrast.type <- "Tukey"
-OPM_OPTIONS$comb.key.join <- "."
-OPM_OPTIONS$comb.value.join <- " "
-OPM_OPTIONS$group.name <- "Group"
-OPM_OPTIONS$file.split.tmpl <- "%s-%05i.%s"
 
 
 ################################################################################
@@ -228,8 +230,8 @@ names(GREEK_LETTERS) <- substring(GREEK_LETTERS, 1L, 1L)
 GREEK_LETTERS <- cbind(plain = GREEK_LETTERS,
   html = sprintf("&%s;", GREEK_LETTERS))
 GREEK_LETTERS <- rbind(GREEK_LETTERS, GREEK_LETTERS)
-rownames(GREEK_LETTERS)[seq.int(nrow(GREEK_LETTERS) / 2L)] <- GREEK_LETTERS[
-  seq.int(nrow(GREEK_LETTERS) / 2L), "plain"]
+rownames(GREEK_LETTERS)[seq_len(nrow(GREEK_LETTERS) / 2L)] <- GREEK_LETTERS[
+  seq_len(nrow(GREEK_LETTERS) / 2L), "plain"]
 
 
 

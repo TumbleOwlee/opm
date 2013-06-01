@@ -408,6 +408,14 @@ setAs(from = "list", to = OPMA, function(from) {
 #'   files with \code{\link{read_single_opm}} or \code{\link{read_opm}} if these
 #'   files already contain discretized data.
 #'
+#'   The discretized data are considered as \sQuote{consistent} with the curve
+#'   parameter from which they have been estimated if no \code{FALSE} value
+#'   corresponds to curve parameter larger than the curve parameter of any
+#'   \code{TRUE} value; \code{NA} values are not considered when checking
+#'   consistency. The \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
+#'   determines whether an error or only a warning is issued in the case of
+#'   inconsistency.
+#'
 #'   For further details see the parent class, \code{\link{OPMA}}.
 #'
 #' @docType class
@@ -423,7 +431,8 @@ setClass(OPMD,
   contains = OPMA,
   validity = function(object) {
     errs <- opmd_problems(object@disc_settings)
-    errs <- c(errs, opmd_problems(object@aggregated, object@discretized))
+    errs <- c(errs, opmd_problems(object@aggregated, object@discretized,
+      object@disc_settings$options$parameter))
     if (length(errs))
       errs
     else
@@ -457,18 +466,26 @@ setMethod("opmd_problems", "list", function(object) {
   opma_problems(object)
 }, sealed = SEALED)
 
-setMethod("opmd_problems", "matrix", function(object, disc) {
+setMethod("opmd_problems", "matrix", function(object, disc, param) {
   errs <- character()
   # uncomment this once numeric vectors are allowed, too:
   #if (!is.vector(disc) || !(is.numeric(disc) || is.logical(disc)))
   #  errs <- c(errs, "discretized data have wrong storage mode")
   if (!identical(names(disc), colnames(object)))
     errs <- c(errs, "discretized data have wrong names")
+  if (length(param) != 1L || !param %in% rownames(object))
+    errs <- c(errs, "missing name of discretized parameter")
   if (length(errs))
-    return(errs) # further tests are impossible in that case
+    return(errs) # further tests are impossible in these cases
   ok <- !is.na(disc)
-  if (!identical(order(disc[ok], object["A", ok]), order(object["A", ok])))
-    errs <- c(errs, "discretized data inconsistent with 'A' parameter")
+  ok <- identical(order(disc[ok], object[param, ok]), order(object[param, ok]))
+  if (!ok) {
+    text <- sprintf("discretized data inconsistent with '%s' parameter", param)
+    if (get("strict.OPMD", OPM_OPTIONS))
+      errs <- c(errs, text)
+    else
+      warning(text)
+  }
   errs
 }, sealed = SEALED)
 

@@ -727,7 +727,7 @@ setMethod("wells", "missing", function(object, ...) {
 #' file. See \code{\link{read_opm}} and \code{\link{read_single_opm}} for
 #' reading such files.
 #'
-#' @param object \code{\link{OPM}} object.
+#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param keys Character vector (or other objects usable as vector index). An
 #'   optional sub-selection. If empty (the default), all \acronym{CSV} data are
 #'   returned. By default it is an error to select non-existing items.
@@ -1634,7 +1634,7 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
   if (time) {
     tp <- hours(x, what = "all")
     if (is.matrix(tp))
-      tp <- lapply(seq.int(nrow(tp)), function(i) tp[i, ])
+      tp <- lapply(seq_len(nrow(tp)), function(i) tp[i, ])
     if (length(maxs <- unique.default(vapply(tp, max, 1))) < 2L)
       return(x)
     min.max <- min(maxs)
@@ -1825,7 +1825,7 @@ lapply(c(
     simplify_conditionally <- function(x) { # instead of sapply()
       if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
         return(x)
-      if (length(n <- unique(vapply(x, length, 0L))) > 1L)
+      if (length(n <- unique.default(vapply(x, length, 0L))) > 1L)
         return(x)
       if (n > 1L)
         do.call(rbind, x)

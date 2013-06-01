@@ -276,9 +276,9 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     # create reshaped data frame and set temporary helper column '_ID' to avoid
     # non-unique values when setting 'row.names'; note according shift of column
     # positions!
-    object <- reshape(cbind(`_ID` = seq.int(nrow(object)), object),
+    object <- reshape(cbind(`_ID` = seq_len(nrow(object)), object),
       direction = "long",
-      idvar = c("_ID", colnames(object)[seq.int(param.pos - 1L)]),
+      idvar = c("_ID", colnames(object)[seq_len(param.pos - 1L)]),
       varying = colnames(object)[seq.int(param.pos + 1L, ncol(object))],
       v.names = RESERVED_NAMES[["value"]],
       timevar = RESERVED_NAMES[["well"]],

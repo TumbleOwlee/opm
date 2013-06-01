@@ -90,7 +90,7 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
     if (L(y))
       groups <- as.factor(rownames(x))
     else
-      groups <- as.factor(seq.int(nrow(x)))
+      groups <- as.factor(seq_len(nrow(x)))
   else
     groups <- as.factor(y)
   if (length(groups) != nrow(x)) # this also covers NULL row names
@@ -1097,7 +1097,7 @@ setMethod("extract", OPMS, function(object, as.labels,
       if (L(how))
         rep.int(1L, length(object))
       else
-        seq.int(length(object))
+        seq_len(length(object))
     }
     if (join) {
       result <- if (is.logical(x))
@@ -1114,7 +1114,7 @@ setMethod("extract", OPMS, function(object, as.labels,
       } else
         result <- do_extract(x, join = FALSE)
       if (ci)
-        result <- result[rep(seq.int(nrow(result)), each = 3L), , drop = FALSE]
+        result <- result[rep(seq_len(nrow(result)), each = 3L), , drop = FALSE]
     }
     result
   }
@@ -1136,7 +1136,7 @@ setMethod("extract", OPMS, function(object, as.labels,
     if (length(as.labels)) {
       columns <- do_extract(as.labels, join = FALSE)
       if (ci)
-        columns <- columns[rep(seq.int(nrow(columns)), each = 3L), ,
+        columns <- columns[rep(seq_len(nrow(columns)), each = 3L), ,
           drop = FALSE]
       columns <- cbind(columns, rownames(result))
       colnames(columns)[ncol(columns)] <- RESERVED_NAMES[["parameter"]]
@@ -1144,7 +1144,7 @@ setMethod("extract", OPMS, function(object, as.labels,
       result <- cbind(columns, result)
     } else {
       params <- rownames(result)
-      rownames(result) <- seq.int(nrow(result))
+      rownames(result) <- seq_len(nrow(result))
       result <- cbind(params, result)
       colnames(result)[1L] <- RESERVED_NAMES[["parameter"]]
     }
@@ -1161,10 +1161,10 @@ setMethod("extract", OPMS, function(object, as.labels,
         labels
     } else {
       rownames(result) <- if (ci)
-        paste(rownames(result), rep(seq.int(nrow(result) / 3L), each = 3L),
+        paste(rownames(result), rep(seq_len(nrow(result) / 3L), each = 3L),
           sep = sep)
       else
-        seq.int(nrow(result))
+        seq_len(nrow(result))
     }
     if (length(as.groups))
       attr(result, "row.groups") <- create_groups(as.groups, TRUE, ci)
@@ -1212,7 +1212,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   if (!is.logical(as.groups) && anyDuplicated(as.groups))
     case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(
       "duplicated grouping values")
-  as.groups <- unclass(object[, seq.int(param.pos - 1L), drop = FALSE][,
+  as.groups <- unclass(object[, seq_len(param.pos - 1L), drop = FALSE][,
     as.groups, drop = FALSE])
   gl <- length(as.groups)
 
@@ -1225,7 +1225,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   # The output has to be organized in a certain structure, three rows per group:
   # first the mean, second the lower CI limit third the upper CI limit. This
   # step creates the factor-data part up to the parameter column.
-  result <- as.data.frame(sapply(aggr.mean[, seq.int(gl), drop = FALSE],
+  result <- as.data.frame(sapply(aggr.mean[, seq_len(gl), drop = FALSE],
     rep, each = 3L))
   colnames(result) <- names(as.groups)
   result[, RESERVED_NAMES[["parameter"]]] <- as.factor(unlist(map_grofit_names(
@@ -1243,7 +1243,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   pos.1 <- ncol(aggr.CI)
   pos.2 <- seq.int(pos.1 / 2L + 1L, pos.1)
   pos.1 <- seq.int(pos.1 / 2L)
-  for (i in seq.int(nrow(aggr.mean)))
+  for (i in seq_len(nrow(aggr.mean)))
     output[, seq.int(i * 3L - 2L, 3L * i)] <- c(aggr.mean[i, , drop = TRUE],
       aggr.CI[i, pos.1, drop = TRUE], aggr.CI[i, pos.2, drop = TRUE])
   output <- t(output)

@@ -33,6 +33,7 @@
 - batch_collect() and batch_opm() get more arguments
 - batch_opm() gets more running modes, and 'run_opm.R' gets more command-line
   options; this mainly allows for combining data sets into the same output file
+- do_disc() gets a 'unify' argument
 
 
 ################################################################################

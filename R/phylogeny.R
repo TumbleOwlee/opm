@@ -443,7 +443,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
       colnames(x) <- div_class(colnames(x), "character-name")
       x[] <- t(apply(x, 1L, div_class, variability))
       x[] <- div_class(x, "measured-character-states")
-      rownames(x) <- span_class(seq.int(nrow(x)), "organism-index")
+      rownames(x) <- span_class(seq_len(nrow(x)), "organism-index")
       c("<div class=\"main-table\">", hwrite(x = t(x), page = NULL,
         table.summary = html.args$table.summary, div = FALSE, ...), "</div>")
     }
@@ -890,7 +890,7 @@ setMethod("phylo_data", "matrix", function(object,
     object <- update(object, how = "NA2int")
   object <- merge(x = object, y = join)
   if (is.list(object) && L(cutoff) > 0)
-    object[] <- lapply(object, reduce_to_mode, cutoff = cutoff, use.na = FALSE)
+    object[] <- lapply(object, reduce_to_mode.default, cutoff, FALSE)
   switch(delete, none = NULL,
     object <- update(object, how = sprintf("delete.%s", delete)))
   result <- format(x = object, how = format, enclose = enclose, digits = digits,

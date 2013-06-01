@@ -2,7 +2,8 @@
 \alias{csv_data}
 \title{Information from input CSV file}
 \arguments{
-  \item{object}{\code{\link{OPM}} object.}
+  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
+  object.}
 
   \item{keys}{Character vector (or other objects usable as
   vector index). An optional sub-selection. If empty (the

@@ -298,8 +298,8 @@ read_microstation_opm <- function(filename) {
   x <- cbind(filename, x, stringsAsFactors = FALSE)
   names(x) <- c(CSV_NAMES[c("FILE", "PLATE_TYPE", "SETUP", "POS")], HOUR,
     clean_coords(sub(pat, "", wells, perl = TRUE)))
-  pos <- seq.int(4L)
-  x <- to_opm_list.list(lapply(seq.int(nrow(x)), function(i) {
+  pos <- seq_len(4L)
+  x <- to_opm_list.list(lapply(seq_len(nrow(x)), function(i) {
     list(csv_data = as.list(x[i, pos, drop = FALSE]),
       metadata = y[i, , drop = TRUE],
       measurements = as.list(x[i, -pos, drop = FALSE]))
@@ -1396,7 +1396,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     for (approach in spec)
       if (is.character(approach)) {
         for (name in approach[!approach %in% colnames(x)])
-          x[, name] <- seq.int(nrow(x))
+          x[, name] <- seq_len(nrow(x))
         x <- x[, approach, drop = FALSE]
         if (!is.null(names(approach)))
           colnames(x) <- names(approach)
