@@ -37,9 +37,33 @@
   \code{\link{extract}}. It is recommended to use the
   maximum height (currently called \sQuote{A}).}
 
-  \item{unify}{Logical scalar indicating whether results
-  should be unified per group. Has no effect on
-  \code{\link{OPMA}} objects.}
+  \item{unify}{Logical or numeric scalar indicating whether
+  results should be unified per group. This works by
+  choosing the most frequent value (mode) if its frequency
+  is above a given threshold and \code{NA} otherwise. (The
+  same approach is used by \code{\link{listing}} and
+  \code{\link{phylo_data}}.)
+
+  If \code{unify} is a logical scalar, \code{NA} triggers
+  unification using 1 as threshold, i.e. all ambiguities
+  are codes as \code{NA}. Using \code{TRUE} turns on
+  unification with the default threshold given by
+  \code{opm_opt("min.mode")}, whereas \code{FALSE} turns
+  unification off.
+
+  If \code{unify} is a numeric scalar, values below or
+  equal to zero turn unification off. Values above zero are
+  directly used as unification threshold, thus values above
+  1 or numeric \code{NA} make no sense (cause an error).
+
+  See \sQuote{Details} below on the potential consequences
+  of unification. In the \code{\link{disc_settings}}
+  entries, an according \sQuote{unified} entry will report
+  the threshold used, with -1 indicating no unification.
+
+  The \code{unify} argument has no effect on
+  \code{\link{OPMA}} objects (because they represent a
+  single group with a single member).}
 
   \item{...}{Optional arguments passed to
   \code{\link{extract}}. Only relevant for certain settings
@@ -64,6 +88,15 @@
   reactions is supported, and only based on the
   \sQuote{maximum height} curve parameter (which is
   biologically reasonable though).
+}
+\details{
+  If \code{unify} is set to \code{FALSE}, the
+  discretization results are always consistent (in the
+  sense described for the \code{\link{OPMD}} class) with
+  the discretized parameter. If \code{unify} is set to
+  \code{TRUE} this cannot be guaranteed any more. To
+  enforce consistency, use \code{opm_opt(strict.OPMD =
+  TRUE)}.
 }
 \note{
   The discretized values can be queried for using
@@ -139,7 +172,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # grouping by species, discretized separately
 
 # using best_cutoff(), groups defined by species affiliation (makes not
-# much sense)
+# much sense and by default yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = "Species")
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 (y <- disc_settings(x)[[1]]) # stored discretization settings
@@ -147,7 +180,8 @@ stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # groups as above, 2 strains per species, but some additional entries
 
-# using best_cutoff(), single group for all plates (makes even less sense)
+# using best_cutoff(), single group for all plates (makes even less sense
+# and by default also yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 (y <- disc_settings(x)[[1]]) # stored discretization settings

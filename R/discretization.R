@@ -402,10 +402,36 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #'   or \code{\link{OPMS}} object should be created.
 #' @param subset Character scalar passed to \code{\link{extract}}. It is
 #'   recommended to use the maximum height (currently called \sQuote{A}).
-#' @param unify Logical scalar indicating whether results should be unified per
-#'   group. Has no effect on \code{\link{OPMA}} objects.
+#' @param unify Logical or numeric scalar indicating whether results should be
+#'   unified per group. This works by choosing the most frequent value (mode)
+#'   if its frequency is above a given threshold and \code{NA} otherwise. (The
+#'   same approach is used by \code{\link{listing}} and
+#'   \code{\link{phylo_data}}.)
+#'
+#'   If \code{unify} is a logical scalar, \code{NA} triggers unification
+#'   using 1 as threshold, i.e. all ambiguities are codes as \code{NA}. Using
+#'   \code{TRUE} turns on unification with the default threshold given by
+#'   \code{opm_opt("min.mode")}, whereas \code{FALSE} turns unification off.
+#'
+#'   If \code{unify} is a numeric scalar, values below or equal to zero turn
+#'   unification off. Values above zero are directly used as unification
+#'   threshold, thus values above 1 or numeric \code{NA} make no sense (cause
+#'   an error).
+#'
+#'   See \sQuote{Details} below on the potential consequences of unification. In
+#'   the \code{\link{disc_settings}} entries, an according \sQuote{unified}
+#'   entry will report the threshold used, with -1 indicating no unification.
+#'
+#'   The \code{unify} argument has no effect on \code{\link{OPMA}} objects
+#'   (because they represent a single group with a single member).
 #' @param ... Optional arguments passed to \code{\link{extract}}. Only relevant
 #'   for certain settings of \code{groups}, see above.
+#'
+#' @details If \code{unify} is set to \code{FALSE}, the discretization results
+#'   are always consistent (in the sense described for the \code{\link{OPMD}}
+#'   class) with the discretized parameter. If \code{unify} is set to
+#'   \code{TRUE} this cannot be guaranteed any more. To enforce consistency,
+#'   use \code{opm_opt(strict.OPMD = TRUE)}.
 #'
 #' @note The discretized values can be queried for using \code{\link{has_disc}}
 #'   and received using \code{\link{discretized}}.
@@ -492,7 +518,7 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' # grouping by species, discretized separately
 #'
 #' # using best_cutoff(), groups defined by species affiliation (makes not
-#' # much sense)
+#' # much sense and by default yields warnings with these data)
 #' x <- do_disc(vaas_4, cutoff = NULL, groups = "Species")
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
@@ -500,7 +526,8 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' stopifnot(is.list(y), is.list(y$options)) # named lists
 #' # groups as above, 2 strains per species, but some additional entries
 #'
-#' # using best_cutoff(), single group for all plates (makes even less sense)
+#' # using best_cutoff(), single group for all plates (makes even less sense
+#' # and by default also yields warnings with these data)
 #' x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE)
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
@@ -554,6 +581,27 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
       discretized = discretized, disc_settings = disc.settings)
   }
 
+  prepare_unify <- function(unify) {
+    if (is.logical(L(unify))) {
+      if (is.na(unify))
+        1L
+      else if (unify)
+        get("min.mode", OPM_OPTIONS)
+      else
+        -1L
+    } else if (is.numeric(unify)) {
+      if (is.na(unify))
+        stop("a numeric NA 'unify' value makes no sense")
+      if (unify > 0) {
+        if (unify > 1)
+          stop("a numeric 'unify' value > 1 makes no sense")
+        unify
+      } else
+        -1L
+    } else
+      stop("'unify' must be a logical or numeric scalar")
+  }
+
   add_as_options <- function(x, y) {
     x[[OPTIONS]] <- y
     x
@@ -562,24 +610,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
   if (!all(has_aggr(object)))
     stop("all plates must contain aggregated data to run this function")
 
-  if (is.logical(L(unify))) {
-    if (is.na(unify)) {
-      min.mode <- 1L
-      unify <- TRUE
-    } else if (unify)
-      min.mode <- get("min.mode", OPM_OPTIONS)
-    else
-      min.mode <- -1
-  } else if (is.numeric(unify)) {
-    if (unify > 0) {
-      min.mode <- unify
-      unify <- TRUE
-    } else {
-      min.mode <- -1
-      unify <- FALSE
-    }
-  } else
-    stop("'unify' must be a logical or numeric scalar")
+  unify <- prepare_unify(unify)
 
   if (is.logical(groups)) {
     combined <- !L(groups)
@@ -620,14 +651,13 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
   if (length(grp)) { # unless empty, 'grp' now holds the group names
 
     disc.settings <- rep.int(list(disc.settings), length(object))
-
-    if (use.best) { # using best_cutoff() instead of k-means partitioning
+    if (use.best) { # using best_cutoff() instead of discrete()
       bc <- do_bc(x, grp, combined)
       for (idx in split(seq_along(grp), grp)) {
         group <- grp[idx[1L]]
         settings <- list(cutoffs = bc[group, "maximum"], datasets = length(idx),
           score = bc[group, "objective"], group = group, parameter = subset,
-          unified = min.mode)
+          unified = unify)
         if (combined)
           settings$group <- NULL
         x[idx, ] <- x[idx, , drop = FALSE] > settings$cutoffs
@@ -640,15 +670,15 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
           gap = TRUE, output = "integer")
         settings <- list(cutoffs = attr(y, "cutoffs"), datasets = length(idx),
           group = as.character(grp[idx[1L]]), parameter = subset,
-          unified = min.mode)
+          unified = unify)
         for (i in idx)
           disc.settings[[i]] <- add_as_options(disc.settings[[i]], settings)
       }
     }
     mode(x) <- "logical"
-    if (unify)
+    if (unify > 0)
       for (idx in split(seq_along(grp), grp)) {
-        y <- reduce_to_mode(x[idx, , drop = FALSE], min.mode, TRUE)
+        y <- reduce_to_mode(x[idx, , drop = FALSE], unify, TRUE)
         for (i in idx)
           x[i, ] <- y
       }
@@ -658,10 +688,10 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")
     disc.settings <- add_as_options(disc.settings,
       list(cutoffs = attr(x, "cutoffs"), datasets = length(object),
-      parameter = subset, unified = min.mode))
+      parameter = subset, unified = unify))
     disc.settings <- rep.int(list(disc.settings), length(object))
-    if (unify) {
-      y <- reduce_to_mode(x[idx, , drop = FALSE], min.mode, TRUE)
+    if (unify > 0) {
+      y <- reduce_to_mode(x[idx, , drop = FALSE], unify, TRUE)
       for (i in seq_len(nrow(x)))
         x[i, ] <- y
     }

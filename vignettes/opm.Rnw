@@ -1804,12 +1804,21 @@ and note that the \code{phylo\_data()} function has a ``html.args'' argument.
 Textual \proglang{HTML} output supports most of the formatting instructions  for the output of \proglang{HTML} tables described below (see \ref{application discrete-table}).
 Note particularly how formatting \textit{via} a \proglang{CSS} file works, as described in Section~\ref{application discrete-table}.
 
-The default settings of \code{do\_disc()} imply exact k-means partitioning into three groups (``negative'', ``ambiguous'' and ``positive''), treating all contained plates together.
+The default settings of \code{do\_disc()} imply exact k-means partitioning into three groups (``negative'', ``ambiguous'' and ``positive''), treating all contained plates together, and using the maximum-height parameter for discretization.
 Let $A_1$ and $A_2$ be the maximum-height parameters from two curves $C_1$ and $C_2$, respectively, and let us assume that $A_1 \geq A_2$ holds.
 The algorithm then guarantees that if $C_2$ is judged as positive reaction then $C_1$ is also judged as positive; if $C_2$ is weak then $C_1$ is not negative; if $C_1$ is negative then $C_2$ is negative; and if $C_1$ is weak then $C_2$ is not positive.
-There are not many other things the algorithm guarantees.
+In this sense, the results will be consistent, but there are not many other things the algorithm guarantees.
 Note particularly that always three clusters result by default (one can omit the middle cluster, i.e. the ``weak'' reactions), irrespective of the input data.
-That is, additionally checking the curve heights and particularly the ``cutoffs'' entry obtained \textit{via} \code{disc\_settings()} should be mandatory.
+This is usually unproblematic if the data contain both really negative and really positive reactions, but data that in reality are negative throughout, or uniformly positive, would nevertheless be split into three (or two) clusters.
+That is, additionally checking the curve heights and particularly the ``cutoffs'' entry obtained \textit{via} \code{disc\_settings()} should initially be mandatory.
+
+It is also possible to make the reactions uniform within metadata-defined groups.
+This would be specified with the \code{unify} argument and would deliberately deviate from the kind of consistency described above.
+The unification approach replaces the primary discretization results with the most frequent value within the respective combination of group and well if this value is present in a given proportion of the original values and with \code{NA} otherwise.
+The according cutoff is set using \code{opm\_opt(min.mode = ...)} or directly.
+Thus there are two distinct meanings of ``ambiguous'' reactions, as ambiguity either results from the clustering of the parameters, or by clustering results that deviate between distinct experimental replications.
+It is unnecessary and perhaps not preferable to use both approaches together, i.e. to cluster into three groups only and then also unify.
+Note that \code{listing()} and \code{phylo\_data()} would use the same unification approach, if requested.
 
 The manual describes the other discretization approaches available in \pkg{opm}, such as using \code{best\_cutoff()} instead of k-means partitioning, and using subsets of the plates, specified using stored metainformation.
 See \code{?do\_disc}.
