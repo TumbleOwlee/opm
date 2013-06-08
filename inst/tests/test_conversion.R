@@ -18,7 +18,7 @@ is_ci_plottable <- function(x) {
     !(length(x) %% length(y)) && all(x == y)
   }
   data_columns_ok <- function(x) {
-    rest <- seq.int(nrow(x)) %% 3L
+    rest <- seq_len(nrow(x)) %% 3L
     all(x[rest == 1L, , drop = FALSE] >= x[rest == 2L, , drop = FALSE]) &&
       all(x[rest == 1L, , drop = FALSE] <= x[rest == 0L, , drop = FALSE])
   }
@@ -72,10 +72,10 @@ test_that("character-matrix objects can be merged", {
   got <- merge(data, FALSE)
   expect_equal(got, data)
 
-  got <- merge(data, seq.int(nrow(data)))
+  got <- merge(data, seq_len(nrow(data)))
   expect_equal(got, data)
 
-  expect_error(got <- merge(data, seq.int(nrow(data))[-1L]))
+  expect_error(got <- merge(data, seq_len(nrow(data))[-1L]))
 
   got <- merge(data, c(1, 2, 1, 2, 1))
   expect_equal(dim(got), c(2L, ncol(data)))

@@ -382,7 +382,7 @@ setAs(from = OPMA, to = "list", function(from) {
 setAs(from = "list", to = OPMA, function(from) {
   convert_aggregated <- function(mat) {
     mat <- as.matrix(as.data.frame(lapply(repair_na_strings(mat), unlist)))
-    mat[, sort.int(colnames(mat)), drop = FALSE]
+    mat[unlist(map_grofit_names()), sort.int(colnames(mat)), drop = FALSE]
   }
   opm <- as(from, OPM)
   settings <- update_settings_list(as.list(from$aggr_settings))
