@@ -381,14 +381,15 @@ setAs(from = OPMA, to = "list", function(from) {
 
 setAs(from = "list", to = OPMA, function(from) {
   convert_aggregated <- function(mat) {
-    mat <- as.matrix(as.data.frame(lapply(repair_na_strings(mat), unlist)))
-    mat[unlist(map_grofit_names()), sort.int(colnames(mat)), drop = FALSE]
+    mat <- repair_na_strings(lapply(mat, `[`, unlist(map_grofit_names())))
+    mat <- do.call(cbind, mat[order(names(mat))])
+    must(mode(mat) <- "numeric")
+    mat
   }
   opm <- as(from, OPM)
-  settings <- update_settings_list(as.list(from$aggr_settings))
-  mat <- convert_aggregated(from$aggregated)
   new(OPMA, csv_data = csv_data(opm), measurements = measurements(opm),
-    metadata = metadata(opm), aggr_settings = settings, aggregated = mat)
+    metadata = metadata(opm), aggregated = convert_aggregated(from$aggregated),
+    aggr_settings = update_settings_list(as.list(from$aggr_settings)))
 })
 
 
