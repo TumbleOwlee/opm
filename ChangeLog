@@ -10,6 +10,8 @@
 - fixed bug in batch_opm() that caused empty graphics files to be produced
 - old-style CSV can now always be read if CSV entries contain commas (problem
   reported by Jesse van Dam)
+- fixed bug when generating OPMA objects from YAML data that made inputting
+  order-dependent (problem reported by Marco Galardini)
 
 - removed deprecated select() function
 - well_to_substrate() is now deprecated in favour of new wells() methods
