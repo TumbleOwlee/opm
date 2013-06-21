@@ -6,7 +6,7 @@
 }
 \value{
   \code{\link{OPMS}} object with the reversed order of
-  plates, or or \code{\link{OPM}} object.
+  plates, or \code{\link{OPM}} object.
 }
 \description{
   Revert the order of plates within an \code{\link{OPMS}}

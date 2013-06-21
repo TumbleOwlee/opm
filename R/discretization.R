@@ -493,6 +493,15 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' stopifnot(identical(y$method, "direct"))
 #' stopifnot(is.list(y), is.list(y$options)) # named lists
 #'
+#' # arbitrary threshold, no ambiguity, no groups, with unification
+#' x <- do_disc(vaas_4, cutoff = 100, unify = TRUE)
+#' stopifnot(has_disc(x), dim(x) == dim(vaas_4))
+#' stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+#' (y <- disc_settings(x)[[1]]) # stored discretization settings
+#' stopifnot(identical(y$method, "direct"))
+#' stopifnot(is.list(y), is.list(y$options)) # named lists
+#' # all plates made uniform (makes not much sense)
+#'
 #' # arbitrary threshold, no ambiguity, with groups, 1 plate per group
 #' x <- do_disc(vaas_4, cutoff = 100, groups = TRUE)
 #' stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
@@ -510,12 +519,21 @@ setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
 #' # now, groups are from the metadata (but played no role)
 #'
 #' # using k-means, no ambiguity, with specified groups
-#' x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species")
-#' stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
+#' x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species")
+#' stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 #' (y <- disc_settings(x)[[1]]) # stored discretization settings
 #' stopifnot(identical(y$method, "kmeans"))
 #' stopifnot(is.list(y), is.list(y$options)) # named lists
 #' # grouping by species, discretized separately
+#'
+#' # same, with unification
+#' x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species", unify = TRUE)
+#' stopifnot(has_disc(x), dim(x) == dim(vaas_4))
+#' stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+#' (y <- disc_settings(x)[[1]]) # stored discretization settings
+#' stopifnot(identical(y$method, "kmeans"))
+#' stopifnot(is.list(y), is.list(y$options)) # named lists
+#' # grouping by species, discretized separately, then made uniform
 #'
 #' # using best_cutoff(), groups defined by species affiliation (makes not
 #' # much sense and by default yields warnings with these data)
@@ -678,7 +696,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     mode(x) <- "logical"
     if (unify > 0)
       for (idx in split(seq_along(grp), grp)) {
-        y <- reduce_to_mode(x[idx, , drop = FALSE], unify, TRUE)
+        y <- reduce_to_mode.matrix(x[idx, , drop = FALSE], unify, TRUE)
         for (i in idx)
           x[i, ] <- y
       }
@@ -691,7 +709,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
       parameter = subset, unified = unify))
     disc.settings <- rep.int(list(disc.settings), length(object))
     if (unify > 0) {
-      y <- reduce_to_mode(x[idx, , drop = FALSE], unify, TRUE)
+      y <- reduce_to_mode.matrix(x, unify, TRUE)
       for (i in seq_len(nrow(x)))
         x[i, ] <- y
     }

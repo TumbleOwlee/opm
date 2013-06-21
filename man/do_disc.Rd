@@ -147,6 +147,15 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
+# arbitrary threshold, no ambiguity, no groups, with unification
+x <- do_disc(vaas_4, cutoff = 100, unify = TRUE)
+stopifnot(has_disc(x), dim(x) == dim(vaas_4))
+stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+(y <- disc_settings(x)[[1]]) # stored discretization settings
+stopifnot(identical(y$method, "direct"))
+stopifnot(is.list(y), is.list(y$options)) # named lists
+# all plates made uniform (makes not much sense)
+
 # arbitrary threshold, no ambiguity, with groups, 1 plate per group
 x <- do_disc(vaas_4, cutoff = 100, groups = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
@@ -164,12 +173,21 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # now, groups are from the metadata (but played no role)
 
 # using k-means, no ambiguity, with specified groups
-x <- do_disc(vaas_4, cutoff = TRUE, groups = "Species")
-stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
+x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species")
+stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
 (y <- disc_settings(x)[[1]]) # stored discretization settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # grouping by species, discretized separately
+
+# same, with unification
+x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species", unify = TRUE)
+stopifnot(has_disc(x), dim(x) == dim(vaas_4))
+stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+(y <- disc_settings(x)[[1]]) # stored discretization settings
+stopifnot(identical(y$method, "kmeans"))
+stopifnot(is.list(y), is.list(y$options)) # named lists
+# grouping by species, discretized separately, then made uniform
 
 # using best_cutoff(), groups defined by species affiliation (makes not
 # much sense and by default yields warnings with these data)

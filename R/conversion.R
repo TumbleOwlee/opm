@@ -676,8 +676,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'   If \code{FALSE}, \code{x} gets ordered according to only the found keys,
 #'   and remains in the original order if none of the keys in \code{by} are
 #'   found at all. Note that it is always an error if keys are found in the
-#'   \code{\link{metadata}} of some of the\code{\link{plates}} but not in those
-#'   of others.
+#'   \code{\link{metadata}} of some of the \code{\link{plates}} but not in
+#'   those of others.
 #' @param na.last Logical scalar. Also passed to \code{order}.
 #' @param ... Optional arguments passed between the methods.
 #' @export
@@ -827,7 +827,7 @@ setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
 #'
 #' @param x \code{\link{OPMS}} or \code{\link{OPM}} object.
 #' @export
-#' @return \code{\link{OPMS}} object with the reversed order of plates, or or
+#' @return \code{\link{OPMS}} object with the reversed order of plates, or
 #'   \code{\link{OPM}} object.
 #' @family conversion-functions
 #' @keywords manip

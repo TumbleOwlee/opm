@@ -33,8 +33,8 @@
   ordered according to only the found keys, and remains in
   the original order if none of the keys in \code{by} are
   found at all. Note that it is always an error if keys are
-  found in the \code{\link{metadata}} of some of
-  the\code{\link{plates}} but not in those of others.}
+  found in the \code{\link{metadata}} of some of the
+  \code{\link{plates}} but not in those of others.}
 
   \item{na.last}{Logical scalar. Also passed to
   \code{order}.}
