@@ -42,27 +42,6 @@ opm_string <- function(version = FALSE) {
 ################################################################################
 
 
-## NOTE: not an S4 method because applicable to any subsettable objects
-
-#' Fetch the last elements
-#'
-#' Fetch the last element(s) from a subsettable object.
-#'
-#' @param x An \R object to which \code{[} can be applied.
-#' @param i Integer scalar. Number of elements to fetch.
-#' @return Object of the same class than \code{x}.
-#' @keywords internal
-#'
-last <- function(x, i = 1L) {
-  if ((len <- length(x)) < L(i))
-    stop("more elements requested than available")
-  x[seq.int(len - i + 1L, len)]
-}
-
-
-################################################################################
-
-
 #' Convert to metadata-like data frame
 #'
 #' A helper function for \code{\link{to_metadata}}.

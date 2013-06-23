@@ -15,14 +15,6 @@ context("Testing the helper functions of the OPM package")
 ## UNTESTED
 
 
-## last
-test_that("an objects last elements can be accessed", {
-  expect_equal(c("x", "y", "z"), last(letters, 3))
-  expect_equal(letters, last(letters, 26))
-  expect_error(last(letters, 27))
-})
-
-
 ## md_data_frame
 ## UNTESTED
 

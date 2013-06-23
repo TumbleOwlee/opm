@@ -553,7 +553,7 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
     ok <- !vapply(cis, is.null, NA)
     cis[!ok] <- list(c(NA_real_, NA_real_))
     cis[ok] <- lapply(cis[ok], `[[`, type, exact = FALSE)
-    cis[ok] <- lapply(cis[ok], FUN = last, i = 2L)
+    cis[ok] <- lapply(lapply(cis[ok], c), tail, 2L)
     cis <- do.call(cbind, cis)
   } else {
     if (as.pe != "pe") {

@@ -483,7 +483,7 @@ setMethod("metadata<-", c(OPMS, "character", OPMS), function(
 setMethod("metadata<-", c(OPMS, "character", "data.frame"), function(
     object, key, value) {
   LL(object, .wanted = nrow(value))
-  j <- last(key)
+  j <- key[[length(key)]] # fails if 'key' is empty
   if (!j %in% colnames(value))
     j <- TRUE
   for (i in seq_along(object@plates))

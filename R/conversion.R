@@ -71,7 +71,7 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
     to.add <- c(0, must(cumsum(tp[-nrow(tp), ncol(tp), drop = FALSE]) + y))
     m[, 1L] <- as.vector(t(tp + to.add))
   } else if (is.list(tp)) {
-    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], last, 1)) + y))
+    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], tail, 1, 1L)) + y))
     m[, 1L] <- unlist(mapply(`+`, tp, to.add, SIMPLIFY = FALSE,
       USE.NAMES = FALSE))
   } else
