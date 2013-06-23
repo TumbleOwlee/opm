@@ -113,6 +113,16 @@ setClass(WMD,
 #'     might be way more appropriate for converting \code{\link{OPM}} objects.
 #'   }
 #'
+#' @examples
+#' # conversion of a list to an OPM object is tolerant against re-orderings
+#' # (but not against additions and omissions)
+#' x <- as(vaas_1, "list")
+#' x$measurements <- c(rev(x$measurements[7:8]), rev(x$measurements[-7:-8]))
+#' summary(x)
+#' x <- as(x, "OPM")
+#' summary(x)
+#' stopifnot(identical(measurements(x), measurements(vaas_1)))
+#'
 #' @docType class
 #' @export
 #' @aliases OPM-class
@@ -148,6 +158,8 @@ setClass(OPM,
 #' @param object Matrix or character vector.
 #' @return Character vector with description of problems, empty if there are
 #'   none.
+#' @details The matrix must contain the hours as first column, the other column
+#'   names must be sorted.
 #' @keywords internal
 #'
 setGeneric("opm_problems",
@@ -259,6 +271,16 @@ setAs(from = "list", to = OPM, function(from) {
 #'   already contain aggregated data.
 #'
 #'   For further details see the parent class, \code{\link{OPM}}.
+#'
+#' @examples
+#' # conversion of a list to an OPMA object is tolerant against re-orderings
+#' # and additions (but not against omissions)
+#' x <- as(vaas_1, "list")
+#' x$aggregated <- c(Answer = 42L, rev(x$aggregated), Text = LETTERS)
+#' summary(x)
+#' x <- as(x, "OPMA")
+#' summary(x)
+#' stopifnot(identical(aggregated(x), aggregated(vaas_1)))
 #'
 #' @docType class
 #' @export
@@ -380,15 +402,16 @@ setAs(from = OPMA, to = "list", function(from) {
 })
 
 setAs(from = "list", to = OPMA, function(from) {
-  convert_aggregated <- function(mat) {
-    mat <- repair_na_strings(lapply(mat, `[`, unlist(map_grofit_names())))
-    mat <- do.call(cbind, mat[order(names(mat))])
-    must(mode(mat) <- "numeric")
-    mat
+  select_aggr <- function(x, wanted) {
+    x <- repair_na_strings(lapply(x, `[`, unlist(map_grofit_names())))
+    x <- do.call(cbind, x[wanted])
+    must(mode(x) <- "numeric")
+    x # should now be matrix, reduced to the known wells, parameters and CIs
   }
-  opm <- as(from, OPM)
-  new(OPMA, csv_data = csv_data(opm), measurements = measurements(opm),
-    metadata = metadata(opm), aggregated = convert_aggregated(from$aggregated),
+  x <- as(from, OPM)
+  new(OPMA, measurements = measurements(x),
+    csv_data = csv_data(x), metadata = metadata(x),
+    aggregated = select_aggr(from$aggregated, colnames(x@measurements)[-1L]),
     aggr_settings = update_settings_list(as.list(from$aggr_settings)))
 })
 
@@ -418,6 +441,16 @@ setAs(from = "list", to = OPMA, function(from) {
 #'   inconsistency.
 #'
 #'   For further details see the parent class, \code{\link{OPMA}}.
+#'
+#' @examples
+#' # conversion of a list to an OPMD object is tolerant against re-orderings
+#' # and additions (but not against omissions)
+#' x <- as(vaas_1, "list")
+#' x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
+#' summary(x)
+#' x <- as(x, "OPMD")
+#' summary(x)
+#' stopifnot(identical(discretized(x), discretized(vaas_1)))
 #'
 #' @docType class
 #' @export
@@ -453,11 +486,13 @@ setClass(OPMD,
 #' \code{\link{OPMD}} discretization settings. Called when constructing an
 #' object of the class.
 #'
-#' @param object Matrix of original, non-discretized data, or list describing
-#'   the discretization settings.
+#' @param object Matrix of original, aggregated, non-discretized data, or list
+#'   describing the discretization settings.
 #' @param disc Vector of discretized data.
 #' @return Character vector with description of problems, empty if there are
 #'   none.
+#' @details At this stage, \code{disc} must already have the same wells than
+#'   \code{object}, in the same order.
 #' @keywords internal
 #'
 setGeneric("opmd_problems",
@@ -508,18 +543,19 @@ setAs(from = OPMD, to = "data.frame", function(from) {
 
 setAs(from = OPMD, to = "list", function(from) {
   result <- as(as(from, OPMA), "list")
-  result$discretized <- as.list(discretized(from))
-  result$disc_settings <- disc_settings(from)
+  result$discretized <- as.list(from@discretized)
+  result$disc_settings <- from@disc_settings
   result
 })
 
 setAs(from = "list", to = OPMD, function(from) {
-  opma <- as(from, OPMA)
+  x <- as(from, OPMA)
   settings <- update_settings_list(as.list(from$disc_settings))
-  discretized <- unlist(repair_na_strings(from$discretized, "logical"))
-  new(OPMD, csv_data = csv_data(opma), measurements = measurements(opma),
-    metadata = metadata(opma), aggr_settings = aggr_settings(opma),
-    aggregated = aggregated(opma), discretized = discretized,
+  discretized <- from$discretized[colnames(x@aggregated)]
+  discretized <- unlist(repair_na_strings(discretized, "logical"))
+  new(OPMD, csv_data = csv_data(x), measurements = measurements(x),
+    metadata = metadata(x), aggr_settings = aggr_settings(x),
+    aggregated = aggregated(x), discretized = discretized,
     disc_settings = settings)
 })
 

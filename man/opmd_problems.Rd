@@ -2,8 +2,9 @@
 \alias{opmd_problems}
 \title{Check OPMD}
 \arguments{
-  \item{object}{Matrix of original, non-discretized data,
-  or list describing the discretization settings.}
+  \item{object}{Matrix of original, aggregated,
+  non-discretized data, or list describing the
+  discretization settings.}
 
   \item{disc}{Vector of discretized data.}
 }
@@ -17,6 +18,10 @@
   list fulfils the requirements for \code{\link{OPMD}}
   discretization settings. Called when constructing an
   object of the class.
+}
+\details{
+  At this stage, \code{disc} must already have the same
+  wells than \code{object}, in the same order.
 }
 \keyword{internal}
 

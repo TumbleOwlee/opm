@@ -33,6 +33,16 @@
   \acronym{OPMD} is an acronym for \sQuote{\acronym{OPM},
   discretized}.
 }
+\examples{
+# conversion of a list to an OPMD object is tolerant against re-orderings
+# and additions (but not against omissions)
+x <- as(vaas_1, "list")
+x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
+summary(x)
+x <- as(x, "OPMD")
+summary(x)
+stopifnot(identical(discretized(x), discretized(vaas_1)))
+}
 \seealso{
   methods::Methods methods::new
 
