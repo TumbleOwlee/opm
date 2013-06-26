@@ -1456,12 +1456,14 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   read_file <- function(infile) {
     data <- read_single_opm(infile)
     if (is.list(data)) # YAML input can result in lists of several OPM objects
-      lapply(lapply(data, FUN = convert_dataset), FUN = as, Class = "list")
+      lapply(data, convert_dataset)
     else
       convert_dataset(data)
   }
 
   create_yaml <- function(x, outfile) {
+    if (is.list(x)) # would be more elegant if to_yaml() could handle that
+      x <- lapply(x, as, "list")
     write(to_yaml(x, json = json), outfile)
   }
 
