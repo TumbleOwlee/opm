@@ -7,6 +7,7 @@
 
 - ensured compatibility with yaml >= 2.1.7 regarding treatment of NA values
   and added according conversion of metadata from YAML/JSON input files
+- resolved ambiguities in method dispatch of `metadata<-`()
 - fixed bug in batch_opm() that caused empty graphics files to be produced
 - old-style CSV can now always be read if CSV entries contain commas (problem
   reported by Jesse van Dam)

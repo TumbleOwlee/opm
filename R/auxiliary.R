@@ -2081,7 +2081,7 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{group.name}{Character scalar used as column name for trivial
 #'       groups (either all items in the same group or each item in a group of
 #'       its own) created by \code{\link{extract}}.}
-#'     \item{heatmap.colors}{Colour palette used by \code{\link{heat_map}}}.
+#'     \item{heatmap.colors}{Colour palette used by \code{\link{heat_map}}.}
 #'     \item{html.attr}{Used by \code{\link{phylo_data}} for automatically
 #'       creating \acronym{HTML} \sQuote{title} and \sQuote{class} attributes.}
 #'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
@@ -2140,7 +2140,7 @@ setGeneric("opm_opt", function(x, ...) standardGeneric("opm_opt"))
 setMethod("opm_opt", "list", function(x) {
   old <- mget(names(x), envir = OPM_OPTIONS)
   for (i in seq_along(x))
-    if (!all(inherits(x[[i]], class(old[[i]]), which = TRUE)))
+    if (!all(inherits(x[[i]], class(old[[i]]), TRUE)))
       stop(sprintf("new and old value have conflicting class(es) for key '%s'",
         names(x)[i]))
   list2env(x, envir = OPM_OPTIONS)

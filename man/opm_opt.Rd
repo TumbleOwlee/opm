@@ -70,7 +70,7 @@
   in the same group or each item in a group of its own)
   created by \code{\link{extract}}.}
   \item{heatmap.colors}{Colour palette used by
-  \code{\link{heat_map}}}.  \item{html.attr}{Used by
+  \code{\link{heat_map}}.} \item{html.attr}{Used by
   \code{\link{phylo_data}} for automatically creating
   \acronym{HTML} \sQuote{title} and \sQuote{class}
   attributes.} \item{key.join}{Used by

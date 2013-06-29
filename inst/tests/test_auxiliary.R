@@ -828,3 +828,6 @@ test_that("character-matrix objects can be updated by deletion", {
 })
 
 
+
+
+
