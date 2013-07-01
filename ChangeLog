@@ -37,6 +37,7 @@
 - batch_opm() gets more running modes, and 'run_opm.R' gets more command-line
   options; this mainly allows for combining data sets into the same output file
 - do_disc() gets a 'unify' argument
+- run_kmeans() gets a 'cores' argument
 
 
 ################################################################################
