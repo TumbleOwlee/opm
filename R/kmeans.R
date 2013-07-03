@@ -62,6 +62,8 @@ to_kmeans.Ckmeans.1d.dp <- function(x, y, ...) {
   x$centers <- as.matrix(x$centers)
   x <- x[c("cluster", "centers", "totss", "withinss", "tot.withinss",
     "betweenss", "size")]
+  x$iter <- 1L # new entry as of R 3.0.1 patched; trivially 1 here
+  x$ifault <- 0L
   class(x) <- "kmeans"
   x
 }
