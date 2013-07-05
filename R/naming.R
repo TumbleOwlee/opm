@@ -546,21 +546,31 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   \describe{
 #'     \item{all}{Create object of S3 class \sQuote{substrate_data} containing
 #'     all available information and useful for display.}
-#'     \item{cas}{\acronym{CAS} registry number.}
-#'     \item{chebi}{\acronym{ChEBI} database ID.}
+#'     \item{cas}{\acronym{CAS} registry number, optionally expanded to an
+#'     \acronym{URL}.}
+#'     \item{chebi}{\acronym{ChEBI} database ID, optionally expanded to an
+#'     \acronym{URL}.}
 #'     \item{downcase}{Substrate name converted to lower case, protecting
 #'     one-letter specifiers, acronyms and chemical symbols, and translating
 #'     relevant characters from the Greek alphabet.}
-#'     \item{drug}{\acronym{KEGG} drug database ID.}
+#'     \item{drug}{\acronym{KEGG} drug database ID, optionally expanded to an
+#'     \acronym{URL}.}
 #'     \item{greek}{Substrate name after translation of relevant characters to
 #'     Greek letters.}
 #'     \item{html}{Like \sQuote{greek}, but use \acronym{HTML} tags.}
-#'     \item{kegg}{\acronym{KEGG} compound database ID.}
-#'     \item{mesh}{\acronym{MeSH} database ID.}
-#'     \item{metacyc}{\acronym{MetaCyc} database ID.}
+#'     \item{kegg}{\acronym{KEGG} compound database ID, optionally expanded to
+#'     an \acronym{URL}.}
+#'     \item{mesh}{\acronym{MeSH} database name (useful for conducting
+#'     \acronym{PubMed} searches), optionally expanded to an \acronym{URL}.}
+#'     \item{metacyc}{\acronym{MetaCyc} database ID, optionally expanded to an
+#'     \acronym{URL}.}
 #'   }
 #'   See the references for information on the databases.
-#' @param ... Optional arguments passed between the methods.
+#' @param browse Numeric scalar. If non-zero, an \acronym{URL} is generated
+#'   from each \acronym{ID}; if positive, each \acronym{URL} is also opened in
+#'   the default web browser. It is an error to try this with those values of
+#'   \code{what} that do not yield an \acronym{ID}.
+#' @param ... Optional other arguments passed between the methods.
 #' @export
 #' @return The character method returns a character vector with \code{object}
 #'   used as names and either a matched entry or \code{NA} as value. The factor
@@ -570,8 +580,9 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   substrates.
 #' @family naming-functions
 #' @keywords utilities
+#' @seealso utils::browseURL
 #' @references Bochner, B. R., pers. comm.
-#' @references \url{http://en.wikipedia.org/wiki/CAS_registry_number}
+#' @references \url{http://www.cas.org/content/chemical-substances/faqs}
 #' @references \url{http://www.genome.jp/kegg/}
 #' @references Kanehisa, M., Goto, S., Furumichi, M., Tanabe, M., and Hirakawa,
 #'   M. 2010 KEGG for representation and analysis of molecular networks
@@ -607,6 +618,11 @@ setMethod("find_positions", OPM, function(object, ...) {
 #' (y <- substrate_info(as.factor(c("D-Glucose", "D-Gloucose"))))
 #' stopifnot(identical(x, y))
 #'
+#' # Now with generation of URLs
+#' (y <- substrate_info(c("D-Glucose", "D-Gloucose"), browse = -1))
+#' stopifnot(is.na(y) | nchar(y) > nchar(x))
+#' # NA remains NA (and would not be opened in the web browser)
+#'
 #' # Character method, safe conversion to lower case
 #' (x <- substrate_info(c("a-D-Glucose", "a-D-Gloucose"), "downcase"))
 #' stopifnot(nchar(x) > nchar(c("a-D-Glucose", "a-D-Gloucose")))
@@ -630,7 +646,12 @@ setGeneric("substrate_info",
 
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "html", "all"), ...) {
+      "greek", "html", "all"), browse = 0L, ...) {
+  create_url <- function(x, how) {
+    base <- URL_BASE[match.arg(how, names(URL_BASE))]
+    x <- sub("^CAS\\s+", "", x, perl = TRUE)
+    ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
+  }
   map_words <- function(x, fun, ...) {
     y <- strsplit(x, "\\w+", perl = TRUE)
     x <- strsplit(x, "\\W+", perl = TRUE)
@@ -673,6 +694,12 @@ setMethod("substrate_info", "character", function(object,
     chebi =, drug =, kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
   )
+  browse <- must(as.integer(L(browse)))
+  if (browse != 0L) {
+    result <- create_url(result, what)
+    if (browse > 0L)
+      lapply(result[!is.na(result)], browseURL)
+  }
   names(result) <- object
   result
 }, sealed = SEALED)

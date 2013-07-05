@@ -19,8 +19,7 @@ test_that("CAS numbers and other IDs are OK", {
   na_or_match(SUBSTRATE_INFO[, "CAS"], "^CAS \\d+(-\\d+)+$")
   na_or_match(SUBSTRATE_INFO[, "KEGG"], "^C\\d{5}$")
   na_or_match(SUBSTRATE_INFO[, "DRUG"], "^D\\d{5}$")
-  na_or_match(SUBSTRATE_INFO[, "MESH"], "^[A-Z]\\d{6}$")
   na_or_match(SUBSTRATE_INFO[, "CHEBI"], "^CHEBI:\\d+$")
-  # the Metacyc IDs are less regular
+  # the Metacyc IDs are less regular, let alone the MeSH names
 })
 

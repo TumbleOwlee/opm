@@ -1967,7 +1967,8 @@ subst.info <- substrate_info(substrates)
 subst.info
 @
 
-By default this yields CAS numbers, but MeSH, ChEBI \citep{Hastings01012013}, KEGG compound, KEGG drug \citep{Kanehisa01012010} and MetaCyc \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
+By default this yields CAS numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but MeSH names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}), ChEBI IDs \citep{Hastings01012013}, KEGG compound IDs, KEGG drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
+Using the ``browse'' argument, full URLs can be created and optionally also directly opened in the default web browser.
 It is possible to nicely display all available information at once:
 
 <<label=substrate.info, results=hide>>=
@@ -2006,7 +2007,7 @@ These features render the \pkg{opm} package the first comprehensive toolbox for 
 Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 
 An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
-At the moment only the translation of well coordinates to substrate names is provided, as well as access to CAS, MeSH, KEGG and Metacyc IDs for the majority of the substrates.
+At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
 More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
 
 Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
