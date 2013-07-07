@@ -1,9 +1,9 @@
 Package: opm
-Version: 0.9.43
-Date: 2013-07-05
+Version: 0.9.44
+Date: 2013-07-07
 Title: Tools for analysing OmniLog(R) Phenotype Microarray data
-Author: Markus Goeker, with contributions by Lea A.I. Vaas, Benjamin
-    Hofner, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
+Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
+    Vaas, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
 Maintainer: Markus Goeker <markus.goeker@dsmz.de>
 Depends:
     R (>= 2.15.0)

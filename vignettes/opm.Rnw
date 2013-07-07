@@ -36,8 +36,8 @@
 %\VignetteIndexEntry{Using opm}
 
 % authors, first page
-\author{Lea A.I. Vaas\\Leibniz Institute DSMZ \And
-        Johannes Sikorski\\Leibniz Institute DSMZ  \AND
+\author{Johannes Sikorski\\Leibniz Institute DSMZ  \AND
+        Lea A.I. Vaas\\Leibniz Institute DSMZ \And
         Benjamin Hofner\\Universit\"{a}t Erlangen-N\"{u}rnberg \And
         Nora Buddruhs\\Leibniz Institute DSMZ \And
         Anne Fiebig\\Leibniz Institute DSMZ \AND
@@ -1967,7 +1967,7 @@ subst.info <- substrate_info(substrates)
 subst.info
 @
 
-By default this yields CAS numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but MeSH names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}), ChEBI IDs \citep{Hastings01012013}, KEGG compound IDs, KEGG drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
+By default this yields CAS numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but MeSH names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}) \citep{Coletti01072001}, ChEBI IDs \citep{Hastings01012013}, KEGG compound IDs, KEGG drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
 Using the ``browse'' argument, full URLs can be created and optionally also directly opened in the default web browser.
 It is possible to nicely display all available information at once:
 

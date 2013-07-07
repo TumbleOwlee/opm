@@ -566,10 +566,11 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'     \acronym{URL}.}
 #'   }
 #'   See the references for information on the databases.
-#' @param browse Numeric scalar. If non-zero, an \acronym{URL} is generated
-#'   from each \acronym{ID}; if positive, each \acronym{URL} is also opened in
-#'   the default web browser. It is an error to try this with those values of
-#'   \code{what} that do not yield an \acronym{ID}.
+#' @param browse Numeric scalar. If non-zero, an \acronym{URL} is generated from
+#'   each \acronym{ID}. If positive, this number of \acronym{URL}s (counted from
+#'   the beginning) is also opened in the default web browser; if negative, the
+#'   \acronym{URL}s are only returned. It is an error to try this with those
+#'   values of \code{what} that do not yield an \acronym{ID}.
 #' @param ... Optional other arguments passed between the methods.
 #' @export
 #' @return The character method returns a character vector with \code{object}
@@ -577,7 +578,15 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   method does the same, whereas the list method traverses a list and calls
 #'   \code{substrate_info} on its elements. The \code{\link{OPM}} and
 #'   \code{\link{OPMS}} methods work like the character method, using their own
-#'   substrates.
+#'   substrates. Depending on the \code{browse} argument, the returned
+#'   \acronym{ID}s might have been converted to \acronym{URL}s, and as a side
+#'   effect tabs in the default web browser might have been opened.
+#' @details The generated \acronym{URL}s should provide plenty of information
+#'   on the respective substrate. In the case of \acronym{ChEBI}, \acronym{KEGG}
+#'   and \acronym{Metacyc}, much information is directly displayed on the page
+#'   itself, whereas the chosen \acronym{CAS} site contains a number of links
+#'   providing additional chemical details. The \acronym{MeSH} weg pages
+#'   directly link to according \acronym{PubMed} searches.
 #' @family naming-functions
 #' @keywords utilities
 #' @seealso utils::browseURL
@@ -596,6 +605,9 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   metabolic pathways and enzymes and the BioCyc collection of pathway/genome
 #'   databases. \emph{Nucleic Acids Research} \strong{40}: D742--D753.
 #' @references \url{http://www.ncbi.nlm.nih.gov/mesh}
+#' @references Coletti, M.H., Bleich, H.L 2001 Medical subject headings used to
+#'   search the biomedical literature. \emph{Journal of the American Medical
+#'   Informatics Association} \strong{8}: 317--323.
 #' @references \url{http://www.ebi.ac.uk/chebi/}
 #' @references Hastings, J., de Matos, P., Dekker, A., Ennis, M., Harsha, B.,
 #'   Kale, N., Muthukrishnan, V., Owen, G., Turner, S., Williams, M.,
@@ -640,6 +652,11 @@ setMethod("find_positions", OPM, function(object, ...) {
 #' data(vaas_4)
 #' (y <- substrate_info(vaas_4[, , 1:3], "all"))
 #' stopifnot(identical(x, y))
+#' \dontrun{
+#'
+#'   # this would open 96 tabs in your browser...
+#'   substrate_info(vaas_4, "kegg", browse = 100)
+#' }
 #'
 setGeneric("substrate_info",
   function(object, ...) standardGeneric("substrate_info"))
@@ -698,7 +715,7 @@ setMethod("substrate_info", "character", function(object,
   if (browse != 0L) {
     result <- create_url(result, what)
     if (browse > 0L)
-      lapply(result[!is.na(result)], browseURL)
+      lapply(head(result[!is.na(result)], browse), browseURL)
   }
   names(result) <- object
   result

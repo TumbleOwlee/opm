@@ -31,11 +31,12 @@
   information on the databases.}
 
   \item{browse}{Numeric scalar. If non-zero, an
-  \acronym{URL} is generated from each \acronym{ID}; if
-  positive, each \acronym{URL} is also opened in the
-  default web browser. It is an error to try this with
-  those values of \code{what} that do not yield an
-  \acronym{ID}.}
+  \acronym{URL} is generated from each \acronym{ID}. If
+  positive, this number of \acronym{URL}s (counted from the
+  beginning) is also opened in the default web browser; if
+  negative, the \acronym{URL}s are only returned. It is an
+  error to try this with those values of \code{what} that
+  do not yield an \acronym{ID}.}
 
   \item{...}{Optional other arguments passed between the
   methods.}
@@ -48,6 +49,10 @@
   \code{substrate_info} on its elements. The
   \code{\link{OPM}} and \code{\link{OPMS}} methods work
   like the character method, using their own substrates.
+  Depending on the \code{browse} argument, the returned
+  \acronym{ID}s might have been converted to
+  \acronym{URL}s, and as a side effect tabs in the default
+  web browser might have been opened.
 }
 \description{
   Return information on substrates such as their
@@ -55,14 +60,14 @@
   substrate names.
 }
 \details{
-  The query names must be written exactly as used in the
-  stored plate annotations. To determine their spelling,
-  use \code{\link{find_substrate}}.
-
-  Currently the information is incomplete, particularly for
-  the PM-M plates.  While it should eventually be possible
-  to link all substrates to \acronym{CAS} numbers, they are
-  not necessarily contained in the other databases.
+  The generated \acronym{URL}s should provide plenty of
+  information on the respective substrate. In the case of
+  \acronym{ChEBI}, \acronym{KEGG} and \acronym{Metacyc},
+  much information is directly displayed on the page
+  itself, whereas the chosen \acronym{CAS} site contains a
+  number of links providing additional chemical details.
+  The \acronym{MeSH} weg pages directly link to according
+  \acronym{PubMed} searches.
 }
 \examples{
 # Character method; compare correct and misspelled substrate name
@@ -94,6 +99,11 @@ stopifnot(inherits(x, "substrate_data"))
 data(vaas_4)
 (y <- substrate_info(vaas_4[, , 1:3], "all"))
 stopifnot(identical(x, y))
+\dontrun{
+
+  # this would open 96 tabs in your browser...
+  substrate_info(vaas_4, "kegg", browse = 100)
+}
 }
 \references{
   Bochner, B. R., pers. comm.
@@ -119,6 +129,11 @@ stopifnot(identical(x, y))
   Research} \strong{40}: D742--D753.
 
   \url{http://www.ncbi.nlm.nih.gov/mesh}
+
+  Coletti, M.H., Bleich, H.L 2001 Medical subject headings
+  used to search the biomedical literature. \emph{Journal
+  of the American Medical Informatics Association}
+  \strong{8}: 317--323.
 
   \url{http://www.ebi.ac.uk/chebi/}
 
