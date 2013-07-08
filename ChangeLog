@@ -3,7 +3,7 @@
 ################################################################################
 
 
-2013-XX-XX (the 10th release on CRAN)
+2013-07-11 (the 10th release on CRAN)
 
 - ensured compatibility with yaml >= 2.1.7 regarding treatment of NA values
   and added according conversion of metadata from YAML/JSON input files
@@ -22,6 +22,7 @@
 - order of arguments of listing() has been slightly changed, and it is
   deprecated to not set the 'as.groups' argument in the OPMD method
 
+- novel as.data.frame() methods, supporting the output of CSV files
 - more opm_opt() entries, allowing for more global control
 - many additions and some corrections in the stored substrate information
 - the OPMD listing() method can now also produce 'OPMS_Listing' objects
@@ -43,6 +44,7 @@
 - run_kmeans() gets a 'cores' argument
 - substrate_info() gets a 'browse' argument, and MeSH IDs were replaced by
   MeSH names, thus allowing for the creation of an URL
+- to_yaml() gets a 'listify' argument
 
 
 ################################################################################

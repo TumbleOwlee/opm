@@ -641,6 +641,13 @@ test_that("extract() deals with duplicate column names", {
 ################################################################################
 
 
+## as.data.frame
+## UNTESTED
+
+
+################################################################################
+
+
 ## to_yaml
 test_that("YAML can be created from a list", {
 

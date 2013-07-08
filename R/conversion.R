@@ -1255,6 +1255,117 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 
 
 ################################################################################
+
+
+#' Create data frame
+#'
+#' These methods create a data frame from aggregated and discretized values in
+#' a manner distinct from \code{\link{extract}}.
+#'
+#' @param x Object of class \code{\link{OPM}}, its child classes, or
+#'   \code{\link{OPMS}}. If an \code{\link{OPMS}} object, its elements must
+#'   either all be \code{\link{OPM}} or all be \code{\link{OPMA}} or all be
+#'   \code{\link{OPMD}} objects.
+#' @param row.names Optional vector for use as row names of the resulting data
+#'   frame. Here, it is not recommended to try to set row names explicitly.
+#' @param optional Logical scalar passed to the list and matrix methods of
+#'   \code{as.data.frame}.
+#' @param sep Character scalar used as word separator in column names.
+#' @param ... Optional arguments passed to the list and matrix methods
+#'   of \code{as.data.frame}.
+#' @param stringsAsFactors Logical scalar passed to these methods.
+#' @return Data frame with one row for each combination of well and plate.
+#' @details This function is mainly intended to produce objects that can easily
+#'   be written to \acronym{CSV} files, for instance using \code{write.table}
+#'   from the \pkg{utils} package. There are no \pkg{opm} methods other than
+#'   \code{\link{batch_opm}} (which can write such files) that make use of the
+#'   created kind of objects.
+#'
+#'   The following entries are contained in the generated data frame:
+#'   \itemize{
+#'   \item The \code{\link{csv_data}} entries that identify the plate.
+#'   \item The names of the wells.
+#'   \item For \code{\link{OPMA}} objects (and \code{\link{OPMS}} objects that
+#'   contain them), the aggregated data (curve parameters), one column for each
+#'   point estimate, upper and lower confidence interval of each parameter.
+#'   \item For \code{\link{OPMA}} objects (and \code{\link{OPMS}} objects that
+#'   contain them), the used aggregation settings, one column per entry, except
+#'   for the \sQuote{options} entry (which is not a scalar).
+#'   \item For \code{\link{OPMD}} objects (and \code{\link{OPMS}} objects that
+#'   contain them), one column with the discretized data.
+#'   \item For \code{\link{OPMD}} objects (and \code{\link{OPMS}} objects that
+#'   contain them), the used discretization settings, one column per entry,
+#'   except for the \sQuote{options} entry (which is not a scalar).
+#'   }
+#'
+#'   The limits of using \acronym{CSV} as output format already show up in this
+#'   list, and in general we recommend to generate \acronym{YAML} or
+#'   \acronym{JSON} output instead.
+#' @export
+#' @family conversion-functions
+#' @seealso utils::write.table
+#' @keywords manip
+#' @examples
+#' ## OPMD method
+#' data(vaas_1)
+#' summary(x <- as.data.frame(vaas_1))
+#' stopifnot(is.data.frame(x), nrow(x) == 96)
+#'
+#' ## OPMS method
+#' data(vaas_4)
+#' summary(x <- as.data.frame(vaas_4))
+#' stopifnot(is.data.frame(x), nrow(x) == 96 * 4)
+#'
+setGeneric("as.data.frame")
+
+setMethod("as.data.frame", OPM, function(x, row.names = NULL,
+    optional = FALSE, sep = "_", ...,
+    stringsAsFactors = default.stringsAsFactors()) {
+  result <- cbind(as.data.frame(as.list(x@csv_data[CSV_NAMES]), NULL, optional,
+    ..., stringsAsFactors = stringsAsFactors), Well = wells(x))
+  rownames(result) <- row.names
+  colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
+  result
+}, sealed = SEALED)
+
+setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
+    optional = FALSE, sep = "_", ...,
+    stringsAsFactors = default.stringsAsFactors()) {
+  result <- as.data.frame(t(x@aggregated), NULL, optional, ...,
+    stringsAsFactors = stringsAsFactors)
+  colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
+  result <- cbind(callNextMethod(x, row.names, optional, sep, ...,
+    stringsAsFactors = stringsAsFactors), result)
+  settings <- x@aggr_settings[c(SOFTWARE, VERSION, METHOD)]
+  names(settings) <- paste("Aggr", names(settings), sep = sep)
+  cbind(result, as.data.frame(settings, NULL, optional, ...,
+    stringsAsFactors = stringsAsFactors))
+}, sealed = SEALED)
+
+setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
+    optional = FALSE, sep = "_", ...,
+    stringsAsFactors = default.stringsAsFactors()) {
+  result <- callNextMethod(x, row.names, optional, sep, ...,
+    stringsAsFactors = stringsAsFactors)
+  result$Discretized <- x@discretized
+  settings <- x@disc_settings[c(SOFTWARE, VERSION, METHOD)]
+  names(settings) <- paste("Disc", names(settings), sep = sep)
+  cbind(result, as.data.frame(settings, NULL, optional, ...,
+    stringsAsFactors = stringsAsFactors))
+}, sealed = SEALED)
+
+setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
+    optional = FALSE, sep = "_", ...,
+    stringsAsFactors = default.stringsAsFactors()) {
+  if (!length(row.names))
+    row.names <- vector("list", length(x@plates))
+  do.call(rbind, mapply(as.data.frame, x@plates, row.names, SIMPLIFY = FALSE,
+    MoreArgs = list(optional = optional, sep = sep, ...,
+    stringsAsFactors = stringsAsFactors), USE.NAMES = FALSE))
+}, sealed = SEALED)
+
+
+################################################################################
 ################################################################################
 #
 # YAML functions
@@ -1273,6 +1384,10 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #' @param line.sep Character scalar used as output line separator.
 #' @param json Logical scalar. Create \acronym{JSON} instead of \acronym{YAML}?
 #'   If so, \code{sep}, \code{line.sep} and \code{...} are ignored.
+#' @param listify Logical scalar indicating whether after conversion to a list
+#'   its non-list elements should be converted to lists if they have names.
+#'   (Names of named vector are \strong{not} conserved by default in output
+#'   \acronym{YAML}).
 #' @param ... Optional other arguments passed to \code{as.yaml} from the
 #'   \pkg{yaml} package.
 #' @export
@@ -1306,12 +1421,19 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 setGeneric("to_yaml", function(object, ...) standardGeneric("to_yaml"))
 
 setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
-    line.sep = "\n", json = FALSE, ...) {
-  LL(sep, line.sep, json)
-  if (json)
-    result <- toJSON(as(object, "list"), "C")
-  else {
-    result <- as.yaml(x = as(object, "list"), line.sep = line.sep, ...)
+    line.sep = "\n", json = FALSE, listify = FALSE, ...) {
+  to_map <- function(items) if (is.null(names(items)))
+    items
+  else
+    as.list(items)
+  LL(sep, line.sep, json, listify)
+  object <- as(object, "list")
+  if (listify)
+    object <- rapply(object, to_map, "ANY", NULL, "replace")
+  if (json) {
+    result <- toJSON(object, "C")
+  } else {
+    result <- as.yaml(x = object, line.sep = line.sep, ...)
     if (sep)
       result <- sprintf(sprintf("---%s%%s%s", line.sep, line.sep), result)
   }

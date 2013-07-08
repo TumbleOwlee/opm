@@ -1,6 +1,6 @@
 Package: opm
-Version: 0.9.44
-Date: 2013-07-07
+Version: 0.10.0
+Date: 2013-07-08
 Title: Tools for analysing OmniLog(R) Phenotype Microarray data
 Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
@@ -29,7 +29,7 @@ Suggests:
     multcomp
 Description: Tools for analysing OmniLog(R) and Microstation Phenotype
     Microarray (PM) data as produced by the devices distributed by
-    BiOLOG Inc., including plotting, aggregating (estimating curve
+    BIOLOG Inc., including plotting, aggregating (estimating curve
     parameters), comparing and discretizing PM data, creating
     phylogenetic formats and reports for taxonomic journals,
     running multiple comparisons of means, integrating metadata,

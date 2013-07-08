@@ -13,7 +13,7 @@
 ################################################################################
 
 
-invisible(lapply(c("optparse", "pkgutils", "opm"), library, quietly = TRUE,
+invisible(lapply(c("optparse", "pkgutils"), library, quietly = TRUE,
   warn.conflicts = FALSE, character.only = TRUE))
 
 
@@ -25,10 +25,11 @@ RESULT <- c(
   "Collect a template for adding metadata.",
   "Draw xy plots into graphics files, one per input file.",
   "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm YAML.",
-  "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm JSON."
+  "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm JSON.",
+  "Convert input OmniLog(R) CSV (or opm YAML or JSON) files to opm CSV."
 )
 names(RESULT) <- c("clean", "levelplot", "split", "template", "xyplot",
-  "yaml", "json")
+  "yaml", "json", "csv")
 AGGREGATION <- c(
   "No estimation of curve parameters.",
   "Fast estimation (only two parameters).",
@@ -91,6 +92,9 @@ run_batch_opm <- function(input, opt) {
     else
       NULL
   }
+  make_table_args <- function(opt) {
+    list(row.names = FALSE, sep = opt$`use-sep`)
+  }
   make_aggr_args <- function(opt) {
     aggr_args <- function(opt, method, spline) {
       x <- list(boot = opt$bootstrap, verbose = !opt$quiet,
@@ -117,6 +121,7 @@ run_batch_opm <- function(input, opt) {
   batch_opm(names = input, proc = proc, disc.args = make_disc_args(opt),
     outdir = opt$dir, aggr.args = make_aggr_args(opt),
     md.args = make_md_args(opt), verbose = !opt$quiet,
+    table.args = make_table_args(opt),
     overwrite = opt$overwrite, include = opt$include, device = opt$format,
     exclude = opt$exclude, gen.iii = opt$type, output = opt$result,
     combine.into = opt$join, csv.args = opt$keys)
@@ -205,7 +210,11 @@ option.parser <- OptionParser(option_list = list(
     help = "Change plate type to this one [default: %default]",
     metavar = "CHAR"),
 
-  # u, v
+  make_option(c("-u", "--use-sep"), type = "character", default = "\t",
+    help = "Field separator for metadata files [default: <tab>]",
+    metavar = "CHAR"),
+
+  #  v
 
   make_option(c("-w", "--weak"), action = "store_true", default = FALSE,
     help = paste("When discretizing, estimate intermediary (weak) reaction",
@@ -249,6 +258,9 @@ if (!length(input)) {
 }
 
 
+library(opm, quietly = TRUE, warn.conflicts = FALSE)
+
+
 invisible(opm_opt(file.encoding = opt$encoding))
 
 
@@ -263,6 +275,7 @@ case(match.arg(opt$result, names(RESULT)),
     run_batch_opm(input, opt)
   },
   template = run_template_mode(input, opt),
+  csv =,
   json =,
   yaml = run_batch_opm(input, opt)
 )

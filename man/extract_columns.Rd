@@ -118,11 +118,11 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \seealso{
   base::data.frame base::as.data.frame base::cbind
 
-  Other conversion-functions: \code{\link{extract}},
-  \code{\link{flatten}}, \code{\link{gen_iii}},
-  \code{\link{merge}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{sort}},
+  Other conversion-functions: \code{\link{as.data.frame}},
+  \code{\link{extract}}, \code{\link{flatten}},
+  \code{\link{gen_iii}}, \code{\link{merge}},
+  \code{\link{oapply}}, \code{\link{plates}},
+  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
   \code{\link{thin_out}}, \code{\link{to_yaml}},
   \code{\link{unique}}
 }

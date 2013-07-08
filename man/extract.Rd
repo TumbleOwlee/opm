@@ -205,7 +205,7 @@ ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 0, y = 0)
   boot::norm base::data.frame base::as.data.frame
   base::matrix base::as.matrix
 
-  Other conversion-functions:
+  Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract_columns}}, \code{\link{flatten}},
   \code{\link{gen_iii}}, \code{\link{merge}},
   \code{\link{oapply}}, \code{\link{plates}},
