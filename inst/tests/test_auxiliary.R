@@ -106,6 +106,14 @@ test_that("rows can be picked", {
 ## UNTESTED
 
 
+## is_cas
+test_that("CAS numbers are recognized", {
+  expect_true(all(is_cas(c("CAS 554-91-6", "554-94-9", "CAS 107-07-3"))))
+  expect_true(all(!is_cas(c("CAS 554-91-7", "foo", "554-94-8", "bar"))))
+  expect_true(all(is.na(is_cas(c(NA, NA, NA)))))
+})
+
+
 ## metadata_key
 test_that("we can convert formulas to formulas for use as metadata keys", {
 

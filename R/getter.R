@@ -805,10 +805,11 @@ setMethod("filename", OPM, function(object) {
 #' Plate type used or normalized
 #'
 #' Get the type of the OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-#' used in the measuring.
+#' used in the measuring, normalize plate-type names, or display known names.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object, or character
-#'   vector of original plate name(s), or factor.
+#'   vector of original plate name(s), or factor. If missing, the function
+#'   displays the plate types \pkg{opm} knows about.
 #' @param full Logical scalar. If \code{TRUE}, add (or replace by) the full name
 #'   of the plate type (if available); otherwise, return it as-is.
 #' @param in.parens Logical scalar. This and the five next arguments work like
@@ -828,7 +829,8 @@ setMethod("filename", OPM, function(object) {
 #'
 #' @return Character scalar in the case of the \code{\link{OPM}} and
 #'   \code{\link{OPMS}} methods, otherwise a character vector with the same
-#'   length than \code{object}, or a corresponding factor.
+#'   length than \code{object}, or a corresponding factor. If \code{object} is
+#'   not given, a character vector of normalized plate-type names.
 #'
 #' @details The \code{\link{OPM}} and \code{\link{OPMS}} methods are convenience
 #'   methods for one of the more important entries of \code{\link{csv_data}}
@@ -844,7 +846,7 @@ setMethod("filename", OPM, function(object) {
 #'
 #' @export
 #' @family getter-functions
-#' @seealso base::strtrim base::abbreviate base::gsu
+#' @seealso base::strtrim base::abbreviate base::gsub
 #' @keywords attribute utilities character
 #' @examples
 #'
@@ -860,7 +862,7 @@ setMethod("filename", OPM, function(object) {
 #'
 #' # Splitting a list of 'OPM' objects according to the plate type is easy:
 #' x <- split(x), sapply(x, plate_type))
-#' # but see also opms() and read_opm() which can do this internally
+#' # but see also opms() and read_opm(), which can do this internally
 #' }
 #'
 #' ## 'OPMS' method
@@ -869,7 +871,7 @@ setMethod("filename", OPM, function(object) {
 #' # plate type is guaranteed to be uniform within an OPMS object
 #' stopifnot(identical(x, xx))
 #'
-#' ## Character method
+#' ## character and factor methods
 #'
 #' # Entirely unrecognized strings are returned as-is
 #' (x <- plate_type(letters))
@@ -879,9 +881,13 @@ setMethod("filename", OPM, function(object) {
 #' (x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), subtype = TRUE))
 #' stopifnot(x != y)
 #'
-#' # Factor method
+#' # Factors
 #' (z <- plate_type(as.factor(y), subtype = TRUE))
 #' stopifnot(is.factor(z), z == x) # same result after conversion
+#'
+#' ## 'missing' method
+#' (x <- plate_type())
+#' stopifnot(is.character(x), plate_type(vaas_1) %in% x)
 #'
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))
 
@@ -948,6 +954,10 @@ setMethod("plate_type", "character", function(object, full = FALSE,
 
 setMethod("plate_type", "factor", function(object, ...) {
   map_values(object = object, mapping = plate_type, ...)
+}, sealed = SEALED)
+
+setMethod("plate_type", "missing", function(object, ...) {
+  names(PLATE_MAP)
 }, sealed = SEALED)
 
 

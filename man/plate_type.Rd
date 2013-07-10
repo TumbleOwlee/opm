@@ -4,7 +4,8 @@
 \arguments{
   \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
   object, or character vector of original plate name(s), or
-  factor.}
+  factor. If missing, the function displays the plate types
+  \pkg{opm} knows about.}
 
   \item{full}{Logical scalar. If \code{TRUE}, add (or
   replace by) the full name of the plate type (if
@@ -41,12 +42,14 @@
   Character scalar in the case of the \code{\link{OPM}} and
   \code{\link{OPMS}} methods, otherwise a character vector
   with the same length than \code{object}, or a
-  corresponding factor.
+  corresponding factor. If \code{object} is not given, a
+  character vector of normalized plate-type names.
 }
 \description{
   Get the type of the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-  used in the measuring.
+  used in the measuring, normalize plate-type names, or
+  display known names.
 }
 \details{
   The \code{\link{OPM}} and \code{\link{OPMS}} methods are
@@ -76,7 +79,7 @@ stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 
 # Splitting a list of 'OPM' objects according to the plate type is easy:
 x <- split(x), sapply(x, plate_type))
-# but see also opms() and read_opm() which can do this internally
+# but see also opms() and read_opm(), which can do this internally
 }
 
 ## 'OPMS' method
@@ -85,7 +88,7 @@ data(vaas_4)
 # plate type is guaranteed to be uniform within an OPMS object
 stopifnot(identical(x, xx))
 
-## Character method
+## character and factor methods
 
 # Entirely unrecognized strings are returned as-is
 (x <- plate_type(letters))
@@ -95,12 +98,16 @@ stopifnot(identical(x, letters))
 (x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), subtype = TRUE))
 stopifnot(x != y)
 
-# Factor method
+# Factors
 (z <- plate_type(as.factor(y), subtype = TRUE))
 stopifnot(is.factor(z), z == x) # same result after conversion
+
+## 'missing' method
+(x <- plate_type())
+stopifnot(is.character(x), plate_type(vaas_1) \%in\% x)
 }
 \seealso{
-  base::strtrim base::abbreviate base::gsu
+  base::strtrim base::abbreviate base::gsub
 
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{anyDuplicated}},
@@ -125,6 +132,7 @@ stopifnot(is.factor(z), z == x) # same result after conversion
 \alias{plate_type,OPM-method}
 \alias{plate_type,character-method}
 \alias{plate_type,factor-method}
+\alias{plate_type,missing-method}
 \alias{plate_type,OPMS-method}
 \usage{
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
@@ -136,6 +144,8 @@ stopifnot(is.factor(z), z == x) # same result after conversion
     normalize = TRUE, subtype = FALSE) 
 
   \S4method{plate_type}{factor}(object, ...) 
+
+  \S4method{plate_type}{missing}(object, ...) 
 
   \S4method{plate_type}{OPMS}(object, ...) 
 

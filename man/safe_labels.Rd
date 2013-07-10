@@ -24,8 +24,8 @@
   \sQuote{phylip} and \sQuote{epf} do not accept comments
   and will yield an error. If \code{enclose} is
   \code{TRUE}, the comment-enclosing characters are
-  appended prepended to the vector, otherwise to each
-  string seperately.}
+  appended and prepended to the vector, otherwise to each
+  string separately.}
 }
 \value{
   Character vector.

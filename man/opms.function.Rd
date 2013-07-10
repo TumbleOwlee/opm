@@ -26,7 +26,7 @@
   \item{group}{Logical or character scalar. If \code{TRUE},
   split the list of collected \code{\link{OPM}} objects
   according to the plate type and convert the sublists
-  seperately if they contain more than one plate; otherwise
+  separately if they contain more than one plate; otherwise
   just keep the \code{\link{OPM}} object. \code{FALSE} is
   the default: all plates are tried to be forced into a
   single \code{\link{OPMS}} object. If a character scalar,

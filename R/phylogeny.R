@@ -23,10 +23,10 @@
 #'   appending spaces? Has no effect for \sQuote{phylip} and \sQuote{html}
 #'   output format.
 #' @param comment Logical scalar. If \code{TRUE}, comments as used in the
-#'   respective format will be produced. \sQuote{phylip} and \sQuote{epf} do
-#'   not accept comments and will yield an error. If \code{enclose} is
-#'   \code{TRUE}, the comment-enclosing characters are appended
-#'   prepended to the vector, otherwise to each string seperately.
+#'   respective format will be produced. \sQuote{phylip} and \sQuote{epf} do not
+#'   accept comments and will yield an error. If \code{enclose} is \code{TRUE},
+#'   the comment-enclosing characters are appended and prepended to the vector,
+#'   otherwise to each string separately.
 #' @details This is not normally called directly by an \pkg{opm} user but by
 #'   \code{\link{phylo_data}}; see there for further details.
 #' @export

@@ -46,13 +46,14 @@
   \code{object} used as names and either a matched entry or
   \code{NA} as value. The factor method does the same,
   whereas the list method traverses a list and calls
-  \code{substrate_info} on its elements. The
-  \code{\link{OPM}} and \code{\link{OPMS}} methods work
-  like the character method, using their own substrates.
-  Depending on the \code{browse} argument, the returned
-  \acronym{ID}s might have been converted to
-  \acronym{URL}s, and as a side effect tabs in the default
-  web browser might have been opened.
+  \code{substrate_info} on suitable elements, leaving
+  others unchanged. The \code{\link{OPM}} and
+  \code{\link{OPMS}} methods work like the character
+  method, using their own substrates. Depending on the
+  \code{browse} argument, the returned \acronym{ID}s might
+  have been converted to \acronym{URL}s, and as a side
+  effect tabs in the default web browser might have been
+  opened.
 }
 \description{
   Return information on substrates such as their
@@ -66,7 +67,7 @@
   much information is directly displayed on the page
   itself, whereas the chosen \acronym{CAS} site contains a
   number of links providing additional chemical details.
-  The \acronym{MeSH} weg pages directly link to according
+  The \acronym{MeSH} web pages directly link to according
   \acronym{PubMed} searches.
 }
 \examples{

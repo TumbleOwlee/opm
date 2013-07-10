@@ -576,16 +576,17 @@ setMethod("find_positions", OPM, function(object, ...) {
 #' @return The character method returns a character vector with \code{object}
 #'   used as names and either a matched entry or \code{NA} as value. The factor
 #'   method does the same, whereas the list method traverses a list and calls
-#'   \code{substrate_info} on its elements. The \code{\link{OPM}} and
-#'   \code{\link{OPMS}} methods work like the character method, using their own
-#'   substrates. Depending on the \code{browse} argument, the returned
-#'   \acronym{ID}s might have been converted to \acronym{URL}s, and as a side
-#'   effect tabs in the default web browser might have been opened.
+#'   \code{substrate_info} on suitable elements, leaving others unchanged. The
+#'   \code{\link{OPM}} and \code{\link{OPMS}} methods work like the character
+#'   method, using their own substrates. Depending on the \code{browse}
+#'   argument, the returned \acronym{ID}s might have been converted to
+#'   \acronym{URL}s, and as a side effect tabs in the default web browser might
+#'   have been opened.
 #' @details The generated \acronym{URL}s should provide plenty of information
 #'   on the respective substrate. In the case of \acronym{ChEBI}, \acronym{KEGG}
 #'   and \acronym{Metacyc}, much information is directly displayed on the page
 #'   itself, whereas the chosen \acronym{CAS} site contains a number of links
-#'   providing additional chemical details. The \acronym{MeSH} weg pages
+#'   providing additional chemical details. The \acronym{MeSH} web pages
 #'   directly link to according \acronym{PubMed} searches.
 #' @family naming-functions
 #' @keywords utilities
@@ -666,12 +667,12 @@ setMethod("substrate_info", "character", function(object,
       "greek", "html", "all"), browse = 0L, ...) {
   create_url <- function(x, how) {
     base <- URL_BASE[match.arg(how, names(URL_BASE))]
-    x <- sub("^CAS\\s+", "", x, perl = TRUE)
+    x <- sub("^CAS\\s+", "", x, TRUE, TRUE)
     ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
   }
   map_words <- function(x, fun, ...) {
-    y <- strsplit(x, "\\w+", perl = TRUE)
-    x <- strsplit(x, "\\W+", perl = TRUE)
+    y <- strsplit(x, "\\w+", FALSE, TRUE)
+    x <- strsplit(x, "\\W+", FALSE, TRUE)
     bad <- !vapply(x, function(value) nzchar(value[1L]), NA)
     x[bad] <- lapply(x[bad], `[`, i = -1L)
     bad <- vapply(x, length, 0L) < vapply(y, length, 0L)
@@ -723,12 +724,12 @@ setMethod("substrate_info", "character", function(object,
 
 setMethod("substrate_info", "substrate_match", function(object, ...) {
   rapply(object = object, f = substrate_info, classes = "character",
-    how = "list", ...)
+    how = "replace", ...)
 }, sealed = SEALED)
 
 setMethod("substrate_info", "list", function(object, ...) {
-  rapply(object = object, f = substrate_info,
-    classes = c("character", "factor"), how = "list", ...)
+  rapply(object = object, f = substrate_info, how = "replace",
+    classes = c("character", "factor"), ...)
 }, sealed = SEALED)
 
 setMethod("substrate_info", OPM, function(object, ...) {
