@@ -149,8 +149,7 @@ stopifnot(identical(x, y))
   utils::browseURL
 
   Other naming-functions: \code{\link{find_positions}},
-  \code{\link{find_substrate}}, \code{\link{listing}},
-  \code{\link{well_to_substrate}}
+  \code{\link{find_substrate}}, \code{\link{listing}}
 }
 \keyword{utilities}
 

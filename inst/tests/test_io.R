@@ -532,8 +532,6 @@ test_that("batch conversion to yaml works", {
   unlink(exp.outfile)
 })
 
-## batch_opm_to_yaml
-## UNTESTED
 
 ################################################################################
 #

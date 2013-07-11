@@ -16,9 +16,7 @@
   \code{as.groups} is not empty, it is used to create the
   row name of the single row of the resulting
   \sQuote{OPMS_Listing} object. Otherwise an
-  \sQuote{OPMD_Listing} object is produced. It is currently
-  possible but \strong{deprecated} to not set
-  \code{as.groups} explicitly.}
+  \sQuote{OPMD_Listing} object is produced.}
 
   \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
   is a list. If the relative frequency of the most frequent
@@ -114,8 +112,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \seealso{
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}},
-  \code{\link{substrate_info}},
-  \code{\link{well_to_substrate}}
+  \code{\link{substrate_info}}
 }
 \keyword{category}
 \keyword{character}
@@ -125,7 +122,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \alias{listing,OPMD-method}
 \alias{listing,OPMS-method}
 \usage{
-  \S4method{listing}{OPMD}(x, as.groups = NULL,
+  \S4method{listing}{OPMD}(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 

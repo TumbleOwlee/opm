@@ -49,11 +49,6 @@
   \code{as.pe} of the function
   \code{\link{fast_estimate}}.} }}
 
-  \item{program}{Deprecated. Use \sQuote{method} instead.
-  If provided, \sQuote{program} has precedence over
-  \sQuote{method}, but \sQuote{program} will eventually be
-  removed.}
-
   \item{plain}{Logical scalar. If \code{TRUE}, only the
   aggregated values are returned (as a matrix, for details
   see below). Otherwise they are integrated in an
@@ -202,8 +197,7 @@ stopifnot(mode(y) == "numeric")
 \alias{do_aggr,OPMS-method}
 \usage{
   \S4method{do_aggr}{OPM}(object, boot = 100L, verbose = FALSE,
-    cores = 1L, options = list(), method = "grofit", plain = FALSE,
-    program = method) 
+    cores = 1L, options = list(), method = "grofit", plain = FALSE) 
 
   \S4method{do_aggr}{matrix}(object, by, fun, sep = ".", ...) 
 

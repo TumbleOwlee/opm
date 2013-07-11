@@ -2,6 +2,11 @@
 
 2013-xx-xx (the 11th release on CRAN)
 
+- removed deprecated functions well_to_substrate() and batch_opm_to_yaml()
+- 'as.groups' argument is now mandatory for the OPMD listing() method
+- removed deprecated 'check.names' argument of to_metadata()
+- removed deprecated 'program' argument of do_aggr()
+
 - new plate_type() method
 
 

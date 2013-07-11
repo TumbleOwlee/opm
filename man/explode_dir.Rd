@@ -91,8 +91,7 @@ stopifnot(length(x) == 0L || length(x) > length(y))
   base::list.files base::Sys.glo
 
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
-  \code{\link{batch_process}},
+  \code{\link{batch_opm}}, \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{file_pattern}}, \code{\link{opm_files}},

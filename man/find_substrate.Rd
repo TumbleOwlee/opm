@@ -68,8 +68,7 @@ stopifnot(identical(z, zz))
   base::grep base::agrep
 
   Other naming-functions: \code{\link{find_positions}},
-  \code{\link{listing}}, \code{\link{substrate_info}},
-  \code{\link{well_to_substrate}}
+  \code{\link{listing}}, \code{\link{substrate_info}}
 }
 \keyword{character}
 \keyword{utilities}

@@ -97,8 +97,7 @@ if (length(infiles) > 0) { # if the files are found
 }
 \seealso{
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
-  \code{\link{clean_filenames}},
+  \code{\link{batch_opm}}, \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{opm_files}}, \code{\link{read_opm}},

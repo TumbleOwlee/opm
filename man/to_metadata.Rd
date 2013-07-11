@@ -10,13 +10,12 @@
   \code{as.data.frame}.}
 
   \item{optional}{Logical scalar passed to
-  \code{as.data.frame} or \code{read.delim}.}
+  \code{as.data.frame} or used after negation as
+  \sQuote{check.names} argument of \code{read.delim}.}
 
   \item{sep}{Character scalar. Field separator in input
   file. This and the following parameters are passed to
   \code{read.delim}.}
-
-  \item{check.names}{Logical scalar.}
 
   \item{strip.white}{Logical scalar.}
 
@@ -84,8 +83,7 @@ stopifnot(identical(copy, vaas_4))
   base::as.data.frame
 
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
-  \code{\link{batch_process}},
+  \code{\link{batch_opm}}, \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
@@ -103,8 +101,7 @@ stopifnot(identical(copy, vaas_4))
 \alias{to_metadata,OPMS-method}
 \usage{
   \S4method{to_metadata}{character}(object, sep = "\t",
-    check.names = !optional, strip.white = TRUE, stringsAsFactors = FALSE,
-    optional = TRUE, ...) 
+    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) 
 
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) 

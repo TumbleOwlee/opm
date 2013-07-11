@@ -280,7 +280,6 @@ if (length(test.files) > 0) { # if the files are found
   pkgutils::mypdf
 
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm_to_yaml}},
   \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},

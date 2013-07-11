@@ -208,8 +208,7 @@ to_sentence.logical <- function(x, html, ...) {
 #'   If \code{x} is an \code{\link{OPMD}} object and \code{as.groups} is not
 #'   empty, it is used to create the row name of the single row of the resulting
 #'   \sQuote{OPMS_Listing} object. Otherwise an \sQuote{OPMD_Listing} object is
-#'   produced. It is currently possible but \strong{deprecated} to not set
-#'   \code{as.groups} explicitly.
+#'   produced.
 #'
 #' @param cutoff Numeric scalar used if \sQuote{as.groups} is a list. If the
 #'   relative frequency of the most frequent entry within the discretized values
@@ -281,12 +280,10 @@ to_sentence.logical <- function(x, html, ...) {
 #'
 setGeneric("listing")
 
-setMethod("listing", OPMD, function(x, as.groups = NULL,
+setMethod("listing", OPMD, function(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) {
-  if (missing(as.groups))
-    warning("providing 'as.groups' will be mandatory in future versions")
   res <- discretized(x)
   names(res) <- wells(object = x, full = full, in.parens = in.parens,
     downcase = downcase, ...)
@@ -329,45 +326,6 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
       cutoff, TRUE), html), character(3L))
   add_stuff(t(res), html, cutoff)
 }, sealed = SEALED)
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Map well names to substrates
-#'
-#' Translate well names (which are basically their coordinates on the plate) to
-#' substrate names, given the name of the plate. This function is
-#' \strong{deprecated}; use \code{\link{wells}} instead.
-#'
-#' @param plate Character vector or factor. The type(s) of the plate(s). See
-#'   \code{\link{plate_type}}. \code{\link{plate_type}} is applied before
-#'   searching for the substrate names, and partial matching is allowed.
-#' @param well Character vector of original well names (coordinates on the
-#'   plate), or integer vector, or convertible to such, or formula. The formula
-#'   allows for sequences of well coordinates; see the examples for details.
-#' @export
-#' @return Character vector or matrix (depending on the length of \code{plate}),
-#'   containing \code{NA} values for plates and wells that could not be
-#'   identified.
-#' @family naming-functions
-#' @keywords utilities
-#' @examples
-#' x <- c("A01", "B10")
-#' (y <- well_to_substrate("PM1", x))
-#' stopifnot(nchar(y) > nchar(x))
-#' # formula yields same result (except for row names)
-#' stopifnot(y == well_to_substrate("PM1", ~ c(A01, B10)))
-#' # using a sequence of well coordinates
-#' stopifnot(nrow(well_to_substrate("PM1", ~ C02:C06)) == 5) # well sequence
-#' stopifnot(nrow(well_to_substrate("PM1")) == 96) # all wells by default
-#'
-well_to_substrate <- function(plate, well = TRUE) {
-  warning("well_to_substrate() is deprecated -- use wells() instead")
-  wells(object = well, full = TRUE, plate = plate)
-}
 
 
 ################################################################################

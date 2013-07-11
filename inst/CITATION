@@ -27,8 +27,8 @@ citEntry(
     "Lea A.I. Vaas, J. Sikorski, B. Hofner, N. Buddruhs, A. Fiebig,",
     "H.-P. Klenk and M. G\"oker.",
     "opm: An R package for analysing OmniLog(R) Phenotype",
-    "MicroArray Data. Bioinformatics, in press",
-    "(doi:10.1093/bioinformatics/btt291)."
+    "MicroArray Data. Bioinformatics 29 (14): 1823-1824.",
+    "doi:10.1093/bioinformatics/btt291"
   )
 )
 
@@ -61,7 +61,7 @@ citEntry(
     "Lea A.I. Vaas, J. Sikorski, V. Michael, M. G\"oker and H.-P. Klenk.",
     "Visualization and curve-parameter estimation strategies for efficient",
     "exploration of phenotype microarray kinetics.",
-    "PLoS ONE 7(4): e34846, 2012 (doi:10.1371/journal.pone.0034846)."
+    "PLoS ONE 7(4): e34846, 2012. doi:10.1371/journal.pone.0034846"
   )
 )
 

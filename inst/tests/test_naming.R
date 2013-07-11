@@ -58,10 +58,6 @@ test_that("well indices given as formula can be mapped", {
 ################################################################################
 
 
-## well_to_substrate
-## UNTESTED
-
-
 ## find_substrate
 test_that("substrate names can be searched", {
 

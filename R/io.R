@@ -713,11 +713,10 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 #'   convertible to a data frame. Might also be \code{\link{WMD}} or
 #'   \code{\link{OPMS}} object.
 #' @param stringsAsFactors Logical scalar passed to \code{as.data.frame}.
-#' @param optional Logical scalar passed to \code{as.data.frame} or
-#'   \code{read.delim}.
+#' @param optional Logical scalar passed to \code{as.data.frame} or used after
+#'   negation as \sQuote{check.names} argument of \code{read.delim}.
 #' @param sep Character scalar. Field separator in input file. This and the
 #'   following parameters are passed to \code{read.delim}.
-#' @param check.names Logical scalar.
 #' @param strip.white Logical scalar.
 #' @param ... Optional other arguments for \code{read.delim} or
 #'   \code{as.data.frame}.
@@ -775,11 +774,8 @@ setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
 setMethod("to_metadata", "character", function(object, sep = "\t",
-    check.names = !optional, strip.white = TRUE, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  if (!missing(check.names))
-    warning("'check.names' is deprecated, use 'optional'")
-  read.delim(file = L(object), sep = sep, check.names = check.names,
+    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) {
+  read.delim(file = L(object), sep = sep, check.names = !optional,
     strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
 }, sealed = SEALED)
 
@@ -1599,45 +1595,6 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     batch_process(names = names, out.ext = out.ext, io.fun = io.fun,
       in.ext = in.ext, compressed = TRUE, literally = FALSE, ..., proc = proc,
       overwrite = overwrite, outdir = outdir, verbose = verbose, demo = demo)
-}
-
-
-################################################################################
-
-
-#' Batch-convert to YAML (deprecated)
-#'
-#' \strong{Deprecated} function to batch-convert from
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} (or
-#' previous \pkg{opm} \acronym{YAML}) to \pkg{opm} \acronym{YAML}. Use
-#' \code{\link{batch_opm}} instead.
-#'
-#' @inheritParams batch_opm
-#' @export
-#' @note This \strong{deprecated} function is for batch-converting many files;
-#'   for writing a single object to a \acronym{YAML} file (or string), see
-#'   \code{\link{to_yaml}}.
-#' @return The function invisibly returns a matrix which describes each
-#'   attempted file conversion. See \code{\link{batch_process}} for details.
-#' @family io-functions
-#' @references \url{http://www.yaml.org/}
-#' @references \url{http://www.biolog.com/}
-#' @seealso utils::read.csv yaml::yaml.load_file
-#' @keywords IO
-#'
-#' @details
-#'   This function is \strong{deprecated}; use \code{\link{batch_opm}} instead.
-#'
-#' @examples
-#' # see batch_opm()
-#'
-batch_opm_to_yaml <- function(names, md.args = NULL, aggr.args = NULL,
-    force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
-    gen.iii = opm_opt("gen.iii"), ..., verbose = TRUE, demo = FALSE) {
-  message("this function is deprecated; use batch_opm() instead")
-  batch_opm(names = names, md.args = md.args, aggr.args = aggr.args,
-    force.aggr = force.aggr, disc.args = disc.args, force.disc = force.disc,
-    gen.iii = gen.iii, ..., output = "yaml", verbose = verbose, demo = demo)
 }
 
 

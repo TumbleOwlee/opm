@@ -242,9 +242,6 @@ param_names <- function(
 #'     see the argument \code{as.pe} of the function
 #'     \code{\link{fast_estimate}}.}
 #'   }
-#' @param program Deprecated. Use \sQuote{method} instead. If provided,
-#'   \sQuote{program} has precedence over \sQuote{method}, but \sQuote{program}
-#'   will eventually be removed.
 #' @param plain Logical scalar. If \code{TRUE}, only the aggregated values are
 #'   returned (as a matrix, for details see below). Otherwise they are
 #'   integrated in an \code{\link{OPMA}} object together with \code{object}.
@@ -350,8 +347,7 @@ param_names <- function(
 setGeneric("do_aggr", function(object, ...) standardGeneric("do_aggr"))
 
 setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
-    cores = 1L, options = list(), method = "grofit", plain = FALSE,
-    program = method) {
+    cores = 1L, options = list(), method = "grofit", plain = FALSE) {
 
   # Convert to OPMA
   integrate_in_opma <- function(object, result) {
@@ -404,11 +400,6 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
       dimnames = list(unname(map), names(x)))
     result[map[["A.point.est"]], ] <- x
     result
-  }
-
-  if (!missing(program)) {
-    warning("'program' is deprecated -- use 'method' instead")
-    method <- program
   }
 
   if (plate_type(object) %in% SPECIAL_PLATES && dim(object)[1] < 2L) {

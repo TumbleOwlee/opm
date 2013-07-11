@@ -58,8 +58,7 @@ stopifnot(!isRfile(x))
   pkgutils::pkg_files
 
   Other io-functions: \code{\link{batch_collect}},
-  \code{\link{batch_opm}}, \code{\link{batch_opm_to_yaml}},
-  \code{\link{batch_process}},
+  \code{\link{batch_opm}}, \code{\link{batch_process}},
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},

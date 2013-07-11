@@ -47,8 +47,7 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 }
 \seealso{
   Other naming-functions: \code{\link{find_substrate}},
-  \code{\link{listing}}, \code{\link{substrate_info}},
-  \code{\link{well_to_substrate}}
+  \code{\link{listing}}, \code{\link{substrate_info}}
 }
 \keyword{utilities}
 
