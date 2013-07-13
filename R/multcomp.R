@@ -223,9 +223,11 @@ setGeneric("opm_mcp",
 
 setMethod("opm_mcp", OPMS, function(object, model, linfct = 1L,
     m.type = "glm", glht.args = list(), ops = "+", output = "mcp", ...) {
+  annotation <- list(plate.type = plate_type(object))
   object <- extract(object = object, dataframe = TRUE, ...,
     as.labels = metadata_key(model, FALSE, ops = ops,
       remove = RESERVED_NAMES[c("well", "value", "parameter")]))
+  attr(object, opm_string()) <- annotation
   opm_mcp(object = object, model = model, linfct = linfct, ops = ops,
     m.type = m.type, split.at = param_names("split.at"), glht.args = glht.args,
     output = output)
@@ -311,6 +313,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     mcp = NULL
   )
 
+  annotation <- attr(object, opm_string())
   object <- convert_data(object, split.at, model)
   linfct <- convert_hypothesis_spec(linfct, model)
 
@@ -329,11 +332,10 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   if (length(confint(result)$confint[, 1L]) > 20L)
     warning("number of performed comparisons exceeds 20")
 
+  attr(result, opm_string()) <- annotation
   result
 }, sealed = SEALED)
 
 
 ################################################################################
-
-
 
