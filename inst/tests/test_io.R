@@ -50,23 +50,27 @@ expect_path_equal <- function(actual, expected) {
 # IO helpers
 #
 
+
+## glob_to_regex
+test_that("wildcards can be converted to regular expressions", {
+  # from http://docstore.mik.ua/orelly/perl/cookbook/ch06_10.htm
+  # with some adaptations and
+  x <- c("list.?", "project.*", "*old", "type*.[ch]", "*.*", "*")
+  wanted <- c("^list\\..$", "^project\\.", "^.*old$", "^type.*\\.\\[ch]$",
+    "^.*\\.", "^")
+  got <- glob_to_regex(x)
+  expect_equal(wanted, got)
+  x <- c("^anc-+k", "+us$hs+")
+  got <- glob_to_regex(x)
+  expect_equal(c("^\\^anc-\\+k$", "^\\+us\\$hs\\+$"), got)
+})
+
+
 ## file_pattern
 test_that("file patterns can be constructed", {
   default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
   expect_equal(default.pat, file_pattern())
   expect_equal("\\.csv$", file_pattern(type = "csv", compressed = FALSE))
-})
-
-
-##  extended_file_pattern
-test_that("extended file patterns can be constructed", {
-  default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
-  expect_equal(NULL, extended_file_pattern(NULL))
-  expect_equal(default.pat, extended_file_pattern(list()))
-  expect_error(extended_file_pattern("*.csv"))
-  expect_equal("*.csv", extended_file_pattern("*.csv", wildcard = FALSE))
-  expect_equal("^.*\\.csv$", extended_file_pattern("*.csv", wildcard = TRUE))
-  expect_equal("5", extended_file_pattern(5, wildcard = FALSE))
 })
 
 

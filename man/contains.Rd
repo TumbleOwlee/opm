@@ -79,10 +79,9 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 
   base::identity
 
-  Other auxiliary-functions: \code{\link{glob_to_regex}},
-  \code{\link{kubrick}}, \code{\link{map_names}},
-  \code{\link{map_values}}, \code{\link{opm_opt}},
-  \code{\link{separate}}
+  Other auxiliary-functions: \code{\link{kubrick}},
+  \code{\link{map_names}}, \code{\link{map_values}},
+  \code{\link{opm_opt}}, \code{\link{separate}}
 }
 \keyword{attribute}
 \keyword{list}

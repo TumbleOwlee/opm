@@ -87,7 +87,8 @@ stopifnot(identical(copy, vaas_4))
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
-  \code{\link{opm_files}}, \code{\link{read_opm}},
+  \code{\link{glob_to_regex}},
+      \code{\link{opm_files}}, \code{\link{read_opm}},
   \code{\link{read_single_opm}}, \code{\link{split_files}}
 }
 \keyword{IO}

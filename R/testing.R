@@ -90,8 +90,9 @@ objects_for_testing <- function() {
   x$OPM.2 <- read_single_opm(x$INFILES[2L])
   x$OPM.3 <- read_single_opm(x$FILE.OLD.STYLE)
   x$ORGN <- "Bacillus simplex"
-  x$MD <- data.frame(File = filename(x$OPM.1), Position = position(x$OPM.1),
-    `Setup Time` = setup_time(x$OPM.1), Organism = x$ORGN,
+  x$MD <- data.frame(File = csv_data(x$OPM.1, what = "file"),
+    Position = csv_data(x$OPM.1, what = "position"),
+    `Setup Time` = csv_data(x$OPM.1, what = "setup"), Organism = x$ORGN,
     check.names = FALSE, stringsAsFactors = FALSE)
   x$OPM.WITH.MD <- include_metadata(x$OPM.1, x$MD, remove.csv.data = FALSE)
   x$OPMS.INPUT <- opms(x$OPM.1, x$OPM.2)

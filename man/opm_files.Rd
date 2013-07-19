@@ -62,7 +62,8 @@ stopifnot(!isRfile(x))
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
-  \code{\link{read_opm}}, \code{\link{read_single_opm}},
+  \code{\link{glob_to_regex}},
+      \code{\link{read_opm}}, \code{\link{read_single_opm}},
   \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{utilities}

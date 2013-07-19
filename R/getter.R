@@ -9,26 +9,52 @@
 
 #' Stored measurements
 #'
-#' Return the measurements. The first column contains the hours, the other ones
-#' contain the values from each well. There is one row per time point.
+#' Return the measurements, optionally only from selected wells and with or
+#' without the time points, or only the time points.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param i Optional character or numeric vector or formula with name(s) or
-#'   position(s) of well(s).
+#' @param i Optional character or numeric vector with name(s) or position(s) of
+#'   well(s). Wells are originally named \sQuote{A01} to \sQuote{H12} but might
+#'   have been subset beforehand. \code{i} can also be a formula, allowing for
+#'   sequences of well coordinates. See the examples.
+#' @param drop Logical scalar. If only a single well was selected, simplify it
+#'   to a vector?
+#' @param what Character scalar determining the output mode as follows:
+#'   \describe{
+#'     \item{all}{Numeric vector: all time points, in order.}
+#'     \item{interval}{The difference between each pair of adjacent time
+#'       points, \code{NA} if this is irregular or only one time point is left.}
+#'     \item{max}{Numeric scalar: the largest time point.}
+#'     \item{minmax}{Numeric scalar: the smallest maximum. For \code{\link{OPM}}
+#'       objects this is apparently identical to \sQuote{max}.}
+#'     \item{size}{Integer scalar: the number of time points.}
+#'     \item{summary}{Display a summary.}
+#'   }
 #' @param ... Optional arguments passed between the methods.
-#' @return Numeric matrix with column names indicating the well coordinate and a
-#'   first column containing the time points.
-#' @details Column names are appropriately set, but not translated (as, e.g., to
+#' @return
+#'   \code{measurements} returns a numeric matrix with column names indicating
+#'   the well coordinate and a first column containing the time points. The
+#'   other columns contain the values from each well. There is one row per time
+#'   point. Column names are appropriately set, but not translated (as, e.g., to
 #'   substrate names). It is possible to select wells, but the time points are
-#'   always included as first column (in contrast to \code{\link{well}}). The
-#'   \code{i} argument refers only to the remaining matrix.
+#'   always included as first column (in contrast to \code{well}). The \code{i}
+#'   argument refers only to the remaining matrix.
+#'
+#'   \code{wells} yields a numeric matrix or vector, depending on \code{i} and
+#'   \code{drop}. It will always ignore the time points, in contrast to
+#'   \code{measurements}.
+#'
+#'   The return value of \code{hours} is dependent on the \code{what} argument;
+#'   see there.
 #' @export
+#' @note Do not confuse \code{well} with \code{\link{wells}}.
 #' @family getter-functions
 #' @keywords attribute
 #' @examples
 #'
-#' # 'OPM' method
+#' # 'OPM' methods
 #' data(vaas_1)
+#'
 #' head(x <- measurements(vaas_1))[, 1:5] # => numeric matrix
 #' stopifnot(is.matrix(x), is.numeric(x))
 #' stopifnot(dim(x) == c(384, 97))
@@ -37,11 +63,40 @@
 #' head(y <- measurements(vaas_1, ~B03)) # => same result with formula
 #' stopifnot(identical(y, x))
 #'
-#' # 'OPMS' method
+#' head(x <- well(vaas_1, "B04")) # => numeric vector
+#' stopifnot(is.numeric(x), length(x) == 384)
+#' head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
+#' stopifnot(is.matrix(x), dim(x) == c(384, 2))
+#' # selecting adjacent wells is easer if using a formula
+#' head(x <- well(vaas_1, c("B12", "C01", "C02")))
+#' stopifnot(is.matrix(x), dim(x) == c(384, 3))
+#' head(y <- well(vaas_1, ~ B12:C02)) # => same result
+#' stopifnot(identical(x, y))
+#'
+#' (x <- hours(vaas_1)) # the default is 'max'
+#' stopifnot(identical(x, 95.75))
+#' (x <- hours(vaas_1, "minmax"))
+#' stopifnot(identical(x, 95.75))
+#' (x <- hours(vaas_1, "summary"))
+#' stopifnot(is.table(x))
+#' (x <- hours(vaas_1, "interval"))
+#' stopifnot(identical(x, 0.25))
+#' (x <- hours(vaas_1, "size"))
+#' stopifnot(identical(x, 384L))
+#'
+#' # 'OPMS' methods
 #' data(vaas_4)
 #' summary(x <- measurements(vaas_4)) # => list of numeric matrices
 #' stopifnot(is.list(x), length(x) == length(vaas_4))
 #' stopifnot(sapply(x, is.matrix), sapply(x, is.numeric))
+#'
+#' head(x <- well(vaas_4, "B04"))[, 1:5] # => numeric matrix
+#' stopifnot(is.matrix(x), dim(x) == c(4, 384))
+#' head(y <- well(vaas_4, ~ B04))[, 1:5] # using a formula
+#' stopifnot(identical(x, y)) # => same result
+#'
+#' (x <- hours(vaas_4)) # all with the same overall running time
+#' stopifnot(length(x) == 4, x == 95.75)
 #'
 setGeneric("measurements",
   function(object, ...) standardGeneric("measurements"))
@@ -53,6 +108,48 @@ setMethod("measurements", OPM, function(object, i) {
     cbind(object@measurements[, 1L, drop = FALSE],
       object@measurements[, -1L, drop = FALSE][,
         well_index(i, colnames(object@measurements)[-1L]), drop = FALSE])
+}, sealed = SEALED)
+
+#= well measurements
+
+#' @rdname measurements
+#' @export
+#'
+setGeneric("well", function(object, ...) standardGeneric("well"))
+
+setMethod("well", OPM, function(object, i, drop = TRUE) {
+  object@measurements[, -1L, drop = FALSE][,
+    well_index(i, colnames(object@measurements)[-1L]), drop = drop]
+}, sealed = SEALED)
+
+#= hours measurements
+
+#' @rdname measurements
+#' @export
+#'
+setGeneric("hours", function(object, ...) standardGeneric("hours"))
+
+setMethod("hours", OPM, function(object,
+    what = c("max", "all", "size", "summary", "interval", "minmax")) {
+  tp <- object@measurements[, HOUR]
+  case(match.arg(what),
+    all = tp,
+    interval = {
+      if (length(tp) < 2L)
+        NA_real_
+      else {
+        diffs <- unique(tp[-1L] - tp[-length(tp)])
+        if (length(diffs) > 1L)
+          NA_real_
+        else
+          diffs[1L]
+      }
+    },
+    minmax =,
+    max = max(tp),
+    size = length(tp),
+    summary = summary(tp)
+  )
 }, sealed = SEALED)
 
 
@@ -270,147 +367,28 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 ################################################################################
 
 
-#' Measurements from selected wells
-#'
-#' Get measurements from specified well(s) stored in an \code{\link{OPM}}
-#' object. This function will always ignore the time points, in contrast to
-#' \code{\link{measurements}}.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param i Character or numeric vector with name(s) or position(s) of well(s).
-#'   Wells are originally named \sQuote{A01} to \sQuote{H12} but might have been
-#'   subset beforehand. \code{i} can also be a formula, allowing for sequences
-#'   of well coordinates. See the examples.
-#' @param drop Logical scalar. If only a single well was selected, simplify it
-#'   to a vector?
-#' @param ... Optional arguments passed between the methods.
-#' @return Numeric matrix or vector (depending on \code{i} and \code{drop}).
-#' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @note Do not confuse this with \code{\link{wells}}.
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' head(x <- well(vaas_1, "B04")) # => numeric vector
-#' stopifnot(is.numeric(x), length(x) == 384)
-#' head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
-#' stopifnot(is.matrix(x), dim(x) == c(384, 2))
-#' # selecting adjacent wells is easer if using a formula
-#' head(x <- well(vaas_1, c("B12", "C01", "C02")))
-#' stopifnot(is.matrix(x), dim(x) == c(384, 3))
-#' head(y <- well(vaas_1, ~ B12:C02)) # => same result
-#' stopifnot(identical(x, y))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' head(x <- well(vaas_4, "B04"))[, 1:5] # => numeric matrix
-#' stopifnot(is.matrix(x), dim(x) == c(4, 384))
-#' head(y <- well(vaas_4, ~ B04))[, 1:5] # using a formula
-#' stopifnot(identical(x, y)) # => same result
-#'
-setGeneric("well", function(object, ...) standardGeneric("well"))
-
-setMethod("well", OPM, function(object, i, drop = TRUE) {
-  object@measurements[, -1L, drop = FALSE][,
-    well_index(i, colnames(object@measurements)[-1L]), drop = drop]
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Overall measuring hours
-#'
-#' Get the total number of measurements hours as stored in an \code{\link{OPM}}
-#' object.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param what Character scalar determining the output mode as follows:
-#'   \describe{
-#'     \item{all}{Numeric vector: all time points, in order.}
-#'     \item{interval}{The difference between each pair of adjacent time
-#'       points, \code{NA} if this is irregular or only one time point is left.}
-#'     \item{max}{Numeric scalar: the largest time point.}
-#'     \item{minmax}{Numeric scalar: the smallest maximum. For \code{\link{OPM}}
-#'       objects this is apparently identical to \sQuote{max}.}
-#'     \item{size}{Integer scalar: the number of time points.}
-#'     \item{summary}{Display a summary.}
-#'   }
-#' @param ... Optional arguments passed between the methods.
-#' @return Dependent on the \code{what} argument; see there.
-#' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- hours(vaas_1)) # the default is 'max'
-#' stopifnot(identical(x, 95.75))
-#' (x <- hours(vaas_1, "minmax"))
-#' stopifnot(identical(x, 95.75))
-#' (x <- hours(vaas_1, "summary"))
-#' stopifnot(is.table(x))
-#' (x <- hours(vaas_1, "interval"))
-#' stopifnot(identical(x, 0.25))
-#' (x <- hours(vaas_1, "size"))
-#' stopifnot(identical(x, 384L))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- hours(vaas_4)) # all with the same overall running time
-#' stopifnot(length(x) == 4, x == 95.75)
-#'
-setGeneric("hours", function(object, ...) standardGeneric("hours"))
-
-setMethod("hours", OPM, function(object,
-    what = c("max", "all", "size", "summary", "interval", "minmax")) {
-  tp <- object@measurements[, HOUR]
-  case(match.arg(what),
-    all = tp,
-    interval = {
-      if (length(tp) < 2L)
-        NA_real_
-      else {
-        diffs <- unique(tp[-1L] - tp[-length(tp)])
-        if (length(diffs) > 1L)
-          NA_real_
-        else
-          diffs[1L]
-      }
-    },
-    minmax =,
-    max = max(tp),
-    size = length(tp),
-    summary = summary(tp)
-  )
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 ## NOTE: 'max' is part of the S4 summary group generic and needs no
 ## setGeneric().
 
 
-#' Maximum
+#' Overall or minimal maximum
 #'
-#' Get the maximal value of all wells or (a) specified one(s). The
-#' \code{\link{OPMS}} method works by calling the \code{\link{OPM}} method on
-#' all plates and then determining the overall maximum.
+#' Get the maximum of all wells or (a) specified one(s), or their smallest
+#' maximum. The \code{\link{OPMS}} method works by calling the \code{\link{OPM}}
+#' method on all plates and then determining the overall maximum or overall
+#' minimum of the maxima.
 #'
 #' @param x \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Coordinate of one to several wells. If missing, the maximum of all
-#'   wells is returned. See \code{\link{well}} for details.
+#' @param ... Coordinate of one to several wells. If missing, the maximum or
+#'   smallest of all wells is returned. See \code{\link{well}} for details. If
+#'   only as single well is selected, the result of \code{minmax} is actually
+#'   identical to the one of \code{max}.
 #' @param na.rm Logical scalar. See \code{max} from the \pkg{base} package. Has
 #'   no effect here because \code{NA} values are not allowed within the
 #'   measurements.
 #' @return Numeric scalar.
 #' @export
-#' @seealso base::max
+#' @seealso base::max base::min
 #' @family getter-functions
 #' @keywords attribute dplot
 #' @examples
@@ -420,12 +398,16 @@ setMethod("hours", OPM, function(object,
 #' (x <- max(vaas_1))
 #' (y <- max(vaas_1, 1)) # this is the negative control
 #' stopifnot(x > y) # i.e., some stronger reactions present
+#' (x <- minmax(vaas_1))
+#' stopifnot(max(vaas_1) > x) # obviously
 #'
 #' # OPMS method
 #' data(vaas_4)
 #' (x <- max(vaas_4))
 #' (y <- max(vaas_4, 1)) # this is the negative control
 #' stopifnot(x > y) # i.e., some stronger reactions present
+#' (x <- minmax(vaas_4))
+#' stopifnot(max(vaas_4) > x) # obviously
 #'
 setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
   if (missing(...))
@@ -439,38 +421,10 @@ setMethod("max", OPMS, function(x, ..., na.rm = FALSE) {
     na.rm = na.rm)
 }, sealed = SEALED)
 
+#= minmax max
 
-################################################################################
-
-
-#' Smallest maximum
-#'
-#' Get the smallest maximum among all wells. The \code{\link{OPMS}} method works
-#' by calling the \code{\link{OPM}} method on all plates and then determining
-#' the overall minimum.
-#'
-#' @param x \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Coordinate of one to several wells. If missing, the smallest
-#'   maximum of all wells is returned. See \code{\link{well}} for details. If
-#'   only as single well is selected, the result is actually identical to the
-#'   one of \code{\link{max}}.
-#' @param na.rm Logical scalar. See \code{\link{max}}.
-#' @return Numeric scalar.
+#' @rdname max
 #' @export
-#' @seealso base::min base::max
-#' @family getter-functions
-#' @keywords attribute dplot
-#' @examples
-#'
-#' # OPM method
-#' data(vaas_1)
-#' (x <- minmax(vaas_1))
-#' stopifnot(max(vaas_1) > x) # obviously
-#'
-#' # OPMS method
-#' data(vaas_4)
-#' (x <- minmax(vaas_4))
-#' stopifnot(max(vaas_4) > x) # obviously
 #'
 setGeneric("minmax", function(x, ...) standardGeneric("minmax"))
 
@@ -487,36 +441,60 @@ setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
 ################################################################################
 
 
-## NOTE: 'dim' is a primitive and needs no setGeneric().
+## NOTE: 'dim' and 'length' are primitive and needs no setGeneric().
 
-#' Dimensions
+#' Get dimensions
 #'
 #' Get the dimensions of the measurements of an \code{\link{OPM}} object, or get
-#' the dimensions of an \code{\link{OPMS}} object. Note that this function
-#' cannot be used to determine the correspondence of the time points between all
-#' plates as it reports only the time points of the first plate. Instead the
-#' \code{\link{OPMS}} method of \code{\link{hours}} must be used.
+#' the dimensions of an \code{\link{OPMS}} object, or the number of plates
+#' stored in an \code{\link{OPMX}} object, or the indexes of all these plates.
 #'
-#' @param x \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @return For the \code{\link{OPM}} method, a two-element numeric vector
-#'   (number of time points and number of wells). For the \code{\link{OPMS}}
-#'   method, a numeric vector with (i) the number of contained \code{\link{OPM}}
-#'   objects, and (ii) and (iii) the dimensions of the first plate.
+#' @param x \code{\link{OPMX}} object.
+#' @param ... \code{\link{OPMS}} objects. Several ones can be provided, but all
+#'   but the first one are ignored. For reasons of comparability, the
+#'   \code{\link{OPM}} methodof \code{seq} deliberately results in an error.
+#' @return For the \code{\link{OPM}} method of \code{dim}, a two-element numeric
+#'   vector (number of time points and number of wells). For the
+#'   \code{\link{OPMS}} method, a numeric vector with (i) the number of
+#'   contained \code{\link{OPM}} objects, and (ii) and (iii) the dimensions of
+#'   the first plate. \code{length} returns an integer scalar. This \code{seq}
+#'   method yields an integer vector (starting with 1 and at least of length 2).
+#' @details
+#' Note that \code{dim} cannot be used to determine the correspondence of the
+#' time points between all plates as it reports only the time points of the
+#' first plate. Instead the \code{\link{OPMS}} method of \code{\link{hours}}
+#' must be used.
+#'
+#' \code{seq} yields the indexes of all plates contained in an
+#' \code{\link{OPMS}} object. This is mainly useful for looping over such
+#' objects. See \code{\link{[}} for a loop-construct usage example, and note
+#' that \code{\link{oapply}} is also available.
+#'
 #' @export
 #' @family getter-functions
 #' @keywords attribute
-#' @seealso base::dim
+#' @seealso base::dim base::length base::seq
 #' @examples
 #'
-#' # OPM method
+#' # OPM methods
 #' data(vaas_1)
 #' (x <- dim(vaas_1))
 #' stopifnot(identical(x, c(384L, 96L)))
+#' (x <- length(vaas_1))
+#' stopifnot(identical(x, 1L)) # 1 plate contained
+#' (x <- try(seq(vaas_1), silent = TRUE)) # deliberately yields an error
+#' stopifnot(inherits(x, "try-error"))
 #'
-#' # OPMS method
+#' # OPMS methods
 #' data(vaas_4)
 #' (x <- dim(vaas_4)) # 2nd value needs not be correct for all plates
 #' stopifnot(identical(x, c(4L, 384L, 96L)))
+#' (x <- length(vaas_4))
+#' stopifnot(identical(x, 4L)) # 4 plates contained
+#' (x <- seq(vaas_4))
+#' stopifnot(identical(x, 1:4)) # indexes for 4 plates
+#' (y <- seq(vaas_4, letters, LETTERS)) # other arguments are ignored
+#' stopifnot(identical(x, y))
 #'
 setMethod("dim", OPM, function(x) {
   dim(measurements(x)[, -1L, drop = FALSE])
@@ -526,61 +504,20 @@ setMethod("dim", OPMS, function(x) {
   c(length(x@plates), dim(x@plates[[1L]]))
 }, sealed = SEALED)
 
+#= length dim
 
-################################################################################
+setMethod("length", OPM, function(x) {
+  1L
+}, sealed = SEALED)
 
-
-#' OPMS length (number of plates)
-#'
-#' Get the number of plates stored in an \code{\link{OPMS}} object.
-#'
-#' @param x \code{\link{OPMS}} object.
-#' @return Numeric scalar.
-#' @export
-#' @family getter-functions
-#' @seealso base::length
-#' @keywords attribute
-#' @examples
-#' data(vaas_4)
-#' (x <- length(vaas_4))
-#' stopifnot(identical(x, 4L)) # 4 plates contained
-#'
 setMethod("length", OPMS, function(x) {
   length(x@plates)
 }, sealed = SEALED)
 
+#= seq dim
 
-################################################################################
-
-
-#' Sequence of plate indexes
-#'
-#' Get the indexes of all plates contained in an \code{\link{OPMS}} object. This
-#' is mainly useful for looping over such objects. See \code{\link{[}} for a
-#' loop-construct usage example, and note that \code{\link{oapply}} is also
-#' available.
-#'
-#' @param ... \code{\link{OPMS}} objects. Several ones can be provided, but all
-#'   but the first one are ignored. For reasons of comparability, the
-#'   \code{\link{OPM}} method deliberately results in an error.
-#' @return Integer vector (starting with 1 and at least of length 2).
+#' @rdname dim
 #' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @seealso base::seq
-#' @examples
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- seq(vaas_4))
-#' stopifnot(identical(x, 1:4)) # indexes for 4 plates
-#' (y <- seq(vaas_4, letters, LETTERS)) # other arguments are ignored
-#' stopifnot(identical(x, y))
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- try(seq(vaas_1), silent = TRUE)) # deliberately yields an error
-#' stopifnot(inherits(x, "try-error"))
 #'
 setGeneric("seq")
 
@@ -724,8 +661,8 @@ setMethod("wells", "missing", function(object, ...) {
 #' Information from input CSV file
 #'
 #' Information about the plate as originally read from the input \acronym{CSV}
-#' file. See \code{\link{read_opm}} and \code{\link{read_single_opm}} for
-#' reading such files.
+#' file (see \code{\link{read_opm}} and \code{\link{read_single_opm}} for
+#' reading such files).
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param keys Character vector (or other objects usable as vector index). An
@@ -733,27 +670,63 @@ setMethod("wells", "missing", function(object, ...) {
 #'   returned. By default it is an error to select non-existing items.
 #' @param strict Logical scalar indicating whether or not it is an error if
 #'   \code{keys} are not found.
+#' @param what Character scalar specifying a subset of the data.
 #' @param ... Optional arguments passed between the methods.
-#' @return Named character vector.
+#' @return Named character vector (unnamed character scalar in the case of
+#'   \code{filename}, \code{setup_time} and \code{filename} and if \code{what}
+#'   is not \sQuote{select}).
+#' @details \code{filename}, \code{setup_time} and \code{position} are
+#'   \strong{deprecated} convenience functions for some of the more important
+#'   entries of \code{csv_data}.
 #' @export
+#' @seealso base::strptime
 #' @family getter-functions
 #' @keywords attribute
 #' @examples
 #'
 #' # 'OPM' method
 #' data(vaas_1)
-#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to setup_time()
+#'
+#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup"'
 #' stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
+#'
+#' (x <- csv_data(vaas_1, what = "file")) # one file name (of course)
+#' stopifnot(is.character(x), length(x) == 1L)
+#'
+#' (x <- csv_data(vaas_1, what = "position")) # single position (of course)
+#' stopifnot(identical(x, " 7-B"))
+#'
+#' (x <- csv_data(vaas_1, what = "setup")) # single setup time (of course)
+#' # WARNING: It is unlikely that all OmniLog output has this setup time format
+#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
+#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
 #'
 #' # 'OPMS' method
 #' data(vaas_4)
+#'
 #' (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 #' stopifnot(is.character(x), length(x) == 4)
+#'
+#' (x <- csv_data(vaas_4, what = "file"))  # one file name per plate
+#' stopifnot(is.character(x), length(x) == 4L)
+#'
+#' (x <- csv_data(vaas_4, what = "position")) # one position per plate
+#' stopifnot(is.character(x), length(x) == length(vaas_4))
+#'
+#' (x <- csv_data(vaas_4, what = "setup")) # one setup time per plate
+#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
+#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 #'
 setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
 
 setMethod("csv_data", OPM, function(object, keys = character(),
-    strict = TRUE) {
+    strict = TRUE, what = c("select", "file", "setup", "position")) {
+  case(match.arg(what),
+    select = NULL,
+    file = return(object@csv_data[[CSV_NAMES[["FILE"]]]]),
+    setup = return(object@csv_data[[CSV_NAMES[["SETUP"]]]]),
+    position = return(object@csv_data[[CSV_NAMES[["POS"]]]])
+  )
   if (!length(keys) || all(is.na(keys) | !nzchar(keys)))
     return(object@csv_data)
   result <- object@csv_data[keys]
@@ -765,37 +738,40 @@ setMethod("csv_data", OPM, function(object, keys = character(),
   result
 }, sealed = SEALED)
 
+#= filename csv_data
 
-################################################################################
-
-
-#' Original input filename
-#'
-#' Get the name of the original \acronym{CSV} input file. This is a convenience
-#' function for one of the more important entries of \code{\link{csv_data}}.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Character scalar.
+#' @rdname csv_data
 #' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- filename(vaas_1)) # one file name (of course)
-#' stopifnot(is.character(x), length(x) == 1L)
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- filename(vaas_4))  # one file name per plate
-#' stopifnot(is.character(x), length(x) == 4L)
 #'
 setGeneric("filename", function(object, ...) standardGeneric("filename"))
 
 setMethod("filename", OPM, function(object) {
-  object@csv_data[[CSV_NAMES[["FILE"]]]]
+  warning("this function is deprecated -- use csv_data() instead")
+  csv_data(object, what = "file")
+}, sealed = SEALED)
+
+#= setup_time csv_data
+
+#' @rdname csv_data
+#' @export
+#'
+setGeneric("setup_time", function(object, ...) standardGeneric("setup_time"))
+
+setMethod("setup_time", OPM, function(object) {
+  warning("this function is deprecated -- use csv_data() instead")
+  csv_data(object, what = "setup")
+}, sealed = SEALED)
+
+#= position csv_data
+
+#' @rdname csv_data
+#' @export
+#'
+setGeneric("position", function(object, ...) standardGeneric("position"))
+
+setMethod("position", OPM, function(object) {
+  warning("this function is deprecated -- use csv_data() instead")
+  csv_data(object, what = "position")
 }, sealed = SEALED)
 
 
@@ -962,90 +938,17 @@ setMethod("plate_type", "missing", function(object, ...) {
 
 
 ################################################################################
-
-
-#' Setup time of the measuring
-#'
-#' Get the setup time of the PM experiment as recorded by the
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument. This is a
-#' convenience function for one of the more important entries of
-#' \code{\link{csv_data}}.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Character vector or \sQuote{POSIXlt} object.
-#' @seealso base::strptime
-#' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- setup_time(vaas_1)) # single setup time (of course)
-#' # WARNING: It is unlikely that all OmniLog output has this setup time format
-#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
-#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- setup_time(vaas_4)) # one setup time per plate
-#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
-#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
-#'
-setGeneric("setup_time", function(object, ...) standardGeneric("setup_time"))
-
-setMethod("setup_time", OPM, function(object) {
-  object@csv_data[[CSV_NAMES[["SETUP"]]]]
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Position of a plate
-#'
-#' Get the position of the plate within the
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument. This is a
-#' convenience function for one of the more important entries of
-#' \code{\link{csv_data}}.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Character scalar.
-#' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- position(vaas_1)) # single position (of course)
-#' stopifnot(identical(x, " 7-B"))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- position(vaas_4)) # one position per plate
-#' stopifnot(is.character(x), length(x) == length(vaas_4))
-#'
-setGeneric("position", function(object, ...) standardGeneric("position"))
-
-setMethod("position", OPM, function(object) {
-  object@csv_data[[CSV_NAMES[["POS"]]]]
-}, sealed = SEALED)
-
-
-################################################################################
 ################################################################################
 #
 # Other getter functions
 #
 
 
-#' Are aggregated data present?
+#' Are aggregated or discretized data present?
 #'
-#' Check whether aggregated data are present. This always returns \code{FALSE}
-#' for the \code{\link{OPM}} class, but not necessarily for its child classes.
+#' Check whether aggregated or discretized data are present. This always returns
+#' \code{FALSE} for the \code{\link{OPM}} class, but not necessarily for its
+#' child classes.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param ... Optional arguments passed between the methods.
@@ -1056,13 +959,13 @@ setMethod("position", OPM, function(object) {
 #' @note  See \code{\link{do_aggr}} for generating aggregated data.
 #' @examples
 #'
-#' # 'OPM' method
+#' # 'OPM' methods
 #' data(vaas_1)
-#' stopifnot(has_aggr(vaas_1))
+#' stopifnot(has_aggr(vaas_1), has_disc(vaas_1))
 #'
-#' # 'OPMS' method
+#' # 'OPMS' methods
 #' data(vaas_4)
-#' stopifnot(has_aggr(vaas_4))
+#' stopifnot(has_aggr(vaas_4), has_disc(vaas_4))
 #'
 setGeneric("has_aggr", function(object, ...) standardGeneric("has_aggr"))
 
@@ -1070,33 +973,10 @@ setMethod("has_aggr", OPM, function(object) {
   .hasSlot(object, "aggregated")
 }, sealed = SEALED)
 
+#= has_disc has_aggr
 
-################################################################################
-
-
-#' Are discretized data present?
-#'
-#' Check whether discretized data are present. This always returns \code{FALSE}
-#' for the \code{\link{OPM}} class, but not necessarily for its child classes.
-#'
-#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Logical vector, one element per plate.
+#' @rdname has_aggr
 #' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @note  See \code{\link{do_disc}} for generating discretized data.
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- has_disc(vaas_1))
-#' stopifnot(x)
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- has_disc(vaas_4))
-#' stopifnot(x)
 #'
 setGeneric("has_disc", function(object, ...) standardGeneric("has_disc"))
 
@@ -1142,12 +1022,12 @@ setGeneric("summary")
 setMethod("summary", OPM, function(object, ...) {
   result <- list(
     Class = class(object),
-    `From file` = filename(object),
+    `From file` = csv_data(object, what = "file"),
     `Hours measured` = hours(object),
     `Number of wells` = length(wells(object)),
     `Plate type` = plate_type(object),
-    Position = position(object),
-    `Setup time` = setup_time(object),
+    Position = csv_data(object, what = "position"),
+    `Setup time` = csv_data(object, what = "setup"),
     Metadata = sum(rapply(object@metadata, f = function(item) 1L)),
     Aggregated = has_aggr(object),
     Discretized = has_disc(object)
@@ -1175,13 +1055,11 @@ setMethod("summary", OPMS, function(object, ...) {
 #
 
 
-#' Get aggregated kinetic data
+#' Get aggregated data
 #'
-#' The aggregated values are the curve parameters. If bootstrapping was used,
-#' their CIs are included. The columns represent the wells, the rows the
-#' estimated parameters and their CIs.
+#' Get the aggregated kinetic data or the aggregation settings used.
 #'
-#' @param object \code{\link{OPMA}} object.
+#' @param object \code{\link{OPMA}} or \code{\link{OPMS}} object.
 #' @param subset Character vector. If not \code{NULL}, restrict to this or these
 #'   parameter(s). See \code{\link{param_names}} for the possible values.
 #' @param ci Logical scalar. Include the estimates of confidence intervals (CIs)
@@ -1206,11 +1084,16 @@ setMethod("summary", OPMS, function(object, ...) {
 #' @note See \code{\link{do_aggr}} for generating aggregated data.
 #' @export
 #' @family getter-functions
-#' @return Numeric matrix.
+#' @return \code{aggregated} yields a numeric matrix of aggregated values
+#'   (a.k.a. the curve parameters). If bootstrapping was used, their CIs are
+#'   included. The columns represent the wells, the rows the estimated
+#'   parameters and their CIs.
+#'
+#'   \code{aggr_settings} returns a named list. See the examples for details.
 #' @keywords attribute
 #' @examples
 #'
-#' # 'OPMA' method
+#' # 'OPMA' methods
 #' data(vaas_1)
 #' # Get full matrix
 #' (x <- aggregated(vaas_1))[, 1:3]
@@ -1221,11 +1104,17 @@ setMethod("summary", OPMS, function(object, ...) {
 #' # Now with lambda correction
 #' (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
+#' # settings
+#' (x <- aggr_settings(vaas_1)) # yields named list
+#' stopifnot(is.list(x), !is.null(names(x)))
 #'
-#' # 'OPMS' method
+#' # 'OPMS' methods
 #' data(vaas_4)
 #' summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
+#' # settings
+#' summary(x <- aggr_settings(vaas_4)) # list of named lists, one per plate
+#' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 #'
 setGeneric("aggregated", function(object, ...) standardGeneric("aggregated"))
 
@@ -1273,32 +1162,10 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
 
 }, sealed = SEALED)
 
+#= aggr_settings aggregated
 
-################################################################################
-
-
-#' Get aggregation settings
-#'
-#' The settings used for aggregating the kinetic data.
-#'
-#' @param object \code{\link{OPMA}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Named list. See the examples for details.
+#' @rdname aggregated
 #' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @note  See \code{\link{do_aggr}} for generating aggregated data.
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- aggr_settings(vaas_1)) # yields named list
-#' stopifnot(is.list(x), !is.null(names(x)))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' summary(x <- aggr_settings(vaas_4)) # list of named lists, one per plate
-#' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 #'
 setGeneric("aggr_settings",
   function(object, ...) standardGeneric("aggr_settings"))
@@ -1311,31 +1178,36 @@ setMethod("aggr_settings", OPMA, function(object) {
 ################################################################################
 
 
-#' Get discretized kinetic data
+#' Get discretized data
 #'
-#' This yields the discretized values of the curve parameter \sQuote{maximum
-#' height}.
+#' Get the discretized kinetic data or the discretization settings used.
 #'
 #' @param object \code{\link{OPMD}} or \code{\link{OPMS}} object.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @family getter-functions
-#' @return Logical vector or matrix.
+#' @return Logical vector or matrix in the case of \code{discretized}, named
+#'   list in the case of \code{disc_settings}. See the examples for details.
 #' @keywords attribute
 #' @note  See \code{\link{do_disc}} for generating discretized data.
 #' @examples
 #'
-#' # 'OPM' method
+#' # 'OPM' methods
 #' data(vaas_1)
 #' (x <- discretized(vaas_1))[1:3] # => logical vector
 #' stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
+#' (x <- disc_settings(vaas_1)) # => named list
+#' stopifnot(is.list(x), !is.null(names(x)))
 #'
-#' # 'OPMS' method
+#' # 'OPMS' methods
 #' data(vaas_4)
 #' (x <- discretized(vaas_4))[, 1:3] # => logical matrix
 #' stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 #' stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
+#' summary(x <- disc_settings(vaas_4)) # => list of named lists, one per plate
+#' stopifnot(is.list(x), is.null(names(x)), length(x) == length(vaas_4))
+#' stopifnot(duplicated(x)[-1])
 #'
 setGeneric("discretized", function(object, ...) standardGeneric("discretized"))
 
@@ -1343,33 +1215,10 @@ setMethod("discretized", OPMD, function(object) {
   object@discretized
 }, sealed = SEALED)
 
+#= disc_settings discretized
 
-################################################################################
-
-
-#' Get discretization settings
-#'
-#' The settings used for discretizing the aggregated kinetic data.
-#'
-#' @param object \code{\link{OPMD}} object.
-#' @param ... Optional arguments passed between the methods.
-#' @return Named list. See the examples for details.
+#' @rdname discretized
 #' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @note  See \code{\link{do_disc}} for generating discretized data.
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- disc_settings(vaas_1)) # => named list
-#' stopifnot(is.list(x), !is.null(names(x)))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' summary(x <- disc_settings(vaas_4)) # => list of named lists, one per plate
-#' stopifnot(is.list(x), is.null(names(x)), length(x) == length(vaas_4))
-#' stopifnot(duplicated(x)[-1])
 #'
 setGeneric("disc_settings",
   function(object, ...) standardGeneric("disc_settings"))
@@ -1678,9 +1527,9 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
 #'
 #' Check whether duplicated \code{\link{OPM}} or \code{\link{OPMA}} objects are
 #' contained within an \code{\link{OPMS}} object. For reasons of consistency,
-#' the \code{\link{OPM}} method always returns \code{FALSE}.
+#' the \code{\link{OPM}} methods always returns \code{FALSE} or \code{0}.
 #'
-#' @param x \code{\link{OPMS}} object.
+#' @param x \code{\link{OPMX}} object.
 #' @param  incomparables Vector passed to \code{duplicated} from the \pkg{base}
 #'   package. By default this is \code{FALSE}.
 #' @param what Indicating which parts of \code{x} should be compared. If a
@@ -1696,18 +1545,26 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
 #' @param ... Optional arguments passed to \code{duplicated} from the \pkg{base}
 #'   package.
 #' @export
-#' @return Logical vector.
+#' @return Logical vector in the case of \code{duplicated}, integer scalar in
+#'   the case of \code{anyDuplicated}. \code{0} if no values are duplicated, the
+#'   index of the first or last (depending on \code{fromLast}) duplicated object
+#'   otherwise.
 #' @family getter-functions
 #' @keywords attribute
-#' @seealso base::duplicated
+#' @seealso base::duplicated base::anyDuplicated
 #' @examples
 #'
-#' # 'OPM' method
+#' # 'OPM' methods
 #' data(vaas_1)
 #' (x <- duplicated(vaas_1)) # 1 element => nothing duplicated
 #' stopifnot(identical(x, FALSE))
 #'
-#' # 'OPMS' method
+#' (x <- anyDuplicated(vaas_1))
+#' stopifnot(identical(x, 0L)) # no complete plate duplicated
+#' (x <- anyDuplicated(vaas_1, what = list("Strain", "Species")))
+#' stopifnot(identical(x, 0L)) # no organisms duplicated
+#'
+#' # 'OPMS' methods
 #' data(vaas_4)
 #' stopifnot(!duplicated(vaas_4)) # => no complete plates duplicated
 #' stopifnot(!duplicated(vaas_4, what = list("Species", "Strain")))
@@ -1716,6 +1573,14 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
 #' # => species duplicated
 #' x <- vaas_4[c(1, 1)] # => complete plate duplicated
 #' stopifnot(c(FALSE, TRUE) == duplicated(x))
+#'
+#' stopifnot(identical(anyDuplicated(vaas_4), 0L))
+#' stopifnot(identical(anyDuplicated(vaas_4, what = list("Strain")), 0L))
+#' # => no strains duplicated
+#' stopifnot(identical(anyDuplicated(vaas_4, what = list("Species")), 2L))
+#' # => species duplicated
+#' x <- vaas_4[c(1, 1)] # complete plate duplicated
+#' stopifnot(identical(anyDuplicated(x), 2L))
 #'
 setGeneric("duplicated")
 
@@ -1732,52 +1597,16 @@ setMethod("duplicated", c(OPMS, "ANY"), function(x, incomparables,
   selection <- tryCatch(match.arg(what), error = function(e) "other")
   duplicated(x = case(selection,
     all = x@plates,
-    csv = cbind(setup_time(x), position(x)),
+    csv = cbind(csv_data(x, what = "setup"), csv_data(x, what = "position")),
     metadata = metadata(x),
     other = metadata(object = x, key = what)
   ), incomparables = incomparables, ...)
 }, sealed = SEALED)
 
+#= anyDuplicated duplicated
 
-################################################################################
-
-
-#' Determine whether plates are duplicated
-#'
-#' Check whether duplicated \code{\link{OPM}} or \code{\link{OPMA}} objects are
-#' contained within an \code{\link{OPMS}} object.  For reasons of consistency,
-#' the \code{\link{OPM}} method always returns \code{0}.
-#'
-#' @param x \code{\link{OPMS}} object.
-#' @param incomparables Vector passed to \code{\link{duplicated}}. The default
-#'   is \code{FALSE}.
-#' @param ... Optional arguments passed to \code{\link{duplicated}}. See the
-#'   examples.
+#' @rdname duplicated
 #' @export
-#' @return Integer scalar. \code{0} if no values are duplicated, the index of
-#'   the first or last (depending on \code{fromLast}) duplicated object
-#'   otherwise.
-#' @seealso base::anyDuplicated
-#' @family getter-functions
-#' @keywords attribute
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- anyDuplicated(vaas_1))
-#' stopifnot(identical(x, 0L)) # no complete plate duplicated
-#' (x <- anyDuplicated(vaas_1, what = list("Strain", "Species")))
-#' stopifnot(identical(x, 0L)) # no organisms duplicated
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' stopifnot(identical(anyDuplicated(vaas_4), 0L))
-#' stopifnot(identical(anyDuplicated(vaas_4, what = list("Strain")), 0L))
-#' # => no strains duplicated
-#' stopifnot(identical(anyDuplicated(vaas_4, what = list("Species")), 2L))
-#' # => species duplicated
-#' x <- vaas_4[c(1, 1)] # complete plate duplicated
-#' stopifnot(identical(anyDuplicated(x), 2L))
 #'
 setGeneric("anyDuplicated")
 

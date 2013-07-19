@@ -284,7 +284,8 @@ if (length(test.files) > 0) { # if the files are found
   \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
-  \code{\link{opm_files}}, \code{\link{read_opm}},
+  \code{\link{glob_to_regex}},
+      \code{\link{opm_files}}, \code{\link{read_opm}},
   \code{\link{read_single_opm}}, \code{\link{split_files}},
   \code{\link{to_metadata}}
 }

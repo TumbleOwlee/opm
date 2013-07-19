@@ -214,9 +214,8 @@ stopifnot(levels(x) == y, names(y) == y)
   base::class base::storage.mode base::as.vector
 
   Other auxiliary-functions: \code{\link{contains}},
-  \code{\link{glob_to_regex}}, \code{\link{kubrick}},
-  \code{\link{map_names}}, \code{\link{opm_opt}},
-  \code{\link{separate}}
+  \code{\link{kubrick}}, \code{\link{map_names}},
+  \code{\link{opm_opt}}, \code{\link{separate}}
 }
 \keyword{list}
 \keyword{manip}

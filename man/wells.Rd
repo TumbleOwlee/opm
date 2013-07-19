@@ -111,13 +111,12 @@ stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
   \code{\link{disc_settings}}, \code{\link{discretized}},
   \code{\link{duplicated}}, \code{\link{filename}},
   \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{hours}}, \code{\link{length}},
-  \code{\link{max}}, \code{\link{measurements}},
-  \code{\link{metadata}}, \code{\link{minmax}},
-  \code{\link{plate_type}}, \code{\link{position}},
-  \code{\link{seq}}, \code{\link{setup_time}},
-  \code{\link{subset}}, \code{\link{summary}},
-  \code{\link{well}}
+  \code{\link{hours}}, \code{\link{max}},
+  \code{\link{measurements}}, \code{\link{metadata}},
+  \code{\link{minmax}}, \code{\link{plate_type}},
+  \code{\link{position}}, \code{\link{seq}},
+  \code{\link{setup_time}}, \code{\link{subset}},
+  \code{\link{summary}}, \code{\link{well}}
 }
 \keyword{attribute}
 

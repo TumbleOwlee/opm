@@ -649,12 +649,16 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #
 
 
-#' Sort OPMS objects
+#' Sort, unify, revert or repeat OPMS objects
 #'
 #' Sort an \code{\link{OPMS}} object based on one to several metadata or
-#' \acronym{CSV} data entries. There is also an \code{\link{OPM}} method which
-#' returns the input data (to avoid destructive effects due to the way the
-#' default \code{sort} interacts with \code{\link{OPM}} indexing).
+#' \acronym{CSV} data entries, or check whether duplicated \code{\link{OPM}} or
+#' \code{\link{OPMA}} objects are contained within an \code{\link{OPMS}} object
+#' and remove the duplicated ones, or revert the order of plates within an
+#' \code{\link{OPMS}} object. Alternatively, repeat \code{\link{OPMS}} or
+#' \code{\link{OPM}} objects zero times, once, or several times, and accordingly
+#' create a novel \code{\link{OPMS}} or \code{\link{OPM}} object (\code{NULL} if
+#' zero length is chosen).
 #'
 #' @param x \code{\link{OPMS}} or \code{\link{OPM}} object.
 #' @param decreasing Logical scalar. Passed to \code{order} from the \pkg{base}
@@ -679,16 +683,37 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'   \code{\link{metadata}} of some of the \code{\link{plates}} but not in
 #'   those of others.
 #' @param na.last Logical scalar. Also passed to \code{order}.
-#' @param ... Optional arguments passed between the methods.
+#' @param incomparables Vector passed to \code{\link{duplicated}}. The default
+#'   is \code{FALSE}.
+#' @param ... Optional arguments passed between the methods or to
+#'   \code{\link{duplicated}} or to \code{rep} from the \pkg{base} package. See
+#'   the examples.
 #' @export
 #' @return \code{\link{OPMS}} object with not necessarily the same order of
 #'   plates than before, or \code{\link{OPM}} object.
+#' @details
+#'   The \code{sort} \code{\link{OPM}} method just returns the input data to
+#'   avoid destructive effects due to the way the default \code{sort} interacts
+#'   with \code{\link{OPM}} indexing.
+#'
+#'   \code{rev} should be slightly more efficient than calling the default
+#'   \code{rev} method. There is also an \code{\link{OPM}} method which just
+#'   returns the input data (to avoid destructive effects due to the way the
+#'   default \code{rev} interacts with \code{\link{OPM}} indexing).
+#'
+#'   The \code{\link{OPM}} method of \code{unique} also returns
+#'   the passed object.
+#'
+#'   \code{rev} yields an \code{\link{OPMS}} object with another number of
+#'   plates, or an \code{\link{OPM}} object, or \code{NULL}.
+#'
 #' @family conversion-functions
 #' @keywords manip
-#' @seealso base::order base::sort base::strptime
+#' @seealso base::order base::sort base::strptime base::unique base::rev
+#' @seealso base::rep
 #' @examples
 #'
-#' ## 'OPMS' method
+#' ## 'OPMS' methods
 #' data(vaas_4)
 #'
 #' # Existing keys
@@ -706,18 +731,54 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'
 #' # CSV-data based
 #' copy <- sort(vaas_4) # default: by setup time
-#' setup_time(vaas_4)
-#' setup_time(copy)
+#' csv_data(vaas_4, what = "setup")
+#' csv_data(copy, what = "setup")
 #' stopifnot(!identical(copy, vaas_4))
 #' copy <- sort(vaas_4, by = c("Position", "Setup Time"))
-#' position(vaas_4)
-#' position(copy)
-#' stopifnot(!is.unsorted(position(copy)), is.unsorted(position(vaas_4)))
+#' csv_data(vaas_4, what = "position")
+#' csv_data(copy, what = "position")
+#' stopifnot(!is.unsorted(csv_data(copy, what = "position")))
+#' stopifnot(is.unsorted(csv_data(vaas_4, what = "position")))
 #'
-#' ## 'OPMS' method
+#' # making OPMS objects unique
+#' dim(x <- unique(vaas_4))
+#' stopifnot(identical(x, vaas_4))
+#' dim(x <- unique(c(vaas_4, vaas_4)))
+#' stopifnot(identical(x, vaas_4))
+#' dim(x <- unique(vaas_4, what = "Species")) # species are not unique
+#' stopifnot(dim(x)[1L] < dim(vaas_4)[1L])
+#' dim(x <- unique(vaas_4, what = list("Species", "Strain")))
+#' stopifnot(identical(x, vaas_4)) # organisms are unique
+#'
+#' # reverting an OPMS object
+#' dim(x <- rev(vaas_4))
+#' stopifnot(dim(x) == dim(vaas_4), !identical(x, vaas_4))
+#' stopifnot(identical(rev(x), vaas_4))
+#'
+#' # repeating an OPMS object
+#' dim(x <- rep(vaas_4))
+#' stopifnot(identical(x, vaas_4))
+#' dim(x <- rep(vaas_4, times = 2))
+#' stopifnot(length(x) == length(vaas_4) * 2)
+#' dim(y <- rep(vaas_4, each = 2))
+#' stopifnot(length(y) == length(vaas_4) * 2, !identical(x, y))
+#' stopifnot(is.null(rep(vaas_4, 0)))
+#'
+#' ## 'OPM' methods
 #' data(vaas_1)
 #' summary(x <- sort(vaas_1))
 #' stopifnot(identical(x, vaas_1))
+#' dim(x <- unique(vaas_1)) # trivial
+#' stopifnot(identical(x, vaas_1))
+#' dim(x <- unique(vaas_1, what = list("Species", "Strain")))
+#' stopifnot(identical(x, vaas_1))
+#' dim(x <- rev(vaas_1)) # trivial
+#' stopifnot(identical(x, vaas_1))
+#' dim(x <- rep(vaas_1, 1))
+#' stopifnot(identical(x, vaas_1))
+#' dim(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
+#' stopifnot(length(x) == 2, is(x, "OPMS"))
+#' stopifnot(is.null(rep(vaas_4, 0)))
 #'
 setGeneric("sort")
 
@@ -742,11 +803,11 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
       stop("'by' must not be empty"),
       list(switch(by,
         setup_time = if (L(parse))
-          must(parse_time(setup_time(x)))
+          must(parse_time(csv_data(x, what = "setup")))
         else
-          setup_time(x),
-        position = position(x),
-        filename = filename(x),
+          csv_data(x, what = "setup"),
+        position = csv_data(x, what = "position"),
+        filename = csv_data(x, what = "file"),
         stop(sprintf("if a character scalar, 'by' must not be '%s'", by))
       )),
       lapply(X = by, FUN = csv_data, object = x)
@@ -759,45 +820,10 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
   x
 }, sealed = SEALED)
 
+#= unique sort
 
-################################################################################
-
-
-#' Make OPMS objects unique
-#'
-#' Check whether duplicated \code{\link{OPM}} or \code{\link{OPMA}} objects are
-#' contained within an \code{\link{OPMS}} object and remove the duplicated ones.
-#' The \code{\link{OPM}} method just returns the object passed.
-#'
-#' @param x \code{\link{OPMS}} or \code{\link{OPM}} object.
-#' @param incomparables Vector passed to \code{\link{duplicated}}. The default
-#'   is \code{FALSE}.
-#' @param ... Optional further arguments passed to \code{\link{duplicated}}. See
-#'   the examples.
+#' @rdname sort
 #' @export
-#' @return \code{\link{OPMS}} or \code{\link{OPM}} object or \code{NULL}.
-#' @family conversion-functions
-#' @keywords manip
-#' @seealso base::unique
-#' @examples
-#'
-#' ## 'OPMS' method
-#' data(vaas_4)
-#' dim(x <- unique(vaas_4))
-#' stopifnot(identical(x, vaas_4))
-#' dim(x <- unique(c(vaas_4, vaas_4)))
-#' stopifnot(identical(x, vaas_4))
-#' dim(x <- unique(vaas_4, what = "Species")) # species are not unique
-#' stopifnot(dim(x)[1L] < dim(vaas_4)[1L])
-#' dim(x <- unique(vaas_4, what = list("Species", "Strain")))
-#' stopifnot(identical(x, vaas_4)) # organisms are unique
-#'
-#' ## 'OPM' method
-#' data(vaas_1)
-#' dim(x <- unique(vaas_1)) # trivial
-#' stopifnot(identical(x, vaas_1))
-#' dim(x <- unique(vaas_1, what = list("Species", "Strain")))
-#' stopifnot(identical(x, vaas_1))
 #'
 setGeneric("unique")
 
@@ -813,37 +839,10 @@ setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
   x[!duplicated(x = x, incomparables = incomparables, ...)]
 }, sealed = SEALED)
 
+#= rev sort
 
-################################################################################
-
-
-#' Revert OPMS objects
-#'
-#' Revert the order of plates within an \code{\link{OPMS}} object. This should
-#' be slightly more efficient than calling the default \code{rev} method. There
-#' is also an \code{\link{OPM}} method which just returns the input data (to
-#' avoid destructive effects due to the way the default \code{rev} interacts
-#' with \code{\link{OPM}} indexing).
-#'
-#' @param x \code{\link{OPMS}} or \code{\link{OPM}} object.
+#' @rdname sort
 #' @export
-#' @return \code{\link{OPMS}} object with the reversed order of plates, or
-#'   \code{\link{OPM}} object.
-#' @family conversion-functions
-#' @keywords manip
-#' @seealso base::rev
-#' @examples
-#'
-#' ## 'OPMS' method
-#' data(vaas_4)
-#' dim(x <- rev(vaas_4))
-#' stopifnot(dim(x) == dim(vaas_4), !identical(x, vaas_4))
-#' stopifnot(identical(rev(x), vaas_4))
-#'
-#' ## 'OPMS' method
-#' data(vaas_1)
-#' dim(x <- rev(vaas_1)) # trivial
-#' stopifnot(identical(x, vaas_1))
 #'
 setGeneric("rev")
 
@@ -856,44 +855,10 @@ setMethod("rev", OPMS, function(x) {
   x
 }, sealed = SEALED)
 
+#= rep sort
 
-################################################################################
-
-
-#' Repeat OPMS objects
-#'
-#' Repeat \code{\link{OPMS}} or \code{\link{OPM}} objects zero times, once, or
-#' several times, and accordingly create a novel \code{\link{OPMS}} or
-#' \code{\link{OPM}} object (\code{NULL} if zero length is chosen).
-#'
-#' @param x \code{\link{OPMS}} or \code{\link{OPM}} object.
-#' @param ... Optional parameters passed to \code{rep} from the \pkg{base}
-#'   package.
+#' @rdname sort
 #' @export
-#' @return \code{\link{OPMS}} object with another number of plates, or or
-#'   \code{\link{OPM}} object, or \code{NULL}.
-#' @family conversion-functions
-#' @keywords manip
-#' @seealso base::rep
-#' @examples
-#'
-#' ## 'OPMS' method
-#' data(vaas_4)
-#' dim(x <- rep(vaas_4))
-#' stopifnot(identical(x, vaas_4))
-#' dim(x <- rep(vaas_4, times = 2))
-#' stopifnot(length(x) == length(vaas_4) * 2)
-#' dim(y <- rep(vaas_4, each = 2))
-#' stopifnot(length(y) == length(vaas_4) * 2, !identical(x, y))
-#' stopifnot(is.null(rep(vaas_4, 0)))
-#'
-#' ## 'OPM' method
-#' data(vaas_1)
-#' dim(x <- rep(vaas_1, 1))
-#' stopifnot(identical(x, vaas_1))
-#' dim(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
-#' stopifnot(length(x) == 2, is(x, "OPMS"))
-#' stopifnot(is.null(rep(vaas_4, 0)))
 #'
 setGeneric("rep")
 

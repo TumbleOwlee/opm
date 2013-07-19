@@ -3,6 +3,9 @@
 \alias{batch_process}
 \alias{explode_dir}
 \alias{file_pattern}
+\alias{glob_to_regex}
+\alias{glob_to_regex.character}
+\alias{glob_to_regex.factor}
 \title{Batch processing of files}
 \usage{
   explode_dir(names, include = NULL, exclude = NULL,
@@ -21,10 +24,18 @@
 
   file_pattern(type = c("both", "csv", "yaml", "json", "any", "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs"))
+
+  glob_to_regex(object)
+
+  \method{glob_to_regex}{character} (object)
+
+  \method{glob_to_regex}{factor} (object)
 }
 \arguments{
   \item{names}{Character vector containing filenames or
   directories, or convertible to such.}
+
+  \item{object}{Character vector or factor.}
 
   \item{include}{If a character scalar, used as regular
   expression or wildcard (see the \code{wildcard} argument)
@@ -47,9 +58,8 @@
   \code{exclude} wildcards (as used by UNIX shells) that
   first need to be concerted to regular expressions? Has no
   effect if lists are used for \code{include} or
-  \code{exclude}, respectively. See
-  \code{\link{glob_to_regex}} for details on such wildcards
-  (a.k.a. globbing patterns).}
+  \code{exclude}, respectively. See below for details on
+  such wildcards (a.k.a. globbing patterns).}
 
   \item{recursive}{Logical scalar. Traverse directories
   recursively and also consider all subdirectories? See
@@ -157,14 +167,16 @@
   above.
 
   \code{file_pattern} yields a character scalar, holding a
-  regular expression.
+  regular expression. \code{glob_to_regex} yields a vector
+  of regular expressions.
 }
 \description{
   Batch-collect information from a series of input files or
   batch-convert data from infiles to data in outfiles.
   Alternatively, turn a mixed file/directory list into a
   list of files or create a regular expression matching
-  certain file extensions. These functions are not normally
+  certain file extensions, or convert a wildcard pattern to
+  a regular expression. These functions are not normally
   directly called by an \pkg{opm} user but by the other IO
   functions of the package such as
   \code{\link{collect_template}} or
@@ -172,12 +184,39 @@
   argument directly for testing the results of the applied
   filename patterns.
 }
-\note{
-  Other functions that call \code{explode_dir} should have
-  a \code{demo} argument which, if set to \code{TRUE},
-  caused the respective function to do no real work but
-  print the names of the files that it would process in
-  normal running mode.
+\details{
+  Other functions that call \code{explode_dir} have a
+  \code{demo} argument which, if set to \code{TRUE}, caused
+  the respective function to do no real work but print the
+  names of the files that it would process in normal
+  running mode.
+
+  \code{glob_to_regex} changes a shell globbing wildcard
+  into a regular expression. This is just a slightly
+  extended version of \code{glob2rx} from the \pkg{utils}
+  package, but more conversion steps might need to be added
+  here in the future. Particularly
+  \code{\link{explode_dir}} and the IO functions calling
+  that function internally use \code{glob_to_regex}. Some
+  hints when using globbing patterns are given in the
+  following.
+
+  The here used globbing search patterns contain only two
+  special characters, \sQuote{?} and \sQuote{*}, and are
+  thus more easy to master than regular expressions.
+  \sQuote{?} matches a single arbitrary character, whereas
+  \sQuote{*} matches zero to an arbitrary number of
+  arbitrary characters. Some examples: \describe{
+  \item{a?c}{Matches \sQuote{abc}, \sQuote{axc}, \sQuote{a
+  c} etc. but not \sQuote{abbc}, \sQuote{abbbc},
+  \sQuote{ac} etc.} \item{a*c}{Matches \sQuote{abc},
+  \sQuote{abbc}, \sQuote{ac} etc. but not \sQuote{abd}
+  etc.} \item{ab*}{Matches \sQuote{abc}, \sQuote{abcdefg},
+  \sQuote{abXYZ} etc.  but not \sQuote{acdefg} etc.}
+  \item{?bc}{Matches \sQuote{abc}, \sQuote{Xbc}, \sQuote{
+  bc} etc. but not \sQuote{aabc}, \sQuote{abbc},
+  \sQuote{bc} etc.} } Despite their simplicity, globbing
+  patterns are often sufficient for selecting filenames.
 }
 \examples{
 # explode_dir()
@@ -197,10 +236,6 @@ stopifnot(length(y) == length(x))
 (y <- explode_dir(R.home(), include = "*/doc/html/*", exclude = "*.html"))
 stopifnot(length(x) == 0L || length(x) > length(y))
 
-# More interesting use cases are provided by the functions that call
-# explode_dir(). Consider to first try them in 'demo' mode. Globbing
-# examples are given under glob_to_regex().
-
 # batch_collect()
 # Read the first line from each of the OPM test dataset files
 f <- opm_files("testdata")
@@ -213,6 +248,7 @@ if (length(f) > 0) { # if the files are found
 } else {
   warning("test files not found")
 }
+# For serious tasks, consider to first try the function in 'demo' mode.
 
 # batch_process()
 # Read the first line from each of the OPM test dataset files and store it
@@ -228,6 +264,7 @@ if (length(infiles) > 0) { # if the files are found
 } else {
   warning("test files not found")
 }
+# For serious tasks, consider to first try the function in 'demo' mode.
 
 # file_pattern()
 (x <- file_pattern())
@@ -237,9 +274,18 @@ stopifnot(nchar(x) > nchar(y))
 (files <- list.files(pattern = "[.]"))
 (x <- file_pattern(I(files))) # I() causes 'literally' to be TRUE
 stopifnot(grepl(x, files, ignore.case = TRUE))
+
+# glob_to_regex()
+x <- "*what glob2rx() can't handle because a '+' is included*"
+(y <- glob_to_regex(x))
+(z <- glob2rx(x))
+stopifnot(!identical(y, z))
+# Factor method
+(z <- glob_to_regex(as.factor(x)))
+stopifnot(identical(as.factor(y), z))
 }
 \seealso{
-  base::list.files base::Sys.glo
+  base::list.files base::Sys.glo utils::glob2rx base::regex
 
   Other io-functions: \code{\link{batch_opm}},
   \code{\link{clean_filenames}},

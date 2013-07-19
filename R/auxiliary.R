@@ -828,68 +828,6 @@ setMethod("separate", "data.frame", function(object, split = opm_opt("split"),
 ################################################################################
 
 
-#' Convert wildcard to regular expression
-#'
-#' Change a shell globbing wildcard into a regular expression. This is just a
-#' slightly extended version of \code{glob2rx} from the \pkg{utils} package, but
-#' more conversion steps might need to be added here in the future.
-#'
-#' @param object Character vector or factor.
-#' @export
-#' @return Character vector (or factor).
-#' @family auxiliary-functions
-#' @keywords character
-#' @seealso utils::glob2rx base::regex
-#' @details This is not normally directly called by an \pkg{opm} user because
-#'   particularly \code{\link{explode_dir}} and the IO functions calling that
-#'   function internally use \code{glob_to_regex} anyway. But some hints when
-#'   using globbing patterns are given in the following.
-#'
-#'   The here used globbing search patterns contain only two special characters,
-#'   \sQuote{?} and \sQuote{*}, and are thus more easy to master than regular
-#'   expressions. \sQuote{?} matches a single arbitrary character, whereas
-#'   \sQuote{*} matches zero to an arbitrary number of arbitrary characters.
-#'   Some examples:
-#'   \describe{
-#'     \item{a?c}{Matches \sQuote{abc}, \sQuote{axc}, \sQuote{a c} etc. but not
-#'       \sQuote{abbc}, \sQuote{abbbc}, \sQuote{ac} etc.}
-#'     \item{a*c}{Matches \sQuote{abc}, \sQuote{abbc}, \sQuote{ac} etc. but not
-#'       \sQuote{abd} etc.}
-#'     \item{ab*}{Matches \sQuote{abc}, \sQuote{abcdefg}, \sQuote{abXYZ} etc.
-#'       but not \sQuote{acdefg} etc.}
-#'     \item{?bc}{Matches \sQuote{abc}, \sQuote{Xbc}, \sQuote{ bc} etc. but not
-#'     \sQuote{aabc}, \sQuote{abbc}, \sQuote{bc} etc.}
-#'   }
-#'   Despite their simplicity, globbing patterns are often sufficient for
-#'   selecting filenames.
-#' @examples
-#' x <- "*what glob2rx() can't handle because a '+' is included*"
-#' (y <- glob_to_regex(x))
-#' (z <- glob2rx(x))
-#' stopifnot(!identical(y, z))
-#' # Factor method
-#' (z <- glob_to_regex(as.factor(x)))
-#' stopifnot(identical(as.factor(y), z))
-#'
-setGeneric("glob_to_regex",
-  function(object, ...) standardGeneric("glob_to_regex"))
-
-setMethod("glob_to_regex", "character", function(object) {
-  # TODO: one should perhaps also check for '|'
-  x <- glob2rx(gsub("([+^$])", "\\\\\\1", object, perl = TRUE))
-  attributes(x) <- attributes(object)
-  x
-}, sealed = SEALED)
-
-setMethod("glob_to_regex", "factor", function(object) {
-  levels(object) <- glob_to_regex(levels(object))
-  object
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 ## NOTE: not an S4 method because conversion is done
 
 #' Trim string

@@ -1,25 +1,27 @@
 
 
 
-
 ################################################################################
 ################################################################################
 #
-# Conditional conversions to OPMS
+# Conditional conversions to OPMS objects or according lists
 #
 
 
 #' Convert to OPM list
 #'
-#' Convert to list of \code{\link{OPM}} objects. Used for building an
-#' \code{\link{OPMS}} object. This method is used by \code{\link{opms}} and
-#' \code{\link{try_opms}}.
+#' Convert to list of \code{\link{OPM}} objects, or conditionally convert a list
+#' to an \code{\link{OPMS}} object. Used for building an \code{\link{OPMS}}
+#' object by \code{\link{opms}} and optionally bulding one by \code{\link{c}}.
 #'
 #' @param object List of objects that can be passed to \code{\link{opms}}
+#'   (optional for \code{try_opms}).
 #' @param precomputed Logical scalar. See \code{\link{opms}}.
 #' @param skip Logical scalar. See \code{\link{opms}}.
 #' @param group Logical scalar. See \code{\link{opms}}.
-#' @return List.
+#' @return \code{to_opm_list} yields a list, \code{try_opms} an
+#'   \code{\link{OPMS}} object (if conversions was successful) or just the input
+#'   \code{object} (if conversions was unsuccessful).
 #' @keywords internal
 #'
 to_opm_list <- function(object, ...) UseMethod("to_opm_list")
@@ -70,8 +72,25 @@ to_opm_list.list <- function(object, precomputed = TRUE, skip = FALSE,
   result
 }
 
+#' @rdname to_opm_list
+#'
+try_opms <- function(object, ...) UseMethod("try_opms")
+
+#' @method try_opms list
+#' @rdname to_opm_list
+#'
+try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
+  tryCatch(
+    new(OPMS, plates = to_opm_list.list(object, precomputed, skip, FALSE)),
+    error = function(e) object)
+}
+
 
 ################################################################################
+################################################################################
+#
+# Assigning into OPMS objects
+#
 
 
 #' Assign subset
@@ -125,50 +144,31 @@ setMethod("[<-", c(OPMS, "ANY", "missing", OPMS), function(x, i, j, value) {
 
 
 ################################################################################
-
-
-#' Convert list to OPMS
-#'
-#' Conditionally convert a list to an \code{\link{OPMS}} object. This method is
-#' used by \code{\link{c}}.
-#'
-#' @param object List.
-#' @param precomputed Logical scalar. See \code{\link{opms}}.
-#' @param skip Logical scalar. See \code{\link{opms}}.
-#' @return \code{\link{OPMS}} object (if conversions was successful) or just the
-#'   input \code{object} (if conversions was unsuccessful).
-#' @keywords internal
-#'
-try_opms <- function(object, ...) UseMethod("try_opms")
-
-#' @method try_opms list
-#' @rdname try_opms
-#'
-try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
-  tryCatch(
-    new(OPMS, plates = to_opm_list.list(object, precomputed, skip, FALSE)),
-    error = function(e) object)
-}
-
-
-################################################################################
 ################################################################################
 #
 # Combination functions
 #
 
 
-#' Combination
+#' Combination and addition of plates
 #'
 #' Combine a \code{\link{OPM}} or \code{\link{OPMS}} object with other objects.
-#' If possible, create an \code{\link{OPMS}} object, otherwise return a list.
 #'
 #' @param x \code{\link{OPMX}} object.
 #' @param ... Other \R objects.
 #' @param recursive Logical scalar. See \code{c} from the \pkg{base} package.
+#' @param e1 \code{\link{OPM}} or \code{\link{OPMS}} object.
+#' @param e2 \code{\link{OPM}} or \code{\link{OPMS}} object, or list.
 #' @export
-#' @return \code{\link{OPMS}} object, list, or \code{\link{OPM}} object (if
-#'   \code{\dots} is not given and \code{x} is such an object).
+#' @return
+#'   \code{c} creates an \code{\link{OPMS}} object if possible, otherwise a
+#'   list, or an \code{\link{OPM}} object (if \code{\dots} is not given and
+#'   \code{x} is such an object).
+#'
+#'   If successful, \code{+} yields an \code{\link{OPMS}} object that contains
+#'   the plates from both \code{e1} and \code{e2}, but it raises an error if the
+#'   plates cannot be combined.
+#'
 #' @family combination-functions
 #' @seealso base::c
 #' @keywords manip
@@ -190,37 +190,8 @@ try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
 #' dim(x <- c(vaas_4, vaas_1))
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 #'
-setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
-  if (missing(..1))
-    return(x)
-  try_opms.list(list(x, ...))
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Addition
-#'
-#' Combine an \code{\link{OPM}} or \code{\link{OPMS}} object with another
-#' \code{\link{OPM}} or \code{\link{OPMS}} object or a list of such objects.
-#' Raise an error if the objects are incompatible.
-#'
-#' @name plus
-#' @exportMethod "+"
-#'
-#' @param e1 \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param e2 \code{\link{OPM}} or \code{\link{OPMS}} object, or list.
-#' @return \code{\link{OPMS}} object that contains the plates from both
-#'   \code{e1} and \code{e2}.
-#' @family combination-functions
-#' @keywords manip
-#'
-#' @examples
-#'
-#' data(vaas_1, vaas_4)
-#' # The examples do not show particularly useful additions, as the plates
-#' # are either entirely or partially identical. Note the changes in the
+#' # The following examples do not show particularly useful additions, as the
+#' # plates are either entirely or partially identical. Note the changes in the
 #' # dimensions.
 #'
 #' # OPM+OPM method
@@ -246,6 +217,18 @@ setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
 #' # OPMS+list method
 #' dim(x <- vaas_4 + list(vaas_1))
 #' stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
+#'
+setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
+  if (missing(..1))
+    return(x)
+  try_opms.list(list(x, ...))
+}, sealed = SEALED)
+
+#= plus c
+
+#' @rdname c
+#' @name plus
+#' @exportMethod "+"
 #'
 setMethod("+", c(OPM, OPM), function(e1, e2) {
   new(OPMS, plates = list(e1, e2))

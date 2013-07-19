@@ -6,8 +6,15 @@
 - 'as.groups' argument is now mandatory for the OPMD listing() method
 - removed deprecated 'check.names' argument of to_metadata()
 - removed deprecated 'program' argument of do_aggr()
+- position(), setup_time() and filename() are deprecated; use csv_data()
+  instead
+- glob_to_regex() is now an S3 generic function
 
 - new plate_type() method
+- csv_data() gets a 'what' argument
+- explicit length() method for OPM objects
+
+- streamlined the documentation (merged many entries) in the manual
 
 
 ################################################################################

@@ -1,6 +1,9 @@
 \name{sort}
+\alias{rep}
+\alias{rev}
 \alias{sort}
-\title{Sort OPMS objects}
+\alias{unique}
+\title{Sort, unify, revert or repeat OPMS objects}
 \arguments{
   \item{x}{\code{\link{OPMS}} or \code{\link{OPM}} object.}
 
@@ -39,8 +42,12 @@
   \item{na.last}{Logical scalar. Also passed to
   \code{order}.}
 
-  \item{...}{Optional arguments passed between the
-  methods.}
+  \item{incomparables}{Vector passed to
+  \code{\link{duplicated}}. The default is \code{FALSE}.}
+
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{duplicated}} or to \code{rep} from the
+  \pkg{base} package. See the examples.}
 }
 \value{
   \code{\link{OPMS}} object with not necessarily the same
@@ -48,13 +55,39 @@
 }
 \description{
   Sort an \code{\link{OPMS}} object based on one to several
-  metadata or \acronym{CSV} data entries. There is also an
-  \code{\link{OPM}} method which returns the input data (to
-  avoid destructive effects due to the way the default
-  \code{sort} interacts with \code{\link{OPM}} indexing).
+  metadata or \acronym{CSV} data entries, or check whether
+  duplicated \code{\link{OPM}} or \code{\link{OPMA}}
+  objects are contained within an \code{\link{OPMS}} object
+  and remove the duplicated ones, or revert the order of
+  plates within an \code{\link{OPMS}} object.
+  Alternatively, repeat \code{\link{OPMS}} or
+  \code{\link{OPM}} objects zero times, once, or several
+  times, and accordingly create a novel \code{\link{OPMS}}
+  or \code{\link{OPM}} object (\code{NULL} if zero length
+  is chosen).
+}
+\details{
+  The \code{sort} \code{\link{OPM}} method just returns the
+  input data to avoid destructive effects due to the way
+  the default \code{sort} interacts with \code{\link{OPM}}
+  indexing.
+
+  \code{rev} should be slightly more efficient than calling
+  the default \code{rev} method. There is also an
+  \code{\link{OPM}} method which just returns the input
+  data (to avoid destructive effects due to the way the
+  default \code{rev} interacts with \code{\link{OPM}}
+  indexing).
+
+  The \code{\link{OPM}} method of \code{unique} also
+  returns the passed object.
+
+  \code{rev} yields an \code{\link{OPMS}} object with
+  another number of plates, or an \code{\link{OPM}} object,
+  or \code{NULL}.
 }
 \examples{
-## 'OPMS' method
+## 'OPMS' methods
 data(vaas_4)
 
 # Existing keys
@@ -72,29 +105,67 @@ stopifnot(identical(x, vaas_4)) # no error, but no new order
 
 # CSV-data based
 copy <- sort(vaas_4) # default: by setup time
-setup_time(vaas_4)
-setup_time(copy)
+csv_data(vaas_4, what = "setup")
+csv_data(copy, what = "setup")
 stopifnot(!identical(copy, vaas_4))
 copy <- sort(vaas_4, by = c("Position", "Setup Time"))
-position(vaas_4)
-position(copy)
-stopifnot(!is.unsorted(position(copy)), is.unsorted(position(vaas_4)))
+csv_data(vaas_4, what = "position")
+csv_data(copy, what = "position")
+stopifnot(!is.unsorted(csv_data(copy, what = "position")))
+stopifnot(is.unsorted(csv_data(vaas_4, what = "position")))
 
-## 'OPMS' method
+# making OPMS objects unique
+dim(x <- unique(vaas_4))
+stopifnot(identical(x, vaas_4))
+dim(x <- unique(c(vaas_4, vaas_4)))
+stopifnot(identical(x, vaas_4))
+dim(x <- unique(vaas_4, what = "Species")) # species are not unique
+stopifnot(dim(x)[1L] < dim(vaas_4)[1L])
+dim(x <- unique(vaas_4, what = list("Species", "Strain")))
+stopifnot(identical(x, vaas_4)) # organisms are unique
+
+# reverting an OPMS object
+dim(x <- rev(vaas_4))
+stopifnot(dim(x) == dim(vaas_4), !identical(x, vaas_4))
+stopifnot(identical(rev(x), vaas_4))
+
+# repeating an OPMS object
+dim(x <- rep(vaas_4))
+stopifnot(identical(x, vaas_4))
+dim(x <- rep(vaas_4, times = 2))
+stopifnot(length(x) == length(vaas_4) * 2)
+dim(y <- rep(vaas_4, each = 2))
+stopifnot(length(y) == length(vaas_4) * 2, !identical(x, y))
+stopifnot(is.null(rep(vaas_4, 0)))
+
+## 'OPM' methods
 data(vaas_1)
 summary(x <- sort(vaas_1))
 stopifnot(identical(x, vaas_1))
+dim(x <- unique(vaas_1)) # trivial
+stopifnot(identical(x, vaas_1))
+dim(x <- unique(vaas_1, what = list("Species", "Strain")))
+stopifnot(identical(x, vaas_1))
+dim(x <- rev(vaas_1)) # trivial
+stopifnot(identical(x, vaas_1))
+dim(x <- rep(vaas_1, 1))
+stopifnot(identical(x, vaas_1))
+dim(x <- rep(vaas_1, 2)) # conversion to OPMS if > 1 element
+stopifnot(length(x) == 2, is(x, "OPMS"))
+stopifnot(is.null(rep(vaas_4, 0)))
 }
 \seealso{
-  base::order base::sort base::strptime
+  base::order base::sort base::strptime base::unique
+  base::rev
+
+  base::rep
 
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},
   \code{\link{flatten}}, \code{\link{gen_iii}},
   \code{\link{merge}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{thin_out}},
-  \code{\link{to_yaml}}, \code{\link{unique}}
+  \code{\link{plates}}, \code{\link{thin_out}},
+  \code{\link{to_yaml}}
 }
 \keyword{manip}
 
@@ -103,6 +174,16 @@ stopifnot(identical(x, vaas_1))
 \alias{sort,OPMX,missing-method}
 \alias{sort,OPM,logical-method}
 \alias{sort,OPMS,logical-method}
+\alias{unique,OPM,ANY-method}
+\alias{unique-methods}
+\alias{unique,OPMS,missing-method}
+\alias{unique,OPMS,ANY-method}
+\alias{rev,OPM-method}
+\alias{rev-methods}
+\alias{rev,OPMS-method}
+\alias{rep,OPM-method}
+\alias{rep-methods}
+\alias{rep,OPMS-method}
 \usage{
   \S4method{sort}{OPMX,missing}(x, decreasing, ...) 
 
@@ -110,5 +191,19 @@ stopifnot(identical(x, vaas_1))
 
   \S4method{sort}{OPMS,logical}(x, decreasing, by = "setup_time",
     parse = TRUE, exact = TRUE, strict = TRUE, na.last = TRUE) 
+
+  \S4method{unique}{OPM,ANY}(x, incomparables, ...) 
+
+  \S4method{unique}{OPMS,missing}(x, incomparables, ...) 
+
+  \S4method{unique}{OPMS,ANY}(x, incomparables, ...) 
+
+  \S4method{rev}{OPM}(x) 
+
+  \S4method{rev}{OPMS}(x) 
+
+  \S4method{rep}{OPM}(x, ...) 
+
+  \S4method{rep}{OPMS}(x, ...) 
 
 }
