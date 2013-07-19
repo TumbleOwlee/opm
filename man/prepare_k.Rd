@@ -11,8 +11,8 @@
   Named integer vector.
 }
 \description{
-  Auxiliary function for checking and slightly adapting k
-  for k-means partitioning.
+  Auxiliary function for checking and slightly adapting
+  \code{k} for k-means partitioning.
 }
 \keyword{internal}
 

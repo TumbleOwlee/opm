@@ -331,7 +331,7 @@ setMethod("discrete", "numeric", function(x, range, gap = FALSE,
         logical = stop("one cannot combine 'logical' and 'middle.na'"),
         factor = ordered(c(0L, 1L, 2L))
       )
-    structure(map[ints], cutoffs = range, .Names = names(x))
+    structure(map[ints], cutoffs = range, names = names(x))
 
   } else { # binary- to multi-state mode without a gap
 
@@ -351,7 +351,7 @@ setMethod("discrete", "numeric", function(x, range, gap = FALSE,
       integer = ints,
       logical = as.logical(ints - 1L),
       factor = ordered(ints)
-    ), .Names = names(x))
+    ), names = names(x))
 
   }
 }, sealed = SEALED)

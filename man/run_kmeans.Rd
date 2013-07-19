@@ -17,7 +17,8 @@
   \sQuote{kmeans} from the \pkg{stats} package.}
 }
 \value{
-  S3 object of class \sQuote{kmeanss}.
+  S3 object of class \sQuote{kmeanss}, basically a named
+  list of \sQuote{kmeans} objects.
 }
 \description{
   Run a k-means partitioning analysis. This function is

@@ -1598,7 +1598,7 @@ setMethod("map_values", c("character", "character"), function(object, mapping) {
 
 setMethod("map_values", c("character", "missing"), function(object) {
   object <- sort.int(unique.default(object))
-  structure(.Data = object, .Names = object)
+  structure(object, names = object)
 }, sealed = SEALED)
 
 #-------------------------------------------------------------------------------

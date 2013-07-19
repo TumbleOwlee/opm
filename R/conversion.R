@@ -1374,13 +1374,12 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
 
 #' Convert to YAML
 #'
-#' Convert some \R object to \acronym{YAML}. If the package \pkg{yaml} is not
-#' installed, a call of this function will result in an error.
+#' Convert some \R object to \acronym{YAML} or \acronym{JSON}.
 #'
 #' @param object Object of one of the classes belonging to
 #'   \code{\link{YAML_VIA_LIST}}.
 #' @param sep Logical scalar. Prepend \acronym{YAML} document separator
-#'   \verb{---}?
+#'   \sQuote{\verb{---}}?
 #' @param line.sep Character scalar used as output line separator.
 #' @param json Logical scalar. Create \acronym{JSON} instead of \acronym{YAML}?
 #'   If so, \code{sep}, \code{line.sep} and \code{...} are ignored.
@@ -1395,6 +1394,7 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
 #' @family conversion-functions
 #' @keywords character IO
 #' @references \url{http://www.yaml.org/}
+#' @references \url{http://www.json.org/}
 #' @details \acronym{YAML} is a useful data-serialization standard that is
 #'   understood by many programming languages. It is particularly more human
 #'   readable than \acronym{XML}, and vector-like data structures (such as
@@ -1409,7 +1409,7 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
 #'   be parsed by a \acronym{YAML} parser. For generating \acronym{JSON}, the
 #'   \code{toJSON} function from the \pkg{rjson} package would be used.
 #'
-#' @seealso yaml::as.yaml yaml::yaml.load_file
+#' @seealso yaml::as.yaml yaml::yaml.load_file json::toJSON
 #'
 #' @examples \dontrun{
 #'

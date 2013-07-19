@@ -8,31 +8,12 @@
 #
 
 
-#' Convert to kmeans
-#'
-#' Convert an object to one of class \sQuote{kmeans}.
-#'
-#' @param x Object to be converted.
-#' @param y Original numeric vector that was used to create a
-#'   \sQuote{Ckmeans.1d.dp} object, or index of an element of a \sQuote{kmeanss}
-#'   object.
-#' @param ... Optional arguments passed to and from other methods, and/or
-#'   between the methods.
-#' @return Object of class \sQuote{kmeans}.
-#' @keywords manip
-#' @family kmeans-functions
-#' @seealso Ckmeans.1d.dp::Ckmeans.1d.dp
+#' @rdname kmeans
 #' @export
-#' @examples
-#' x <- c(1, 2, 4, 5, 7, 8)
-#' summary(y <- kmeans(x, 3))
-#' stopifnot(identical(y, to_kmeans(y)))
-#' # see particularly run_kmeans() which uses this internally if clustering is
-#' # done with Ckmeans.1d.dp::Ckmeans.1d.dp()
 #'
 to_kmeans <- function(x, ...) UseMethod("to_kmeans")
 
-#' @rdname to_kmeans
+#' @rdname kmeans
 #' @method to_kmeans kmeans
 #' @export
 #'
@@ -40,7 +21,7 @@ to_kmeans.kmeans <- function(x, ...) {
   x
 }
 
-#' @rdname to_kmeans
+#' @rdname kmeans
 #' @method to_kmeans kmeanss
 #' @export
 #'
@@ -48,7 +29,7 @@ to_kmeans.kmeanss <- function(x, y, ...) {
   x[[y]]
 }
 
-#' @rdname to_kmeans
+#' @rdname kmeans
 #' @method to_kmeans Ckmeans.1d.dp
 #' @export
 #'
@@ -72,38 +53,13 @@ to_kmeans.Ckmeans.1d.dp <- function(x, y, ...) {
 ################################################################################
 
 
-#' Calinski-Harabasz statistics
-#'
-#' Calculate or plot the Calinski-Harabasz statistics from \code{kmeans}
-#' results. The result of \code{plot} is a simple scatterplot which can be
-#' modified with arguments passed to \code{plot} from the \pkg{graphics}
-#' package.
-#'
-#' @param x Object of class \sQuote{kmeans}, \sQuote{Ckmeans.1d.dp} or
-#'   \sQuote{kmeanss}. For \code{plot}, only the latter.
-#' @param xlab Character scalar passed to \code{plot} from the \pkg{graphics}
-#'   package.
-#' @param ylab Character scalar passed to \code{plot}.
-#' @inheritParams to_kmeans
-#' @return \code{calinksi} returns a numeric vector with one element per
-#'   \sQuote{kmeans} object. \code{plot} returns it invisibly. Its
-#'   \sQuote{names} attribute indicates the original numbers of clusters
-#'   requested.
-#' @keywords hplot cluster
-#' @family kmeans-functions
+#' @rdname kmeans
 #' @export
-#' @examples
-#' data(vaas_4)
-#' x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
-#' x.km <- run_kmeans(x, k = 1:10)
-#' # the usual arguments of plot() are available
-#' show(y <- plot(x.km, col = "blue", pch = 19))
-#' stopifnot(is.numeric(y), names(y) == 1:10)
 #'
 calinski <- function(x, ...) UseMethod("calinski")
 
+#' @rdname kmeans
 #' @method calinski kmeans
-#' @rdname calinski
 #' @export
 #'
 calinski.kmeans <- function(x, ...) {
@@ -115,7 +71,7 @@ calinski.kmeans <- function(x, ...) {
   (r.2 / (k - 1L)) / ((1L - r.2) / (n - k))
 }
 
-#' @rdname calinski
+#' @rdname kmeans
 #' @method calinski Ckmeans.1d.dp
 #' @export
 #'
@@ -123,7 +79,7 @@ calinski.Ckmeans.1d.dp <- function(x, y, ...) {
   calinski(to_kmeans(x, y), ...)
 }
 
-#' @rdname calinski
+#' @rdname kmeans
 #' @method calinski kmeanss
 #' @export
 #'
@@ -131,7 +87,11 @@ calinski.kmeanss <- function(x, ...) {
   vapply(X = x, FUN = calinski, FUN.VALUE = 1, ...)
 }
 
-#' @rdname calinski
+
+################################################################################
+
+
+#' @rdname kmeans
 #' @method plot kmeanss
 #' @export
 #'
@@ -146,15 +106,21 @@ plot.kmeanss <- function(x, xlab = "Number of clusters",
 ################################################################################
 
 
-#' Cluster borders
+#' Work with k-means results
 #'
-#' Determine the borders between clusters of one-dimensional data or create a
-#' histogram in which these borders are plotted.
+#' Calculate or plot the Calinski-Harabasz statistics from \code{kmeans}
+#' results. The result of \code{plot} is a simple scatterplot which can be
+#' modified with arguments passed to \code{plot} from the \pkg{graphics}
+#' package. Alternatively, determine the borders between clusters of
+#' one-dimensional data, create a histogram in which these borders are plotted,
+#' or convert an object to one of class \sQuote{kmeans}.
 #'
 #' @param x Object of class \sQuote{kmeans}, \sQuote{Ckmeans.1d.dp} or
-#'   \sQuote{kmeanss}.
+#'   \sQuote{kmeanss}. For \code{plot}, only the latter.
 #' @param y Vector of original data subjected to clustering. Automatically
-#'   determined for the \sQuote{kmeanss} methods.
+#'   determined for the \sQuote{kmeanss} methods. For \code{to_kmeans}, original
+#'   numeric vector that was used to create a \sQuote{Ckmeans.1d.dp} object, or
+#'   index of an element of a \sQuote{kmeanss} object.
 #' @param k Numeric vector or \code{NULL}. If non-empty, it indicates the number
 #'   of groups (previously used as input for \code{kmeans}) for which vertical
 #'   lines should be drawn in the plot that represent the cluster borders. If
@@ -164,13 +130,28 @@ plot.kmeanss <- function(x, xlab = "Number of clusters",
 #' @param lwd Like \code{col}.
 #' @param lty Like \code{col}.
 #' @param main Passed to \code{hist.default}.
-#' @param xlab Passed to \code{hist.default}.
+#' @param xlab Character scalar passed to \code{hist.default} or to \code{plot}
+#'   from the \pkg{graphics} package.
+#' @param ylab Character scalar passed to \code{plot} from the \pkg{graphics}
+#'   package.
 #' @param ... Optional arguments passed to and from other methods. For the
 #'   \code{hist} method, optional arguments passed to \code{hist.default}.
 #' @export
-#' @return Numeric vector or list of such vectors. For the \code{hist} method,
-#'   like \code{hist.default}; see there for details.
-#' @keywords cluster hplot
+#' @rdname kmeans
+#' @aliases kmeans
+#' @return
+#'   \code{to_kmeans} creates an object of class \sQuote{kmeans}.
+#'
+#'   \code{borders} creates a numeric vector or list of such vectors.
+#'
+#'   The return value of the \code{hist} method is like \code{hist.default};
+#'   see there for details.
+#'
+#'   \code{calinksi} returns a numeric vector with one element per
+#'   \sQuote{kmeans} object. \code{plot} returns it invisibly. Its
+#'   \sQuote{names} attribute indicates the original numbers of clusters
+#'   requested.
+#' @keywords cluster hplot manip
 #' @family kmeans-functions
 #' @details The borders are calculated as the mean of the maximum of the cluster
 #'   with the lower values and the minimum of the neighboring cluster with the
@@ -181,12 +162,17 @@ plot.kmeanss <- function(x, xlab = "Number of clusters",
 #'   clustering, but this is not checked. Using \sQuote{kmeanss} objects thus
 #'   might preferable in most cases because they contain a copy of the input
 #'   data.
-#' @seealso graphics::hist graphics::abline
+#' @seealso graphics::hist graphics::abline Ckmeans.1d.dp::Ckmeans.1d.dp
 #' @examples
 #'
 #' data(vaas_4)
 #' x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 #' x.km <- run_kmeans(x, k = 1:10)
+#'
+#' # plot() method
+#' # the usual arguments of plot() are available
+#' show(y <- plot(x.km, col = "blue", pch = 19))
+#' stopifnot(is.numeric(y), names(y) == 1:10)
 #'
 #' # borders() method
 #' (x.b <- borders(x.km)) # => list of numeric vectors
@@ -199,9 +185,16 @@ plot.kmeanss <- function(x, xlab = "Number of clusters",
 #' y <- hist(x.km, 3:4, col = c("blue", "red"), lwd = 2)
 #' stopifnot(inherits(y, "histogram"))
 #'
+#' # to_kmeans() methods
+#' x <- c(1, 2, 4, 5, 7, 8)
+#' summary(y <- kmeans(x, 3))
+#' stopifnot(identical(y, to_kmeans(y)))
+#' # see particularly run_kmeans() which uses this internally if clustering is
+#' # done with Ckmeans.1d.dp::Ckmeans.1d.dp()
+#'
 borders <- function(x, ...) UseMethod("borders")
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method borders kmeans
 #' @export
 #'
@@ -215,7 +208,7 @@ borders.kmeans <- function(x, y, ...) {
   colMeans(matrix(sort.int(ranges)[c(-1L, -length(ranges))], nrow = 2L))
 }
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method borders Ckmeans.1d.dp
 #' @export
 #'
@@ -223,7 +216,7 @@ borders.Ckmeans.1d.dp <- function(x, y, ...) {
   borders(to_kmeans(x), y, ...)
 }
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method borders kmeanss
 #' @export
 #'
@@ -231,7 +224,7 @@ borders.kmeanss <- function(x, ...) {
   sapply(x, FUN = borders, y = attr(x, "input"), ..., simplify = FALSE)
 }
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method hist kmeans
 #' @export
 #'
@@ -244,7 +237,7 @@ hist.kmeans <- function(x, y, col = "black", lwd = 1L, lty = 1L, main = NULL,
   invisible(result)
 }
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method hist Ckmeans.1d.dp
 #' @export
 #'
@@ -252,7 +245,7 @@ hist.Ckmeans.1d.dp <- function(x, y, ...) {
   hist(to_kmeans(x), y, ...)
 }
 
-#' @rdname borders
+#' @rdname kmeans
 #' @method hist kmeanss
 #' @export
 #'
@@ -281,7 +274,7 @@ hist.kmeanss <- function(x, k = NULL, col = "black", lwd = 1L, lty = 1L,
 
 #' Prepare the k for k-means
 #'
-#' Auxiliary function for checking and slightly adapting k for k-means
+#' Auxiliary function for checking and slightly adapting \code{k} for k-means
 #' partitioning.
 #'
 #' @param object Numeric vector.
@@ -289,7 +282,7 @@ hist.kmeanss <- function(x, k = NULL, col = "black", lwd = 1L, lty = 1L,
 #' @keywords internal
 #'
 prepare_k <- function(k) {
-  k <- sort.int(unique(must(as.integer(k))))
+  k <- sort.int(unique.default(must(as.integer(k))))
   if (length(k) < 1L || any(is.na(k)) || any(k < 1L))
     stop("'k' must contain positive numbers throughout")
   names(k) <- k
@@ -314,7 +307,8 @@ prepare_k <- function(k) {
 #' @param cores Numeric scalar indicating the number of cores to use.
 #' @param ... List of optional arguments passed to \sQuote{kmeans} from the
 #'   \pkg{stats} package.
-#' @return S3 object of class \sQuote{kmeanss}.
+#' @return S3 object of class \sQuote{kmeanss}, basically a named list of
+#'   \sQuote{kmeans} objects.
 #' @family kmeans-functions
 #' @seealso stats::kmeans Ckmeans.1d.dp::Ckmeans.1d.dp
 #' @keywords cluster

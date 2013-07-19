@@ -221,7 +221,7 @@ read_new_opm <- function(filename) {
   data <- matrix(data[-seq_len(ncol)], ncol = ncol, byrow = TRUE,
     dimnames = list(NULL, data[seq_len(ncol)]))
   pos <- seq_len(pos - 1L)
-  comments <- structure(.Data = c(filename, data[1L, pos]),
+  comments <- structure(c(filename, data[1L, pos]),
     names = c(CSV_NAMES[["FILE"]], colnames(data)[pos]))
   data <- apply(data[, -pos], MARGIN = 2L, FUN = as.numeric)
   if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
@@ -307,85 +307,6 @@ read_microstation_opm <- function(filename) {
   if (!length(x))
     stop("MicroStation CSV file contained no interpretable data")
   x
-}
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Read single PM file
-#'
-#' Read single OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} or \pkg{opm}
-#' data file in either new- or old-style \acronym{CSV} or \acronym{YAML}
-#' (including \acronym{JSON} format.
-#' MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)} \acronym{CSV} are
-#' also understood, as well as files compressed using \command{gzip},
-#' \command{bzip2}, \command{lzma} or \command{xz}.
-#'
-#' @param filename Character scalar, or convertible to such, with the obvious
-#'   meaning.
-#' @export
-#' @return \code{\link{OPM}} object. In the case of \acronym{YAML} input, this
-#'   might also be an \code{\link{OPMA}} object or a list of such objects, but
-#'   \strong{not} an \code{\link{OPMS}} object.
-#' @family io-functions
-#'
-#' @details The expected \acronym{CSV} format is what is output by an
-#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
-#'   per file, or a MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
-#'   instrument, with one to many plates per file. Other formats, or
-#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} files re-saved with
-#'   distinct \acronym{CSV} settings, are not understood. For this reason, if
-#'   any editing of the files was necessary at all, it is advisable to do this
-#'   in an editor for plain text, not in a spreadsheet program.
-#'
-#'   Plates run in ID mode are automatically detected as such (their plate type
-#'   is changed from \sQuote{OTH} to the internally used spelling of
-#'   \sQuote{Generation III}). A generation-III or other plate type can also be
-#'   forced later on by using \code{\link{gen_iii}}.
-#'
-#'   It is \strong{impossible} to read \acronym{CSV} files that contain more
-#'   than one plate. For splitting old-style and new-style \acronym{CSV} files
-#'   into one file per plate, see the example under \code{\link{split_files}}.
-#'   In contrast, input \acronym{YAML} files can contain data from more than one
-#'   plate. The format (which includes \acronym{JSON}) is described in detail
-#'   under \code{\link{batch_opm}}.
-#'
-#' @references \url{http://www.yaml.org/}
-#' @references \url{http://www.json.org/}
-#' @references \url{http://www.biolog.com/}
-#' @seealso utils::read.csv
-#' @keywords IO
-#' @examples
-#' test.files <- opm_files("testdata")
-#' if (length(test.files) > 0) { # if the folder is found
-#'   x <- read_single_opm(test.files[1]) # => 'OPM' object
-#'   class(x)
-#'   dim(x)
-#'   summary(x)
-#'   stopifnot(is(x, "OPM"), identical(dim(x), c(384L, 96L)))
-#' } else {
-#'   warning("test-file folder not found")
-#' }
-#' # this can be repeated for the other input test files
-#'
-read_single_opm <- function(filename) {
-  if (!file.exists(filename <- as.character(L(filename))))
-    stop(sprintf("file '%s' does not exist", filename))
-  errs <- list()
-  routines <- list(`New CSV` = read_new_opm, `Old CSV` = read_old_opm,
-    YAML = read_opm_yaml, `MicroStation CSV` = read_microstation_opm)
-  for (name in names(routines)) {
-    result <- tryCatch(routines[[name]](filename), error = conditionMessage)
-    if (!is.character(result))
-      return(result)
-    errs[[name]] <- result
-  }
-  names(errs) <- paste(names(errs), "error")
-  errs$Filename <- filename
-  stop(listing(errs, header = "Unknown file format:"))
 }
 
 
@@ -567,12 +488,15 @@ opm_files <- function(
 
 ## Not an S4 method because conversion is done
 
-#' Read multiple PM files at once
+
+#' Read multiple PM files at once or read single PM file
 #'
 #' Read OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} or \pkg{opm} data
 #' file(s) in one of three possible formats: either new- or old-style
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} or
-#' \pkg{opm} \acronym{YAML} format. Files compressed using \command{gzip},
+#' \pkg{opm} \acronym{YAML} (including \acronym{JSON}) format.
+#' MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)} \acronym{CSV} are
+#' also understood, as well as files compressed  using \command{gzip},
 #' \command{bzip2}, \command{lzma} or \command{xz} are also understood (but may
 #' be excluded using \code{include} and/or \code{exclude}).
 #'
@@ -582,6 +506,9 @@ opm_files <- function(
 #'   \code{include} argument of \code{\link{read_opm}} and
 #'   \code{\link{explode_dir}} for how to select subsets from the input files or
 #'   directories.
+#'
+#' @param filename Character scalar, or convertible to such, with the obvious
+#'   meaning.
 #'
 #' @param convert Character scalar with one of the following values:
 #'   \describe{
@@ -614,15 +541,39 @@ opm_files <- function(
 #'   names of the files that would be (attempted to) read, and return them
 #'   invisibly?
 #'
-#' @return \code{\link{OPM}} object (maybe \code{\link{OPMA}} in case of
+#' @return
+#'   \code{read_opm} returns an
+#'   \code{\link{OPM}} object (maybe \code{\link{OPMA}} in case of
 #'   \acronym{YAML} input), or list of such objects, or \code{\link{OPMS}}
 #'   object. If \code{demo} is \code{TRUE}, a character vector instead.
 #'
-#' @details Regarding the \acronym{CSV} format, see the remark to
-#'   \code{\link{read_single_opm}}. The \acronym{YAML} format is described in
-#'   detail under \code{\link{batch_opm}}.
+#'   \code{read_single_opm} also returns an\code{\link{OPM}} object. In the
+#'   case of \acronym{YAML} input, this
+#'   might also be an \code{\link{OPMA}} object or a list of such objects, but
+#'   \strong{not} an \code{\link{OPMS}} object.
 #'
-#'   or splitting lists of \code{\link{OPM}} objects according to the plate
+#' @details The expected \acronym{CSV} format is what is output by an
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument, one plate
+#'   per file, or a MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+#'   instrument, with one to many plates per file. Other formats, or
+#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} files re-saved with
+#'   distinct \acronym{CSV} settings, are not understood. For this reason, if
+#'   any editing of the files was necessary at all, it is advisable to do this
+#'   in an editor for plain text, not in a spreadsheet program.
+#'
+#'   Plates run in ID mode are automatically detected as such (their plate type
+#'   is changed from \sQuote{OTH} to the internally used spelling of
+#'   \sQuote{Generation III}). A generation-III or other plate type can also be
+#'   forced later on by using \code{\link{gen_iii}}.
+#'
+#'   It is \strong{impossible} to read \acronym{CSV} files that contain more
+#'   than one plate. For splitting old-style and new-style \acronym{CSV} files
+#'   into one file per plate, see the example under \code{\link{split_files}}.
+#'   In contrast, input \acronym{YAML} files can contain data from more than one
+#'   plate. The format (which includes \acronym{JSON}) is described in detail
+#'   under \code{\link{batch_opm}}.
+#'
+#'   For splitting lists of \code{\link{OPM}} objects according to the plate
 #'   type, see \code{\link{plate_type}}, and consider the plate-type selection
 #'   options of \code{\link{opms}}.
 #'
@@ -659,6 +610,19 @@ opm_files <- function(
 #' x <- read_opm(".")
 #' }
 #'
+#' # read_single_opm()
+#' test.files <- opm_files("testdata")
+#' if (length(test.files) > 0) { # if the folder is found
+#'   x <- read_single_opm(test.files[1]) # => 'OPM' object
+#'   class(x)
+#'   dim(x)
+#'   summary(x)
+#'   stopifnot(is(x, "OPM"), identical(dim(x), c(384L, 96L)))
+#' } else {
+#'   warning("test-file folder not found")
+#' }
+#' # this can be repeated for the other input test files
+#'
 read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     gen.iii = opm_opt("gen.iii"), include = list(), ..., demo = FALSE) {
   do_split <- function(x) split(x, vapply(x, plate_type, ""))
@@ -694,6 +658,26 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
       })
     )
   )
+}
+
+#' @rdname read_opm
+#' @export
+#'
+read_single_opm <- function(filename) {
+  if (!file.exists(filename <- as.character(L(filename))))
+    stop(sprintf("file '%s' does not exist", filename))
+  errs <- list()
+  routines <- list(`New CSV` = read_new_opm, `Old CSV` = read_old_opm,
+    YAML = read_opm_yaml, `MicroStation CSV` = read_microstation_opm)
+  for (name in names(routines)) {
+    result <- tryCatch(routines[[name]](filename), error = conditionMessage)
+    if (!is.character(result))
+      return(result)
+    errs[[name]] <- result
+  }
+  names(errs) <- paste(names(errs), "error")
+  errs$Filename <- filename
+  stop(listing(errs, header = "Unknown file format:"))
 }
 
 
@@ -1727,8 +1711,8 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
       return(character())
     outnames <- sprintf(format, out.base, seq_along(data), out.ext)
     if (demo)
-      message(listing(structure(.Data = outnames,
-        names = seq_along(outnames)), header = infile))
+      message(listing(structure(outnames, names = seq_along(outnames)),
+        header = infile))
     else
       mapply(write, data, outnames, USE.NAMES = FALSE, SIMPLIFY = FALSE)
     outnames
@@ -1813,7 +1797,7 @@ clean_filenames <- function(x, overwrite = FALSE, demo = FALSE,
   result <- clean_basenames(basename(x))
   result <- ifelse(dirname(x) == ".", result, file.path(dirname(x), result))
   different <- result != x
-  result <- structure(.Data = result[different], names = x[different])
+  result <- structure(result[different], names = x[different])
   if (!overwrite) {
     result <- result[!duplicated(result)]
     result <- result[!file.exists(result)]

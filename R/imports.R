@@ -23,7 +23,7 @@ NULL
 #'
 NULL
 
-#' @importFrom stats lm glm aov confint
+#' @importFrom stats lm glm aov confint coef
 #'
 NULL
 

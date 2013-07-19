@@ -1521,7 +1521,7 @@ setMethod("radial_plot", "matrix", function(object, rp.type = "p",
     }
     result <- suppressWarnings(cbind(rn, line.col))
     result <- result[seq_len(nrow(object)), , drop = FALSE]
-    result <- structure(.Data = result[, 2L], .Names = as.vector(result[, 1L]))
+    result <- structure(result[, 2L], names = as.vector(result[, 1L]))
   } else
     result <- NULL
   invisible(result)

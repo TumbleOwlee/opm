@@ -270,7 +270,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     if (is.null(names(result)))
       names(result) <- rep(get("contrast.type", OPM_OPTIONS),
         length.out = length(result))
-    result <- structure(names(result), .Names = result)
+    result <- structure(names(result), names = result)
     do.call(multcomp::mcp, as.list(result))
   }
   convert_data <- function(object, split.at, model) {

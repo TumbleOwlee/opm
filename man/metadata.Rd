@@ -68,6 +68,9 @@
   as \code{::} but their use is not recommended. All
   operators with a lower precedence than \code{$} separate
   list elements.
+
+  Additional options when using formulas are described
+  under \code{\link{extract}}.
 }
 \examples{
 # 'OPM' method

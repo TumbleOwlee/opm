@@ -1,13 +1,42 @@
-\name{borders}
+\name{to_kmeans}
 \alias{borders}
 \alias{borders.Ckmeans.1d.dp}
 \alias{borders.kmeans}
 \alias{borders.kmeanss}
+\alias{calinski}
+\alias{calinski.Ckmeans.1d.dp}
+\alias{calinski.kmeans}
+\alias{calinski.kmeanss}
 \alias{hist.Ckmeans.1d.dp}
 \alias{hist.kmeans}
 \alias{hist.kmeanss}
-\title{Cluster borders}
+\alias{kmeans}
+\alias{plot.kmeanss}
+\alias{to_kmeans}
+\alias{to_kmeans.Ckmeans.1d.dp}
+\alias{to_kmeans.kmeans}
+\alias{to_kmeans.kmeanss}
+\title{Work with k-means results}
 \usage{
+  to_kmeans(x, ...)
+
+  \method{to_kmeans}{kmeans} (x, ...)
+
+  \method{to_kmeans}{kmeanss} (x, y, ...)
+
+  \method{to_kmeans}{Ckmeans.1d.dp} (x, y, ...)
+
+  calinski(x, ...)
+
+  \method{calinski}{kmeans} (x, ...)
+
+  \method{calinski}{Ckmeans.1d.dp} (x, y, ...)
+
+  \method{calinski}{kmeanss} (x, ...)
+
+  \method{plot}{kmeanss} (x, xlab = "Number of clusters",
+    ylab = "Calinski-Harabasz statistics", ...)
+
   borders(x, ...)
 
   \method{borders}{kmeans} (x, y, ...)
@@ -27,11 +56,14 @@
 }
 \arguments{
   \item{x}{Object of class \sQuote{kmeans},
-  \sQuote{Ckmeans.1d.dp} or \sQuote{kmeanss}.}
+  \sQuote{Ckmeans.1d.dp} or \sQuote{kmeanss}. For
+  \code{plot}, only the latter.}
 
   \item{y}{Vector of original data subjected to clustering.
   Automatically determined for the \sQuote{kmeanss}
-  methods.}
+  methods. For \code{to_kmeans}, original numeric vector
+  that was used to create a \sQuote{Ckmeans.1d.dp} object,
+  or index of an element of a \sQuote{kmeanss} object.}
 
   \item{k}{Numeric vector or \code{NULL}. If non-empty, it
   indicates the number of groups (previously used as input
@@ -50,21 +82,41 @@
 
   \item{main}{Passed to \code{hist.default}.}
 
-  \item{xlab}{Passed to \code{hist.default}.}
+  \item{xlab}{Character scalar passed to
+  \code{hist.default} or to \code{plot} from the
+  \pkg{graphics} package.}
+
+  \item{ylab}{Character scalar passed to \code{plot} from
+  the \pkg{graphics} package.}
 
   \item{...}{Optional arguments passed to and from other
   methods. For the \code{hist} method, optional arguments
   passed to \code{hist.default}.}
 }
 \value{
-  Numeric vector or list of such vectors. For the
-  \code{hist} method, like \code{hist.default}; see there
-  for details.
+  \code{to_kmeans} creates an object of class
+  \sQuote{kmeans}.
+
+  \code{borders} creates a numeric vector or list of such
+  vectors.
+
+  The return value of the \code{hist} method is like
+  \code{hist.default}; see there for details.
+
+  \code{calinksi} returns a numeric vector with one element
+  per \sQuote{kmeans} object. \code{plot} returns it
+  invisibly. Its \sQuote{names} attribute indicates the
+  original numbers of clusters requested.
 }
 \description{
-  Determine the borders between clusters of one-dimensional
-  data or create a histogram in which these borders are
-  plotted.
+  Calculate or plot the Calinski-Harabasz statistics from
+  \code{kmeans} results. The result of \code{plot} is a
+  simple scatterplot which can be modified with arguments
+  passed to \code{plot} from the \pkg{graphics} package.
+  Alternatively, determine the borders between clusters of
+  one-dimensional data, create a histogram in which these
+  borders are plotted, or convert an object to one of class
+  \sQuote{kmeans}.
 }
 \details{
   The borders are calculated as the mean of the maximum of
@@ -84,6 +136,11 @@ data(vaas_4)
 x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 x.km <- run_kmeans(x, k = 1:10)
 
+# plot() method
+# the usual arguments of plot() are available
+show(y <- plot(x.km, col = "blue", pch = 19))
+stopifnot(is.numeric(y), names(y) == 1:10)
+
 # borders() method
 (x.b <- borders(x.km)) # => list of numeric vectors
 stopifnot(is.list(x.b), length(x.b) == 10, sapply(x, is.numeric))
@@ -94,14 +151,21 @@ y <- hist(x.km[[2]], x, col = "blue", lwd = 2)
 stopifnot(inherits(y, "histogram"))
 y <- hist(x.km, 3:4, col = c("blue", "red"), lwd = 2)
 stopifnot(inherits(y, "histogram"))
+
+# to_kmeans() methods
+x <- c(1, 2, 4, 5, 7, 8)
+summary(y <- kmeans(x, 3))
+stopifnot(identical(y, to_kmeans(y)))
+# see particularly run_kmeans() which uses this internally if clustering is
+# done with Ckmeans.1d.dp::Ckmeans.1d.dp()
 }
 \seealso{
   graphics::hist graphics::abline
+  Ckmeans.1d.dp::Ckmeans.1d.dp
 
-  Other kmeans-functions: \code{\link{calinski}},
-        \code{\link{plot.kmeanss}}, \code{\link{run_kmeans}},
-  \code{\link{to_kmeans}},
-      }
+  Other kmeans-functions: \code{\link{run_kmeans}}
+}
 \keyword{cluster}
 \keyword{hplot}
+\keyword{manip}
 

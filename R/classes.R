@@ -43,34 +43,61 @@ setMethod("update_settings_list", "list", function(x) {
 ################################################################################
 
 
-#' WMD class
+#' Virtual classes of the opm package
 #'
+#' Classes that are virtual and thus are not directly dealt with by an
+#' \pkg{opm} user.
+#'
+#' @details
+#' \acronym{WMD} is an acronym for \sQuote{with metadata}.
 #' This is a virtual class facilitating the management of metadata. No objects
 #' can be created from it because metadata without data make not much sense. It
-#' is used by its child classes such as \code{\link{OPM}}, but it is not
-#' directly applied by an \pkg{opm} user.
+#' is used by its child classes such as \code{\link{OPM}}.
 #'
-#' @note \acronym{WMD} is an acronym for \sQuote{with metadata}.
+#' Conceptually, this class treats metadata as arbitrarily nested lists
+#' with arbitrary content. Containers of objects that inherit from this class
+#' are not forced to contain the same metadata entries. Problems might arise
+#' if such data are queried and attempted to be converted to, e.g., data
+#' frames because some values might be missing. But metadata can be queried
+#' beforehand for the keys as well as the values they contain, and other
+#' methods support setting, modifying and deleting metadata.
 #'
-#' @details Conceptually, this class treats metadata as arbitrarily nested lists
-#'   with arbitrary content. Containers of objects that inherit from this class
-#'   are not forced to contain the same metadata entries. Problems might arise
-#'   if such data are queried and attempted to be converted to, e.g., data
-#'   frames because some values might be missing. But metadata can be queried
-#'   beforehand for the keys as well as the values they contain, and other
-#'   methods support setting, modifying and deleting metadata.
+#' For \code{\link{OPM}} and the other \pkg{opm} classes that use it,
+#' \sQuote{metadata} refers to information that, in contrast to, e.g.,
+#' \code{\link{csv_data}} must be added by the user \strong{after} reading
+#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} files.
+#' Metadata might already be present in \acronym{YAML} files created by the
+#' \pkg{opm} package, however.
 #'
-#'   For \code{\link{OPM}} and the other \pkg{opm} classes that use it,
-#'   \sQuote{metadata} refers to information that, in contrast to, e.g.,
-#'   \code{\link{csv_data}} must be added by the user \strong{after} reading
-#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} files.
-#'   Metadata might already be present in \acronym{YAML} files created by the
-#'   \pkg{opm} package, however.
+#' \acronym{MOA} is an acronym for \sQuote{matrix or array}. \acronym{MOA} is a
+#' virtual class facilitating the implementation of functionality for
+#' both matrices and arrays. Methods defined for objects from the class can be
+#' applied to either kind of object. See \code{\link{map_values}} and
+#' \code{\link{map_names}} for usage examples.
 #'
+#' \acronym{FOE} is an acronym for \sQuote{formula or expression}.
+#' This is a virtual class facilitating the implementation of functionality
+#' for both formulas and expressions. Methods defined for objects from the
+#' class can be applied to either kind of object.
+#' See \code{\link{metadata.set}} and \code{\link{map_metadata}} for
+#' usage examples.
+#'
+#' \acronym{OPMX} stands for \sQuote{\acronym{OPM} or \acronym{OPMS}}.
+#' It is a virtual class containing helper methods mainly for plotting
+#' \code{\link{OPM}} and \code{\link{OPMS}} objects.
+#' See \code{\link{show}} and \code{\link{sort}} for usage examples.
+#'
+#' See \code{\link{to_yaml}} for a usage example of \sQuote{YAML_VIA_LIST}.
+#' This is a virtual class facilitating the conversion to \acronym{YAML} format
+#' (or its subset, \acronym{JSON}). It can currently be used by any class that
+#' can be coerced to a list.
+#'
+#' @name WMD
 #' @docType class
 #' @export
 #' @aliases WMD-class
-#' @seealso methods::Methods
+#' @seealso methods::Methods base::matrix base::array base::expression
+#'   stats::formula
 #' @family classes
 #' @keywords methods classes
 #'
@@ -263,7 +290,7 @@ setAs(from = "list", to = OPM, function(from) {
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
 #' together with aggregated values.
 #'
-#' @note \acronym{OPMA} is an acronym for \sQuote{acronym{OPM}, aggregated}.
+#' @note \acronym{OPMA} is an acronym for \sQuote{\acronym{OPM}, aggregated}.
 #'
 #' @details Objects of this class are usually created by calling
 #'   \code{\link{do_aggr}} on an \code{\link{OPM}} object, or by inputting files
@@ -705,83 +732,31 @@ setAs(from = "matrix", to = CMAT, function(from) {
 ################################################################################
 
 
-#' FOE class
-#'
-#' This is a virtual class facilitating the implementation of functionality for
-#' both formulas and expressions. Methods defined for objects from the class can
-#' be applied to either kind of object, but this class is not directly dealt
-#' with by an \pkg{opm} user.
-#'
-#' @note \sQuote{FOE} is an acronym for \sQuote{formula or expression}.
-#'
-#' @details See \code{\link{metadata.set}} and \code{\link{map_metadata}} for
-#'   usage examples.
-#'
-#' @name FOE
-#'
-#' @docType class
-#' @export
-#' @aliases FOE-class
-#' @seealso methods::Methods base::expression stats::formula
-#' @family classes
-#' @keywords methods classes
-#'
-NULL
-
-setClassUnion(FOE, c("formula", "expression"))
-
-
-################################################################################
-
-
-#' MOA class
-#'
-#' This is a virtual class facilitating the implementation of functionality for
-#' both matrices and arrays. Methods defined for objects from the class can be
-#' applied to either kind of object, but this class is not directly dealt with
-#' by an \pkg{opm} user.
-#'
-#' @note \sQuote{MOA} is an acronym for \sQuote{matrix or array}.
-#'
-#' @details See \code{\link{map_values}} and \code{\link{map_names}} for
-#'   usage examples.
-#'
+#' @rdname WMD
 #' @name MOA
-#'
+#' @aliases MOA-class
 #' @docType class
 #' @export
-#' @aliases MOA-class
-#' @seealso methods::Methods base::matrix base::array
-#' @family classes
-#' @keywords methods classes
 #'
 NULL
 
 setClassUnion(MOA, c("matrix", "array"))
 
-
-################################################################################
-
-
-#' OPMX class
-#'
-#' This is a virtual class containing helper methods mainly for plotting
-#' \code{\link{OPM}} and \code{\link{OPMS}} objects. It is not directly applied
-#' by an \pkg{opm} user.
-#'
-#' @note Regarding the name: \acronym{OPMX} stands for \sQuote{\acronym{OPM} or
-#'   \acronym{OPMS}}.
-#'
-#' @details See \code{\link{show}} and \code{\link{sort}} for usage examples.
-#'
-#' @name OPMX
-#'
+#' @rdname WMD
+#' @name FOE
+#' @aliases FOE-class
 #' @docType class
 #' @export
+#'
+NULL
+
+setClassUnion(FOE, c("formula", "expression"))
+
+#' @rdname WMD
+#' @name OPMX
 #' @aliases OPMX-class
-#' @seealso methods::Methods
-#' @family classes
-#' @keywords methods classes
+#' @docType class
+#' @export
 #'
 NULL
 
@@ -790,27 +765,11 @@ NULL
 #
 setClassUnion(OPMX, c(OPM, OPMS))
 
-
-################################################################################
-
-
-#' YAML_VIA_LIST class
-#'
-#' This is a virtual class facilitating the conversion to \acronym{YAML} format
-#' (or its subset, \acronym{JSON}). It can currently be used by any class that
-#' can be coerced to a list, but it is not directly applied by an \pkg{opm}
-#' user.
-#'
+#' @rdname WMD
 #' @name YAML_VIA_LIST
-#'
-#' @details See \code{\link{to_yaml}} for a usage example.
-#'
+#' @aliases YAML_VIA_LIST-class
 #' @docType class
 #' @export
-#' @aliases YAML_VIA_LIST-class
-#' @seealso methods::Methods
-#' @family classes
-#' @keywords methods classes
 #'
 NULL
 

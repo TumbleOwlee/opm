@@ -6,7 +6,7 @@
   \code{\link{YAML_VIA_LIST}}.}
 
   \item{sep}{Logical scalar. Prepend \acronym{YAML}
-  document separator \verb{---}?}
+  document separator \sQuote{\verb{---}}?}
 
   \item{line.sep}{Character scalar used as output line
   separator.}
@@ -28,9 +28,8 @@
   Character scalar (\acronym{YAML} string).
 }
 \description{
-  Convert some \R object to \acronym{YAML}. If the package
-  \pkg{yaml} is not installed, a call of this function will
-  result in an error.
+  Convert some \R object to \acronym{YAML} or
+  \acronym{JSON}.
 }
 \details{
   \acronym{YAML} is a useful data-serialization standard
@@ -60,9 +59,11 @@ write(to_yaml(x), "out.yml")
 }
 \references{
   \url{http://www.yaml.org/}
+
+  \url{http://www.json.org/}
 }
 \seealso{
-  yaml::as.yaml yaml::yaml.load_file
+  yaml::as.yaml yaml::yaml.load_file json::toJSON
 
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},

@@ -78,7 +78,7 @@ extract_curve_params.grofit <- function(x, ...) {
   settings <- c(x$control)
   x <- summary(x$gcFit)
   map <- map_grofit_names()
-  structure(.Data = t(as.matrix(x[, names(map)])),
+  structure(t(as.matrix(x[, names(map)])),
     dimnames = list(map, x[, "TestId"]), settings = settings)
 }
 

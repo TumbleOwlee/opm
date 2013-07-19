@@ -20,7 +20,7 @@
   \code{\link{OPM}}.
 }
 \note{
-  \acronym{OPMA} is an acronym for \sQuote{acronym{OPM},
+  \acronym{OPMA} is an acronym for \sQuote{\acronym{OPM},
   aggregated}.
 }
 \examples{

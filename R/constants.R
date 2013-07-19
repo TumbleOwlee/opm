@@ -139,7 +139,7 @@ URL_BASE <- c(
 # 29-8-2011), sorted darkest-first.
 #
 W3C_COLORS <- structure(
-  .Data = c(
+  c(
     "#000000",
     "#000080",
     "#008000",

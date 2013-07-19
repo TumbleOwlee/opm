@@ -1438,6 +1438,9 @@ setMethod("disc_settings", OPMD, function(object) {
 #'   of high precedence such as \code{::} but their use is not recommended. All
 #'   operators with a lower precedence than \code{$} separate list elements.
 #'
+#'   Additional options when using formulas are described under
+#'   \code{\link{extract}}.
+#'
 #' @examples
 #'
 #' # 'OPM' method
@@ -2294,7 +2297,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("factor", WMD), function(x, table) {
-    func_(structure(.Data = as.character(x), .Names = names(x)), table)
+    func_(structure(as.character(x), names = names(x)), table)
   }, sealed = SEALED)
 })
 
