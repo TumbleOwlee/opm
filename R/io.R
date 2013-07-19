@@ -7,102 +7,6 @@
 #
 
 
-## NOTE: not an S4 method because check is done using match.arg()
-
-#' File pattern
-#'
-#' Create a regular expression matching certain file extensions. This is not
-#' normally directly called by an \pkg{opm} user but by the other IO functions
-#' of the package.
-#'
-#' @param type Character scalar indicating the file types to be matched by
-#'   extension. Alternaticely, directly the extension or extensions, or a list
-#'   of file names (not \code{NA}).
-#' @param compressed Logical scalar. Shall compressed files also be matched?
-#'   This affects the returned pattern as well as the pattern used for
-#'   extracting file extensions from complete file names (if \code{literally}
-#'   is \code{TRUE}).
-#' @param literally Logical scalar. Interpret \code{type} literally? This also
-#'   allows for vectors with more than a single element, as well as the
-#'   extraction of file extensions from file names.
-#' @export
-#' @return Character scalar, holding a regular expression.
-#' @family io-functions
-#' @keywords utilities
-#' @seealso tools::file_ext
-#' @examples
-#' (x <- file_pattern())
-#' (y <- file_pattern(type = "csv", compressed = FALSE))
-#' stopifnot(nchar(x) > nchar(y))
-#' # constructing pattern from existing files
-#' (files <- list.files(pattern = "[.]"))
-#' (x <- file_pattern(I(files))) # I() causes 'literally' to be TRUE
-#' stopifnot(grepl(x, files, ignore.case = TRUE))
-#'
-file_pattern <- function(
-    type = c("both", "csv", "yaml", "json", "any", "empty"),
-    compressed = TRUE, literally = inherits(type, "AsIs")) {
-  make_pat <- function(x, compressed, enclose = "\\.%s$") {
-    if (compressed)
-      x <- sprintf("%s(\\.(bz2|gz|lzma|xz))?", x)
-    sprintf(enclose, x)
-  }
-  LL(literally, compressed)
-  result <- if (literally) {
-    x <- make_pat("([^.]+)", compressed, "^.*?\\.%s$")
-    x <- sub(x, "\\1", type, perl = TRUE)
-    if (all(same <- x == basename(type))) { # assuming extensions
-      type <- x
-      bad <- "^\\w+$"
-    } else { # assuming file names
-      type <- x[!same]
-      bad <- "^\\w+(\\.\\w+)?$"
-    }
-    if (any(bad <- !grepl(bad, type <- unique.default(type), perl = TRUE)))
-      stop("'type' must contain word characters (only): ", type[bad][1L])
-    case(length(type), stop("'type' must be non-empty"), type,
-      sprintf("(%s)", paste(type, collapse = "|")))
-  } else
-    case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
-      yaml = "ya?ml", json = "json", any = "[^.]+", empty = "")
-  make_pat(result, compressed)
-}
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because dispatch is done manually
-
-#' File pattern
-#'
-#' Create regexp matching certain file extensions.
-#'
-#' @param arg If a list, call \code{\link{file_pattern}} with it as arguments.
-#'   If \code{NULL}, return it unchanged. Otherwise convert it to character and
-#'   optionally using \code{\link{glob_to_regex}}, depending on \code{wildcard}.
-#' @param wildcard Logical scalar. Convert \code{arg} using
-#'   \code{\link{glob_to_regex}}?
-#' @return Character scalar, holding a regular expression, or any object,
-#'   unchanged.
-#' @keywords internal
-#' @seealso tools::file_ext
-#'
-extended_file_pattern <- function(arg, wildcard) {
-  if (is.null(arg))
-    return(arg)
-  if (is.list(arg))
-    return(do.call(file_pattern, arg))
-  result <- as.character(arg)
-  if (wildcard)
-    result <- glob_to_regex(result)
-  result
-}
-
-
-################################################################################
-
-
 #' Repair OTH plates
 #'
 #' Plates run in generation-III mode, if converted to \acronym{CSV} by the
@@ -317,14 +221,111 @@ read_microstation_opm <- function(filename) {
 #
 
 
-## NOTE: not an S4 method because conversion is done
+## NOTE: not an S4 method because conversion is done by calling functions, and
+## error message would be meaningful.
 
-#' Conversion of directory names to file names
+#' Conversion between two files
 #'
-#' Turn a mixed file/directory list into a list of files. This is not normally
-#' directly called by an \pkg{opm} user but by the other IO functions of the
-#' package. One can use their \code{demo} argument directly for testing the
-#' results of the applied filename patterns.
+#' Convert data from an input file to data in an output file.
+#'
+#' @param files Two-element character vector containing the input and output
+#'   files.
+#' @param io.fun Conversion function. Should accept \code{infile} and
+#'   \code{outfile} as the first two arguments.
+#' @param fun.args Optional list of further arguments of \code{io.fun}.
+#' @param overwrite Character scalar. If \sQuote{yes}, conversion is always
+#'   tried if \code{infile} exists and is not empty. If \sQuote{no}, conversion
+#'   is not tried if \code{outfile} exists and is not empty. If \sQuote{older},
+#'   conversion is tried if \code{outfile} does not exist or is empty or is
+#'   older than \code{infile} (with respect to the modification time).
+#' @param verbose Logical scalar. Print conversion and success/failure
+#'   information?
+#' @return Character vector corresponding to one of the rows of the result of
+#'   \code{\link{batch_process}}.
+#' @keywords internal
+#'
+process_io <- function(files, io.fun, fun.args = list(),
+    overwrite = c("no", "older", "yes"), verbose = TRUE) {
+  empty <- function(file.status) {
+    is.na(file.status$size) || file.status$size == 0
+  }
+  create_parent <- function(filename) {
+    outdir <- dirname(filename)
+    file.exists(outdir) || dir.create(outdir, recursive = TRUE,
+      showWarnings = FALSE)
+  }
+  prepare_conversion <- function(infile, outfile, overwrite) {
+    istat <- file.info(c(infile, outfile)) # fails if not character
+    ostat <- istat[2L, ]
+    istat <- istat[1L, ]
+    if (empty(istat))
+      "infile unknown or empty"
+    else
+      case(overwrite,
+        yes = if (unlink(outfile) == 0L)
+          ""
+        else
+          "could not delete outfile",
+        no = if (empty(ostat))
+          ""
+        else
+          "outfile not empty",
+        older = if (!empty(ostat) && istat$mtime < ostat$mtime)
+          "outfile not empty and newer"
+        else if (unlink(outfile) == 0L)
+          ""
+        else
+          "could not delete outfile"
+      )
+  }
+  conduct_conversion <- function(infile, outfile, fun, fun.args) {
+    if (!create_parent(outfile))
+      return("could not create parent directory")
+    problem <- tryCatch({
+      do.call(fun, c(infile = infile, outfile = outfile, fun.args))
+      ""
+    }, error = conditionMessage)
+    if (nzchar(problem))
+      problem
+    else if (empty(file.info(outfile)))
+      "outfile not created or empty"
+    else
+      "ok"
+  }
+  LL(files, .wanted = 2L)
+  overwrite <- match.arg(overwrite)
+  result <- list(infile = files[1L], outfile = files[2L], before = "",
+    after = "")
+  result$before <- prepare_conversion(files[1L], files[2L], overwrite)
+  if (!nzchar(result$before)) {
+    result$before <- "attempt to create outfile"
+    result$after <- conduct_conversion(files[1L], files[2L], io.fun, fun.args)
+  }
+  if (verbose) {
+    lapply(formatDL(unlist(result), style = "list"), message)
+    message("")
+  }
+  unlist(result)
+}
+
+
+################################################################################
+
+
+## NOTE: not S4 methods because conversion is done
+
+#' Batch processing of files
+#'
+#' Batch-collect information from a series of input files or batch-convert data
+#' from infiles to data in outfiles. Alternatively, turn a mixed file/directory
+#' list into a list of files or create a regular expression matching certain
+#' file extensions. These functions are not normally directly called by an
+#' \pkg{opm} user but by the other IO functions of the package such as
+#' \code{\link{collect_template}} or \code{\link{batch_opm}}. One can use their
+#' \code{demo} argument directly for testing the results of the applied filename
+#' patterns.
+#'
+#' @inheritParams process_io
 #'
 #' @param names Character vector containing filenames or directories, or
 #'   convertible to such.
@@ -357,10 +358,61 @@ read_microstation_opm <- function(filename) {
 #'   that if requested this is done \strong{before} expanding the names of
 #'   directories, if any.
 #'
-#' @return Character vector (which would be empty if all existing files, if any,
-#'   had been unselected).
+#' @param fun Collecting function. Should use the filename as first argument.
+#' @param fun.args Optional list of arguments to \code{fun} or \code{io.fun}.
+#' @param ... Optional further arguments passed to \code{\link{explode_dir}}.
+#' @param proc Integer scalar. The number of processes to spawn. Cannot be set
+#'   to more than 1 core if running under Windows. See the \code{cores}
+#'   argument of \code{\link{do_aggr}} for details.
+#' @param simplify Logical scalar. Should the resulting list be simplified to a
+#'   vector or matrix if possible?
+#' @param use.names Logical scalar. Should \code{names} be used for naming the
+#'   elements of the result?
 #'
-#' @note Other functions that call this function should have a \code{demo}
+#' @param out.ext Character scalar. The extension of the outfile names (without
+#'   the dot).
+#' @param outdir Character vector. Directories in which to place the outfiles.
+#'   If \code{NULL} or only containing empty strings, each infile's directory is
+#'   used.
+#' @param in.ext Character scalar. Passed through \code{\link{file_pattern}},
+#'   then used for the replacement of old file extensions with new ones.
+#'
+#' @param type Character scalar indicating the file types to be matched by
+#'   extension. Alternaticely, directly the extension or extensions, or a list
+#'   of file names (not \code{NA}).
+#' @param compressed Logical scalar. Shall compressed files also be matched?
+#'   This affects the returned pattern as well as the pattern used for
+#'   extracting file extensions from complete file names (if \code{literally}
+#'   is \code{TRUE}).
+#' @param literally Logical scalar. Interpret \code{type} literally? This also
+#'   allows for vectors with more than a single element, as well as the
+#'   extraction of file extensions from file names.
+#' @param demo Logical scalar. In the case of \code{batch_process}, if
+#'   \code{TRUE} do not convert files, but print the attempted infile-outfile
+#'   conversions and invisibly return a matrix with infiles in the first and
+#'   outfiles in the second column? For the other functions, the effect is
+#'   equivalent.
+#'
+#' @return
+#' \code{explode_dir} returns a character vector (which would be empty if all
+#' existing files, if any, had been unselected).
+#'
+#' \code{batch_collect} returns a list, potentially simplified to a vector,
+#' depending on the output of \code{fun} and the value of \code{simplify}. See
+#' also \code{demo}.
+#'
+#' In normal mode, \code{batch_process} creates an invisibly returned character
+#' matrix in which each row corresponds to a named character vector with the
+#' keys \sQuote{infile}, \sQuote{outfile}, \sQuote{before} and \sQuote{after}.
+#' The latter two describe the result of the action(s) before and after
+#' attempting to convert \code{infile} to \code{outfile}. \sQuote{after} is the
+#' empty string if no conversion was tried (see \code{overwrite}), \sQuote{ok}
+#' if conversion was successful and a message describing the problems otherwise.
+#' For the results of the \code{demo} mode see above.
+#'
+#' \code{file_pattern} yields a character scalar, holding a regular expression.
+#'
+#' @note Other functions that call \code{explode_dir} should have a \code{demo}
 #'   argument which, if set to \code{TRUE}, caused the respective function to do
 #'   no real work but print the names of the files that it would process in
 #'   normal running mode.
@@ -371,6 +423,7 @@ read_microstation_opm <- function(filename) {
 #' @keywords IO character
 #' @examples
 #'
+#' # explode_dir()
 #' # Example with temporary directory
 #' td <- tempdir()
 #' tf <- tempfile()
@@ -390,6 +443,43 @@ read_microstation_opm <- function(filename) {
 #' # More interesting use cases are provided by the functions that call
 #' # explode_dir(). Consider to first try them in 'demo' mode. Globbing
 #' # examples are given under glob_to_regex().
+#'
+#' # batch_collect()
+#' # Read the first line from each of the OPM test dataset files
+#' f <- opm_files("testdata")
+#' if (length(f) > 0) { # if the files are found
+#'   x <- batch_collect(f, fun = readLines, fun.args = list(n = 1L))
+#'   # yields a list with the input files as names and the result from each
+#'   # file as values (exactly one line)
+#'   stopifnot(is.list(x), identical(names(x), f))
+#'   stopifnot(sapply(x, is.character), sapply(x, length) == 1L)
+#' } else {
+#'   warning("test files not found")
+#' }
+#'
+#' # batch_process()
+#' # Read the first line from each of the OPM test dataset files and store it
+#' # in temporary files
+#' pf <- function(infile, outfile) write(readLines(infile, n = 1), outfile)
+#' infiles <- opm_files("testdata")
+#' if (length(infiles) > 0) { # if the files are found
+#'   x <- batch_process(infiles, out.ext = "tmp", io.fun = pf,
+#'     outdir = tempdir())
+#'   stopifnot(is.matrix(x), identical(x[, 1], infiles))
+#'   stopifnot(file.exists(x[, 2]))
+#'   unlink(x[, 2])
+#' } else {
+#'   warning("test files not found")
+#' }
+#'
+#' # file_pattern()
+#' (x <- file_pattern())
+#' (y <- file_pattern(type = "csv", compressed = FALSE))
+#' stopifnot(nchar(x) > nchar(y))
+#' # constructing pattern from existing files
+#' (files <- list.files(pattern = "[.]"))
+#' (x <- file_pattern(I(files))) # I() causes 'literally' to be TRUE
+#' stopifnot(grepl(x, files, ignore.case = TRUE))
 #'
 explode_dir <- function(names,
     include = NULL, exclude = NULL, ignore.case = TRUE, wildcard = TRUE,
@@ -423,6 +513,116 @@ explode_dir <- function(names,
   result <- explode_names(names, recursive = recursive)
   result <- select_files(result, include, invert = FALSE)
   select_files(result, exclude, invert = TRUE)
+}
+
+#' @rdname explode_dir
+#' @export
+#'
+batch_collect <- function(names, fun, fun.args = list(), proc = 1L, ...,
+    use.names = TRUE, simplify = FALSE, demo = FALSE) {
+  names <- explode_dir(names, ...)
+  if (demo) {
+    message(paste(names, collapse = "\n"))
+    return(invisible(names))
+  }
+  fun.args <- as.list(fun.args)
+  mcmapply(FUN = fun, names, MoreArgs = as.list(fun.args), SIMPLIFY = simplify,
+    USE.NAMES = use.names, mc.cores = proc)
+}
+
+#' @rdname explode_dir
+#' @export
+#'
+batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
+    outdir = NULL, overwrite = c("yes", "older", "no"), in.ext = "any",
+    compressed = TRUE, literally = inherits(in.ext, "AsIs"), ...,
+    verbose = TRUE, demo = FALSE) {
+  create_outfile_names <- function(infiles, outdir, out.ext) {
+    if (length(outdir) == 0L || all(!nzchar(outdir)))
+      outdir <- dirname(infiles)
+    result <- sub(in.ext, "", basename(infiles), perl = TRUE,
+      ignore.case = TRUE)
+    result <- paste(result, sub("^\\.+", "", out.ext), sep = ".")
+    file.path(outdir, result)
+  }
+  LL(demo, verbose, compressed)
+  in.ext <- file_pattern(in.ext, compressed, literally)
+  overwrite <- match.arg(overwrite)
+  infiles <- explode_dir(names, ...)
+  outfiles <- create_outfile_names(infiles, outdir, out.ext)
+  if (demo) {
+    message(paste(infiles, outfiles, sep = "\n  => ", collapse = "\n"))
+    return(invisible(cbind(infiles, outfiles)))
+  }
+  fun.args <- as.list(fun.args)
+  data <- mapply(c, infiles, outfiles, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  result <- mclapply(X = data, FUN = process_io, mc.cores = proc,
+    io.fun = io.fun, fun.args = fun.args, overwrite = overwrite,
+    verbose = verbose)
+  invisible(do.call(rbind, result))
+}
+
+#' @rdname explode_dir
+#' @export
+#'
+file_pattern <- function(
+    type = c("both", "csv", "yaml", "json", "any", "empty"),
+    compressed = TRUE, literally = inherits(type, "AsIs")) {
+  make_pat <- function(x, compressed, enclose = "\\.%s$") {
+    if (compressed)
+      x <- sprintf("%s(\\.(bz2|gz|lzma|xz))?", x)
+    sprintf(enclose, x)
+  }
+  LL(literally, compressed)
+  result <- if (literally) {
+    x <- make_pat("([^.]+)", compressed, "^.*?\\.%s$")
+    x <- sub(x, "\\1", type, perl = TRUE)
+    if (all(same <- x == basename(type))) { # assuming extensions
+      type <- x
+      bad <- "^\\w+$"
+    } else { # assuming file names
+      type <- x[!same]
+      bad <- "^\\w+(\\.\\w+)?$"
+    }
+    if (any(bad <- !grepl(bad, type <- unique.default(type), perl = TRUE)))
+      stop("'type' must contain word characters (only): ", type[bad][1L])
+    case(length(type), stop("'type' must be non-empty"), type,
+      sprintf("(%s)", paste(type, collapse = "|")))
+  } else
+    case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
+      yaml = "ya?ml", json = "json", any = "[^.]+", empty = "")
+  make_pat(result, compressed)
+}
+
+
+################################################################################
+
+
+## NOTE: not an S4 method because dispatch is done manually
+
+#' File pattern (extended)
+#'
+#' Create regexp matching certain file extensions.
+#'
+#' @param arg If a list, call \code{\link{file_pattern}} with it as arguments.
+#'   If \code{NULL}, return it unchanged. Otherwise convert it to character and
+#'   optionally using \code{\link{glob_to_regex}}, depending on \code{wildcard}.
+#' @param wildcard Logical scalar. Convert \code{arg} using
+#'   \code{\link{glob_to_regex}}?
+#' @return Character scalar, holding a regular expression, or any object,
+#'   unchanged.
+#' @keywords internal
+#' @seealso tools::file_ext
+#'
+extended_file_pattern <- function(arg, wildcard) {
+  if (is.null(arg))
+    return(arg)
+  if (is.list(arg))
+    return(do.call(file_pattern, arg))
+  result <- as.character(arg)
+  if (wildcard)
+    result <- glob_to_regex(result)
+  result
 }
 
 
@@ -787,61 +987,6 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #
 
 
-## NOTE: not an S4 method because conversion is done
-
-#' Collect information from files
-#'
-#' Batch-collect information from a series of input files. This is not normally
-#' directly called by an \pkg{opm} user because \code{\link{collect_template}}
-#' is available.
-#'
-#' @inheritParams read_opm
-#' @param names Character vector with file or directory names, or convertible to
-#'   such. See \code{\link{explode_dir}} for details.
-#' @param fun Collecting function. Should use the filename as first argument.
-#' @param fun.args Optional list of arguments to \code{fun}.
-#' @param ... Optional further arguments passed to \code{\link{explode_dir}}.
-#' @param proc Integer scalar. The number of processes to spawn. Cannot be set
-#'   to more than 1 core if running under Windows. See the \code{cores}
-#'   argument of \code{\link{do_aggr}} for details.
-#' @param simplify Logical scalar. Should the resulting list be simplified to a
-#'   vector or matrix if possible?
-#' @param use.names Logical scalar. Should \code{names} be used for naming the
-#'   elements of the result?
-#' @export
-#' @family io-functions
-#' @return List, potentially simplified to a vector, depending on the output of
-#'   \code{fun} and the value of \code{simplify}. See also \code{demo}.
-#' @keywords IO
-#' @examples
-#' # Read the first line from each of the OPM test dataset files
-#' f <- opm_files("testdata")
-#' if (length(f) > 0) { # if the files are found
-#'   x <- batch_collect(f, fun = readLines, fun.args = list(n = 1L))
-#'   # yields a list with the input files as names and the result from each
-#'   # file as values (exactly one line)
-#'   stopifnot(is.list(x), identical(names(x), f))
-#'   stopifnot(sapply(x, is.character), sapply(x, length) == 1L)
-#' } else {
-#'   warning("test files not found")
-#' }
-#'
-batch_collect <- function(names, fun, fun.args = list(), proc = 1L, ...,
-    use.names = TRUE, simplify = FALSE, demo = FALSE) {
-  names <- explode_dir(names, ...)
-  if (demo) {
-    message(paste(names, collapse = "\n"))
-    return(invisible(names))
-  }
-  fun.args <- as.list(fun.args)
-  mcmapply(FUN = fun, names, MoreArgs = as.list(fun.args), SIMPLIFY = simplify,
-    USE.NAMES = use.names, mc.cores = proc)
-}
-
-
-################################################################################
-
-
 #' Collect metadata template
 #'
 #' Collect a metadata template from
@@ -1004,184 +1149,6 @@ setMethod("collect_template", OPMS, function(object, ...) {
   result <- lapply(object@plates, collect_template, ...)
   do.call(rbind, result)
 }, sealed = SEALED)
-
-
-################################################################################
-################################################################################
-#
-# Batch conversion functions
-#
-
-
-## NOTE: not an S4 method because conversion is done by calling functions, and
-## error message would be meaningful.
-
-#' Conversion between two files
-#'
-#' Convert data from an input file to data in an output file.
-#'
-#' @param files Two-element character vector containing the input and output
-#'   files.
-#' @param io.fun Conversion function. Should accept \code{infile} and
-#'   \code{outfile} as the first two arguments.
-#' @param fun.args Optional list of further arguments of \code{io.fun}.
-#' @param overwrite Character scalar. If \sQuote{yes}, conversion is always
-#'   tried if \code{infile} exists and is not empty. If \sQuote{no}, conversion
-#'   is not tried if \code{outfile} exists and is not empty. If \sQuote{older},
-#'   conversion is tried if \code{outfile} does not exist or is empty or is
-#'   older than \code{infile} (with respect to the modification time).
-#' @param verbose Logical scalar. Print conversion and success/failure
-#'   information?
-#' @return Character vector corresponding to one of the rows of the result of
-#'   \code{\link{batch_process}}.
-#' @keywords internal
-#'
-process_io <- function(files, io.fun, fun.args = list(),
-    overwrite = c("no", "older", "yes"), verbose = TRUE) {
-  empty <- function(file.status) {
-    is.na(file.status$size) || file.status$size == 0
-  }
-  create_parent <- function(filename) {
-    outdir <- dirname(filename)
-    file.exists(outdir) || dir.create(outdir, recursive = TRUE,
-      showWarnings = FALSE)
-  }
-  prepare_conversion <- function(infile, outfile, overwrite) {
-    istat <- file.info(c(infile, outfile)) # fails if not character
-    ostat <- istat[2L, ]
-    istat <- istat[1L, ]
-    if (empty(istat))
-      "infile unknown or empty"
-    else
-      case(overwrite,
-        yes = if (unlink(outfile) == 0L)
-          ""
-        else
-          "could not delete outfile",
-        no = if (empty(ostat))
-          ""
-        else
-          "outfile not empty",
-        older = if (!empty(ostat) && istat$mtime < ostat$mtime)
-          "outfile not empty and newer"
-        else if (unlink(outfile) == 0L)
-          ""
-        else
-          "could not delete outfile"
-      )
-  }
-  conduct_conversion <- function(infile, outfile, fun, fun.args) {
-    if (!create_parent(outfile))
-      return("could not create parent directory")
-    problem <- tryCatch({
-      do.call(fun, c(infile = infile, outfile = outfile, fun.args))
-      ""
-    }, error = conditionMessage)
-    if (nzchar(problem))
-      problem
-    else if (empty(file.info(outfile)))
-      "outfile not created or empty"
-    else
-      "ok"
-  }
-  LL(files, .wanted = 2L)
-  overwrite <- match.arg(overwrite)
-  result <- list(infile = files[1L], outfile = files[2L], before = "",
-    after = "")
-  result$before <- prepare_conversion(files[1L], files[2L], overwrite)
-  if (!nzchar(result$before)) {
-    result$before <- "attempt to create outfile"
-    result$after <- conduct_conversion(files[1L], files[2L], io.fun, fun.args)
-  }
-  if (verbose) {
-    lapply(formatDL(unlist(result), style = "list"), message)
-    message("")
-  }
-  unlist(result)
-}
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Convert infiles to outfiles
-#'
-#' Batch-convert data from infiles to data in outfiles. This is not normally
-#' directly called by an \pkg{opm} user because \code{\link{batch_opm}}
-#' is available.
-#'
-#' @inheritParams process_io
-#' @inheritParams batch_collect
-#' @param out.ext Character scalar. The extension of the outfile names (without
-#'   the dot).
-#' @param outdir Character vector. Directories in which to place the outfiles.
-#'   If \code{NULL} or only containing empty strings, each infile's directory is
-#'   used.
-#' @param in.ext Character scalar. Passed through \code{\link{file_pattern}},
-#'   then used for the replacement of old file extensions with new ones.
-#' @param compressed Logical scalar. Passed as 2nd argument to
-#'   \code{\link{file_pattern}}.
-#' @param literally Logical scalar. Passed as 3rd argument to
-#'   \code{\link{file_pattern}}.
-#' @param demo Logical scalar. Do not convert files, but print the attempted
-#'   infile-outfile conversions and invisibly return a matrix with infiles in
-#'   the first and outfiles in the second column?
-#' @export
-#' @return In normal mode, an invisibly returned character matrix in which each
-#'   row corresponds to a named character vector with the keys \sQuote{infile},
-#'   \sQuote{outfile}, \sQuote{before} and \sQuote{after}. The latter two
-#'   describe the result of the action(s) before and after attempting to convert
-#'   \code{infile} to \code{outfile}. \sQuote{after} is the empty string if no
-#'   conversion was tried (see \code{overwrite}), \sQuote{ok} if conversion was
-#'   successful and a message describing the problems otherwise. For the results
-#'   of the \code{demo} mode see above.
-#' @keywords IO
-#' @family io-functions
-#' @examples
-#' # Read the first line from each of the OPM test dataset files and store it
-#' # in temporary files
-#' pf <- function(infile, outfile) write(readLines(infile, n = 1), outfile)
-#' infiles <- opm_files("testdata")
-#' if (length(infiles) > 0) { # if the files are found
-#'   x <- batch_process(infiles, out.ext = "tmp", io.fun = pf,
-#'     outdir = tempdir())
-#'   stopifnot(is.matrix(x), identical(x[, 1], infiles))
-#'   stopifnot(file.exists(x[, 2]))
-#'   unlink(x[, 2])
-#' } else {
-#'   warning("test files not found")
-#' }
-#'
-batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
-    outdir = NULL, overwrite = c("yes", "older", "no"), in.ext = "any",
-    compressed = TRUE, literally = inherits(in.ext, "AsIs"), ...,
-    verbose = TRUE, demo = FALSE) {
-  create_outfile_names <- function(infiles, outdir, out.ext) {
-    if (length(outdir) == 0L || all(!nzchar(outdir)))
-      outdir <- dirname(infiles)
-    result <- sub(in.ext, "", basename(infiles), perl = TRUE,
-      ignore.case = TRUE)
-    result <- paste(result, sub("^\\.+", "", out.ext), sep = ".")
-    file.path(outdir, result)
-  }
-  LL(demo, verbose, compressed)
-  in.ext <- file_pattern(in.ext, compressed, literally)
-  overwrite <- match.arg(overwrite)
-  infiles <- explode_dir(names, ...)
-  outfiles <- create_outfile_names(infiles, outdir, out.ext)
-  if (demo) {
-    message(paste(infiles, outfiles, sep = "\n  => ", collapse = "\n"))
-    return(invisible(cbind(infiles, outfiles)))
-  }
-  fun.args <- as.list(fun.args)
-  data <- mapply(c, infiles, outfiles, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-  result <- mclapply(X = data, FUN = process_io, mc.cores = proc,
-    io.fun = io.fun, fun.args = fun.args, overwrite = overwrite,
-    verbose = verbose)
-  invisible(do.call(rbind, result))
-}
 
 
 ################################################################################

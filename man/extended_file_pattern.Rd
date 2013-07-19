@@ -1,6 +1,6 @@
 \name{extended_file_pattern}
 \alias{extended_file_pattern}
-\title{File pattern}
+\title{File pattern (extended)}
 \usage{
   extended_file_pattern(arg, wildcard)
 }

@@ -10,7 +10,7 @@
   \code{other} with additional attributes.
 }
 \description{
-  Attach the contents of all slots, except the
+  Attach the contents of all slots, except for the
   measurements, to another object. Useful in conversions
   (coercions).
 }
