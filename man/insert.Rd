@@ -1,10 +1,18 @@
 \name{insert}
 \alias{insert}
-\title{Insert a list in a list}
+\alias{insert.list}
+\title{Insert a list into a list}
+\usage{
+  insert(object, ...)
+
+  \method{insert}{list} (object, other, ...,
+    .force = FALSE, .strict = FALSE)
+}
 \arguments{
   \item{object}{List.}
 
-  \item{other}{\R object to insert. List.}
+  \item{other}{List or other \R object to insert. Can also
+  be missing.}
 
   \item{...}{Optional other items to insert.}
 
@@ -18,7 +26,7 @@
   already contained values.}
 }
 \value{
-  List.
+  List, potentially modified.
 }
 \description{
   Insert all values from another list in a list, either by
@@ -32,11 +40,3 @@
 }
 \keyword{internal}
 
-\docType{methods}
-\alias{insert-methods}
-\alias{insert,list-method}
-\usage{
-  \S4method{insert}{list}(object, other, ..., .force = FALSE,
-    .strict = FALSE) 
-
-}

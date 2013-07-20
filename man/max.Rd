@@ -52,11 +52,9 @@ stopifnot(max(vaas_4) > x) # obviously
   \code{\link{duplicated}}, \code{\link{filename}},
   \code{\link{has_aggr}}, \code{\link{has_disc}},
   \code{\link{hours}}, \code{\link{measurements}},
-  \code{\link{metadata}}, \code{\link{plate_type}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{summary}}, \code{\link{well}},
-  \code{\link{wells}}
+  \code{\link{plate_type}}, \code{\link{position}},
+  \code{\link{seq}}, \code{\link{setup_time}},
+  \code{\link{subset}}, \code{\link{well}}
 }
 \keyword{attribute}
 \keyword{dplot}

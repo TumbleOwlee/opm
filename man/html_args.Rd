@@ -1,6 +1,7 @@
 \name{html_args}
 \alias{html_args}
-\title{Default HTML formatting arguments}
+\alias{safe_labels}
+\title{HTML formatting and output label generation}
 \usage{
   html_args(character.states = c(`negative reaction` = "-", `weak reaction` = "w",
     `positive reaction` = "+"),
@@ -10,6 +11,9 @@
     table.summary = "character matrix",
     greek.letters = TRUE, css.file = opm_opt("css.file"),
     ...)
+
+  safe_labels(x, format, enclose = TRUE, pad = FALSE,
+    comment = FALSE)
 }
 \arguments{
   \item{character.states}{Character vector used for mapping
@@ -80,14 +84,47 @@
   the \pkg{base} package).} \item{insert}{As above, but
   inserted between the legend and the table.}
   \item{append}{As above, but inserted after the table.} }}
+
+  \item{x}{Character vector or convertible to such.}
+
+  \item{format}{Character scalar. See
+  \code{\link{phylo_data}}.}
+
+  \item{enclose}{Logical scalar. See
+  \code{\link{phylo_data}} and the description of
+  \code{comment}.}
+
+  \item{pad}{Logical scalar. Bring labels to the same
+  number of characters by appending spaces? Has no effect
+  for \sQuote{phylip} and \sQuote{html} output format.}
+
+  \item{comment}{Logical scalar. If \code{TRUE}, comments
+  as used in the respective format will be produced.
+  \sQuote{phylip} and \sQuote{epf} do not accept comments
+  and will yield an error. If \code{enclose} is
+  \code{TRUE}, the comment-enclosing characters are
+  appended and prepended to the vector, otherwise to each
+  string separately.}
 }
 \value{
-  List.
+  List of \acronym{HTML} arguments or character vector with
+  modified labels.
 }
 \description{
-  A helper function for \code{\link{phylo_data}} allowing
-  for the easy fine-tuning of the generated \acronym{HTML}
-  output.
+  These are helper functions for \code{\link{phylo_data}}
+  allowing for either the easy fine-tuning of the generated
+  \acronym{HTML} output or for the conversions of strings
+  to safe phylogenetic taxon labels.
+}
+\details{
+  These functions are not normally called directly by an
+  \pkg{opm} user but by \code{\link{phylo_data}}; see there
+  for their usual application.
+
+  Label cleaning invokes either the replacement of
+  disallowed characters or the enclosing of all labels in
+  single quotes and the doubling of pre-existing single
+  quotes, if any.
 }
 \note{
   The \code{\link{phylo_data}} methods for
@@ -95,13 +132,24 @@
   do not support all \acronym{HTML} formatting options.
 }
 \examples{
-# see phylo_data()
+# Some animals you might know
+x <- c("Elephas maximus", "Loxodonta africana", "Giraffa camelopardalis")
+
+(y <- safe_labels(x, "phylip"))
+stopifnot(nchar(y) == 10L) # truncation
+
+(y <- safe_labels(x, "epf"))
+stopifnot(nchar(y) == nchar(x)) # changes in length unnecessary
+(y <- safe_labels(x, "epf", pad = TRUE))
+stopifnot(nchar(y) == 22) # padded to uniform length
+
+(y <- safe_labels(x, "nexus", enclose = TRUE))
+stopifnot(grepl("^'.*'$", y)) # all strings enclosed in sinqle quotes
 }
 \seealso{
-  base::normalizePath base::I
+  base::normalizePath base::I base::gsub
 
-  Other phylogeny-functions: \code{\link{phylo_data}},
-  \code{\link{safe_labels}}
+  Other phylogeny-functions: \code{\link{phylo_data}}
 }
 \keyword{IO}
 \keyword{character}

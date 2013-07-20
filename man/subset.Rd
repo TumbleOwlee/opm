@@ -143,11 +143,10 @@ stopifnot(dim(y)[3] > dim(x)[3])
   \code{\link{duplicated}}, \code{\link{filename}},
   \code{\link{has_aggr}}, \code{\link{has_disc}},
   \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{metadata}},
-  \code{\link{minmax}}, \code{\link{plate_type}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{summary}},
-  \code{\link{well}}, \code{\link{wells}}
+  \code{\link{measurements}}, \code{\link{minmax}},
+  \code{\link{plate_type}}, \code{\link{position}},
+  \code{\link{seq}}, \code{\link{setup_time}},
+  \code{\link{well}}
 }
 \keyword{manip}
 

@@ -18,6 +18,21 @@ rand_range <- function(n, minstart = 0, maxstart = 100, maxrange = 100) {
 ################################################################################
 
 
+## summary
+test_that("a summary can be printed", {
+  # OPM method
+  x <- summary(OPM.1)
+  expect_is(x, "OPM_Summary")
+  expect_true(length(x) > 7L)
+  capture.output(expect_equal(print(x), x))
+  # OPMS method
+  s <- summary(OPMS.INPUT)
+  capture.output(expect_equal(print(s), s))
+  expect_is(s, "OPMS_Summary")
+  expect_equal(length(s), length(OPMS.INPUT))
+  expect_true(all(vapply(s, inherits, logical(1L), "OPM_Summary")))
+})
+
 ## show
 ## UNTESTED
 

@@ -531,127 +531,6 @@ setMethod("seq", OPMS, function(...) {
 
 
 ################################################################################
-
-
-#' Available well names
-#'
-#' Get the names of the wells contained in an \code{\link{OPM}} object.
-#' Optionally the full substrate names can be added in parentheses or brackets
-#' or used instead of the coordinate, and trimmed to a given length.
-#'
-#' @param object \code{\link{OPM}} object, \code{\link{OPMS}} object or well
-#'   name or index. If missing, defaults to the selection of all possible
-#'   wells.
-#' @param full Logical scalar. Return the full names of the wells (if available)
-#'   or just their coordinates on the plate? The following arguments have no
-#'   effect if \code{full} is \code{FALSE}.
-#' @param in.parens Logical scalar. If \code{TRUE}, add the full name of the
-#'   substrate in parentheses (or brackets) after the original name. If
-#'   \code{FALSE}, replace by the full substrate name. Note that adding in
-#'   parentheses (or brackets) is only done if the trimmed substrate names are
-#'   not empty.
-#' @param max Numeric scalar. Maximum number of characters allowed in the names.
-#'   Longer names are truncated and the truncation is indicated by appending a
-#'   dot.
-#' @param brackets Logical scalar. Use brackets instead of parentheses?
-#' @param clean Logical scalar. If \code{TRUE}, clean trimmed end of full
-#'   substrate name from non-word characters; use an empty string if only the
-#'   dot remained.
-#' @param word.wise Logical scalar. If \code{TRUE}, abbreviation works by
-#'   truncating each word separately, and removing vowels first.
-#' @param paren.sep Character scalar. What to insert before the opening
-#'   parenthesis (or bracket).
-#' @param downcase Logical scalar indicating whether full names should be
-#'   (carefully) converted to lower case. This uses \code{\link{substrate_info}}
-#'   in \sQuote{downcase} mode; see there for details.
-#' @param plate Name of the plate type. Several ones can be given unless
-#'   \code{object} is of class \code{\link{OPM}} or \code{\link{OPMS}}.
-#'   \code{\link{plate_type}} is applied before searching for the substrate
-#'   names, and partial matching is allowed.
-#' @param ... Optional arguments passed between the methods.
-#' @return Character vector.
-#' @export
-#' @family getter-functions
-#' @seealso base::strtrim base::abbreviate
-#' @keywords attribute
-#' @details The purpose of the \code{\link{OPM}} and \code{\link{OPMS}} methods
-#'   should be obvious. The default method is intended for providing a quick
-#'   overview of the substrates contained in one to several plates if
-#'   \code{full} is \code{TRUE}. If \code{full} is \code{FALSE}, it can be used
-#'   to study the effect of the well-index translation and well-name
-#'   normalization approaches as used by \pkg{opm}, particularly by the
-#'   subsetitting methods (see \code{\link{[}}).
-#' @note Do not confuse this with \code{\link{well}}.
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- wells(vaas_1, full = FALSE))[1:10]
-#' (y <- wells(vaas_1, full = TRUE))[1:10]
-#' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))[1:10]
-#' # string lengths differ depending on selection
-#' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
-#'
-#' # 'OPM' method
-#' data(vaas_4)
-#' (xx <- wells(vaas_4, full = FALSE))[1:10]
-#' # wells are guaranteed to be uniform within OPMS objects
-#' stopifnot(identical(x, xx))
-#'
-#' # default method
-#' x <- c("A01", "B10")
-#' (y <- wells(x, plate = "PM1"))
-#' stopifnot(nchar(y) > nchar(x))
-#' (z <- wells(x, plate = "PM1", in.parens = TRUE))
-#' stopifnot(nchar(z) > nchar(y))
-#' # formula yields same result (except for row names)
-#' stopifnot(y == wells(~ c(A01, B10), plate = "PM1"))
-#' # using a sequence of well coordinates
-#' stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
-#' stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
-#'
-setGeneric("wells", function(object, ...) standardGeneric("wells"))
-
-setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = plate_type(object)) {
-  result <- setdiff(colnames(measurements(object)), HOUR)
-  if (L(full))
-    map_well_names(result, L(plate), in.parens = in.parens,
-      max = max, brackets = brackets, clean = clean, word.wise = word.wise,
-      paren.sep = paren.sep, downcase = downcase)
-  else
-    result
-}, sealed = SEALED)
-
-setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = "PM01") {
-  result <- well_index(object, rownames(WELL_MAP))
-  if (!is.character(result))
-    result <- rownames(WELL_MAP)[result]
-  result <- do.call(cbind, rep.int(list(result), length(plate)))
-  pos <- pmatch(plate_type(plate), colnames(WELL_MAP))
-  colnames(result) <- plate
-  if (is.character(object))
-    rownames(result) <- object
-  if (!L(full))
-    return(result)
-  for (i in which(!is.na(pos)))
-    result[, i] <- map_well_names(result[, i], colnames(WELL_MAP)[pos[i]],
-      in.parens = in.parens, max = max, brackets = brackets, clean = clean,
-      word.wise = word.wise, paren.sep = paren.sep, downcase = downcase)
-  for (i in which(is.na(pos)))
-    result[, i] <- NA_character_
-  result
-}, sealed = SEALED)
-
-setMethod("wells", "missing", function(object, ...) {
-  wells(object = TRUE, ...)
-}, sealed = SEALED)
-
-
-################################################################################
 ################################################################################
 #
 # Getter functions for the CSV data
@@ -687,16 +566,16 @@ setMethod("wells", "missing", function(object, ...) {
 #' # 'OPM' method
 #' data(vaas_1)
 #'
-#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup"'
+#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
 #' stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
 #'
-#' (x <- csv_data(vaas_1, what = "file")) # one file name (of course)
+#' (x <- csv_data(vaas_1, what = "filename")) # one file name (of course)
 #' stopifnot(is.character(x), length(x) == 1L)
 #'
 #' (x <- csv_data(vaas_1, what = "position")) # single position (of course)
 #' stopifnot(identical(x, " 7-B"))
 #'
-#' (x <- csv_data(vaas_1, what = "setup")) # single setup time (of course)
+#' (x <- csv_data(vaas_1, what = "setup_time")) # single setup time (of course)
 #' # WARNING: It is unlikely that all OmniLog output has this setup time format
 #' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
@@ -707,24 +586,24 @@ setMethod("wells", "missing", function(object, ...) {
 #' (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 #' stopifnot(is.character(x), length(x) == 4)
 #'
-#' (x <- csv_data(vaas_4, what = "file"))  # one file name per plate
+#' (x <- csv_data(vaas_4, what = "filename"))  # one file name per plate
 #' stopifnot(is.character(x), length(x) == 4L)
 #'
 #' (x <- csv_data(vaas_4, what = "position")) # one position per plate
 #' stopifnot(is.character(x), length(x) == length(vaas_4))
 #'
-#' (x <- csv_data(vaas_4, what = "setup")) # one setup time per plate
+#' (x <- csv_data(vaas_4, what = "setup_time")) # one setup time per plate
 #' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 #'
 setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
 
 setMethod("csv_data", OPM, function(object, keys = character(),
-    strict = TRUE, what = c("select", "file", "setup", "position")) {
+    strict = TRUE, what = c("select", "filename", "setup_time", "position")) {
   case(match.arg(what),
     select = NULL,
-    file = return(object@csv_data[[CSV_NAMES[["FILE"]]]]),
-    setup = return(object@csv_data[[CSV_NAMES[["SETUP"]]]]),
+    filename = return(object@csv_data[[CSV_NAMES[["FILE"]]]]),
+    setup_time = return(object@csv_data[[CSV_NAMES[["SETUP"]]]]),
     position = return(object@csv_data[[CSV_NAMES[["POS"]]]])
   )
   if (!length(keys) || all(is.na(keys) | !nzchar(keys)))
@@ -747,7 +626,7 @@ setGeneric("filename", function(object, ...) standardGeneric("filename"))
 
 setMethod("filename", OPM, function(object) {
   warning("this function is deprecated -- use csv_data() instead")
-  csv_data(object, what = "file")
+  csv_data(object, what = "filename")
 }, sealed = SEALED)
 
 #= setup_time csv_data
@@ -759,7 +638,7 @@ setGeneric("setup_time", function(object, ...) standardGeneric("setup_time"))
 
 setMethod("setup_time", OPM, function(object) {
   warning("this function is deprecated -- use csv_data() instead")
-  csv_data(object, what = "setup")
+  csv_data(object, what = "setup_time")
 }, sealed = SEALED)
 
 #= position csv_data
@@ -986,69 +865,6 @@ setMethod("has_disc", OPM, function(object) {
 
 
 ################################################################################
-
-
-#' Summarize OPM or OPMS objects
-#'
-#' Generate a summary (which also prints nicely to the screen).
-#'
-#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Optional arguments passed to \code{formatDL}.
-#' @export
-#' @return For the \code{\link{OPM}} method, a named list of the class
-#'   \sQuote{OPM_Summary}, returned invisibly. The \sQuote{metadata} entry is
-#'   the number of non-list elements in \code{\link{metadata}}. For the
-#'   \code{\link{OPMS}} method, a list of such lists (one per plate), also
-#'   returned invisibly, with the class set to \sQuote{OPMS_Summary} and some
-#'   information on the entire object in the attribute \sQuote{overall}.
-#' @family getter-functions
-#' @keywords attribute
-#' @seealso base::summary base::formatDL
-#' @examples
-#'
-#' # OPM method
-#' data(vaas_1)
-#' (x <- summary(vaas_1))
-#' stopifnot(is.list(x), is.object(x))
-#'
-#' # OPMS method
-#' data(vaas_4)
-#' (x <- summary(vaas_4))
-#' stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
-#'   is.object(x))
-#'
-setGeneric("summary")
-
-setMethod("summary", OPM, function(object, ...) {
-  result <- list(
-    Class = class(object),
-    `From file` = csv_data(object, what = "file"),
-    `Hours measured` = hours(object),
-    `Number of wells` = length(wells(object)),
-    `Plate type` = plate_type(object),
-    Position = csv_data(object, what = "position"),
-    `Setup time` = csv_data(object, what = "setup"),
-    Metadata = sum(rapply(object@metadata, f = function(item) 1L)),
-    Aggregated = has_aggr(object),
-    Discretized = has_disc(object)
-  )
-  class(result) <- "OPM_Summary"
-  result
-}, sealed = SEALED)
-
-setMethod("summary", OPMS, function(object, ...) {
-  result <- lapply(object@plates, summary)
-  x <- list(dimensions = dim(object),
-    aggregated = length(which(has_aggr(object))),
-    discretized = length(which(has_disc(object))),
-    plate.type = plate_type(object))
-  attr(result, "overall") <- x
-  class(result) <- "OPMS_Summary"
-  result
-}, sealed = SEALED)
-
-
-################################################################################
 ################################################################################
 #
 # Getter functions for aggregated data
@@ -1225,108 +1041,6 @@ setGeneric("disc_settings",
 
 setMethod("disc_settings", OPMD, function(object) {
   object@disc_settings
-}, sealed = SEALED)
-
-
-################################################################################
-################################################################################
-#
-# Getter functions for metadata
-#
-
-
-#' Get metadata
-#'
-#' Get meta-information stored together with the data.
-#'
-#' @param object \code{\link{WMD}} object.
-#' @param key \code{NULL}, vector, factor or formula. \itemize{
-#'   \item If \code{NULL} or otherwise empty, return all metadata.
-#'   \item If a non-empty list, treated as list of keys. Return value would be
-#'   the list of corresponding metadata values. Here, character vectors of
-#'   length > 1 can be used to query nested metadata lists.
-#'   \item If neither empty nor a list nor a formula (i.e. usually a character
-#'   or numeric vector), \code{key} is treated as a single list key. Factors are
-#'   converted to \sQuote{character} mode.
-#'   \item Formulas can also be used and are converted to a list or character or
-#'   numeric vector using the rules described under \sQuote{Details}.
-#'   \item It is in general not recommended to use numeric vectors as \code{key}
-#'   arguments, either directly or within a list or formula.
-#' }
-#' @param exact Logical scalar. Use exact or partial matching of keys? Has no
-#'   effect if \code{key} is empty.
-#' @param strict Logical scalar. Is it an error if a \code{NULL} value results
-#'   from fetching a metadata key?
-#' @param ... Optional arguments passed between the methods.
-#' @return List (empty if metadata were not set or if subselection using
-#'   \code{key} did not result).
-#' @export
-#' @family getter-functions
-#' @keywords attribute
-#' @details If a named list is used as \code{key} argument, its names will be
-#'   used within the first level of the resulting nested or non-nested list.
-#'   That is, \code{key} can be used to translate names on the fly, and this can
-#'   be used by all functions that call \code{metadata} indirectly, usually via
-#'   an \code{as.labels} or \code{as.groups} argument.
-#'
-#'   Even though it is not technically impossible per se, it is usually a bad
-#'   idea to select metadata entries using numeric (positional) or logical keys.
-#'   The problem is that, in contrast to, e.g., data frames, their is no
-#'   guarantee that metadata entries with the same name occur in the same
-#'   position, even if they belong to \code{\link{OPM}} objects within a single
-#'   \code{\link{OPMS}} object.
-#'
-#'   Formulas passed as \code{key} argument are treated by ignoring the left
-#'   side (if any) and converting the right side to a list or other vector. Code
-#'   enclosed in \code{I} is evaluated with a call to \code{eval}. It is up to
-#'   the user to ensure that this call succeeds and yields a character vector or
-#'   a list. Operators in all other code within the formula are used just as
-#'   separators, and all names are converted to character scalars. The \code{$}
-#'   operator binds tightly, i.e. it separates elements of a character vector
-#'   (for nested querying) in the output. The same effect have other operators
-#'   of high precedence such as \code{::} but their use is not recommended. All
-#'   operators with a lower precedence than \code{$} separate list elements.
-#'
-#'   Additional options when using formulas are described under
-#'   \code{\link{extract}}.
-#'
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- metadata(vaas_1, "Strain"))
-#' stopifnot(x == "DSM30083T")
-#' (y <- metadata(vaas_1, ~ Strain)) # using a formula => same result
-#' stopifnot(identical(x, y))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- metadata(vaas_4, "Strain"))
-#' stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
-#' (y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
-#' stopifnot(identical(x, y))
-#'
-setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
-
-setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
-    strict = FALSE) {
-  LL(exact, strict)
-  if (!length(key))
-    return(object@metadata)
-  key <- metadata_key(key, FALSE)
-  fetch_fun <- if (strict)
-    function(key) {
-      if (is.null(result <- object@metadata[[key, exact = exact]]))
-        stop(sprintf("got NULL value when using key '%s'",
-          paste(key, collapse = " -> ")))
-      result
-    }
-  else
-    function(key) object@metadata[[key, exact = exact]]
-  if (is.list(key))
-    sapply(key, fetch_fun, simplify = FALSE)
-  else # should be a (character) vector
-    fetch_fun(key)
 }, sealed = SEALED)
 
 
@@ -1597,7 +1311,8 @@ setMethod("duplicated", c(OPMS, "ANY"), function(x, incomparables,
   selection <- tryCatch(match.arg(what), error = function(e) "other")
   duplicated(x = case(selection,
     all = x@plates,
-    csv = cbind(csv_data(x, what = "setup"), csv_data(x, what = "position")),
+    csv = cbind(csv_data(x, what = "setup_time"),
+      csv_data(x, what = "position")),
     metadata = metadata(x),
     other = metadata(object = x, key = what)
   ), incomparables = incomparables, ...)

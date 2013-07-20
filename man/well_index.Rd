@@ -1,8 +1,11 @@
 \name{well_index}
+\alias{clean_coords}
 \alias{well_index}
 \title{Translate well coordinates}
 \usage{
   well_index(x, names)
+
+  clean_coords(x)
 }
 \arguments{
   \item{x}{Vector, formula or missing. Basically any \R

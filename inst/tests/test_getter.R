@@ -154,42 +154,6 @@ test_that("the length can be queried", {
 ## UNTESTED
 
 
-## wells
-test_that("information on the contained wells can be received", {
-  w.got <- wells(OPMS.INPUT)
-  expect_is(w.got, "character")
-  expect_equal(length(w.got), dim(OPMS.INPUT)[3L])
-  w.got <- wells(OPMS.INPUT)
-  expect_is(w.got, "character")
-  expect_equal(length(w.got), dim(OPMS.INPUT)[3L])
-})
-
-
-## wells
-test_that("substrate names can be translated", {
-
-  plate.1 <- "PM01"
-  exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
-  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE)
-
-  plates.2 <- c(plate.1, "PM02")
-  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
-  exp.2 <- cbind(exp.1, exp.2)
-  colnames(exp.2) <- plates.2
-  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
-  expect_equal(got, exp.2)
-
-  # Partial matching is allowed
-  plates.2 <- c(plate.1, "PM02")
-  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
-  exp.2 <- cbind(exp.1, exp.2)
-  colnames(exp.2) <- c(plates.2[1L], "PM02")
-  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
-  expect_equal(got, exp.2)
-
-})
-
-
 ################################################################################
 
 
@@ -286,22 +250,6 @@ test_that("aggregated values can be obtained", {
 ## UNTESTED
 
 
-## summary
-test_that("a summary can be printed", {
-  # OPM method
-  x <- summary(OPM.1)
-  expect_is(x, "OPM_Summary")
-  expect_true(length(x) > 7L)
-  capture.output(expect_equal(print(x), x))
-  # OPMS method
-  s <- summary(OPMS.INPUT)
-  capture.output(expect_equal(print(s), s))
-  expect_is(s, "OPMS_Summary")
-  expect_equal(length(s), length(OPMS.INPUT))
-  expect_true(all(vapply(s, inherits, logical(1L), "OPM_Summary")))
-})
-
-
 ################################################################################
 
 
@@ -357,53 +305,6 @@ test_that("aggregation settings can be queried", {
 
 ## disc_settings
 ## UNTESTED
-
-
-################################################################################
-
-
-## metadata
-test_that("missing metadata result in an error if requested", {
-  expect_is(OPM.1, "OPM")
-  expect_equal(metadata(OPM.1), list())
-  expect_equal(metadata(OPM.1, "Organism"), NULL)
-  expect_error(metadata(OPM.1, "Organism", strict = TRUE))
-})
-
-## metadata
-test_that("metadata have be included in example OPM object", {
-  expect_is(OPM.WITH.MD, "OPM")
-  exp.list <- list(File = filename(OPM.1), Organism = ORGN)
-  expect_equal(metadata(OPM.WITH.MD), exp.list)
-  expect_equal(metadata(OPM.WITH.MD, "Organism"), ORGN)
-  expect_equal(metadata(OPM.WITH.MD, list("File", "Organism")), exp.list)
-  exp.list$Organism <- NULL
-  exp.list$Org <- ORGN
-  expect_equal(metadata(OPM.WITH.MD, list("File", "Org"), exact = FALSE),
-    exp.list)
-  exp.list$Org <- NULL
-  exp.list <- c(exp.list, list(Org = NULL))
-  expect_equal(metadata(OPM.WITH.MD, list("File", "Org"), exact = TRUE),
-    exp.list)
-})
-
-## metadata
-test_that("the OPMS metadata can be queried", {
-  md.got <- metadata(OPMS.INPUT)
-  expect_is(md.got, "list")
-  expect_equal(length(md.got), length(OPMS.INPUT))
-  expect_true(all(sapply(md.got, is.list)))
-  md.got <- metadata(OPMS.INPUT, "organism")
-  expect_is(md.got, "character")
-  expect_equal(length(md.got), length(OPMS.INPUT))
-  md.got <- metadata(OPMS.INPUT, list("not.there"))
-  expect_is(md.got, "list")
-  expect_true(all(sapply(md.got, is.list)))
-  expect_true(all(sapply(md.got, names) == "not.there"))
-  expect_true(all(sapply(md.got, function(x) is.null(x$not.there))))
-  expect_error(md.got <- metadata(OPMS.INPUT, list("not.there"), strict = TRUE))
-  expect_equal(metadata(OPMS.INPUT), metadata(THIN.AGG))
-})
 
 
 ################################################################################

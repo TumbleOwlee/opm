@@ -51,6 +51,45 @@ test_that("well indices given as formula can be mapped", {
 ## UNTESTED
 
 
+################################################################################
+
+
+## wells
+test_that("information on the contained wells can be received", {
+  w.got <- wells(OPMS.INPUT)
+  expect_is(w.got, "character")
+  expect_equal(length(w.got), dim(OPMS.INPUT)[3L])
+  w.got <- wells(OPMS.INPUT)
+  expect_is(w.got, "character")
+  expect_equal(length(w.got), dim(OPMS.INPUT)[3L])
+})
+
+
+## wells
+test_that("substrate names can be translated", {
+
+  plate.1 <- "PM01"
+  exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
+  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE)
+
+  plates.2 <- c(plate.1, "PM02")
+  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
+  exp.2 <- cbind(exp.1, exp.2)
+  colnames(exp.2) <- plates.2
+  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
+  expect_equal(got, exp.2)
+
+  # Partial matching is allowed
+  plates.2 <- c(plate.1, "PM02")
+  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
+  exp.2 <- cbind(exp.1, exp.2)
+  colnames(exp.2) <- c(plates.2[1L], "PM02")
+  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
+  expect_equal(got, exp.2)
+
+})
+
+
 ## listing
 ## UNTESTED
 

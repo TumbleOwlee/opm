@@ -1,11 +1,12 @@
 \name{wells}
+\alias{listing}
 \alias{wells}
-\title{Available well names}
+\title{Listing of well names}
 \arguments{
   \item{object}{\code{\link{OPM}} object,
   \code{\link{OPMS}} object or well name or index. If
-  missing, defaults to the selection of all possible
-  wells.}
+  missing, defaults to the selection of all possible wells
+  (for the default plate type, see below).}
 
   \item{full}{Logical scalar. Return the full names of the
   wells (if available) or just their coordinates on the
@@ -51,31 +52,80 @@
 
   \item{...}{Optional arguments passed between the
   methods.}
+
+  \item{x}{\code{\link{OPMD}} or \code{\link{OPMS}}
+  object.}
+
+  \item{as.groups}{Vector or \code{NULL}. If non-empty,
+  passed as eponymous argument to \code{\link{extract}}.
+  Thus \code{TRUE} and \code{FALSE} can be used, creating
+  either a single group or one per plate. The extracted
+  metadata define groups for which the discretized data are
+  aggregated.
+
+  If \code{x} is an \code{\link{OPMD}} object and
+  \code{as.groups} is not empty, it is used to create the
+  row name of the single row of the resulting
+  \sQuote{OPMS_Listing} object. Otherwise an
+  \sQuote{OPMD_Listing} object is produced.}
+
+  \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
+  is a list. If the relative frequency of the most frequent
+  entry within the discretized values to be joined is below
+  that cutoff, \code{NA} is used. Ignored if \code{x} is an
+  \code{\link{OPMD}} object but added to the result if
+  \code{as.groups} is non-empty.}
+
+  \item{html}{Logical scalar. Convert to \acronym{HTML}?
+  This involves Greek letters and paragraph (\sQuote{div})
+  tags.}
+
+  \item{sep}{Character scalar used for joining the
+  \sQuote{as.groups} entries (if any).}
+
+  \item{exact}{Logical scalar passed to
+  \code{\link{metadata}}.}
+
+  \item{strict}{Logical scalar also passed to
+  \code{\link{metadata}}.}
 }
 \value{
-  Character vector.
+  Character vector. For the \code{listing} methods, a
+  character vector or matrix with additional class atribute
+  \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the
+  examples for details.
 }
 \description{
   Get the names of the wells contained in an
-  \code{\link{OPM}} object. Optionally the full substrate
+  \code{\link{OPMX}} object. Optionally the full substrate
   names can be added in parentheses or brackets or used
   instead of the coordinate, and trimmed to a given length.
+  The \code{listing} methods create a textual listing of
+  the discretized values. This is useful to describe
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  phenotype microarray results in a scientific manuscript.
 }
 \details{
   The purpose of the \code{\link{OPM}} and
-  \code{\link{OPMS}} methods should be obvious. The default
-  method is intended for providing a quick overview of the
-  substrates contained in one to several plates if
-  \code{full} is \code{TRUE}. If \code{full} is
-  \code{FALSE}, it can be used to study the effect of the
-  well-index translation and well-name normalization
-  approaches as used by \pkg{opm}, particularly by the
-  subsetitting methods (see \code{\link{[}}).
+  \code{\link{OPMS}} methods for \code{wells} should be
+  obvious. The default method is intended for providing a
+  quick overview of the substrates contained in one to
+  several plates if \code{full} is \code{TRUE}. If
+  \code{full} is \code{FALSE}, it can be used to study the
+  effect of the well-index translation and well-name
+  normalization approaches as used by \pkg{opm},
+  particularly by the subsetting methods (see
+  \code{\link{[}}).
+
+  See \code{\link{do_disc}} for generating discretized
+  data.
 }
 \note{
-  Do not confuse this with \code{\link{well}}.
+  Do not confuse \code{wells} this with \code{\link{well}}.
 }
 \examples{
+## wells()
+
 # 'OPM' method
 data(vaas_1)
 (x <- wells(vaas_1, full = FALSE))[1:10]
@@ -101,32 +151,75 @@ stopifnot(y == wells(~ c(A01, B10), plate = "PM1"))
 # using a sequence of well coordinates
 stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
 stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
+
+## listing()
+
+# 'OPMD' method
+data(vaas_1)
+
+# this yields one sentence for each kind of reaction:
+(x <- listing(vaas_1, NULL))
+stopifnot(inherits(x, "OPMD_Listing"), is.character(x), length(x) == 3,
+  !is.null(names(x)))
+
+# create an 'OPMS_Listing' object
+(y <- listing(vaas_1, ~ Species + Strain))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(1, 3),
+  y == x, colnames(y) == names(x), !is.null(rownames(y)))
+
+# including HTML tags
+(y <- listing(vaas_1, NULL, html = TRUE))
+stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
+  !is.null(names(x)))
+
+# 'OPMS' method
+data(vaas_4)
+
+# no grouping, no names (numbering used instead for row names)
+(x <- listing(vaas_4[1:2], as.groups = NULL))
+stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+(y <- listing(vaas_4[1:2], as.groups = FALSE)) # alternative
+stopifnot(identical(x, y))
+
+# in effect no grouping, but names
+(x <- listing(vaas_4[1:2], as.groups = list("Species", "Strain")))
+stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+
+# only single group for all plates
+(y <- listing(vaas_4[1:2], as.groups = TRUE))
+stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(1, 3))
+stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+
+# two groups
+(x <- listing(vaas_4, as.groups = list("Species")))
+stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
+stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 }
 \seealso{
   base::strtrim base::abbreviate
 
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{dim}},
-  \code{\link{disc_settings}}, \code{\link{discretized}},
-  \code{\link{duplicated}}, \code{\link{filename}},
-  \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{metadata}},
-  \code{\link{minmax}}, \code{\link{plate_type}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{summary}}, \code{\link{well}}
+  Other naming-functions: \code{\link{find_positions}},
+  \code{\link{find_substrate}},
+  \code{\link{substrate_info}}
 }
 \keyword{attribute}
+\keyword{category}
+\keyword{character}
 
 \docType{methods}
 \alias{wells-methods}
+\alias{wells,OPMS-method}
 \alias{wells,OPM-method}
 \alias{wells,ANY-method}
 \alias{wells,missing-method}
-\alias{wells,OPMS-method}
+\alias{listing,OPMD-method}
+\alias{listing-methods}
+\alias{listing,OPMS-method}
 \usage{
+  \S4method{wells}{OPMS}(object, ...) 
+
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
     max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
     paren.sep = " ", downcase = FALSE, plate = plate_type(object)) 
@@ -137,6 +230,13 @@ stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
 
   \S4method{wells}{missing}(object, ...) 
 
-  \S4method{wells}{OPMS}(object, ...) 
+  \S4method{listing}{OPMD}(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) 
+
+  \S4method{listing}{OPMS}(x, as.groups, cutoff = opm_opt("min.mode"),
+    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
+    ..., exact = TRUE, strict = TRUE) 
 
 }

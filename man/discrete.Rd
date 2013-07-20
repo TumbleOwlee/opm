@@ -1,11 +1,13 @@
 \name{discrete}
+\alias{best_cutoff}
 \alias{discrete}
-\title{Convert to discrete characters}
+\title{Discretization functions}
 \arguments{
   \item{x}{Numeric vector or a \code{\link{MOA}} object
   convertible to a numeric vector. The data-frame method
   first calls \code{\link{extract}}, restricting the
-  columns to the numeric ones.}
+  columns to the numeric ones. \code{best_cutoff} only
+  accepts a numeric matrix.}
 
   \item{range}{If a numeric vector, in non-\code{gap} mode
   (see next argument) the assumed real range of the data;
@@ -69,23 +71,68 @@
 
   \item{sep}{Character scalar. See \code{\link{extract}}.}
 
+  \item{y}{Factor or character vector indicating group
+  affiliations. Its length must correspond to the number of
+  rows of \code{x}.}
+
+  \item{combined}{Logical scalar. If \code{TRUE}, determine
+  a single threshold for the entire matrix. If
+  \code{FALSE}, determine one threshold for each group of
+  rows of \code{x} that corresponds to a level of
+  \code{y}.}
+
+  \item{lower}{Numeric scalar. Lower bound for the cutoff
+  values to test.}
+
+  \item{upper}{Numeric scalar. Upper bound for the cutoff
+  values to test.}
+
+  \item{all}{Logical scalar. If \code{TRUE}, calculate the
+  score for all possible cutoffs for \code{x}. This is slow
+  and is only useful for plotting complete optimization
+  curves.}
+
   \item{...}{Optional arguments passed between the methods
   or, if requested, to \code{\link{run_kmeans}} (except
   \code{object} and \code{k}, see there).}
 }
 \value{
-  Double, integer, character or logical vector or factor,
-  depending on \code{output}. For the matrix method, a
-  matrix composed of a vector as produced by the numeric
-  method, the original \code{dimensions} and the original
-  \code{dimnames} attributes of \code{x}.
+  \code{discrete} generates a double, integer, character or
+  logical vector or factor, depending on \code{output}. For
+  the matrix method, a matrix composed of a vector as
+  produced by the numeric method, the original
+  \code{dimensions} and the original \code{dimnames}
+  attributes of \code{x}.
+
+  If \code{combined} is \code{TRUE}, \code{best_cutoff}
+  yields either a matrix or a vector: If \code{all} is
+  \code{TRUE}, a two-column matrix with (i) the cutoffs
+  examined and (ii) the resulting scores. If \code{all} is
+  \code{FALSE}, a vector with the entries \sQuote{maximum}
+  (the best cutoff) and \sQuote{objective} (the score it
+  achieved). If \code{combined} is \code{FALSE}, either a
+  list of matrices or a matrix. If \code{all} is
+  \code{TRUE}, a list of matrices structures like the
+  single matrix returned if \code{combined} is \code{TRUE}.
+  If \code{all} is \code{FALSE}, a matrix with two colums
+  called \sQuote{maximum} \sQuote{objective}, and one row
+  per level of \code{y}.
 }
 \description{
-  Convert a vector of continuous characters to discrete
-  ones.
+  These are the helper functions called by
+  \code{\link{do_disc}} (which is the function normally
+  applied by an \pkg{opm} user). \code{discrete} converts
+  continuous numeric characters to discrete ones.
+  \code{best_cutoff} determines the best cutoff for
+  dividing a numeric matrix into two categories by
+  minimizing within-group discrepancies. That is, for each
+  combination of row group and column maximize the number
+  of contained elements that are in the category in which
+  most of the elements within this combination of row group
+  and column are located.
 }
 \details{
-  One of the uses of this functions is to create character
+  One of the uses of \code{discrete} is to create character
   data suitable for phylogenetic studies with programs such
   as \acronym{PAUP*} and \acronym{RAxML}. These accept only
   discrete characters with at most 32 states, coded as 0 to
@@ -95,6 +142,19 @@
   The matrix method is just a wrapper that takes care of
   the matrix dimensions, and the data-frame method is a
   wrapper for that method.
+
+  The scoring function to be maximized by
+  \code{best_cutoff} is calculated as follows. All values
+  in \code{x} are divided into those larger then the cutoff
+  and those at most large as the cutoff. For each
+  combination of group and matrix column the frequencies of
+  the two categories are determined, and the respective
+  larger ones are summed up over all combinations. This
+  value is then divided by the frequency over the entire
+  matrix of the more frequent of the two categories. This
+  is done to avoid trivial solutions with minimal and
+  maximal cutoffs, causing all values to be placed in the
+  same category.
 }
 \note{
   The term \sQuote{character} as used here has nothing to
@@ -139,6 +199,24 @@ x <- extract(vaas_4, as.labels = list("Species", "Strain"),
   in.parens = FALSE)
 (y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]
 stopifnot(c("0", "?", "1") \%in\% y)
+
+## best_cutoff()
+x <- matrix(c(5:2, 1:2, 7:8), ncol = 2)
+grps <- c("a", "a", "b", "b")
+
+# combined optimization
+(y <- best_cutoff(x, grps))
+stopifnot(is.numeric(y), length(y) == 2) # two-element numeric vector
+stopifnot(y[["maximum"]] < 4, y[["maximum"]] > 3, y[["objective"]] == 2)
+plot(best_cutoff(x, grps, all = TRUE), type = "l")
+
+# separate optimization
+(y <- best_cutoff(x, grps, combined = FALSE))
+stopifnot(is.matrix(y), dim(y) == c(2, 2)) # numeric matrix
+stopifnot(y["a", "objective"] == 2, y["b", "objective"] == 2)
+(y <- best_cutoff(x, grps, combined = FALSE, all = TRUE))
+plot(y$a, type = "l")
+plot(y$b, type = "l")
 }
 \references{
   Dougherty, J., Kohavi, R., Sahami, M. 1995 Supervised and
@@ -159,10 +237,9 @@ stopifnot(c("0", "?", "1") \%in\% y)
   bourgeoisie.} France/Spain, 96 min.
 }
 \seealso{
-  base::cut
+  base::cut stats::optimize
 
-  Other discretization-functions:
-  \code{\link{best_cutoff}}, \code{\link{do_disc}}
+  Other discretization-functions: \code{\link{do_disc}}
 }
 \keyword{category}
 \keyword{character}
@@ -172,6 +249,9 @@ stopifnot(c("0", "?", "1") \%in\% y)
 \alias{discrete,numeric-method}
 \alias{discrete,MOA-method}
 \alias{discrete,data.frame-method}
+\alias{best_cutoff,matrix,character-method}
+\alias{best_cutoff-methods}
+\alias{best_cutoff,matrix,factor-method}
 \usage{
   \S4method{discrete}{numeric}(x, range, gap = FALSE,
     output = c("character", "integer", "logical", "factor", "numeric"),
@@ -181,5 +261,11 @@ stopifnot(c("0", "?", "1") \%in\% y)
 
   \S4method{discrete}{data.frame}(x, as.labels = NULL, sep = " ",
     ...) 
+
+  \S4method{best_cutoff}{matrix,character}(x, y, ...) 
+
+  \S4method{best_cutoff}{matrix,factor}(x, y,
+    combined = TRUE, lower = min(x, na.rm = TRUE),
+    upper = max(x, na.rm = TRUE), all = FALSE) 
 
 }

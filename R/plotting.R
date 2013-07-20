@@ -3,32 +3,77 @@
 ################################################################################
 ################################################################################
 #
-# Methods for show() and print()
+# Methods for summary(), show() and print()
 #
 
 
-#' Show OPM or OPMS objects
+#' Summarize OPM or OPMS objects
 #'
-#' Display an \code{\link{OPM}} or \code{\link{OPMS}} object on screen.
+#' Generate a summary (which also prints nicely to the screen), or display an
+#' \code{\link{OPM}} or \code{\link{OPMS}} object on screen.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
+#' @param ... Optional arguments passed to \code{formatDL}.
 #' @export
-#' @return See \code{\link{summary}}.
+#' @return For the \code{\link{OPM}} method, a named list of the class
+#'   \sQuote{OPM_Summary}, returned invisibly. The \sQuote{metadata} entry is
+#'   the number of non-list elements in \code{\link{metadata}}. For the
+#'   \code{\link{OPMS}} method, a list of such lists (one per plate), also
+#'   returned invisibly, with the class set to \sQuote{OPMS_Summary} and some
+#'   information on the entire object in the attribute \sQuote{overall}.
+#' @details Currently the \code{show} methods are just wrappers for the
+#'   \code{summary} methods for these objects with an additional call to
+#'   \code{print}. The \acronym{CMAT} method is only for internal use.
 #' @family plotting-functions
 #' @keywords attribute
-#' @details Currently this is just a wrapper for the \code{\link{summary}}
-#'   method for these objects with an additional call to \code{\link{print}}.
-#' @seealso methods::show base::print
+#' @seealso base::summary base::formatDL methods::show base::print
 #' @examples
 #'
-#' # OPMA method
+#' # OPM method
 #' data(vaas_1)
-#' vaas_1
+#' (x <- summary(vaas_1))
+#' stopifnot(is.list(x), is.object(x))
+#' vaas_1 # calls show()
 #'
 #' # OPMS method
 #' data(vaas_4)
-#' vaas_4[1:2]
+#' (x <- summary(vaas_4))
+#' stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
+#'   is.object(x))
+#' vaas_4 # calls show()
 #'
+setGeneric("summary")
+
+setMethod("summary", OPM, function(object, ...) {
+  result <- list(
+    Class = class(object),
+    `From file` = csv_data(object, what = "filename"),
+    `Hours measured` = hours(object),
+    `Number of wells` = length(wells(object)),
+    `Plate type` = plate_type(object),
+    Position = csv_data(object, what = "position"),
+    `Setup time` = csv_data(object, what = "setup_time"),
+    Metadata = sum(rapply(object@metadata, f = function(item) 1L)),
+    Aggregated = has_aggr(object),
+    Discretized = has_disc(object)
+  )
+  class(result) <- "OPM_Summary"
+  result
+}, sealed = SEALED)
+
+setMethod("summary", OPMS, function(object, ...) {
+  result <- lapply(object@plates, summary)
+  x <- list(dimensions = dim(object),
+    aggregated = length(which(has_aggr(object))),
+    discretized = length(which(has_disc(object))),
+    plate.type = plate_type(object))
+  attr(result, "overall") <- x
+  class(result) <- "OPMS_Summary"
+  result
+}, sealed = SEALED)
+
+#= show summary
+
 setMethod("show", OPMX, function(object) {
   print(summary(object))
 }, sealed = SEALED)

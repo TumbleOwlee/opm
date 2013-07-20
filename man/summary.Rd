@@ -19,35 +19,36 @@
 }
 \description{
   Generate a summary (which also prints nicely to the
-  screen).
+  screen), or display an \code{\link{OPM}} or
+  \code{\link{OPMS}} object on screen.
+}
+\details{
+  Currently the \code{show} methods are just wrappers for
+  the \code{summary} methods for these objects with an
+  additional call to \code{print}. The \acronym{CMAT}
+  method is only for internal use.
 }
 \examples{
 # OPM method
 data(vaas_1)
 (x <- summary(vaas_1))
 stopifnot(is.list(x), is.object(x))
+vaas_1 # calls show()
 
 # OPMS method
 data(vaas_4)
 (x <- summary(vaas_4))
 stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
   is.object(x))
+vaas_4 # calls show()
 }
 \seealso{
-  base::summary base::formatDL
+  base::summary base::formatDL methods::show base::print
 
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{dim}},
-  \code{\link{disc_settings}}, \code{\link{discretized}},
-  \code{\link{duplicated}}, \code{\link{filename}},
-  \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{metadata}},
-  \code{\link{minmax}}, \code{\link{plate_type}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{well}}, \code{\link{wells}}
+  Other plotting-functions: \code{\link{ci_plot}},
+  \code{\link{heat_map}}, \code{\link{level_plot}},
+  \code{\link{radial_plot}}, \code{\link{select_colors}},
+  \code{\link{xy_plot}}
 }
 \keyword{attribute}
 
@@ -55,9 +56,16 @@ stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
 \alias{summary-methods}
 \alias{summary,OPM-method}
 \alias{summary,OPMS-method}
+\alias{show,OPMX-method}
+\alias{show-methods}
+\alias{show,CMAT-method}
 \usage{
   \S4method{summary}{OPM}(object, ...) 
 
   \S4method{summary}{OPMS}(object, ...) 
+
+  \S4method{show}{OPMX}(object) 
+
+  \S4method{show}{CMAT}(object) 
 
 }

@@ -13,11 +13,9 @@
   \item{by}{List or character vector. If a list, a list of
   one to several keys passed as \code{key} argument to
   \code{\link{metadata}}. If a character vector of length
-  one, \code{by} must specify the name of one of the
-  functions \code{\link{setup_time}},
-  \code{\link{filename}} or \code{\link{position}}. If
-  longer, passed step-by-step to \code{\link{csv_data}} as
-  \code{keys} argument.}
+  one, \code{by} is passed as \sQuote{what} argument to
+  \code{\link{csv_data}}. If longer, passed step-by-step to
+  \code{\link{csv_data}} as \code{keys} argument.}
 
   \item{parse}{Logical scalar. Convert the
   \code{\link{setup_time}} via \code{strptime} before
@@ -105,8 +103,8 @@ stopifnot(identical(x, vaas_4)) # no error, but no new order
 
 # CSV-data based
 copy <- sort(vaas_4) # default: by setup time
-csv_data(vaas_4, what = "setup")
-csv_data(copy, what = "setup")
+csv_data(vaas_4, what = "setup_time")
+csv_data(copy, what = "setup_time")
 stopifnot(!identical(copy, vaas_4))
 copy <- sort(vaas_4, by = c("Position", "Setup Time"))
 csv_data(vaas_4, what = "position")
@@ -190,7 +188,7 @@ stopifnot(is.null(rep(vaas_4, 0)))
   \S4method{sort}{OPM,logical}(x, decreasing, ...) 
 
   \S4method{sort}{OPMS,logical}(x, decreasing, by = "setup_time",
-    parse = TRUE, exact = TRUE, strict = TRUE, na.last = TRUE) 
+    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) 
 
   \S4method{unique}{OPM,ANY}(x, incomparables, ...) 
 

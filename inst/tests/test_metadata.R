@@ -124,6 +124,54 @@ test_that("the metadata can be modified using a mapping function", {
 })
 
 
+
+################################################################################
+
+
+## metadata
+test_that("missing metadata result in an error if requested", {
+  expect_is(OPM.1, "OPM")
+  expect_equal(metadata(OPM.1), list())
+  expect_equal(metadata(OPM.1, "Organism"), NULL)
+  expect_error(metadata(OPM.1, "Organism", strict = TRUE))
+})
+
+## metadata
+test_that("metadata have be included in example OPM object", {
+  expect_is(OPM.WITH.MD, "OPM")
+  exp.list <- list(File = filename(OPM.1), Organism = ORGN)
+  expect_equal(metadata(OPM.WITH.MD), exp.list)
+  expect_equal(metadata(OPM.WITH.MD, "Organism"), ORGN)
+  expect_equal(metadata(OPM.WITH.MD, list("File", "Organism")), exp.list)
+  exp.list$Organism <- NULL
+  exp.list$Org <- ORGN
+  expect_equal(metadata(OPM.WITH.MD, list("File", "Org"), exact = FALSE),
+    exp.list)
+  exp.list$Org <- NULL
+  exp.list <- c(exp.list, list(Org = NULL))
+  expect_equal(metadata(OPM.WITH.MD, list("File", "Org"), exact = TRUE),
+    exp.list)
+})
+
+## metadata
+test_that("the OPMS metadata can be queried", {
+  md.got <- metadata(OPMS.INPUT)
+  expect_is(md.got, "list")
+  expect_equal(length(md.got), length(OPMS.INPUT))
+  expect_true(all(sapply(md.got, is.list)))
+  md.got <- metadata(OPMS.INPUT, "organism")
+  expect_is(md.got, "character")
+  expect_equal(length(md.got), length(OPMS.INPUT))
+  md.got <- metadata(OPMS.INPUT, list("not.there"))
+  expect_is(md.got, "list")
+  expect_true(all(sapply(md.got, is.list)))
+  expect_true(all(sapply(md.got, names) == "not.there"))
+  expect_true(all(sapply(md.got, function(x) is.null(x$not.there))))
+  expect_error(md.got <- metadata(OPMS.INPUT, list("not.there"), strict = TRUE))
+  expect_equal(metadata(OPMS.INPUT), metadata(THIN.AGG))
+})
+
+
 ################################################################################
 
 

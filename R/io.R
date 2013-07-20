@@ -895,104 +895,11 @@ read_single_opm <- function(filename) {
 
 #' Input metadata
 #'
-#' Create data frame holding potential \code{\link{OPM}} or \code{\link{OPMS}}
-#' object metadata.
-#'
-#' @param object Name of input file (character scalar), or any object
-#'   convertible to a data frame. Might also be \code{\link{WMD}} or
-#'   \code{\link{OPMS}} object.
-#' @param stringsAsFactors Logical scalar passed to \code{as.data.frame}.
-#' @param optional Logical scalar passed to \code{as.data.frame} or used after
-#'   negation as \sQuote{check.names} argument of \code{read.delim}.
-#' @param sep Character scalar. Field separator in input file. This and the
-#'   following parameters are passed to \code{read.delim}.
-#' @param strip.white Logical scalar.
-#' @param ... Optional other arguments for \code{read.delim} or
-#'   \code{as.data.frame}.
-#' @export
-#' @return Data frame.
-#' @details The character method reads metadata from an input file and is only a
-#'   thin wrapper for \code{read.delim} but contains some useful adaptations
-#'   (such as \strong{not} converting strings to factors, and not modifying
-#'   column names). The default method reads metadata from an object convertible
-#'   to a data frame and is only a thin wrapper of \code{as.data.frame} but
-#'   contains the same useful adaptations as the filename method.
-#'
-#'   The \code{\link{WMD}} and \code{\link{OPMS}} methods create a data frame
-#'   from the contained metadata, where necessary converting nested metadata
-#'   entries to data-frame columns of mode \sQuote{list}. The number of rows
-#'   of the resuling data frame corresponds to the length of \code{object}, the
-#'   number of columns to the size of the set created from all valid names at
-#'   the top level of the metadata entries.
-#'
-#' @family io-functions
-#' @keywords IO manip
-#' @seealso base::default.stringsAsFactors utils::read.delim base::as.data.frame
-#' @examples
-#'
-#' # Character method
-#' (x <- to_metadata(list(a = 7:8, `b c` = letters[1:2])))
-#' tmpfile <- tempfile()
-#' write.table(x, tmpfile, row.names = FALSE, sep = "\t")
-#' (x1 <- read.delim(tmpfile)) # comparison with base R function
-#' (x2 <- to_metadata(tmpfile))
-#' stopifnot(identical(names(x2), names(x)), !identical(names(x1), names(x)))
-#'
-#' # Default method
-#' x <- list(a = 7:8, `b c` = letters[1:2])
-#' (x1 <- as.data.frame(x))
-#' (x2 <- to_metadata(x))
-#' stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
-#'
-#' # WMD method
-#' data(vaas_1)
-#' (x <- to_metadata(vaas_1)) # one row per OPM object
-#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
-#'
-#' # OPMS method
-#' data(vaas_4)
-#' (x <- to_metadata(vaas_4)) # one row per OPM object
-#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
-#' copy <- vaas_4
-#' metadata(copy) <- x
-#' stopifnot(identical(copy, vaas_4))
-#' # ... this works only in the special case of non-nested metadata that
-#' # have the same set of entries in all OPMS elements
-#'
-setGeneric("to_metadata",
-  function(object, ...) standardGeneric("to_metadata"))
-
-setMethod("to_metadata", "character", function(object, sep = "\t",
-    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) {
-  read.delim(file = L(object), sep = sep, check.names = !optional,
-    strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
-}, sealed = SEALED)
-
-setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  as.data.frame(x = object, stringsAsFactors = stringsAsFactors,
-    optional = optional, ...)
-}, sealed = SEALED)
-
-setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  md_data_frame(list(object@metadata), stringsAsFactors, optional, ...)
-}, sealed = SEALED)
-
-setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  md_data_frame(metadata(object), stringsAsFactors, optional, ...)
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Collect metadata template
-#'
-#' Collect a metadata template from
+#' Either collect a metadata template from
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} comments
-#' assisting in later on adding metadata using  \code{\link{include_metadata}}.
+#' assisting in later on adding metadata using \code{\link{include_metadata}} or
+#' create a data frame holding potential \code{\link{OPM}} or \code{\link{OPMS}}
+#' object metadata.
 #'
 #' @param object Character vector or \code{\link{OPM}} or \code{\link{OPMS}}
 #'   object. The \code{\link{OPM}} and \code{\link{OPMS}} methods just collect a
@@ -1006,6 +913,10 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #'   Regarding the supported input file formats, see
 #'   \code{\link{read_single_opm}}.
 #'
+#'   \code{to_metadata} needs the name of an input file (character scalar), or
+#'   any object convertible to a data frame. Might also be \code{\link{WMD}} or
+#'   \code{\link{OPMS}} object.
+#'
 #' @param outfile Character scalar. Ignored if \code{NULL} or empty string.
 #'   Otherwise, interpreted as the name of a \acronym{CSV} output file. If
 #'   metadata have already been collected in an older file with the same name,
@@ -1014,7 +925,7 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #'   version can use two distinct names for novel and old files; see
 #'   \code{previous}.
 #' @param sep Character scalar. \acronym{CSV} field separator for
-#'   \code{outfile}.
+#'   \code{outfile} and for the input files of \code{to_metadata}.
 #' @param previous Ignored if \code{NULL}. Otherwise passed to
 #'   \code{\link{to_metadata}}. If it is a filename different from
 #'   \code{outfile}, it is an error if the file does not exist.
@@ -1029,11 +940,18 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #'   \code{\link{batch_collect}}.
 #' @param ... Other arguments passed to \code{\link{batch_collect}}, or
 #'   arguments passed from the \code{\link{OPMS}} to the \code{\link{OPM}}
-#'   method.
+#'   method, or to \code{read.delim} or \code{as.data.frame}.
 #' @param demo Logical scalar. Run in \sQuote{demo} mode? Also passed to
 #'   \code{\link{batch_collect}}.
+#' @param stringsAsFactors Logical scalar passed to \code{as.data.frame}.
+#' @param optional Logical scalar passed to \code{as.data.frame} or used after
+#'   negation as \sQuote{check.names} argument of \code{read.delim}.
+#' @param strip.white Logical scalar passed to \code{read.delim}.
+#'
 #' @export
-#' @return In the case of the character method, a data frame, returned invisibly
+#' @return
+#'   \code{to_metadata} yields a data frame. Reagrding \code{collect_template},
+#'   in the case of the character method, a data frame, returned invisibly
 #'   if \code{outfile} is given; if \code{demo} is \code{TRUE}, a character
 #'   vector of filenames instead, also returned invisibly. The \code{\link{OPM}}
 #'   method returns a data frame with one row and the number of columns equal to
@@ -1046,11 +964,29 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #'   external editor, and/or creates a data frame for editing the data directly
 #'   in \R with the \code{edit} function.
 #'
+#'   The \code{to_metadata} character method reads metadata from an input file
+#'   and is only a thin wrapper for \code{read.delim} but contains some useful
+#'   adaptations (such as \strong{not} converting strings to factors, and not
+#'   modifying column names). The default method reads metadata from an object
+#'   convertible to a data frame and is only a thin wrapper of
+#'   \code{as.data.frame} but contains the same useful adaptations as the
+#'   filename method.
+#'
+#'   The \code{\link{WMD}} and \code{\link{OPMS}} methods create a data frame
+#'   from the contained metadata, where necessary converting nested metadata
+#'   entries to data-frame columns of mode \sQuote{list}. The number of rows
+#'   of the resuling data frame corresponds to the length of \code{object}, the
+#'   number of columns to the size of the set created from all valid names at
+#'   the top level of the metadata entries.
+#'
+#' @seealso base::default.stringsAsFactors base::as.data.frame
 #' @seealso utils::edit utils::read.delim
 #' @family io-functions
 #' @references \url{http://www.biolog.com/}
-#' @keywords IO attribute
+#' @keywords IO attribute manip
 #' @examples
+#'
+#' ## collect_template()
 #'
 #' # Character method
 #' test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
@@ -1093,6 +1029,37 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #' stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
 #' # again see include_metadata() for how to use this to add metadata
 #' # information
+#'
+#' ## to_metadata()
+#'
+#' # Character method
+#' (x <- to_metadata(list(a = 7:8, `b c` = letters[1:2])))
+#' tmpfile <- tempfile()
+#' write.table(x, tmpfile, row.names = FALSE, sep = "\t")
+#' (x1 <- read.delim(tmpfile)) # comparison with base R function
+#' (x2 <- to_metadata(tmpfile))
+#' stopifnot(identical(names(x2), names(x)), !identical(names(x1), names(x)))
+#'
+#' # Default method
+#' x <- list(a = 7:8, `b c` = letters[1:2])
+#' (x1 <- as.data.frame(x))
+#' (x2 <- to_metadata(x))
+#' stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
+#'
+#' # WMD method
+#' data(vaas_1)
+#' (x <- to_metadata(vaas_1)) # one row per OPM object
+#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
+#'
+#' # OPMS method
+#' data(vaas_4)
+#' (x <- to_metadata(vaas_4)) # one row per OPM object
+#' stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
+#' copy <- vaas_4
+#' metadata(copy) <- x
+#' stopifnot(identical(copy, vaas_4))
+#' # ... this works only in the special case of non-nested metadata that
+#' # have the same set of entries in all OPMS elements
 #'
 setGeneric("collect_template",
   function(object, ...) standardGeneric("collect_template"))
@@ -1149,6 +1116,36 @@ setMethod("collect_template", OPM, function(object,
 setMethod("collect_template", OPMS, function(object, ...) {
   result <- lapply(object@plates, collect_template, ...)
   do.call(rbind, result)
+}, sealed = SEALED)
+
+#= to_metadata collect_template
+
+#' @rdname collect_template
+#' @export
+#'
+setGeneric("to_metadata",
+  function(object, ...) standardGeneric("to_metadata"))
+
+setMethod("to_metadata", "character", function(object, sep = "\t",
+    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) {
+  read.delim(file = L(object), sep = sep, check.names = !optional,
+    strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
+}, sealed = SEALED)
+
+setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
+  as.data.frame(x = object, stringsAsFactors = stringsAsFactors,
+    optional = optional, ...)
+}, sealed = SEALED)
+
+setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
+  md_data_frame(list(object@metadata), stringsAsFactors, optional, ...)
+}, sealed = SEALED)
+
+setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) {
+  md_data_frame(metadata(object), stringsAsFactors, optional, ...)
 }, sealed = SEALED)
 
 

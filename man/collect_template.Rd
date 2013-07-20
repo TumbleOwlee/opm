@@ -1,6 +1,7 @@
 \name{collect_template}
 \alias{collect_template}
-\title{Collect metadata template}
+\alias{to_metadata}
+\title{Input metadata}
 \arguments{
   \item{object}{Character vector or \code{\link{OPM}} or
   \code{\link{OPMS}} object. The \code{\link{OPM}} and
@@ -14,7 +15,12 @@
   contains (unless restrictions with patterns are made).
   One can also provide file names, or a mixture of file and
   directory names.  Regarding the supported input file
-  formats, see \code{\link{read_single_opm}}.}
+  formats, see \code{\link{read_single_opm}}.
+
+  \code{to_metadata} needs the name of an input file
+  (character scalar), or any object convertible to a data
+  frame. Might also be \code{\link{WMD}} or
+  \code{\link{OPMS}} object.}
 
   \item{outfile}{Character scalar. Ignored if \code{NULL}
   or empty string.  Otherwise, interpreted as the name of a
@@ -27,7 +33,8 @@
   \code{previous}.}
 
   \item{sep}{Character scalar. \acronym{CSV} field
-  separator for \code{outfile}.}
+  separator for \code{outfile} and for the input files of
+  \code{to_metadata}.}
 
   \item{previous}{Ignored if \code{NULL}. Otherwise passed
   to \code{\link{to_metadata}}. If it is a filename
@@ -51,27 +58,41 @@
 
   \item{...}{Other arguments passed to
   \code{\link{batch_collect}}, or arguments passed from the
-  \code{\link{OPMS}} to the \code{\link{OPM}} method.}
+  \code{\link{OPMS}} to the \code{\link{OPM}} method, or to
+  \code{read.delim} or \code{as.data.frame}.}
 
   \item{demo}{Logical scalar. Run in \sQuote{demo} mode?
   Also passed to \code{\link{batch_collect}}.}
+
+  \item{stringsAsFactors}{Logical scalar passed to
+  \code{as.data.frame}.}
+
+  \item{optional}{Logical scalar passed to
+  \code{as.data.frame} or used after negation as
+  \sQuote{check.names} argument of \code{read.delim}.}
+
+  \item{strip.white}{Logical scalar passed to
+  \code{read.delim}.}
 }
 \value{
-  In the case of the character method, a data frame,
-  returned invisibly if \code{outfile} is given; if
-  \code{demo} is \code{TRUE}, a character vector of
-  filenames instead, also returned invisibly. The
-  \code{\link{OPM}} method returns a data frame with one
-  row and the number of columns equal to the sum of the
-  lengths of \code{selection} and \code{add.cols}. The
-  \code{\link{OPM}} method returns such a data frame with
-  one row per contained plate.
+  \code{to_metadata} yields a data frame. Reagrding
+  \code{collect_template}, in the case of the character
+  method, a data frame, returned invisibly if
+  \code{outfile} is given; if \code{demo} is \code{TRUE}, a
+  character vector of filenames instead, also returned
+  invisibly. The \code{\link{OPM}} method returns a data
+  frame with one row and the number of columns equal to the
+  sum of the lengths of \code{selection} and
+  \code{add.cols}. The \code{\link{OPM}} method returns
+  such a data frame with one row per contained plate.
 }
 \description{
-  Collect a metadata template from
+  Either collect a metadata template from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   \acronym{CSV} comments assisting in later on adding
-  metadata using \code{\link{include_metadata}}.
+  metadata using \code{\link{include_metadata}} or create a
+  data frame holding potential \code{\link{OPM}} or
+  \code{\link{OPMS}} object metadata.
 }
 \details{
   The character method batch-collects templates for
@@ -80,8 +101,29 @@
   collected template to a file for use with an external
   editor, and/or creates a data frame for editing the data
   directly in \R with the \code{edit} function.
+
+  The \code{to_metadata} character method reads metadata
+  from an input file and is only a thin wrapper for
+  \code{read.delim} but contains some useful adaptations
+  (such as \strong{not} converting strings to factors, and
+  not modifying column names). The default method reads
+  metadata from an object convertible to a data frame and
+  is only a thin wrapper of \code{as.data.frame} but
+  contains the same useful adaptations as the filename
+  method.
+
+  The \code{\link{WMD}} and \code{\link{OPMS}} methods
+  create a data frame from the contained metadata, where
+  necessary converting nested metadata entries to
+  data-frame columns of mode \sQuote{list}. The number of
+  rows of the resuling data frame corresponds to the length
+  of \code{object}, the number of columns to the size of
+  the set created from all valid names at the top level of
+  the metadata entries.
 }
 \examples{
+## collect_template()
+
 # Character method
 test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
   value = TRUE, perl = TRUE)
@@ -123,11 +165,44 @@ stopifnot(identical(dim(x), c(4L, 3L)))
 stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
 # again see include_metadata() for how to use this to add metadata
 # information
+
+## to_metadata()
+
+# Character method
+(x <- to_metadata(list(a = 7:8, `b c` = letters[1:2])))
+tmpfile <- tempfile()
+write.table(x, tmpfile, row.names = FALSE, sep = "\t")
+(x1 <- read.delim(tmpfile)) # comparison with base R function
+(x2 <- to_metadata(tmpfile))
+stopifnot(identical(names(x2), names(x)), !identical(names(x1), names(x)))
+
+# Default method
+x <- list(a = 7:8, `b c` = letters[1:2])
+(x1 <- as.data.frame(x))
+(x2 <- to_metadata(x))
+stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
+
+# WMD method
+data(vaas_1)
+(x <- to_metadata(vaas_1)) # one row per OPM object
+stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
+
+# OPMS method
+data(vaas_4)
+(x <- to_metadata(vaas_4)) # one row per OPM object
+stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
+copy <- vaas_4
+metadata(copy) <- x
+stopifnot(identical(copy, vaas_4))
+# ... this works only in the special case of non-nested metadata that
+# have the same set of entries in all OPMS elements
 }
 \references{
   \url{http://www.biolog.com/}
 }
 \seealso{
+  base::default.stringsAsFactors base::as.data.frame
+
   utils::edit utils::read.delim
 
   Other io-functions: \code{\link{batch_collect}},
@@ -135,17 +210,22 @@ stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
   \code{\link{clean_filenames}}, \code{\link{explode_dir}},
   \code{\link{file_pattern}}, \code{\link{glob_to_regex}},
       \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+  \code{\link{read_single_opm}}, \code{\link{split_files}}
 }
 \keyword{IO}
 \keyword{attribute}
+\keyword{manip}
 
 \docType{methods}
 \alias{collect_template-methods}
 \alias{collect_template,character-method}
 \alias{collect_template,OPM-method}
 \alias{collect_template,OPMS-method}
+\alias{to_metadata,character-method}
+\alias{to_metadata-methods}
+\alias{to_metadata,ANY-method}
+\alias{to_metadata,WMD-method}
+\alias{to_metadata,OPMS-method}
 \usage{
   \S4method{collect_template}{character}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
@@ -156,5 +236,17 @@ stopifnot(identical(dim(x), c(4L, 5L))) # => data frame with more columns
     selection = opm_opt("csv.selection"), add.cols = NULL) 
 
   \S4method{collect_template}{OPMS}(object, ...) 
+
+  \S4method{to_metadata}{character}(object, sep = "\t",
+    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) 
+
+  \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) 
+
+  \S4method{to_metadata}{WMD}(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) 
+
+  \S4method{to_metadata}{OPMS}(object, stringsAsFactors = FALSE,
+    optional = TRUE, ...) 
 
 }

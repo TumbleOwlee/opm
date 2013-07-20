@@ -36,7 +36,7 @@ stopifnot(is.character(x), length(x) > 0L, identical(x, rev(y)))
 
   Other plotting-functions: \code{\link{ci_plot}},
   \code{\link{heat_map}}, \code{\link{level_plot}},
-  \code{\link{radial_plot}}, \code{\link{show}},
+  \code{\link{radial_plot}}, \code{\link{summary}},
   \code{\link{xy_plot}}
 }
 \keyword{color}

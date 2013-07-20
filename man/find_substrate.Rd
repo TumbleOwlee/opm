@@ -1,8 +1,12 @@
 \name{find_substrate}
+\alias{find_positions}
 \alias{find_substrate}
-\title{Identify substrates}
+\title{Identify substrates or positions}
 \arguments{
-  \item{object}{Query character vector or factor.}
+  \item{object}{Query character vector or factor, when
+  searching for positions alternatively a list, an S3
+  object of class \sQuote{substrate_match}, an
+  \code{\link{OPM}} or an \code{\link{OPMS}} object.}
 
   \item{search}{Character scalar indicating the search
   mode. \describe{ \item{exact}{Query names must exactly
@@ -28,22 +32,42 @@
   methods.}
 }
 \value{
-  An S3 object of class \sQuote{substrate_match}; basically
-  a list of character vectors (empty if nothing was found),
-  with duplicates removed and the rest sorted. The names of
-  the list correspond to \code{names}.
+  \code{find_substrate} returns an S3 object of class
+  \sQuote{substrate_match}; basically a list of character
+  vectors (empty if nothing was found), with duplicates
+  removed and the rest sorted. The names of the list
+  correspond to \code{names}.
+
+  The \code{find_positions} character method returns a list
+  of character matrices (empty if nothing was found), with
+  one row per position found, the plate name in the first
+  column and the well name in the second. The names of this
+  list correspond to \code{names}. The \code{\link{OPM}}
+  and \code{\link{OPMS}} methods do the same, using their
+  own substrates. The list and \sQuote{substrate_match}
+  methods return lists of such lists.
 }
 \description{
   Identify the names of substrates as used in the stored
-  plate annotations. Exact or error-tolerant matching can
-  be used, as well as globbing and regular-expression
-  matching.
+  plate annotations, or identify the positions of
+  substrates, i.e. the plate(s) and well(s) in which they
+  occur. Exact or error-tolerant matching can be used, as
+  well as globbing and regular-expression matching.
+}
+\details{
+  When searching for positions, the query names must be
+  written exactly as used in the stored plate annotations.
+  To determine their spelling, use \code{find_substrate}.
+  This spelling is not guaranteed to be stable between
+  distinct \pkg{opm} releases.
 }
 \note{
   See \code{\link{glob_to_regex}} for a description of
   globbing patterns.
 }
 \examples{
+## find_substrate()
+
 # Note that 'exact' search matches parts of the names, whereas globbing
 # matches entire strings if there are no wildcards (which wouldn't make much
 # sense)
@@ -63,12 +87,28 @@ stopifnot(length(z[[1]]) > length(x[[1]]))
 # Factor method
 (zz <- find_substrate(as.factor("D-Glucose"), search = "approx"))
 stopifnot(identical(z, zz))
+
+## find_positions()
+
+# Character method; compare correct and misspelled substrate name
+(x <- find_positions(c("D-Glucose", "D-Gloucose")))
+stopifnot(length(x[[1]]) > length(x[[2]]))
+
+# Factor method
+(y <- find_positions(as.factor(c("D-Glucose", "D-Gloucose"))))
+stopifnot(identical(y, x))
+
+# List method
+x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
+x[[1]][1:3]
+x[[2]]
+stopifnot(length(x[[1]]) > length(x[[2]]))
 }
 \seealso{
   base::grep base::agrep
 
-  Other naming-functions: \code{\link{find_positions}},
-  \code{\link{listing}}, \code{\link{substrate_info}}
+  Other naming-functions: \code{\link{listing}},
+  \code{\link{substrate_info}}, \code{\link{wells}}
 }
 \keyword{character}
 \keyword{utilities}
@@ -76,11 +116,32 @@ stopifnot(identical(z, zz))
 \docType{methods}
 \alias{find_substrate-methods}
 \alias{find_substrate,character-method}
+\alias{find_positions,character-method}
+\alias{find_positions-methods}
+\alias{find_positions,substrate_match-method}
+\alias{find_positions,list-method}
+\alias{find_positions,OPM-method}
 \alias{find_substrate,factor-method}
+\alias{find_positions-methods}
+\alias{find_positions,factor-method}
+\alias{find_positions-methods}
+\alias{find_positions,OPMS-method}
 \usage{
   \S4method{find_substrate}{character}(object,
     search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) 
 
+  \S4method{find_positions}{character}(object, ...) 
+
+  \S4method{find_positions}{substrate_match}(object, ...) 
+
+  \S4method{find_positions}{list}(object, ...) 
+
+  \S4method{find_positions}{OPM}(object, ...) 
+
   \S4method{find_substrate}{factor}(object, ...) 
+
+  \S4method{find_positions}{factor}(object, ...) 
+
+  \S4method{find_positions}{OPMS}(object, ...) 
 
 }

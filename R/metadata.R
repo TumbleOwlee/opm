@@ -1,99 +1,10 @@
 
+
 ################################################################################
 ################################################################################
 #
-# Metadata functions
+# Setter functions for metadata
 #
-
-
-#' Add metadata (from file or data frame)
-#'
-#' Include metadata by mapping \acronym{CSV} data and column names in a data
-#' frame.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param md Dataframe containing keys as column names, or name of file from
-#'   which to read the data frame. Handled by \code{\link{to_metadata}}.
-#' @param keys Character vector.
-#' @param replace Logical scalar indicating whether the previous metadata, if
-#'   any, shall be replaced by the novel ones, or whether these shall be
-#'   appended.
-#' @param skip.failure Logical scalar. Do not stop with an error message if
-#'   (unambiguous) selection is impossible but raise a warning only?
-#' @param remove.keys Logical scalar. When including \code{md} in the metadata,
-#'   discard the \code{keys} columns?
-#' @param ... Optional argument passed to \code{\link{to_metadata}}.
-#' @export
-#' @return Novel \code{\link{OPM}} object.
-#' @family metadata-functions
-#' @keywords manip
-#' @examples
-#' data(vaas_1)
-#' (x <- collect_template(vaas_1, add.cols = "Location")) # generate data frame
-#' x[1, "Location"] <- "Braunschweig" # insert additional information
-#' copy <- include_metadata(vaas_1, x) # include the data in new OPM object
-#' stopifnot(is.null(metadata(vaas_1, "Location")))
-#' stopifnot(identical(metadata(copy, "Location"), "Braunschweig"))
-#'
-setGeneric("include_metadata",
-  function(object, ...) standardGeneric("include_metadata"))
-
-setMethod("include_metadata", OPM, function(object, md,
-    keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
-    remove.keys = TRUE, ...) {
-
-  LL(replace, skip.failure, remove.keys)
-
-  selection <- as.list(csv_data(object, keys))
-
-  # Get and check metadata.
-  md <- to_metadata(md, ...)
-  absent.keys <- setdiff(keys, colnames(md))
-  if (length(absent.keys) > 0L)
-    stop("key missing in 'metadata': ", absent.keys[1L])
-
-  # Try to select the necessary information from the metadata.
-  found <- pick_from(md, selection)
-  msg <- if ((nr <- nrow(found)) == 1L)
-    NULL
-  else if (nr == 0L)
-    listing(selection,
-      header = "could not find this key/value combination in 'metadata':")
-  else
-    listing(selection,
-      header = "the selection resulted in more than one row for:")
-
-  # Failures.
-  if (!is.null(msg)) {
-    if (skip.failure) {
-      warning(msg)
-      return(object)
-    } else
-      stop(msg)
-  }
-
-  # Success.
-  wanted <- colnames(found)
-  if (remove.keys)
-    wanted <- setdiff(wanted, keys)
-  found <- as.list(found[, wanted, drop = FALSE])
-  result <- object
-  result@metadata <- if (replace)
-    found
-  else
-    c(metadata(result), found)
-
-  result
-
-}, sealed = SEALED)
-
-setMethod("include_metadata", OPMS, function(object, ...) {
-  object@plates <- lapply(X = object@plates, FUN = include_metadata, ...)
-  object
-}, sealed = SEALED)
-
-
-################################################################################
 
 
 #' Replace metadata
@@ -554,14 +465,29 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 ################################################################################
 
 
-#' Map metadata
+#' Add or map metadata
 #'
-#' Modify meta-information stored together with the measurements by using a
-#' function or other kinds of mappings and return the objects otherwise
-#' unchanged. The \code{\link{OPMS}} method applies this to all plates in turn
-#' and returns an \code{\link{OPMS}} object with accordingly modified metadata.
+#' Include metadata by mapping \acronym{CSV} data and column names in a data
+#' frame (optionally read from file) or modify meta-information stored together
+#' with the measurements by using a function or other kinds of mappings and
+#' return the objects otherwise unchanged. The \code{\link{OPMS}} method applies
+#' this to all plates in turn and returns an \code{\link{OPMS}} object with
+#' accordingly modified metadata.
 #'
-#' @param object \code{\link{WMD}} object or \code{\link{OPMS}} object.
+#' @param object \code{\link{OPM}} (\code{\link{WMD}}) object or
+#'   \code{\link{OPMS}} object.
+#'
+#' @param md Dataframe containing keys as column names, or name of file from
+#'   which to read the data frame. Handled by \code{\link{to_metadata}}.
+#' @param keys Character vector.
+#' @param replace Logical scalar indicating whether the previous metadata, if
+#'   any, shall be replaced by the novel ones, or whether these shall be
+#'   appended.
+#' @param skip.failure Logical scalar. Do not stop with an error message if
+#'   (unambiguous) selection is impossible but raise a warning only?
+#' @param remove.keys Logical scalar. When including \code{md} in the metadata,
+#'   discard the \code{keys} columns?
+#'
 #' @param mapping In most cases passed to \code{\link{map_values}}. \itemize{
 #'   \item If a function, this is just a wrapper for \code{rapply}, with
 #'   \code{how} set to \sQuote{replace}, if \code{values} is \code{TRUE}. It is
@@ -597,14 +523,26 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #'   If \code{mapping} is missing, \code{classes} specifies classes that are
 #'   converted to character vectors.
 #'
-#' @param ... Optional argument passed to \code{mapping} if it is a function,
-#'   and from the \code{\link{OPMS}} method to the \code{\link{WMD}} method.
-#' @return \code{\link{WMD}} or \code{\link{OPMS}} object with modified
-#'   metadata.
+#' @param ... Optional arguments passed to \code{mapping} if it is a function,
+#'   and from the \code{\link{OPMS}} method to the \code{\link{WMD}} method, or
+#'   from \code{include_metadata} to \code{\link{to_metadata}}.
 #' @export
+#' @return Novel \code{\link{WMD}} or \code{\link{OPMS}} object with modified
+#'   metadata.
 #' @family metadata-functions
 #' @keywords manip
 #' @examples
+#'
+#' ## include_metadata()
+#' data(vaas_1)
+#'
+#' (x <- collect_template(vaas_1, add.cols = "Location")) # generate data frame
+#' x[1, "Location"] <- "Braunschweig" # insert additional information
+#' copy <- include_metadata(vaas_1, x) # include the data in new OPM object
+#' stopifnot(is.null(metadata(vaas_1, "Location")))
+#' stopifnot(identical(metadata(copy, "Location"), "Braunschweig"))
+#'
+#' ## map_metadata()
 #'
 #' # WMD methods
 #' data(vaas_1)
@@ -675,6 +613,68 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' (x <- metadata(map_metadata(vaas_4)))
 #' stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
 #'
+setGeneric("include_metadata",
+  function(object, ...) standardGeneric("include_metadata"))
+
+setMethod("include_metadata", OPM, function(object, md,
+    keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
+    remove.keys = TRUE, ...) {
+
+  LL(replace, skip.failure, remove.keys)
+
+  selection <- as.list(csv_data(object, keys))
+
+  # Get and check metadata.
+  md <- to_metadata(md, ...)
+  absent.keys <- setdiff(keys, colnames(md))
+  if (length(absent.keys) > 0L)
+    stop("key missing in 'metadata': ", absent.keys[1L])
+
+  # Try to select the necessary information from the metadata.
+  found <- pick_from(md, selection)
+  msg <- if ((nr <- nrow(found)) == 1L)
+    NULL
+  else if (nr == 0L)
+    listing(selection,
+      header = "could not find this key/value combination in 'metadata':")
+  else
+    listing(selection,
+      header = "the selection resulted in more than one row for:")
+
+  # Failures.
+  if (!is.null(msg)) {
+    if (skip.failure) {
+      warning(msg)
+      return(object)
+    } else
+      stop(msg)
+  }
+
+  # Success.
+  wanted <- colnames(found)
+  if (remove.keys)
+    wanted <- setdiff(wanted, keys)
+  found <- as.list(found[, wanted, drop = FALSE])
+  result <- object
+  result@metadata <- if (replace)
+    found
+  else
+    c(metadata(result), found)
+
+  result
+
+}, sealed = SEALED)
+
+setMethod("include_metadata", OPMS, function(object, ...) {
+  object@plates <- lapply(X = object@plates, FUN = include_metadata, ...)
+  object
+}, sealed = SEALED)
+
+#= map_metadata include_metadata
+
+#' @rdname include_metadata
+#' @export
+#'
 setGeneric("map_metadata",
   function(object, mapping, ...) standardGeneric("map_metadata"))
 
@@ -729,14 +729,36 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 
 
 ################################################################################
+################################################################################
+#
+# Getter functions for metadata
+#
 
 
-#' Get metadata characters
+#' Get metadata
 #'
-#' Collect all \sQuote{character} entries from the meta-information stored
-#' together with the measurements. Optionally coerce data of other types.
+#' Get meta-information stored together with the data or collect all
+#' \sQuote{character} entries from the meta-information stored together with the
+#' measurements. Optionally coerce data of other types.
 #'
 #' @param object \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @param key \code{NULL}, vector, factor or formula. \itemize{
+#'   \item If \code{NULL} or otherwise empty, return all metadata.
+#'   \item If a non-empty list, treated as list of keys. Return value would be
+#'   the list of corresponding metadata values. Here, character vectors of
+#'   length > 1 can be used to query nested metadata lists.
+#'   \item If neither empty nor a list nor a formula (i.e. usually a character
+#'   or numeric vector), \code{key} is treated as a single list key. Factors are
+#'   converted to \sQuote{character} mode.
+#'   \item Formulas can also be used and are converted to a list or character or
+#'   numeric vector using the rules described under \sQuote{Details}.
+#'   \item It is in general not recommended to use numeric vectors as \code{key}
+#'   arguments, either directly or within a list or formula.
+#' }
+#' @param exact Logical scalar. Use exact or partial matching of keys? Has no
+#'   effect if \code{key} is empty.
+#' @param strict Logical scalar. Is it an error if a \code{NULL} value results
+#'   from fetching a metadata key?
 #' @param values Logical scalar. If \code{FALSE}, metadata names, not values,
 #'   are collected, and \code{classes} is ignored (names are always of class
 #'   \sQuote{character} and need not be coerced).
@@ -746,31 +768,104 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #'   the \code{coerce} argument of \code{map_values} for details.
 #' @param ... Optional argument passed from the \code{\link{OPMS}} to the
 #'   \code{\link{WMD}} method.
-#' @return Character vector, sorted and made unique. Original \code{names}
-#'   attributes, if any, are dropped and replaced by the character vector
-#'   itself. (This might be convenient regarding its use with
+#'
+#' @return \code{metadata} generates a list (empty if metadata were not set or
+#'   if subselection using \code{key} did not result).
+#'
+#'   \code{metadata_chars} yields a character vector, sorted and made unique.
+#'   Original \code{names} attributes, if any, are dropped and replaced by the
+#'   character vector itself. (This might be convenient regarding its use with
 #'   \code{\link{map_metadata}}.)
 #' @details The result can be used to create a mapping for
 #'   \code{\link{map_metadata}}. The \code{\link{OPMS}} method just applies the
 #'   \code{\link{WMD}} method to all contained plates in turn.
+#'
 #' @export
 #' @family metadata-functions
 #' @keywords attribute
+#' @details If a named list is used as \code{key} argument, its names will be
+#'   used within the first level of the resulting nested or non-nested list.
+#'   That is, \code{key} can be used to translate names on the fly, and this can
+#'   be used by all functions that call \code{metadata} indirectly, usually via
+#'   an \code{as.labels} or \code{as.groups} argument.
+#'
+#'   Even though it is not technically impossible per se, it is usually a bad
+#'   idea to select metadata entries using numeric (positional) or logical keys.
+#'   The problem is that, in contrast to, e.g., data frames, their is no
+#'   guarantee that metadata entries with the same name occur in the same
+#'   position, even if they belong to \code{\link{OPM}} objects within a single
+#'   \code{\link{OPMS}} object.
+#'
+#'   Formulas passed as \code{key} argument are treated by ignoring the left
+#'   side (if any) and converting the right side to a list or other vector. Code
+#'   enclosed in \code{I} is evaluated with a call to \code{eval}. It is up to
+#'   the user to ensure that this call succeeds and yields a character vector or
+#'   a list. Operators in all other code within the formula are used just as
+#'   separators, and all names are converted to character scalars. The \code{$}
+#'   operator binds tightly, i.e. it separates elements of a character vector
+#'   (for nested querying) in the output. The same effect have other operators
+#'   of high precedence such as \code{::} but their use is not recommended. All
+#'   operators with a lower precedence than \code{$} separate list elements.
+#'
+#'   Additional options when using formulas are described under
+#'   \code{\link{extract}}.
+#'
 #' @examples
 #'
-#' # WMD method
+#' # 'OPM' methods
 #' data(vaas_1)
+#'
+#' (x <- metadata(vaas_1, "Strain"))
+#' stopifnot(x == "DSM30083T")
+#' (y <- metadata(vaas_1, ~ Strain)) # using a formula => same result
+#' stopifnot(identical(x, y))
+#'
 #' (x <- metadata_chars(vaas_1, values = FALSE))
 #' stopifnot(names(x) == x) # mapping metadata keys to themselves
 #' (x <- metadata_chars(vaas_1, values = TRUE))
 #' stopifnot(names(x) == x) # mapping metadata values to themselves
 #' # See map_metadata() for a potential usage of the metadata_chars() result
 #'
-#' # OPMS method
+#' # 'OPMS' methods
+#' data(vaas_4)
+#'
+#' (x <- metadata(vaas_4, "Strain"))
+#' stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
+#' (y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
+#' stopifnot(identical(x, y))
+#'
 #' data(vaas_4)
 #' (x <- metadata_chars(vaas_4, values = TRUE)) # the values
 #' (y <- metadata_chars(vaas_4, values = FALSE)) # the keys
 #' stopifnot(length(x) > length(y))
+#'
+setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
+
+setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
+    strict = FALSE) {
+  LL(exact, strict)
+  if (!length(key))
+    return(object@metadata)
+  key <- metadata_key(key, FALSE)
+  fetch_fun <- if (strict)
+    function(key) {
+      if (is.null(result <- object@metadata[[key, exact = exact]]))
+        stop(sprintf("got NULL value when using key '%s'",
+          paste(key, collapse = " -> ")))
+      result
+    }
+  else
+    function(key) object@metadata[[key, exact = exact]]
+  if (is.list(key))
+    sapply(key, fetch_fun, simplify = FALSE)
+  else # should be a (character) vector
+    fetch_fun(key)
+}, sealed = SEALED)
+
+#= metadata_chars metadata
+
+#' @rdname metadata
+#' @export
 #'
 setGeneric("metadata_chars",
   function(object, ...) standardGeneric("metadata_chars"))
@@ -789,5 +884,4 @@ setMethod("metadata_chars", OPMS, function(object, ...) {
 
 
 ################################################################################
-
 

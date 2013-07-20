@@ -1157,19 +1157,30 @@ prepare_class_names.character <- function(x) {
 ################################################################################
 
 
-#' Map values
+#' Map values or names
 #'
-#' Map values using a character vector, a function or a formula. This is not
-#' normally directly called by an \pkg{opm} user because
-#' \code{\link{map_metadata}} is available.
+#' Map values using a character vector, a function or a formula, or use a
+#' character vector or a function for recursively mapping list names, or mapping
+#' the \sQuote{colnames} and \sQuote{rownames} attributes of a data frame or
+#' matrix. These functions are not normally directly called by an \pkg{opm} user
+#' because \code{\link{map_metadata}} is available.
 #'
-#' @param object List (may be nested), data frame or character vector. If it has
-#'   names, they are preserved. \code{NULL} can also be given and yields
-#'   \code{NULL} or an empty named character vector (if \code{mapping} is
-#'   missing). \code{object} may also belong to the virtual class
-#'   \code{\link{MOA}}, comprising matrices and arrays.
-#' @param mapping Character vector, function, formula, expression, \code{NULL}
-#'   or missing.
+#' @param object When mapping values, a list (may be nested), data frame or
+#'   character vector. If it has names, they are preserved. \code{NULL} can also
+#'   be given and yields \code{NULL} or an empty named character vector (if
+#'   \code{mapping} is missing). \code{object} may also belong to the virtual
+#'   class \code{\link{MOA}}, comprising matrices and arrays.
+#'
+#'   When mapping names, \code{object} can be any \R object. The default method
+#'   applies the mapping to the \sQuote{names} attribute. The behaviour is
+#'   special for lists, which are traversed recursively to also consider
+#'   sublists with names. Data frames and \code{\link{MOA}} objects (that is,
+#'   including matrices and arrays) are also treated specially because the
+#'   \sQuote{dimnames} attribute, not the \sQuote{names} attribute is
+#'   considered.
+#'
+#' @param mapping When mapping values, a character vector, function, formula,
+#'   expression, \code{NULL} or missing.
 #'   \itemize{
 #'   \item If a character vector used as a mapping from its names to its values.
 #'   Values from \code{object} are searched for in the \code{names} attribute of
@@ -1194,7 +1205,13 @@ prepare_class_names.character <- function(x) {
 #'   conversion back to a list, is returned.
 #'   \item If \code{mapping} is \code{NULL} and \code{object} is a list, all
 #'   contained objects of zero length are removed recursively.
-#' }
+#'   }
+#'
+#'   When mapping names, a mapping function that takes a character vector as
+#'   first argument, or character vector used for mapping from its names to its
+#'   values, or missing. It is guaranteed that \code{NULL} input remains
+#'   \code{NULL}, irrespective of the value of \code{mapping}.
+#'
 #' @param coerce The usage of this argument depends on \code{object}.
 #'   \itemize{
 #'   \item A character vector with the names of classes that are coerced to
@@ -1212,11 +1229,17 @@ prepare_class_names.character <- function(x) {
 #' @param ... Optional further arguments to \code{mapping} (\strong{if} it is a
 #'   function).
 #' @export
-#' @return List, data frame, character vector or \code{NULL}.
+#' @return \code{map_values} returns a list, data frame, character vector or
+#'   \code{NULL}.
+#'
+#'   \code{map_names} yields a character vector if \code{mapping} is missing,
+#'   otherwise an \R object of the same class than \code{object}.
+#'
 #' @seealso base::rapply base::list base::as.list methods::as base::class
 #'   base::storage.mode base::as.vector
 #' @family auxiliary-functions
 #' @keywords manip list
+#'
 #' @details Mapping of \sQuote{character} data using another \sQuote{character}
 #'   vector is possible, as well as recursively applying a mapping function to
 #'   all \sQuote{character} values within a list, or non-recursively to a data
@@ -1225,7 +1248,21 @@ prepare_class_names.character <- function(x) {
 #'   classes using coercion functions. For convenience in programming, methods
 #'   for the \sQuote{NULL} class are also available.
 #'
+#'   In the case of lists, the function passed to \code{map_names} is not
+#'   applied to list elements which are not themselves lists, even if they have
+#'   a \sQuote{names} attribute. Such elements and their names, if any, are
+#'   returned unchanged. If a \sQuote{names}, \sQuote{colnames} or
+#'   \sQuote{rownames} attribute is \code{NULL}, it is ignored.
+#'
+#'   Alternatively, instead of mapping the names, collect them and return them
+#'   as a single character vector, sorted and with duplicates removed. The
+#'   collected names are added as their own \code{names} attribute; this might
+#'   be useful if the result is later on used for some mapping (using this
+#'   function or \code{\link{map_values}}).
+#'
 #' @examples
+#'
+#' ## map_values()
 #'
 #' # Character/character method
 #' map <- letters
@@ -1354,6 +1391,60 @@ prepare_class_names.character <- function(x) {
 #' # Factor/missing method
 #' (y <- map_values(x))
 #' stopifnot(levels(x) == y, names(y) == y)
+#'
+#' ## map_names()
+#'
+#' # List/function method
+#' x <- list(a = 1:8, c = 9, d = 'x')
+#' map <- function(x) sprintf("%s%s", x, x)
+#' (y <- map_names(x, map))
+#' stopifnot(identical(as.character(x), as.character(y)))
+#' stopifnot(!identical(names(x), names(y)))
+#'
+#' # List/character method
+#' x <- list(a = 1:8, c = 9, d = 'x')
+#' map <- c(a = "b", e = "f", x = "y")
+#' (y <- map_names(x, map))
+#' stopifnot(identical(as.character(x), as.character(y)))
+#' stopifnot(!identical(names(x), names(y)))
+#' # compare with the map_values() example
+#'
+#' # List/missing method
+#' x <- list(a = 1:8, c = 9, d = 'x')
+#' (y <- map_names(x))
+#' stopifnot(identical(as.vector(y), names(x)))
+#' stopifnot(identical(names(y), names(x)))
+#' # Now a recursive list
+#' x <- list(a = 1:8, c = 9, d = list(d1 = 'x', d2 = 'y'))
+#' (y <- map_names(x))
+#' stopifnot(length(y) > length(names(x)))
+#'
+#' # Data frame/function method
+#' x <- data.frame(a = 1:3, b = letters[1:3])
+#' (y <- map_names(x, toupper))
+#' stopifnot(identical(y[[1]], x[[1]]), identical(y[[2]], x[[2]]))
+#' stopifnot(identical(names(y), c("A", "B")))
+#'
+#' # Data frame/character method
+#' (y <- map_names(x, c(a = "b", b = "a")))
+#' stopifnot(x == y, names(y) == c("b", "a"))
+#'
+#' # Data frame/missing method
+#' (y <- map_names(x))
+#' stopifnot(is.character(y), y == names(y), length(y) == 5)
+#'
+#' # Matrix/function method
+#' x <- as.matrix(x)
+#' (y <- map_names(x, toupper))
+#' stopifnot(x == y, toupper(colnames(x)) == colnames(y))
+#'
+#' # Matrix/character method
+#' (y <- map_names(x, c(a = "b", b = "a")))
+#' stopifnot(x == y, colnames(y) == c("b", "a"))
+#'
+#' # Matrix/missing method
+#' (y <- map_names(x))
+#' stopifnot(y == c("a", "b"), names(y) == y)
 #'
 setGeneric("map_values",
   function(object, mapping, ...) standardGeneric("map_values"))
@@ -1571,98 +1662,12 @@ setMethod("map_values", c("NULL", "missing"), function(object, mapping) {
 }, sealed = SEALED)
 
 
-################################################################################
+#-------------------------------------------------------------------------------
 
+#= map_names map_values
 
-#' Map names
-#'
-#' Use a character vector or a function for recursively mapping list names, or
-#' mapping the \sQuote{colnames} and \sQuote{rownames} attributes of a data
-#' frame. This function is not normally directly called by an \pkg{opm} user
-#' because \code{\link{map_metadata}} is available.
-#'
-#' @param object Any \R object. The default method applies the mapping to the
-#'   \sQuote{names} attribute. The behaviour is special for lists, which are
-#'   traversed recursively to also consider sublists with names. Data frames and
-#'   \code{\link{MOA}} objects (that is, including matrices and arrays) are also
-#'   treated specially because the \sQuote{dimnames} attribute, not the
-#'   \sQuote{names} attribute is considered.
-#' @param mapping Mapping function that takes a character vector as first
-#'   argument, or character vector used for mapping from its names to its
-#'   values, or missing. It is guaranteed that \code{NULL} input remains
-#'   \code{NULL}, irrespective of the value of \code{mapping}.
-#' @param ... Optional further arguments to \code{mapping} (if it is a
-#'   function).
-#' @return Character vector if \code{mapping} is missing, otherwise an \R object
-#'   of the same class than \code{object}.
+#' @rdname map_values
 #' @export
-#' @family auxiliary-functions
-#' @seealso base::rapply base::list base::as.list
-#' @keywords manip list
-#' @details In the case of lists, the function is not applied to list elements
-#'   which are not themselves lists, even if they have a \sQuote{names}
-#'   attribute. Such elements and their names, if any, are returned unchanged.
-#'   If a \sQuote{names}, \sQuote{colnames} or \sQuote{rownames} attribute is
-#'   \code{NULL}, it is ignored.
-#'
-#'   Alternatively, instead of mapping the names, collect them and return them
-#'   as a single character vector, sorted and with duplicates removed. The
-#'   collected names are added as their own \code{names} attribute; this might
-#'   be useful if the result is later on used for some mapping (using this
-#'   function or \code{\link{map_values}}).
-#' @examples
-#'
-#' # List/function method
-#' x <- list(a = 1:8, c = 9, d = 'x')
-#' map <- function(x) sprintf("%s%s", x, x)
-#' (y <- map_names(x, map))
-#' stopifnot(identical(as.character(x), as.character(y)))
-#' stopifnot(!identical(names(x), names(y)))
-#'
-#' # List/character method
-#' x <- list(a = 1:8, c = 9, d = 'x')
-#' map <- c(a = "b", e = "f", x = "y")
-#' (y <- map_names(x, map))
-#' stopifnot(identical(as.character(x), as.character(y)))
-#' stopifnot(!identical(names(x), names(y)))
-#' # compare with the map_values() example
-#'
-#' # List/missing method
-#' x <- list(a = 1:8, c = 9, d = 'x')
-#' (y <- map_names(x))
-#' stopifnot(identical(as.vector(y), names(x)))
-#' stopifnot(identical(names(y), names(x)))
-#' # Now a recursive list
-#' x <- list(a = 1:8, c = 9, d = list(d1 = 'x', d2 = 'y'))
-#' (y <- map_names(x))
-#' stopifnot(length(y) > length(names(x)))
-#'
-#' # Data frame/function method
-#' x <- data.frame(a = 1:3, b = letters[1:3])
-#' (y <- map_names(x, toupper))
-#' stopifnot(identical(y[[1]], x[[1]]), identical(y[[2]], x[[2]]))
-#' stopifnot(identical(names(y), c("A", "B")))
-#'
-#' # Data frame/character method
-#' (y <- map_names(x, c(a = "b", b = "a")))
-#' stopifnot(x == y, names(y) == c("b", "a"))
-#'
-#' # Data frame/missing method
-#' (y <- map_names(x))
-#' stopifnot(is.character(y), y == names(y), length(y) == 5)
-#'
-#' # Matrix/function method
-#' x <- as.matrix(x)
-#' (y <- map_names(x, toupper))
-#' stopifnot(x == y, toupper(colnames(x)) == colnames(y))
-#'
-#' # Matrix/character method
-#' (y <- map_names(x, c(a = "b", b = "a")))
-#' stopifnot(x == y, colnames(y) == c("b", "a"))
-#'
-#' # Matrix/missing method
-#' (y <- map_names(x))
-#' stopifnot(y == c("a", "b"), names(y) == y)
 #'
 setGeneric("map_names",
   function(object, mapping, ...) standardGeneric("map_names"))
@@ -1811,7 +1816,7 @@ repair_na_strings.list <- function(object,
 #
 
 
-#' Insert a list in a list
+#' Insert a list into a list
 #'
 #' Insert all values from another list in a list, either by overwriting the
 #' previously present data or by only setting the missing ones. Note that this
@@ -1819,21 +1824,23 @@ repair_na_strings.list <- function(object,
 #' \code{NULL}.
 #'
 #' @param object List.
-#' @param other \R object to insert. List.
+#' @param other  List or other \R object to insert. Can also be missing.
 #' @param ... Optional other items to insert.
 #' @param .force Logical scalar. Overwite items that are already there?
 #' @param .strict Logical scalar. If \code{TRUE}, has precedence over
 #'   \code{.force} and causes some restrictions: Only names that are already
 #'   present are allowed, and the classes must match the classes of the already
 #'   contained values.
-#' @return List.
+#' @return List, potentially modified.
 #' @seealso utils::modifyList
 #' @keywords internal
 #'
-setGeneric("insert", function(object, ...) standardGeneric("insert"))
+insert <- function(object, ...) UseMethod("insert")
 
-setMethod("insert", "list", function(object, other, ..., .force = FALSE,
-    .strict = FALSE) {
+#' @rdname insert
+#' @method insert list
+#'
+insert.list <- function(object, other, ..., .force = FALSE, .strict = FALSE) {
   insert_carefully <- function(x, y) {
     if (length(bad <- setdiff(nn <- names(y), names(x))))
       stop("unknown key: ", bad[1L])
@@ -1859,19 +1866,22 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
     keys <- setdiff(keys, names(object))
   object[keys] <- other[keys]
   object
-}, sealed = SEALED)
+}
 
 
 ################################################################################
 
 
-#' Query a list with a list
+#' Query an object with another object
 #'
-#' Test whether all names of a query list occur as names in a data list and
-#' optionally also whether they point to the same elements; apply this principle
-#' recursively to all sublists.
+#' One use is to test whether all names of a query list occur as names in a data
+#' list and optionally also whether they point to the same elements; this
+#' principle is applied recursively to all sublists. This method is not normally
+#' directly called by an \pkg{opm} user but might be useful in other contexts
+#' (it is used by a number of metadata query functions). Alternatively,
+#' \code{\link{OPMX}} objects can be queried with other such objects.
 #'
-#' @param object List containing the data, or \code{\link{OPMS}} object.
+#' @param object List containing the data, or \code{\link{OPMX}} object.
 #' @param other For the list method, a list used as query; for the
 #'   \code{\link{OPMS}} method, an \code{\link{OPM}} object used as query.
 #' @param values Logical scalar. Compare also the values or only the keys? If
@@ -1896,16 +1906,13 @@ setMethod("insert", "list", function(object, other, ..., .force = FALSE,
 #'   list results in \code{TRUE}. Missing names in a non-empty query list result
 #'   in \code{FALSE}.
 #'
-#'   There are also \code{\link{OPMS}} and \code{\link{OPM}} methods, which
-#'   test, for instance, whether an \code{\link{OPM}} object is contained in an
-#'   \code{\link{OPMS}} object.
+#'   The \code{\link{OPMS}} and \code{\link{OPM}} methods test, for instance,
+#'   whether an \code{\link{OPM}} object is contained in an \code{\link{OPMS}}
+#'   object. The test may also be vice versa but then trivially fails.
 #' @family auxiliary-functions
 #' @seealso base::list base::as.list base::`[` base::`[[` base::match
 #' @seealso base::identity
 #' @keywords attribute list
-#' @note This function is not normally directly called by an \pkg{opm} user but
-#'   might be useful in other contexts. It forms the basis of a number of
-#'   metadata query functions.
 #' @examples
 #'
 #' # List/list method

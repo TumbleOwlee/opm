@@ -47,7 +47,7 @@ setMethod("to_grofit_data", OPM, function(object) {
   names <- matrix(nrow = length(w), ncol = 3L,
     dimnames = list(well = w, value = c("well", "plate_id", "concentration")))
   names[, 1L] <- w
-  names[, 2L] <- paste(csv_data(object, what = "setup"),
+  names[, 2L] <- paste(csv_data(object, what = "setup_time"),
     csv_data(object, what = "position"), collapse = "-")
   names <- as.data.frame(names, stringsAsFactors = FALSE)
   names[, 3L] <- 1L # dummy concentration

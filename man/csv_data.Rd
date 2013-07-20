@@ -42,16 +42,16 @@
 # 'OPM' method
 data(vaas_1)
 
-(x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup"'
+(x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
 stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
 
-(x <- csv_data(vaas_1, what = "file")) # one file name (of course)
+(x <- csv_data(vaas_1, what = "filename")) # one file name (of course)
 stopifnot(is.character(x), length(x) == 1L)
 
 (x <- csv_data(vaas_1, what = "position")) # single position (of course)
 stopifnot(identical(x, " 7-B"))
 
-(x <- csv_data(vaas_1, what = "setup")) # single setup time (of course)
+(x <- csv_data(vaas_1, what = "setup_time")) # single setup time (of course)
 # WARNING: It is unlikely that all OmniLog output has this setup time format
 (parsed <- strptime(x, format = "\%m/\%d/\%Y \%I:\%M:\%S \%p"))
 stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
@@ -62,13 +62,13 @@ data(vaas_4)
 (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 stopifnot(is.character(x), length(x) == 4)
 
-(x <- csv_data(vaas_4, what = "file"))  # one file name per plate
+(x <- csv_data(vaas_4, what = "filename"))  # one file name per plate
 stopifnot(is.character(x), length(x) == 4L)
 
 (x <- csv_data(vaas_4, what = "position")) # one position per plate
 stopifnot(is.character(x), length(x) == length(vaas_4))
 
-(x <- csv_data(vaas_4, what = "setup")) # one setup time per plate
+(x <- csv_data(vaas_4, what = "setup_time")) # one setup time per plate
 (parsed <- strptime(x, format = "\%m/\%d/\%Y \%I:\%M:\%S \%p"))
 stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 }
@@ -81,11 +81,9 @@ stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
   \code{\link{discretized}}, \code{\link{duplicated}},
   \code{\link{has_aggr}}, \code{\link{has_disc}},
   \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{metadata}},
-  \code{\link{minmax}}, \code{\link{plate_type}},
-  \code{\link{seq}}, \code{\link{subset}},
-  \code{\link{summary}}, \code{\link{well}},
-  \code{\link{wells}}
+  \code{\link{measurements}}, \code{\link{minmax}},
+  \code{\link{plate_type}}, \code{\link{seq}},
+  \code{\link{subset}}, \code{\link{well}}
 }
 \keyword{attribute}
 
@@ -107,7 +105,7 @@ stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 \alias{setup_time,OPMS-method}
 \usage{
   \S4method{csv_data}{OPM}(object, keys = character(),
-    strict = TRUE, what = c("select", "file", "setup", "position")) 
+    strict = TRUE, what = c("select", "filename", "setup_time", "position")) 
 
   \S4method{filename}{OPM}(object) 
 

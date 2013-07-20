@@ -339,112 +339,6 @@ lapply(c(
 })
 
 
-
-################################################################################
-################################################################################
-#
-# Flattening functions
-#
-
-
-#' Flatten measurements from OPM or OPMS objects
-#'
-#' Convert into \sQuote{flat} data frame, including all measurements in a single
-#' column (suitable, e.g., for \pkg{lattice}).
-#'
-#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object or list.
-#' @param include \code{NULL}, character vector, list or formula. If not empty,
-#'   include this meta-information in the data frame, replicated in each row.
-#'   Otherwise it converted to a list and passed to \code{\link{metadata}}. See
-#'   there for details.
-#' @param fixed \code{NULL} or list. If not \code{NULL}, include these items in
-#'   the data frame, replicated in each row.
-#' @param factors Logical scalar. See the \sQuote{stringsAsFactors} argument of
-#'   \code{data.frame} and \code{as.data.frame}.
-#' @param exact Logical scalar. Passed to \code{\link{metadata}}.
-#' @param strict Logical scalar. Passed to \code{\link{metadata}}.
-#' @param full Logical scalar. Replace well coordinates by full names?
-#' @param ... Optional other arguments passed to \code{\link{wells}}, or from
-#'   the \code{\link{OPMS}} to the \code{\link{OPM}} method.
-#' @export
-#' @return Data frame. Column names are unchecked (not converted to variable
-#'   names). The three last columns are coding for time, well and value, with
-#'   the exact spelling of the column names given by \code{\link{param_names}}.
-#'
-#'   The \code{\link{OPMS}} method yields an additional column for the plate,
-#'   the exact spelling of its name also being available via
-#'   \code{\link{param_names}}. This column contains the position of each plate
-#'   within \code{object}.
-#' @family conversion-functions
-#' @keywords manip dplot
-#' @seealso stats::reshape
-#' @examples
-#'
-#' # OPM method
-#' data(vaas_1)
-#' # distinct numbers of columns due to distinct selection settings
-#' head(x <- flatten(vaas_1))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
-#' head(x <- flatten(vaas_1, fixed = "TEST"))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 4L)))
-#' head(x <- flatten(vaas_1, fixed = "TEST", include = "Strain"))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 5L)))
-#'
-#' # OPMS method
-#' data(vaas_4)
-#' # distinct numbers of columns due to distinct selection settings
-#' head(x <- flatten(vaas_4))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
-#' head(x <- flatten(vaas_4, fixed = "TEST"))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 5L)))
-#' head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
-#'
-setGeneric("flatten")
-
-setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
-    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE, ...) {
-
-  # Convert to flat data frame
-  well.names <- wells(object, full = full, ...)
-  ## the home-brewn solution was much faster than reshape():
-  # if (factors)
-  #   well.names <- as.factor(well.names)
-  # result <- reshape(as.data.frame(object@measurements,
-  #   stringsAsFactors = factors), direction = "long", idvar = "Hour",
-  #   varying = wells(object), v.names = "Value", timevar = "Well",
-  #   times = well.names)
-  # colnames(result)[1L] <- "Time"
-  times <- hours(object, "all")
-  rep.times <- rep.int(times, length(well.names))
-  rep.wells <- rep(well.names, each = length(times))
-  result <- data.frame(time = rep.times, well = rep.wells,
-    value = as.vector(object@measurements[, -1L]), check.names = FALSE,
-    stringsAsFactors = factors)
-  colnames(result) <- RESERVED_NAMES[colnames(result)]
-
-  if (length(fixed)) # Include fixed stuff
-    result <- cbind(as.data.frame(as.list(fixed), stringsAsFactors = factors),
-      result)
-
-  if (length(include)) # Pick metadata and include them in the data frame
-    result <- cbind(as.data.frame(metadata(object, include,
-      exact = exact, strict = strict), stringsAsFactors = factors), result)
-
-  result
-
-}, sealed = SEALED)
-
-setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
-    ...) {
-  nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
-  nums <- lapply(as.list(nums), `names<-`, value = RESERVED_NAMES[["plate"]])
-  nums <- lapply(nums, c, fixed, recursive = FALSE)
-  do.call(rbind, mapply(flatten, object = object@plates, fixed = nums,
-    MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
-}, sealed = SEALED)
-
-
 ################################################################################
 
 
@@ -475,174 +369,6 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 
 
 ################################################################################
-
-
-#' Create data frame or vector from metadata
-#'
-#' Extract selected metadata entries for use as additional columns in a data
-#' frame or (after joining) as character vector with labels.
-#'
-#' @param object \code{\link{OPMS}} object or data frame.
-#' @param what For the \code{\link{OPMS}} method, a list of metadata keys to
-#'   consider, or single such key; passed to \code{\link{metadata}}. A formula
-#'   is also possible; see there for details. A peculiarity of
-#'   \code{extract_columns} is that including \code{J} as a pseudo-function call
-#'   in the formula triggers the combination of metadata entries to new factors
-#'   immediately after selecting them, as long as \code{join} is \code{FALSE}.
-#'
-#'   For the data-frame method, just the names of the columns to extract, or
-#'   their indices, as vector, if \code{direct} is \code{TRUE}. Alternatively,
-#'   the name of the class to extract from the data frame to form the matrix
-#'   values.
-#'
-#'   In the \sQuote{direct} mode, \code{what} can also be a named list of
-#'   vectors used for indexing. In that case a data frame is returned that
-#'   contains the columns from \code{object} together with new columns that
-#'   result from pasting the selected columns together.
-#' @param join Logical scalar. Join each row together to yield a character
-#'   vector? Otherwise it is just attempted to construct a data frame.
-#' @param sep Character scalar. Used as separator between the distinct metadata
-#'   entries if these are to be pasted together. Ignored unless \code{join} is
-#'   \code{TRUE}. The data-frame method always joins the data unless \code{what}
-#'   is a list.
-#' @param dups Character scalar specifying what to do in the case of duplicate
-#'   labels: either \sQuote{warn}, \sQuote{error} or \sQuote{ignore}. Ignored
-#'   unless \code{join} is \code{TRUE}.
-#' @param factors Logical scalar determining whether strings should be converted
-#'   to factors. Note that this would only affect newly created data-frame
-#'   columns.
-#' @param exact Logical scalar. Also passed to \code{\link{metadata}}.
-#' @param strict Logical scalar. Also passed to \code{\link{metadata}}.
-#' @param as.labels Character vector. See \code{\link{extract}}.
-#' @param as.groups Character vector. See \code{\link{extract}}.
-#' @param direct Logical scalar. Extract column names directly, or search for
-#'   columns of one to several given classes?
-#' @export
-#' @details This function is not normally directly called by an \pkg{opm} user
-#'   because \code{\link{extract}} is available, which uses this function, but
-#'   can be used for testing the applied metadata selections beforehand.
-#'
-#'   The data-frame method is partially trivial (extract the selected columns
-#'   and join them to form a character vector or new data-frame columns),
-#'   partially more useful (extract columns with data of a specified class).
-#' @return For the \code{OPMS} method, a data frame or character vector,
-#'   depending on the \code{join} argument. The data-frame method returns a
-#'   character vector or a data frame, too, but depending on the \code{what}
-#'   argument.
-#' @family conversion-functions
-#' @keywords dplot manip
-#' @seealso base::data.frame base::as.data.frame base::cbind
-#' @examples
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#'
-#' # Create data frame
-#' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
-#' stopifnot(is.data.frame(x), dim(x) == c(4, 2))
-#' (y <- extract_columns(vaas_4, what = ~ Species + Strain))
-#' stopifnot(identical(x, y)) # same result using a formula
-#' (y <- extract_columns(vaas_4, what = ~ J(Species + Strain)))
-#' stopifnot(is.data.frame(y), dim(y) == c(4, 3)) # additional column created
-#' stopifnot(identical(x, y[, -3]))
-#'
-#' # Create a character vector
-#' (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
-#' stopifnot(is.character(x), length(x) == 4L)
-#' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-#'   dups = "error"), silent = TRUE)) # duplicates yield error
-#' stopifnot(inherits(x, "try-error"))
-#' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
-#'   dups = "warn"), silent = TRUE)) # duplicates yield warning only
-#' stopifnot(is.character(x), length(x) == 4L)
-#'
-#' # data-frame method, 'direct' running mode
-#' x <- data.frame(a = 1:26, b = letters, c = LETTERS)
-#' (y <- extract_columns(x, I(c("a", "b")), sep = "-"))
-#' stopifnot(grepl("^\\s*\\d+-[a-z]$", y)) # pasted columns 'a' and 'b'
-#'
-#' # data-frame method, using class name
-#' (y <- extract_columns(x, as.labels = "b", what = "integer", as.groups = "c"))
-#' stopifnot(is.matrix(y), dim(y) == c(26, 1), rownames(y) == x$b)
-#' stopifnot(identical(attr(y, "row.groups"), x$c))
-#'
-setGeneric("extract_columns",
-  function(object, ...) standardGeneric("extract_columns"))
-
-setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
-    sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
-    exact = TRUE, strict = TRUE) {
-  what <- metadata_key(what, FALSE, NULL)
-  result <- metadata(object, what, exact, strict)
-  result <- if (is.list(result))
-    lapply(result, rapply, f = as.character)
-  else
-    as.list(as.character(result))
-  if (L(join)) {
-    result <- unlist(lapply(result, FUN = paste0, collapse = sep))
-    msg <- if (is.dup <- anyDuplicated(result))
-      paste("duplicated label:", result[is.dup])
-    else
-      NULL
-    if (length(msg))
-      case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
-  } else {
-    result <- must(do.call(rbind, result))
-    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = factors)
-    if (ncol(result) > length(colnames(result)))
-      colnames(result) <- paste(what, collapse = get("key.join", OPM_OPTIONS))
-    if (is.list(attr(what, "combine")))
-      result <- extract_columns(result, attr(what, "combine"),
-        factors = factors, direct = TRUE)
-  }
-  result
-}, sealed = SEALED)
-
-setMethod("extract_columns", "data.frame", function(object, what,
-    as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
-    factors = is.list(what), direct = inherits(what, "AsIs")) {
-  join <- function(x, what, sep)
-    do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
-  find_stuff <- function(x, what) {
-    x <- x[, vapply(x, inherits, NA, what), drop = FALSE]
-    if (!ncol(x))
-      stop("no data of class(es) ", paste(what, collapse = "/"), " found")
-    as.matrix(x)
-  }
-  LL(direct, factors)
-  if (direct) {
-    if (is.list(what)) {
-      if (is.null(names(what)))
-        stop("if 'what' is a list, it must have names")
-      result <- object
-      what <- what[!match(names(what), colnames(result), 0L)]
-      if (factors)
-        for (i in seq_along(what))
-          result[, names(what)[i]] <- as.factor(join(object, what[[i]], sep))
-      else
-        for (i in seq_along(what))
-          result[, names(what)[i]] <- join(object, what[[i]], sep)
-      if (length(as.labels))
-        rownames(result) <- join(object, as.labels, sep)
-    } else {
-      result <- join(object, what, sep)
-      if (length(as.labels))
-        names(result) <- join(object, as.labels, sep)
-      if (factors)
-        result <- as.factor(result)
-    }
-  } else {
-    result <- find_stuff(object, what)
-    if (length(as.labels))
-      rownames(result) <- join(object, as.labels, sep)
-  }
-  if (length(as.groups))
-    attr(result, "row.groups") <- as.factor(join(object, as.groups, sep))
-  result
-}, sealed = SEALED)
-
-
-################################################################################
 ################################################################################
 #
 # Sorting etc.
@@ -665,9 +391,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'   package.
 #' @param by List or character vector. If a list, a list of one to several keys
 #'   passed as \code{key} argument to \code{\link{metadata}}. If a character
-#'   vector of length one, \code{by} must specify the name of one of the
-#'   functions \code{\link{setup_time}}, \code{\link{filename}} or
-#'   \code{\link{position}}. If longer, passed step-by-step to
+#'   vector of length one, \code{by} is passed as \sQuote{what} argument to
+#'   \code{\link{csv_data}}. If longer, passed step-by-step to
 #'   \code{\link{csv_data}} as \code{keys} argument.
 #' @param parse Logical scalar. Convert the \code{\link{setup_time}} via
 #'   \code{strptime} before ordering? Has only an effect if \code{by} is
@@ -731,8 +456,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'
 #' # CSV-data based
 #' copy <- sort(vaas_4) # default: by setup time
-#' csv_data(vaas_4, what = "setup")
-#' csv_data(copy, what = "setup")
+#' csv_data(vaas_4, what = "setup_time")
+#' csv_data(copy, what = "setup_time")
 #' stopifnot(!identical(copy, vaas_4))
 #' copy <- sort(vaas_4, by = c("Position", "Setup Time"))
 #' csv_data(vaas_4, what = "position")
@@ -791,28 +516,25 @@ setMethod("sort", c(OPM, "logical"), function(x, decreasing, ...) {
 }, sealed = SEALED)
 
 setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
-    parse = TRUE, exact = TRUE, strict = TRUE, na.last = TRUE) {
+    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) {
   if (is.list(by)) {
     keys <- lapply(X = by, FUN = metadata, object = x, exact = exact,
       strict = strict)
     if (!strict)
       if (!length(keys <- keys[!vapply(keys, is.null, NA)]))
         return(x)
-  } else if (is.character(by))
-    keys <- case(length(by),
-      stop("'by' must not be empty"),
-      list(switch(by,
-        setup_time = if (L(parse))
-          must(parse_time(csv_data(x, what = "setup")))
-        else
-          csv_data(x, what = "setup"),
-        position = csv_data(x, what = "position"),
-        filename = csv_data(x, what = "file"),
-        stop(sprintf("if a character scalar, 'by' must not be '%s'", by))
-      )),
-      lapply(X = by, FUN = csv_data, object = x)
+  } else if (is.character(by)) {
+    case(length(by),
+      stop("if a character scalar, 'by' must not be empty"),
+      {
+        keys <- csv_data(x, what = by)
+        if (L(parse))
+          keys <- must(parse_time(keys))
+        keys <- list(keys)
+      },
+      keys <- lapply(X = by, FUN = csv_data, object = x)
     )
-  else
+  } else
     stop("'by' must be a list or a character vector")
   keys <- insert(keys, decreasing = decreasing, na.last = na.last,
     .force = TRUE)
@@ -880,16 +602,18 @@ setMethod("rep", OPMS, function(x, ...) {
 #
 
 
-#' Extract aggregated values
+#' Extract aggregated values and/or metadata
 #'
 #' Extract selected aggregated and/or discretized values into common matrix or
-#' data frame. The data-frame method conducts normalisation and/or computes
-#' normalized point-estimates and respective confidence intervals for
-#' user-defined experimental groups. It is mainly a helper function for
-#' \code{\link{ci_plot}}.
+#' data frame. The \code{extract} data-frame method conducts normalisation
+#' and/or computes normalized point-estimates and respective confidence
+#' intervals for user-defined experimental groups. It is mainly a helper
+#' function for \code{\link{ci_plot}}. \code{extract_columns} extracts only
+#' selected metadata entries for use as additional columns in a data frame or
+#' (after joining) as character vector with labels.
 #'
-#' @param object \code{\link{OPMS}} object or data frame with one column named
-#'   as indicated by \code{split.at} (default given by
+#' @param object \code{\link{OPMS}} object or data frame, for \code{extract}
+#'   with one column named as indicated by \code{split.at} (default given by
 #'   \code{\link{param_names}("split.at")}), columns with factor variables
 #'   before that column and columns with numeric vectors after that column.
 #' @param as.labels List, character vector or formula indicating the metadata to
@@ -929,13 +653,18 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   the data should be aggregated by calculating means and confidence
 #'   intervals. If \code{FALSE}, such an aggregation does not take place. If
 #'   \code{TRUE}, all those columns are used for grouping.
-#' @param sep Character scalar. See \code{\link{extract_columns}}.
-#' @param dups Character scalar. See \code{\link{extract_columns}}. For the
-#'   data-frame method, a character scalar defining the action to conduct if
+#' @param sep Character scalar. Used as separator between the distinct metadata
+#'   entries if these are to be pasted together. \code{extract_columns} ignores
+#'   this unless \code{join} is \code{TRUE}. The data-frame method always joins
+#'   the data unless \code{what} is a list.
+#' @param dups Character scalar specifying what to do in the case of duplicate
+#'   labels: either \sQuote{warn}, \sQuote{error} or \sQuote{ignore}. Ignored
+#'   unless \code{join} is \code{TRUE}. For the data-frame method of
+#'   \code{extract}, a character scalar defining the action to conduct if
 #'   \code{as.groups} contains duplicates.
 #'
-#' @param exact Logical scalar. See \code{\link{extract_columns}}.
-#' @param strict Logical scalar. See \code{\link{extract_columns}}.
+#' @param exact Logical scalar. Passed to \code{\link{metadata}}.
+#' @param strict Logical scalar. Also passed to \code{\link{metadata}}.
 #'
 #' @param full Logical scalar indicating whether full substrate names shall be
 #'   used. This is passed to \code{\link{wells}}, but in contrast to what
@@ -960,20 +689,60 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   calculated over all rows or columns if normalization is requested using
 #'   \code{norm.per}. But if \code{direct} is \code{TRUE}, \code{norm.by} is
 #'   directly interpreted as numeric vector used for normalization.
-#' @param direct Logical scalar indicating how to use \code{norm.by}. See there
-#'   for details.
+#' @param direct Logical scalar. For \code{extract}, indicating how to use
+#'   \code{norm.by}. See there for details. For \code{extract_columns},
+#'   indicating whether to extract column names directly, or search for columns
+#'   of one to several given classes.
+#'
 #' @param subtract Logical scalar indicating whether normalization (if any) is
 #'   done by subtracting or dividing.
 #' @param split.at Character vector defining alternative names of the column at
 #'   which the data frame shall be divided. Exactly one must match.
 #'
+#' @param what For the \code{\link{OPMS}} method, a list of metadata keys to
+#'   consider, or single such key; passed to \code{\link{metadata}}. A formula
+#'   is also possible; see there for details. A peculiarity of
+#'   \code{extract_columns} is that including \code{J} as a pseudo-function call
+#'   in the formula triggers the combination of metadata entries to new factors
+#'   immediately after selecting them, as long as \code{join} is \code{FALSE}.
+#'
+#'   For the data-frame method, just the names of the columns to extract, or
+#'   their indices, as vector, if \code{direct} is \code{TRUE}. Alternatively,
+#'   the name of the class to extract from the data frame to form the matrix
+#'   values.
+#'
+#'   In the \sQuote{direct} mode, \code{what} can also be a named list of
+#'   vectors used for indexing. In that case a data frame is returned that
+#'   contains the columns from \code{object} together with new columns that
+#'   result from pasting the selected columns together.
+#' @param join Logical scalar. Join each row together to yield a character
+#'   vector? Otherwise it is just attempted to construct a data frame.
+#' @param factors Logical scalar determining whether strings should be converted
+#'   to factors. Note that this would only affect newly created data-frame
+#'   columns.
+#'
 #' @export
-#' @return Numeric matrix or data frame; always a data frame for the data-frame
-#'   method with the same column structure as \code{object} and, if grouping was
-#'   used, a triplet structure of the rows, as indicated in the new
-#'   \code{split.at} column: (i) group mean, (ii) lower and (iii) upper boundary
-#'   of the group confidence interval. The data could then be visualized using
-#'   \code{\link{ci_plot}}. See the examples.
+#' @return Numeric matrix or data frame from \code{extract}; always a data frame
+#'   for the data-frame method with the same column structure as \code{object}
+#'   and, if grouping was used, a triplet structure of the rows, as indicated in
+#'   the new \code{split.at} column: (i) group mean, (ii) lower and (iii) upper
+#'   boundary of the group confidence interval. The data could then be
+#'   visualized using \code{\link{ci_plot}}. See the examples.
+#'
+#'   For the \code{OPMS} method of \code{extract_columns}, a data frame or
+#'   character vector, depending on the \code{join} argument. The data-frame
+#'   method of \code{extract_columns} returns a character vector or a data
+#'   frame, too, but depending on the \code{what} argument.
+#'
+#' @details \code{extract_columns} is not normally directly called by an
+#'   \pkg{opm} user because \code{extract} is available, which uses this
+#'   function, but can be used for testing the applied metadata selections
+#'   beforehand.
+#'
+#'   The \code{extract_columns} data-frame method is partially trivial (extract
+#'   the selected columns and join them to form a character vector or new
+#'   data-frame columns), partially more useful (extract columns with data of a
+#'   specified class).
 #'
 #' @family conversion-functions
 #' @author Lea A.I. Vaas, Markus Goeker
@@ -982,6 +751,7 @@ setMethod("rep", OPMS, function(x, ...) {
 #'
 #'   boot::norm
 #'   base::data.frame base::as.data.frame base::matrix base::as.matrix
+#'   base::cbind
 #' @keywords manip dplot htest
 #' @examples
 #'
@@ -1045,6 +815,40 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   subtract = TRUE)
 #' # plotting using ci_plot()
 #' ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 0, y = 0)
+#'
+#' ## extract_columns()
+#'
+#' # 'OPMS' method
+#' data(vaas_4)
+#'
+#' # Create data frame
+#' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
+#' stopifnot(is.data.frame(x), dim(x) == c(4, 2))
+#' (y <- extract_columns(vaas_4, what = ~ Species + Strain))
+#' stopifnot(identical(x, y)) # same result using a formula
+#' (y <- extract_columns(vaas_4, what = ~ J(Species + Strain)))
+#' stopifnot(is.data.frame(y), dim(y) == c(4, 3)) # additional column created
+#' stopifnot(identical(x, y[, -3]))
+#'
+#' # Create a character vector
+#' (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))
+#' stopifnot(is.character(x), length(x) == 4L)
+#' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
+#'   dups = "error"), silent = TRUE)) # duplicates yield error
+#' stopifnot(inherits(x, "try-error"))
+#' (x <- try(extract_columns(vaas_4, what = list("Species"), join = TRUE,
+#'   dups = "warn"), silent = TRUE)) # duplicates yield warning only
+#' stopifnot(is.character(x), length(x) == 4L)
+#'
+#' # data-frame method, 'direct' running mode
+#' x <- data.frame(a = 1:26, b = letters, c = LETTERS)
+#' (y <- extract_columns(x, I(c("a", "b")), sep = "-"))
+#' stopifnot(grepl("^\\s*\\d+-[a-z]$", y)) # pasted columns 'a' and 'b'
+#'
+#' # data-frame method, using class name
+#' (y <- extract_columns(x, as.labels = "b", what = "integer", as.groups = "c"))
+#' stopifnot(is.matrix(y), dim(y) == c(26, 1), rownames(y) == x$b)
+#' stopifnot(identical(attr(y, "row.groups"), x$c))
 #'
 setGeneric("extract", function(object, ...) standardGeneric("extract"))
 
@@ -1218,14 +1022,96 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   cbind(result, output)
 }, sealed = SEALED)
 
+#= extract_columns extract
+
+#' @rdname extract
+#' @export
+#'
+setGeneric("extract_columns",
+  function(object, ...) standardGeneric("extract_columns"))
+
+setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
+    sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
+    exact = TRUE, strict = TRUE) {
+  what <- metadata_key(what, FALSE, NULL)
+  result <- metadata(object, what, exact, strict)
+  result <- if (is.list(result))
+    lapply(result, rapply, f = as.character)
+  else
+    as.list(as.character(result))
+  if (L(join)) {
+    result <- unlist(lapply(result, FUN = paste0, collapse = sep))
+    msg <- if (is.dup <- anyDuplicated(result))
+      paste("duplicated label:", result[is.dup])
+    else
+      NULL
+    if (length(msg))
+      case(match.arg(dups), ignore = as.null, warn = warning, error = stop)(msg)
+  } else {
+    result <- must(do.call(rbind, result))
+    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = factors)
+    if (ncol(result) > length(colnames(result)))
+      colnames(result) <- paste(what, collapse = get("key.join", OPM_OPTIONS))
+    if (is.list(attr(what, "combine")))
+      result <- extract_columns(result, attr(what, "combine"),
+        factors = factors, direct = TRUE)
+  }
+  result
+}, sealed = SEALED)
+
+setMethod("extract_columns", "data.frame", function(object, what,
+    as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
+    factors = is.list(what), direct = inherits(what, "AsIs")) {
+  join <- function(x, what, sep)
+    do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
+  find_stuff <- function(x, what) {
+    x <- x[, vapply(x, inherits, NA, what), drop = FALSE]
+    if (!ncol(x))
+      stop("no data of class(es) ", paste(what, collapse = "/"), " found")
+    as.matrix(x)
+  }
+  LL(direct, factors)
+  if (direct) {
+    if (is.list(what)) {
+      if (is.null(names(what)))
+        stop("if 'what' is a list, it must have names")
+      result <- object
+      what <- what[!match(names(what), colnames(result), 0L)]
+      if (factors)
+        for (i in seq_along(what))
+          result[, names(what)[i]] <- as.factor(join(object, what[[i]], sep))
+      else
+        for (i in seq_along(what))
+          result[, names(what)[i]] <- join(object, what[[i]], sep)
+      if (length(as.labels))
+        rownames(result) <- join(object, as.labels, sep)
+    } else {
+      result <- join(object, what, sep)
+      if (length(as.labels))
+        names(result) <- join(object, as.labels, sep)
+      if (factors)
+        result <- as.factor(result)
+    }
+  } else {
+    result <- find_stuff(object, what)
+    if (length(as.labels))
+      rownames(result) <- join(object, as.labels, sep)
+  }
+  if (length(as.groups))
+    attr(result, "row.groups") <- as.factor(join(object, as.groups, sep))
+  result
+}, sealed = SEALED)
+
 
 ################################################################################
 
 
 #' Create data frame
 #'
-#' These methods create a data frame from aggregated and discretized values in
-#' a manner distinct from \code{\link{extract}}.
+#' These \code{as.data.frame} methods create a data frame from aggregated and
+#' discretized values in a manner distinct from \code{\link{extract}}.
+#' \code{flatten} converts into a \sQuote{flat} data frame, including all
+#' measurements in a single column (suitable, e.g., for \pkg{lattice}).
 #'
 #' @param x Object of class \code{\link{OPM}}, its child classes, or
 #'   \code{\link{OPMS}}. If an \code{\link{OPMS}} object, its elements must
@@ -1236,15 +1122,43 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #' @param optional Logical scalar passed to the list and matrix methods of
 #'   \code{as.data.frame}.
 #' @param sep Character scalar used as word separator in column names.
-#' @param ... Optional arguments passed to the list and matrix methods
+#' @param stringsAsFactors Logical scalar passed to the list and matrix methods
 #'   of \code{as.data.frame}.
-#' @param stringsAsFactors Logical scalar passed to these methods.
-#' @return Data frame with one row for each combination of well and plate.
-#' @details This function is mainly intended to produce objects that can easily
-#'   be written to \acronym{CSV} files, for instance using \code{write.table}
-#'   from the \pkg{utils} package. There are no \pkg{opm} methods other than
-#'   \code{\link{batch_opm}} (which can write such files) that make use of the
-#'   created kind of objects.
+#'
+#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object (or list).
+#' @param include \code{NULL}, character vector, list or formula. If not empty,
+#'   include this meta-information in the data frame, replicated in each row.
+#'   Otherwise it converted to a list and passed to \code{\link{metadata}}. See
+#'   there for details.
+#' @param fixed \code{NULL} or list. If not \code{NULL}, include these items in
+#'   the data frame, replicated in each row.
+#' @param factors Logical scalar. See the \sQuote{stringsAsFactors} argument of
+#'   \code{data.frame} and \code{as.data.frame} from the \pkg{base} package.
+#' @param exact Logical scalar. Passed to \code{\link{metadata}}.
+#' @param strict Logical scalar. Passed to \code{\link{metadata}}.
+#' @param full Logical scalar. Replace well coordinates by full names?
+#' @param ... Optional other arguments passed to \code{\link{wells}}, or from
+#'   the \code{\link{OPMS}} to the \code{\link{OPM}} method, or to the list and
+#'   matrix methods of \code{as.data.frame}.
+#'
+#' @return These \code{as.data.frame} methods create a data frame with one row
+#'   for each combination of well and plate.
+#'
+#'   In the data frame returned by \code{flatten}, column names are unchecked
+#'   (not converted to variable names). The three last columns are coding for
+#'   time, well and value, with the exact spelling of the column names given by
+#'   \code{\link{param_names}}.
+#'
+#'   The \code{\link{OPMS}} method yields an additional column for the plate,
+#'   the exact spelling of its name also being available via
+#'   \code{\link{param_names}}. This column contains the position of each plate
+#'   within \code{object}.
+#'
+#' @details These \code{as.data.frame} methods are mainly intended to produce
+#'   objects that can easily be written to \acronym{CSV} files, for instance
+#'   using \code{write.table} from the \pkg{utils} package. There are no
+#'   \pkg{opm} methods other than \code{\link{batch_opm}} (which can write such
+#'   files) that make use of the created kind of objects.
 #'
 #'   The following entries are contained in the generated data frame:
 #'   \itemize{
@@ -1268,9 +1182,12 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #'   \acronym{JSON} output instead.
 #' @export
 #' @family conversion-functions
-#' @seealso utils::write.table
-#' @keywords manip
+#' @seealso utils::write.table stats::reshape pkgutils::flatten
+#' @keywords manip dplot
 #' @examples
+#'
+#' ## as.data.frame()
+#'
 #' ## OPMD method
 #' data(vaas_1)
 #' summary(x <- as.data.frame(vaas_1))
@@ -1280,6 +1197,28 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 #' data(vaas_4)
 #' summary(x <- as.data.frame(vaas_4))
 #' stopifnot(is.data.frame(x), nrow(x) == 96 * 4)
+#'
+#' ## flatten()
+#'
+#' # OPM method
+#' data(vaas_1)
+#' # distinct numbers of columns due to distinct selection settings
+#' head(x <- flatten(vaas_1))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
+#' head(x <- flatten(vaas_1, fixed = "TEST"))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 4L)))
+#' head(x <- flatten(vaas_1, fixed = "TEST", include = "Strain"))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 5L)))
+#'
+#' # OPMS method
+#' data(vaas_4)
+#' # distinct numbers of columns due to distinct selection settings
+#' head(x <- flatten(vaas_4))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
+#' head(x <- flatten(vaas_4, fixed = "TEST"))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 5L)))
+#' head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
 #'
 setGeneric("as.data.frame")
 
@@ -1327,6 +1266,55 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
   do.call(rbind, mapply(as.data.frame, x@plates, row.names, SIMPLIFY = FALSE,
     MoreArgs = list(optional = optional, sep = sep, ...,
     stringsAsFactors = stringsAsFactors), USE.NAMES = FALSE))
+}, sealed = SEALED)
+
+#= flatten as.data.frame
+
+#' @rdname as.data.frame
+#' @export
+#'
+setGeneric("flatten")
+
+setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
+    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE, ...) {
+
+  # Convert to flat data frame
+  well.names <- wells(object, full = full, ...)
+  ## the home-brewn solution was much faster than reshape():
+  # if (factors)
+  #   well.names <- as.factor(well.names)
+  # result <- reshape(as.data.frame(object@measurements,
+  #   stringsAsFactors = factors), direction = "long", idvar = "Hour",
+  #   varying = wells(object), v.names = "Value", timevar = "Well",
+  #   times = well.names)
+  # colnames(result)[1L] <- "Time"
+  times <- hours(object, "all")
+  rep.times <- rep.int(times, length(well.names))
+  rep.wells <- rep(well.names, each = length(times))
+  result <- data.frame(time = rep.times, well = rep.wells,
+    value = as.vector(object@measurements[, -1L]), check.names = FALSE,
+    stringsAsFactors = factors)
+  colnames(result) <- RESERVED_NAMES[colnames(result)]
+
+  if (length(fixed)) # Include fixed stuff
+    result <- cbind(as.data.frame(as.list(fixed), stringsAsFactors = factors),
+      result)
+
+  if (length(include)) # Pick metadata and include them in the data frame
+    result <- cbind(as.data.frame(metadata(object, include,
+      exact = exact, strict = strict), stringsAsFactors = factors), result)
+
+  result
+
+}, sealed = SEALED)
+
+setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
+    ...) {
+  nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
+  nums <- lapply(as.list(nums), `names<-`, value = RESERVED_NAMES[["plate"]])
+  nums <- lapply(nums, c, fixed, recursive = FALSE)
+  do.call(rbind, mapply(flatten, object = object@plates, fixed = nums,
+    MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
 }, sealed = SEALED)
 
 

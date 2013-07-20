@@ -59,32 +59,6 @@ map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 ################################################################################
 
 
-#' Clean well coordinates
-#'
-#' Clean well coordinates given as character strings.
-#'
-#' @param x Character vector.
-#' @return Character vector of the length of \code{x}.
-#' @keywords internal
-#'
-clean_coords <- function(x) {
-  do_clean <- function(x) {
-    x <- sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE), perl = TRUE)
-    sprintf("%s%02i", toupper(substring(x, 1L, 1L)),
-      as.integer(sub("^[A-Za-z]+", "", x, perl = TRUE)))
-  }
-  if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, perl = TRUE)))
-    x[bad] <- do_clean(x[bad])
-  x
-}
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because manual dispatch
-
-
 #' Translate well coordinates
 #'
 #' Translate well coordinates to numeric indexes, or clean well indexes given
@@ -106,6 +80,19 @@ well_index <- function(x, names) {
     eval(x[[length(x)]], structure(as.list(seq_along(names)), names = names))
   else
     x
+}
+
+#' @rdname well_index
+#'
+clean_coords <- function(x) {
+  do_clean <- function(x) {
+    x <- sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE), perl = TRUE)
+    sprintf("%s%02i", toupper(substring(x, 1L, 1L)),
+      as.integer(sub("^[A-Za-z]+", "", x, perl = TRUE)))
+  }
+  if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, perl = TRUE)))
+    x[bad] <- do_clean(x[bad])
+  x
 }
 
 
@@ -193,11 +180,46 @@ to_sentence.logical <- function(x, html, ...) {
 ################################################################################
 
 
-#' Create textual listing
+#' Listing of well names
 #'
-#' This creates a textual listing of the discretized values. This is useful to
-#' describe OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype
-#' microarray results in a scientific manuscript.
+#' Get the names of the wells contained in an \code{\link{OPMX}} object.
+#' Optionally the full substrate names can be added in parentheses or brackets
+#' or used instead of the coordinate, and trimmed to a given length. The
+#' \code{listing} methods create a textual listing of the discretized values.
+#' This is useful to describe
+#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray
+#' results in a scientific manuscript.
+#'
+#' @param object \code{\link{OPM}} object, \code{\link{OPMS}} object or well
+#'   name or index. If missing, defaults to the selection of all possible
+#'   wells (for the default plate type, see below).
+#' @param full Logical scalar. Return the full names of the wells (if available)
+#'   or just their coordinates on the plate? The following arguments have no
+#'   effect if \code{full} is \code{FALSE}.
+#' @param in.parens Logical scalar. If \code{TRUE}, add the full name of the
+#'   substrate in parentheses (or brackets) after the original name. If
+#'   \code{FALSE}, replace by the full substrate name. Note that adding in
+#'   parentheses (or brackets) is only done if the trimmed substrate names are
+#'   not empty.
+#' @param max Numeric scalar. Maximum number of characters allowed in the names.
+#'   Longer names are truncated and the truncation is indicated by appending a
+#'   dot.
+#' @param brackets Logical scalar. Use brackets instead of parentheses?
+#' @param clean Logical scalar. If \code{TRUE}, clean trimmed end of full
+#'   substrate name from non-word characters; use an empty string if only the
+#'   dot remained.
+#' @param word.wise Logical scalar. If \code{TRUE}, abbreviation works by
+#'   truncating each word separately, and removing vowels first.
+#' @param paren.sep Character scalar. What to insert before the opening
+#'   parenthesis (or bracket).
+#' @param downcase Logical scalar indicating whether full names should be
+#'   (carefully) converted to lower case. This uses \code{\link{substrate_info}}
+#'   in \sQuote{downcase} mode; see there for details.
+#' @param plate Name of the plate type. Several ones can be given unless
+#'   \code{object} is of class \code{\link{OPM}} or \code{\link{OPMS}}.
+#'   \code{\link{plate_type}} is applied before searching for the substrate
+#'   names, and partial matching is allowed.
+#' @param ... Optional arguments passed between the methods.
 #'
 #' @param x \code{\link{OPMD}} or \code{\link{OPMS}} object.
 #' @param as.groups Vector or \code{NULL}. If non-empty, passed as eponymous
@@ -209,31 +231,67 @@ to_sentence.logical <- function(x, html, ...) {
 #'   empty, it is used to create the row name of the single row of the resulting
 #'   \sQuote{OPMS_Listing} object. Otherwise an \sQuote{OPMD_Listing} object is
 #'   produced.
-#'
 #' @param cutoff Numeric scalar used if \sQuote{as.groups} is a list. If the
 #'   relative frequency of the most frequent entry within the discretized values
 #'   to be joined is below that cutoff, \code{NA} is used. Ignored if \code{x}
 #'   is an \code{\link{OPMD}} object but added to the result if \code{as.groups}
 #'   is non-empty.
-#' @param downcase Logical scalar passed to \code{\link{wells}}.
-#' @param full Logical scalar passed to \code{\link{wells}}.
-#' @param in.parens Logical scalar passed to \code{\link{wells}}.
 #' @param html Logical scalar. Convert to \acronym{HTML}? This involves Greek
 #'   letters and paragraph (\sQuote{div}) tags.
 #' @param sep Character scalar used for joining the \sQuote{as.groups} entries
 #'   (if any).
-#' @param ... Optional arguments passed between the methods or to
-#'   \code{\link{wells}}.
 #' @param exact Logical scalar passed to \code{\link{metadata}}.
 #' @param strict Logical scalar also passed to \code{\link{metadata}}.
-#' @return Character vector or matrix with additional class atribute
-#'   \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the examples for
-#'   details.
+#'
+#' @return Character vector. For the \code{listing} methods, a character vector
+#'   or matrix with additional class atribute \sQuote{OPMD_Listing} or
+#'   \sQuote{OPMS_Listing}. See the examples for details.
 #' @export
 #' @family naming-functions
-#' @keywords character category
-#' @note  See \code{\link{do_disc}} for generating discretized data.
+#' @seealso base::strtrim base::abbreviate
+#' @keywords attribute character category
+#' @details The purpose of the \code{\link{OPM}} and \code{\link{OPMS}} methods
+#'   for \code{wells} should be obvious. The default method is intended for
+#'   providing a quick overview of the substrates contained in one to several
+#'   plates if \code{full} is \code{TRUE}. If \code{full} is \code{FALSE}, it
+#'   can be used to study the effect of the well-index translation and well-name
+#'   normalization approaches as used by \pkg{opm}, particularly by the
+#'   subsetting methods (see \code{\link{[}}).
+#'
+#'   See \code{\link{do_disc}} for generating discretized data.
+#'
+#' @note Do not confuse \code{wells} this with \code{\link{well}}.
 #' @examples
+#'
+#' ## wells()
+#'
+#' # 'OPM' method
+#' data(vaas_1)
+#' (x <- wells(vaas_1, full = FALSE))[1:10]
+#' (y <- wells(vaas_1, full = TRUE))[1:10]
+#' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))[1:10]
+#' # string lengths differ depending on selection
+#' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
+#'
+#' # 'OPM' method
+#' data(vaas_4)
+#' (xx <- wells(vaas_4, full = FALSE))[1:10]
+#' # wells are guaranteed to be uniform within OPMS objects
+#' stopifnot(identical(x, xx))
+#'
+#' # default method
+#' x <- c("A01", "B10")
+#' (y <- wells(x, plate = "PM1"))
+#' stopifnot(nchar(y) > nchar(x))
+#' (z <- wells(x, plate = "PM1", in.parens = TRUE))
+#' stopifnot(nchar(z) > nchar(y))
+#' # formula yields same result (except for row names)
+#' stopifnot(y == wells(~ c(A01, B10), plate = "PM1"))
+#' # using a sequence of well coordinates
+#' stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
+#' stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
+#'
+#' ## listing()
 #'
 #' # 'OPMD' method
 #' data(vaas_1)
@@ -277,6 +335,51 @@ to_sentence.logical <- function(x, html, ...) {
 #' (x <- listing(vaas_4, as.groups = list("Species")))
 #' stopifnot(inherits(x, "OPMS_Listing"), is.matrix(x), dim(x) == c(2, 3))
 #' stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
+#'
+setGeneric("wells", function(object, ...) standardGeneric("wells"))
+
+setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
+    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
+    paren.sep = " ", downcase = FALSE, plate = plate_type(object)) {
+  result <- setdiff(colnames(measurements(object)), HOUR)
+  if (L(full))
+    map_well_names(result, L(plate), in.parens = in.parens,
+      max = max, brackets = brackets, clean = clean, word.wise = word.wise,
+      paren.sep = paren.sep, downcase = downcase)
+  else
+    result
+}, sealed = SEALED)
+
+setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
+    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
+    paren.sep = " ", downcase = FALSE, plate = "PM01") {
+  result <- well_index(object, rownames(WELL_MAP))
+  if (!is.character(result))
+    result <- rownames(WELL_MAP)[result]
+  result <- do.call(cbind, rep.int(list(result), length(plate)))
+  pos <- pmatch(plate_type(plate), colnames(WELL_MAP))
+  colnames(result) <- plate
+  if (is.character(object))
+    rownames(result) <- object
+  if (!L(full))
+    return(result)
+  for (i in which(!is.na(pos)))
+    result[, i] <- map_well_names(result[, i], colnames(WELL_MAP)[pos[i]],
+      in.parens = in.parens, max = max, brackets = brackets, clean = clean,
+      word.wise = word.wise, paren.sep = paren.sep, downcase = downcase)
+  for (i in which(is.na(pos)))
+    result[, i] <- NA_character_
+  result
+}, sealed = SEALED)
+
+setMethod("wells", "missing", function(object, ...) {
+  wells(object = TRUE, ...)
+}, sealed = SEALED)
+
+#= listing wells
+
+#' @rdname wells
+#' @export
 #'
 setGeneric("listing")
 
@@ -331,13 +434,17 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
 ################################################################################
 
 
-#' Identify substrates
+#' Identify substrates or positions
 #'
-#' Identify the names of substrates as used in the stored plate annotations.
-#' Exact or error-tolerant matching can be used, as well as globbing and
-#' regular-expression matching.
+#' Identify the names of substrates as used in the stored plate annotations, or
+#' identify the positions of substrates, i.e. the plate(s) and well(s) in which
+#' they occur. Exact or error-tolerant matching can be used, as well as globbing
+#' and regular-expression matching.
 #'
-#' @param object Query character vector or factor.
+#' @param object Query character vector or factor, when searching for positions
+#'   alternatively a list, an S3 object of class \sQuote{substrate_match}, an
+#'   \code{\link{OPM}} or an \code{\link{OPMS}} object.
+#'
 #' @param search Character scalar indicating the search mode. \describe{
 #'   \item{exact}{Query names must exactly match (parts of) the well
 #'   annotations.}
@@ -358,14 +465,32 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
 #'   \code{search} argument).
 #' @param ... Optional arguments passed between the methods.
 #' @export
-#' @return An S3 object of class \sQuote{substrate_match}; basically a list of
-#'   character vectors (empty if nothing was found), with duplicates removed and
-#'   the rest sorted. The names of the list correspond to \code{names}.
+#' @return
+#'   \code{find_substrate} returns an S3 object of class
+#'   \sQuote{substrate_match}; basically a list of character vectors (empty if
+#'   nothing was found), with duplicates removed and the rest sorted. The names
+#'   of the list correspond to \code{names}.
+#'
+#'   The \code{find_positions} character method returns a list of character
+#'   matrices (empty if nothing was found), with one row per position found, the
+#'   plate name in the first column and the well name in the second. The names
+#'   of this list correspond to \code{names}. The \code{\link{OPM}} and
+#'   \code{\link{OPMS}} methods do the same, using their own substrates. The
+#'   list and \sQuote{substrate_match} methods return lists of such lists.
+#'
+#' @details When searching for positions, the query names must be written
+#'   exactly as used in the stored plate annotations. To determine their
+#'   spelling, use \code{find_substrate}. This spelling is not guaranteed
+#'   to be stable between distinct \pkg{opm} releases.
+#'
 #' @note See \code{\link{glob_to_regex}} for a description of globbing patterns.
 #' @seealso base::grep base::agrep
 #' @family naming-functions
 #' @keywords character utilities
 #' @examples
+#'
+#' ## find_substrate()
+#'
 #' # Note that 'exact' search matches parts of the names, whereas globbing
 #' # matches entire strings if there are no wildcards (which wouldn't make much
 #' # sense)
@@ -385,6 +510,22 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
 #' # Factor method
 #' (zz <- find_substrate(as.factor("D-Glucose"), search = "approx"))
 #' stopifnot(identical(z, zz))
+#'
+#' ## find_positions()
+#'
+#' # Character method; compare correct and misspelled substrate name
+#' (x <- find_positions(c("D-Glucose", "D-Gloucose")))
+#' stopifnot(length(x[[1]]) > length(x[[2]]))
+#'
+#' # Factor method
+#' (y <- find_positions(as.factor(c("D-Glucose", "D-Gloucose"))))
+#' stopifnot(identical(y, x))
+#'
+#' # List method
+#' x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
+#' x[[1]][1:3]
+#' x[[2]]
+#' stopifnot(length(x[[1]]) > length(x[[2]]))
 #'
 setGeneric("find_substrate",
   function(object, ...) standardGeneric("find_substrate"))
@@ -420,49 +561,12 @@ setMethod("find_substrate", "character", function(object,
   result
 }, sealed = SEALED)
 
+#= find_positions find_substrate
 
 setOldClass("substrate_match")
 
-
-################################################################################
-
-
-#' Identify positions of substrates
-#'
-#' Identify the positions of substrates, i.e. the plate(s) and well(s) in which
-#' they occur.
-#'
-#' @param object Query character vector, factor or list, S3 object of class
-#'   \sQuote{substrate_match}, \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Optional arguments passed between the methods.
+#' @rdname find_substrate
 #' @export
-#' @return The character method returns a list of character matrices (empty if
-#'   nothing was found), with one row per position found, the plate name in the
-#'   first column and the well name in the second. The names of this list
-#'   correspond to \code{names}. The \code{\link{OPM}} and \code{\link{OPMS}}
-#'   methods do the same, using their own substrates. The list and
-#'   \sQuote{substrate_match} methods return lists of such lists.
-#' @details  The query names must be written exactly as used in the stored plate
-#'   annotations. To determine their spelling, use \code{\link{find_substrate}}.
-#'   This spelling is not guaranteed to be stable between distinct \pkg{opm}
-#'   releases.
-#' @family naming-functions
-#' @keywords utilities
-#' @examples
-#'
-#' # Character method; compare correct and misspelled substrate name
-#' (x <- find_positions(c("D-Glucose", "D-Gloucose")))
-#' stopifnot(length(x[[1]]) > length(x[[2]]))
-#'
-#' # Factor method
-#' (y <- find_positions(as.factor(c("D-Glucose", "D-Gloucose"))))
-#' stopifnot(identical(y, x))
-#'
-#' # List method
-#' x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
-#' x[[1]][1:3]
-#' x[[2]]
-#' stopifnot(length(x[[1]]) > length(x[[2]]))
 #'
 setGeneric("find_positions",
   function(object, ...) standardGeneric("find_positions"))
