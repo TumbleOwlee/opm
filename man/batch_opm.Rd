@@ -158,6 +158,10 @@
   files.
 }
 \details{
+  This function is for batch-converting many files; for
+  writing a single object to a \acronym{YAML} file (or
+  string), see \code{\link{to_yaml}}.
+
   A \acronym{YAML} document can comprise \emph{scalars}
   (single values of some type), \emph{sequences} (ordered
   collections of some values, without names) and
@@ -247,11 +251,6 @@
 
   See \code{\link{as.data.frame}} regarding the generated
   \acronym{CSV}.
-}
-\note{
-  This function is for batch-converting many files; for
-  writing a single object to a \acronym{YAML} file (or
-  string), see \code{\link{to_yaml}}.
 }
 \examples{
 test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,

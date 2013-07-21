@@ -16,11 +16,8 @@
 }
 \description{
   Get the discretized kinetic data or the discretization
-  settings used.
-}
-\note{
-  See \code{\link{do_disc}} for generating discretized
-  data.
+  settings used. (See \code{\link{do_disc}} for generating
+  discretized data.)
 }
 \examples{
 # 'OPM' methods

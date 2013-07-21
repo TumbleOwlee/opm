@@ -21,12 +21,12 @@ test_that("OPMS has all method of OPM/OPMA/OPMD", {
     error = function(e) character())
   if (length(m)) {
     opm.methods <- m[
-      sapply(m, existsMethod, "OPMD") |
-      sapply(m, existsMethod, "OPMA") |
-      sapply(m, existsMethod, "OPM") |
-      sapply(m, existsMethod, "WMD")
+      vapply(m, existsMethod, NA, "OPMD") |
+      vapply(m, existsMethod, NA, "OPMA") |
+      vapply(m, existsMethod, NA, "OPM") |
+      vapply(m, existsMethod, NA, "WMD")
     ]
-    opms.methods <- m[sapply(m, existsMethod, "OPMS")]
+    opms.methods <- m[vapply(m, existsMethod, NA, "OPMS")]
     expect_equal(character(), setdiff(opm.methods, opms.methods))
     expect_true(length(setdiff(opms.methods, opm.methods)) > 0)
   }

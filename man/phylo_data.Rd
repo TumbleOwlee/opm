@@ -23,11 +23,13 @@
   case of \sQuote{html} format, a non-empty \code{comment}
   yields the title of the HTML document.
 
-  The main difference between \sQuote{epf} and
-  \sQuote{phylip} is that the former can use labels with
-  more than ten characters, but its labels must not contain
-  whitespace. (These adaptations are done automatically
-  with \code{\link{safe_labels}}.)}
+  \sQuote{epf} or \sQuote{extended PHYLIP} is sometimes
+  called \sQuote{relaxed PHYLIP}. The main difference
+  between \sQuote{epf} and \sQuote{phylip} is that the
+  former can use labels with more than ten characters, but
+  its labels must not contain whitespace. (These
+  adaptations are done automatically with
+  \code{\link{safe_labels}}.)}
 
   \item{outfile}{Character scalar. If a non-empty character
   scalar, resulting lines are directly written to this
@@ -153,7 +155,9 @@
   modified, see \code{\link{html_args}}. The
   \sQuote{hennig} (Hennig86) format is the one used by
   \acronym{TNT}; it allows continuous characters to be
-  analysed as such.
+  analysed as such. Regarding the meaning of
+  \sQuote{character} as used here, see the \sQuote{Details}
+  section of \code{\link{discrete}}.
 
   The generated \acronym{HTML} is guaranteed to produce
   neither errors nor warnings if checked using the Tidy
@@ -166,13 +170,6 @@
   and the others is also indicated. For the \acronym{CSS}
   files that come with the package, see the examples below
   and \code{\link{opm_files}}.
-}
-\note{
-  \itemize{ \item Regarding the meaning of
-  \sQuote{character} as used here, see the \sQuote{Details}
-  section of \code{\link{discrete}}.  \item \sQuote{epf} or
-  \sQuote{extended PHYLIP} is sometimes called
-  \sQuote{relaxed PHYLIP}. }
 }
 \examples{
 # simple helper functions

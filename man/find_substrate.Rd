@@ -11,14 +11,16 @@
   \item{search}{Character scalar indicating the search
   mode. \describe{ \item{exact}{Query names must exactly
   match (parts of) the well annotations.} \item{glob}{Shell
-  globbing is used.} \item{approx}{Approximate matching is
-  used; the number or proportion of errors allowed is set
-  using \code{max.dev}, and neither globbing or
-  regular-expression matching is done in that case.}
-  \item{regex}{Regular-expression matching is used.}
-  \item{pmatch}{Uses \code{pmatch} from the \pkg{base}
-  package.} } All matching is case-insensitive except for
-  \sQuote{exact} and \sQuote{pmatch} search modes.}
+  globbing is used. See \code{\link{glob_to_regex}} for a
+  description of globbing patterns.}
+  \item{approx}{Approximate matching is used; the number or
+  proportion of errors allowed is set using \code{max.dev},
+  and neither globbing or regular-expression matching is
+  done in that case.} \item{regex}{Regular-expression
+  matching is used.} \item{pmatch}{Uses \code{pmatch} from
+  the \pkg{base} package.} } All matching is
+  case-insensitive except for \sQuote{exact} and
+  \sQuote{pmatch} search modes.}
 
   \item{max.dev}{Numeric scalar indicating the maximum
   allowed deviation. If < 1, the proportion of characters
@@ -60,10 +62,6 @@
   To determine their spelling, use \code{find_substrate}.
   This spelling is not guaranteed to be stable between
   distinct \pkg{opm} releases.
-}
-\note{
-  See \code{\link{glob_to_regex}} for a description of
-  globbing patterns.
 }
 \examples{
 ## find_substrate()

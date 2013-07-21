@@ -42,15 +42,15 @@
 #'   always included as first column (in contrast to \code{well}). The \code{i}
 #'   argument refers only to the remaining matrix.
 #'
-#'   \code{wells} yields a numeric matrix or vector, depending on \code{i} and
-#'   \code{drop}. It will always ignore the time points as values, in contrast
-#'   to \code{measurements}. But depending on \code{use.names} they would be
+#'   Do not confuse \code{well} with \code{\link{wells}}. \code{well} yields a
+#'   numeric matrix or vector, depending on \code{i} and \code{drop}. It will
+#'   always ignore the time points as values, in contrast to
+#'   \code{measurements}. But depending on \code{use.names} they would be
 #'   inserted as names.
 #'
 #'   The return value of \code{hours} is dependent on the \code{what} argument;
 #'   see there.
 #' @export
-#' @note Do not confuse \code{well} with \code{\link{wells}}.
 #' @family getter-functions
 #' @keywords attribute
 #' @examples
@@ -671,9 +671,10 @@ setMethod("position", OPM, function(object) {
 
 #' Are aggregated or discretized data present?
 #'
-#' Check whether aggregated or discretized data are present. This always returns
-#' \code{FALSE} for the \code{\link{OPM}} class, but not necessarily for its
-#' child classes.
+#' Check whether aggregated or discretized data are present. (See
+#' \code{\link{do_aggr}} and \code{\link{do_disc}} for generating such data.)
+#' This always returns \code{FALSE} for the \code{\link{OPM}} class, but not
+#' necessarily for its child classes.
 #'
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param ... Optional arguments passed between the methods.
@@ -681,7 +682,6 @@ setMethod("position", OPM, function(object) {
 #' @export
 #' @family getter-functions
 #' @keywords attribute
-#' @note  See \code{\link{do_aggr}} for generating aggregated data.
 #' @examples
 #'
 #' # 'OPM' methods
@@ -719,7 +719,8 @@ setMethod("has_disc", OPM, function(object) {
 
 #' Get aggregated data
 #'
-#' Get the aggregated kinetic data or the aggregation settings used.
+#' Get the aggregated kinetic data or the aggregation settings used. (See
+#' \code{\link{do_aggr}} for generating aggregated data.)
 #'
 #' @param object \code{\link{OPMA}} or \code{\link{OPMS}} object.
 #' @param subset Character vector. If not \code{NULL}, restrict to this or these
@@ -743,7 +744,6 @@ setMethod("has_disc", OPM, function(object) {
 #'   Currently the other parameters are not checked, and all \code{NA} values,
 #'   if any, also remain unchanged.
 #' @param ... Optional arguments passed between the methods.
-#' @note See \code{\link{do_aggr}} for generating aggregated data.
 #' @export
 #' @family getter-functions
 #' @return \code{aggregated} yields a numeric matrix of aggregated values
@@ -816,7 +816,7 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
       SOFTWARE, software))
 
   # generate subset
-  wanted <- unlist(map_grofit_names(subset, ci))
+  wanted <- unlist(map_param_names(subset, ci))
   result <- object@aggregated[wanted, , drop = FALSE]
   if (CURVE_PARAMS[2L] %in% subset)
     result <- trim_lambda(result, hours(object), trim = trim)
@@ -842,7 +842,8 @@ setMethod("aggr_settings", OPMA, function(object) {
 
 #' Get discretized data
 #'
-#' Get the discretized kinetic data or the discretization settings used.
+#' Get the discretized kinetic data or the discretization settings used. (See
+#' \code{\link{do_disc}} for generating discretized data.)
 #'
 #' @param object \code{\link{OPMD}} or \code{\link{OPMS}} object.
 #' @param ... Optional arguments passed between the methods.
@@ -851,7 +852,6 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' @return Logical vector or matrix in the case of \code{discretized}, named
 #'   list in the case of \code{disc_settings}. See the examples for details.
 #' @keywords attribute
-#' @note  See \code{\link{do_disc}} for generating discretized data.
 #' @examples
 #'
 #' # 'OPM' methods

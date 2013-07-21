@@ -261,7 +261,7 @@ test_that("aggregated data in OPMS objects can be queried", {
   ag.got <- aggregated(THIN.AGG)
   expect_is(ag.got, "list")
   expect_equal(length(ag.got), length(THIN.AGG))
-  expect_true(all(sapply(ag.got, is.matrix)))
+  expect_true(all(vapply(ag.got, is.matrix, NA)))
 })
 
 

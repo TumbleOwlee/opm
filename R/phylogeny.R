@@ -76,21 +76,20 @@
 #'   the comment-enclosing characters are appended and prepended to the vector,
 #'   otherwise to each string separately.
 #'
-#' @note The \code{\link{phylo_data}} methods for \sQuote{OPMD_Listing} and
-#'   \sQuote{OPMS_Listing} objects do not support all \acronym{HTML} formatting
-#'   options.
 #' @return List of \acronym{HTML} arguments or character vector with modified
 #'   labels.
 #' @details These functions are not normally called directly by an \pkg{opm}
 #'   user but by \code{\link{phylo_data}}; see there for their usual
-#'   application.
+#'   application. The \code{\link{phylo_data}} methods for \sQuote{OPMD_Listing}
+#'   and \sQuote{OPMS_Listing} objects do not support all \acronym{HTML}
+#'   formatting options.
 #'
 #'   Label cleaning invokes either the replacement of disallowed characters or
 #'   the enclosing of all labels in single quotes and the doubling of
 #'   pre-existing single quotes, if any.
 #'
 #' @keywords character cluster IO
-#' @seealso base::normalizePath base::I base::gsub
+#' @seealso base::normalizePath base::I base::gsu
 #' @export
 #' @family phylogeny-functions
 #' @examples
@@ -602,10 +601,11 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #'   appropriately escaped). In case of \sQuote{html} format, a non-empty
 #'   \code{comment} yields the title of the HTML document.
 #'
-#'   The main difference between \sQuote{epf} and \sQuote{phylip} is that the
-#'   former can use labels with more than ten characters, but its labels must
-#'   not contain whitespace. (These adaptations are done automatically with
-#'   \code{\link{safe_labels}}.)
+#'   \sQuote{epf} or \sQuote{extended PHYLIP} is sometimes called
+#'   \sQuote{relaxed PHYLIP}. The main difference between \sQuote{epf} and
+#'   \sQuote{phylip} is that the former can use labels with more than ten
+#'   characters, but its labels must not contain whitespace. (These adaptations
+#'   are done automatically with \code{\link{safe_labels}}.)
 #' @param outfile Character scalar. If a non-empty character scalar, resulting
 #'   lines are directly written to this file. Otherwise, they are returned.
 #' @param enclose Logical scalar. Shall labels be enclosed in single quotes?
@@ -688,7 +688,8 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #'   other data, the \code{character.states} argument should be modified, see
 #'   \code{\link{html_args}}. The \sQuote{hennig} (Hennig86) format is the one
 #'   used by \acronym{TNT}; it allows continuous characters to be analysed as
-#'   such.
+#'   such. Regarding the meaning of \sQuote{character} as used here, see the
+#'   \sQuote{Details} section of \code{\link{discrete}}.
 #'
 #'   The generated \acronym{HTML} is guaranteed to produce neither errors nor
 #'   warnings if checked using the Tidy program. It deliberately contains no
@@ -698,14 +699,6 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #'   Whether the characters show differences between at least one organism and
 #'   the others is also indicated. For the \acronym{CSS} files that come with
 #'   the package, see the examples below and \code{\link{opm_files}}.
-#'
-#' @note \itemize{
-#'   \item Regarding the meaning of \sQuote{character} as used here, see the
-#'   \sQuote{Details} section of \code{\link{discrete}}.
-#'   \item \sQuote{epf} or \sQuote{extended PHYLIP} is sometimes called
-#'     \sQuote{relaxed PHYLIP}.
-#' }
-#'
 #' @keywords character cluster IO
 #'
 #' @references Berger, S. A., Stamatakis, A. 2010 Accuracy of morphology-based

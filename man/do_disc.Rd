@@ -97,8 +97,7 @@
   \code{TRUE} this cannot be guaranteed any more. To
   enforce consistency, use \code{opm_opt(strict.OPMD =
   TRUE)}.
-}
-\note{
+
   The discretized values can be queried for using
   \code{\link{has_disc}} and received using
   \code{\link{discretized}}.

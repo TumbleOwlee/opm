@@ -14,12 +14,10 @@
 }
 \description{
   Check whether aggregated or discretized data are present.
-  This always returns \code{FALSE} for the
-  \code{\link{OPM}} class, but not necessarily for its
-  child classes.
-}
-\note{
-  See \code{\link{do_aggr}} for generating aggregated data.
+  (See \code{\link{do_aggr}} and \code{\link{do_disc}} for
+  generating such data.) This always returns \code{FALSE}
+  for the \code{\link{OPM}} class, but not necessarily for
+  its child classes.
 }
 \examples{
 # 'OPM' methods

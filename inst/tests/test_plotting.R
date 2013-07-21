@@ -84,11 +84,11 @@ test_that("cex can be guessed", {
 test_that("best layouts can be determined", {
   x <- 0:100
   got <- lapply(x, best_layout)
-  prods <- sapply(got, Reduce, f = `*`)
+  prods <- vapply(got, Reduce, 0, f = `*`)
   expect_true(all(prods >= x))
   expect_false(all(prods > x))
-  expect_true(all(sapply(got, length) == 2L))
-  expect_true(all(sapply(got, function(a) a[1] >= a[2])))
+  expect_true(all(vapply(got, length, 0L) == 2L))
+  expect_true(all(vapply(got, function(a) a[1] >= a[2], NA)))
   expect_error(best_layout(-1))
 })
 

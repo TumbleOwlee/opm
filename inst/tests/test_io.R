@@ -197,9 +197,9 @@ test_that("read_opm can read three partially incompatible files", {
   opm.1 <- read_opm(files, convert = "sep")
   expect_is(opm.1, "list")
   expect_equal(2L, length(opm.1))
-  expect_true(all(sapply(opm.1, class) == "list"))
-  expect_true(all(sapply(opm.1[[1]], class) == OPM))
-  expect_true(all(sapply(opm.1[[2]], class) == OPM))
+  expect_true(all(vapply(opm.1, is.list, NA)))
+  expect_true(all(vapply(opm.1[[1]], is, NA, OPM)))
+  expect_true(all(vapply(opm.1[[2]], is, NA, OPM)))
 
   opm.1 <- read_opm(files, convert = "grp")
   expect_is(opm.1, "list")
@@ -282,15 +282,15 @@ test_that("explode_dir deals with non-existing files", {
 ## to_metadata
 test_that("to_metadata converts objects in the right way", {
   x <- data.frame(a = 1:10, b = letters[1:10])
-  expect_equivalent(c("integer", "factor"), sapply(x, class))
+  expect_equivalent(c("integer", "factor"), vapply(x, class, ""))
   x <- as.data.frame(x)
-  expect_equivalent(c("integer", "factor"), sapply(x, class))
+  expect_equivalent(c("integer", "factor"), vapply(x, class, ""))
   x <- to_metadata(x)
-  expect_equivalent(c("integer", "factor"), sapply(x, class))
+  expect_equivalent(c("integer", "factor"), vapply(x, class, ""))
   x <- to_metadata(as.matrix(x))
-  expect_equivalent(c("character", "character"), sapply(x, class))
+  expect_equivalent(c("character", "character"), vapply(x, class, ""))
   x <- as.data.frame(as.matrix(x))
-  expect_equivalent(c("factor", "factor"), sapply(x, class))
+  expect_equivalent(c("factor", "factor"), vapply(x, class, ""))
 })
 
 ## to_metadata
@@ -299,9 +299,9 @@ test_that("to_metadata converts OPMS objects in the right way", {
   got <- to_metadata(OPMS.INPUT)
   expect_is(got, "data.frame")
   expect_equal(nrow(got), length(OPMS.INPUT))
-  expect_true(setequal(sapply(got, class), c("character", "integer")))
+  expect_true(setequal(vapply(got, class, ""), c("character", "integer")))
   got <- to_metadata(OPMS.INPUT, stringsAsFactors = TRUE)
-  expect_true(setequal(sapply(got, class), c("factor", "integer")))
+  expect_true(setequal(vapply(got, class, ""), c("factor", "integer")))
   # 2 (nested metadata)
   x <- OPM.1
   metadata(x) <- list(A = 1:3, B = 7L, C = list('c1', 1:3))
@@ -312,7 +312,8 @@ test_that("to_metadata converts OPMS objects in the right way", {
   expect_warning(got <- to_metadata(x))
   expect_equal(nrow(got), length(x))
   expect_true(setequal(names(got), LETTERS[1:4]))
-  expect_true(setequal(sapply(got, class), c("list", "integer", "character")))
+  expect_true(setequal(vapply(got, class, ""),
+    c("list", "integer", "character")))
 })
 
 
@@ -327,8 +328,8 @@ test_that("batch collection works as expected", {
   got <- batch_collect(files, readLines, fun.arg = list(n = 5L))
   expect_is(got, "list")
   expect_equal(files, names(got))
-  expect_true(all(sapply(got, is.character)))
-  expect_true(all(sapply(got, length) == 5L))
+  expect_true(all(vapply(got, is.character, NA)))
+  expect_true(all(vapply(got, length, 0L) == 5L))
   expect_that(got <- batch_collect(files, readLines, fun.arg = list(n = 5L),
     demo = TRUE), shows_message())
   expect_path_equal(got, files)
@@ -386,7 +387,7 @@ test_that("templates can be collected and written to files", {
   expect_equal(colnames(template), c("Setup Time", "Position", "File"))
   expect_equal(nrow(template), 2L)
   expect_true(all(! is.na(template)))
-  expect_true(all("character" == sapply(template, class)))
+  expect_true(all("character" == vapply(template, class, "")))
   unlink(outfile)
 
   expect_error(template <- collect_template(files, exclude = "*Example*_3.*",
@@ -416,7 +417,7 @@ test_that("templates can be collected with added columns", {
   expect_equal(nrow(template), 2L)
   expect_true(all(!is.na(template[, 1L:3L])))
   expect_true(all(is.na(template[, to.add])))
-  expect_true(all("character" == sapply(template, class)))
+  expect_true(all("character" == vapply(template, class, "")))
 
   # if 'exclude' was not specific enough, 'template' would be empty
   expect_that(template <- collect_template(files, exclude = "*Example*_3.*",

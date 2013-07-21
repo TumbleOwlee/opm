@@ -119,17 +119,15 @@
 \details{
   These functions are not normally called directly by an
   \pkg{opm} user but by \code{\link{phylo_data}}; see there
-  for their usual application.
+  for their usual application. The \code{\link{phylo_data}}
+  methods for \sQuote{OPMD_Listing} and
+  \sQuote{OPMS_Listing} objects do not support all
+  \acronym{HTML} formatting options.
 
   Label cleaning invokes either the replacement of
   disallowed characters or the enclosing of all labels in
   single quotes and the doubling of pre-existing single
   quotes, if any.
-}
-\note{
-  The \code{\link{phylo_data}} methods for
-  \sQuote{OPMD_Listing} and \sQuote{OPMS_Listing} objects
-  do not support all \acronym{HTML} formatting options.
 }
 \examples{
 # Some animals you might know
@@ -147,7 +145,7 @@ stopifnot(nchar(y) == 22) # padded to uniform length
 stopifnot(grepl("^'.*'$", y)) # all strings enclosed in sinqle quotes
 }
 \seealso{
-  base::normalizePath base::I base::gsub
+  base::normalizePath base::I base::gsu
 
   Other phylogeny-functions: \code{\link{phylo_data}}
 }

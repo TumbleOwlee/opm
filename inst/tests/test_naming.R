@@ -99,14 +99,14 @@ test_that("the plate type of OPMS objects can be changed", {
 ################################################################################
 
 
-## map_grofit_names
+## map_param_names
 test_that("curve parameter names can be mapped", {
-  x <- map_grofit_names()
+  x <- map_param_names()
   expect_true(all(CURVE_PARAMS %in% unlist(x)))
-  y <- map_grofit_names(opm.fast = TRUE)
+  y <- map_param_names(opm.fast = TRUE)
   expect_true(!any(names(y) %in% names(x)))
   expect_equivalent(x, y)
-  x <- map_grofit_names(plain = TRUE)
+  x <- map_param_names(plain = TRUE)
   expect_true(setequal(unlist(x), param_names()))
 })
 
@@ -239,7 +239,7 @@ test_that("positions within PM plates can be found", {
   got <- find_positions(query)
   expect_is(got, "list")
   expect_equal(query, names(got))
-  expect_true(all(sapply(got, is.matrix)))
+  expect_true(all(vapply(got, is.matrix, NA)))
   expect_true(all(dim(got[[1L]] > 0L)))
   expect_true(all(dim(got[[2L]] > 0L)))
   expect_true(all(dim(got[[3L]] == 0L)))
@@ -252,7 +252,7 @@ test_that("positions within PM plates can be found", {
   got <- got[[1L]]
   expect_is(got, "list")
   expect_equal(query[[1L]], names(got))
-  expect_true(all(sapply(got, is.matrix)))
+  expect_true(all(vapply(got, is.matrix, NA)))
 
 })
 

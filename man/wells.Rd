@@ -101,11 +101,13 @@
   names can be added in parentheses or brackets or used
   instead of the coordinate, and trimmed to a given length.
   The \code{listing} methods create a textual listing of
-  the discretized values. This is useful to describe
+  the discretized values. (See \code{\link{do_disc}} for
+  generating discretized data.) This is useful to describe
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray results in a scientific manuscript.
 }
 \details{
+  Do not confuse \code{wells} this with \code{\link{well}}.
   The purpose of the \code{\link{OPM}} and
   \code{\link{OPMS}} methods for \code{wells} should be
   obvious. The default method is intended for providing a
@@ -116,17 +118,9 @@
   normalization approaches as used by \pkg{opm},
   particularly by the subsetting methods (see
   \code{\link{[}}).
-
-  See \code{\link{do_disc}} for generating discretized
-  data.
-}
-\note{
-  Do not confuse \code{wells} this with \code{\link{well}}.
 }
 \examples{
-## wells()
-
-# 'OPM' method
+## wells() 'OPM' method
 data(vaas_1)
 (x <- wells(vaas_1, full = FALSE))[1:10]
 (y <- wells(vaas_1, full = TRUE))[1:10]
@@ -134,13 +128,13 @@ data(vaas_1)
 # string lengths differ depending on selection
 stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 
-# 'OPM' method
+## wells() 'OPM' method
 data(vaas_4)
 (xx <- wells(vaas_4, full = FALSE))[1:10]
 # wells are guaranteed to be uniform within OPMS objects
 stopifnot(identical(x, xx))
 
-# default method
+## wells() default method
 x <- c("A01", "B10")
 (y <- wells(x, plate = "PM1"))
 stopifnot(nchar(y) > nchar(x))
@@ -152,9 +146,7 @@ stopifnot(y == wells(~ c(A01, B10), plate = "PM1"))
 stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
 stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
 
-## listing()
-
-# 'OPMD' method
+## listing() 'OPMD' method
 data(vaas_1)
 
 # this yields one sentence for each kind of reaction:
@@ -172,7 +164,7 @@ stopifnot(inherits(y, "OPMS_Listing"), is.matrix(y), dim(y) == c(1, 3),
 stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
   !is.null(names(x)))
 
-# 'OPMS' method
+## listing() 'OPMS' method
 data(vaas_4)
 
 # no grouping, no names (numbering used instead for row names)

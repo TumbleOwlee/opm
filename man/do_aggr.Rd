@@ -113,8 +113,7 @@
   \sQuote{settings} attributes could be obtained as
   components of the list returned by
   \code{aggr_settings(x)}.
-}
-\note{
+
   The aggregated values can be queried for using
   \code{\link{has_aggr}} and received using
   \code{\link{aggregated}}.

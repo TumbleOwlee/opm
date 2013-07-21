@@ -1170,8 +1170,6 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #'   from the \pkg{base} package with one placeholder for the plate-type, and
 #'   without a file extension.
 #' @export
-#' @note This function is for batch-converting many files; for writing a single
-#'   object to a \acronym{YAML} file (or string), see \code{\link{to_yaml}}.
 #' @return The function invisibly returns a matrix which describes each
 #'   attempted file conversion. See \code{\link{batch_process}} for details.
 #' @family io-functions
@@ -1183,6 +1181,9 @@ setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
 #' @keywords IO
 #'
 #' @details
+#'   This function is for batch-converting many files; for writing a single
+#'   object to a \acronym{YAML} file (or string), see \code{\link{to_yaml}}.
+#'
 #'   A \acronym{YAML} document can comprise \emph{scalars} (single values of
 #'   some type), \emph{sequences} (ordered collections of some values, without
 #'   names) and \emph{mappings} (collections assigning a name to each value),

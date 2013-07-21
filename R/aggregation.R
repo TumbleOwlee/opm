@@ -78,7 +78,7 @@ extract_curve_params <- function(x, ...) UseMethod("extract_curve_params")
 extract_curve_params.grofit <- function(x, ...) {
   settings <- c(x$control)
   x <- summary(x$gcFit)
-  map <- map_grofit_names()
+  map <- map_param_names()
   structure(t(as.matrix(x[, names(map)])),
     dimnames = list(map, x[, "TestId"]), settings = settings)
 }
@@ -129,10 +129,7 @@ extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
 #'
 summary.splines_bootstrap <- function (object, ...) {
 
-    # TODO: should rather rely on map_grofit_names()
-    cnames <- c("mu", "lambda", "A", "AUC",
-      "mu CI95 low", "lambda CI95 low", "A CI95 low", "AUC CI95 low",
-      "mu CI95 high", "lambda CI95 high", "A CI95 high", "AUC CI95 high")
+    cnames <- unlist(map_param_names(), use.names = FALSE)
 
     res <- data.frame(t(sapply(object, extract_curve_params.opm_model)))
     res$mu <- unlist(res$mu)
@@ -248,7 +245,7 @@ summary.splines_bootstrap <- function (object, ...) {
 #'   attributes could be obtained as components of the list returned by
 #'   \code{aggr_settings(x)}.
 #'
-#' @note The aggregated values can be queried for using \code{\link{has_aggr}}
+#'   The aggregated values can be queried for using \code{\link{has_aggr}}
 #'   and received using \code{\link{aggregated}}.
 #'
 #' @references Brisbin, I. L., Collins, C. T., White, G. C., McCallum, D. A.
@@ -358,7 +355,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
   }
 
   copy_A_param <- function(x) {
-    map <- unlist(map_grofit_names(opm.fast = TRUE))
+    map <- unlist(map_param_names(opm.fast = TRUE))
     result <- matrix(data = NA_real_, nrow = length(map), ncol = length(x),
       dimnames = list(unname(map), names(x)))
     result[map[["A.point.est"]], ] <- x
@@ -395,7 +392,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
           rownames(result)[1L:3L], perl = TRUE)
         rownames(result)[10L:12L] <- sub("^[^.]+", "mu",
           rownames(result)[1L:3L], perl = TRUE)
-        map <- map_grofit_names(opm.fast = TRUE)
+        map <- map_param_names(opm.fast = TRUE)
         result <- result[names(map), , drop = FALSE]
         rownames(result) <- as.character(map)
         attr(result, OPTIONS) <- options
@@ -433,7 +430,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
           result <- rbind(result,
             matrix(NA, nrow = 8L, ncol = ncol(result)))
         ## dirty hack:
-        map <- map_grofit_names(opm.fast = TRUE)
+        map <- map_param_names(opm.fast = TRUE)
         rownames(result) <- as.character(map)
         colnames(result) <- wells
         attr(result, OPTIONS) <- unclass(options)

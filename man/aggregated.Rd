@@ -44,10 +44,8 @@
 }
 \description{
   Get the aggregated kinetic data or the aggregation
-  settings used.
-}
-\note{
-  See \code{\link{do_aggr}} for generating aggregated data.
+  settings used. (See \code{\link{do_aggr}} for generating
+  aggregated data.)
 }
 \examples{
 # 'OPMA' methods

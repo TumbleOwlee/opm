@@ -46,7 +46,8 @@
   column (in contrast to \code{well}). The \code{i}
   argument refers only to the remaining matrix.
 
-  \code{wells} yields a numeric matrix or vector, depending
+  Do not confuse \code{well} with \code{\link{wells}}.
+  \code{well} yields a numeric matrix or vector, depending
   on \code{i} and \code{drop}. It will always ignore the
   time points as values, in contrast to
   \code{measurements}. But depending on \code{use.names}
@@ -59,9 +60,6 @@
   Return the measurements, optionally only from selected
   wells and with or without the time points, or only the
   time points.
-}
-\note{
-  Do not confuse \code{well} with \code{\link{wells}}.
 }
 \examples{
 # 'OPM' methods

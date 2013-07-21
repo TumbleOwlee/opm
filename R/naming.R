@@ -217,7 +217,7 @@ select_colors <- function(
 #'
 #' @export
 #' @family naming-functions
-#' @seealso base::strtrim base::abbreviate base::gsub
+#' @seealso base::strtrim base::abbreviate base::gsu
 #' @keywords attribute utilities character manip
 #' @examples
 #'
@@ -388,7 +388,7 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 #' @return Named list with old names as keys, new ones as values.
 #' @keywords internal
 #'
-map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
+map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
     opm.fast = FALSE) {
   part.1 <- as.list(CURVE_PARAMS)
   names(part.1) <- if (opm.fast)
@@ -471,7 +471,8 @@ clean_coords <- function(x) {
 #' Map well names to substrates
 #'
 #' Translate well names (which are basically their coordinates on the plate) to
-#' substrate names, given the name of the plate.
+#' substrate names, given the name of the plate. (The user-level function is
+#' \code{\link{wells}}.)
 #'
 #' @param wells Character vector of original well names (coordinates on the
 #'   plate).
@@ -485,7 +486,6 @@ clean_coords <- function(x) {
 #'   and \code{\link{trim_string}}.
 #' @return Character vector.
 #' @keywords internal
-#' @note The user-level function is \code{\link{wells}}.
 #'
 map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     paren.sep = " ", downcase = FALSE, ...) {
@@ -553,9 +553,9 @@ to_sentence.logical <- function(x, html, ...) {
 #' Optionally the full substrate names can be added in parentheses or brackets
 #' or used instead of the coordinate, and trimmed to a given length. The
 #' \code{listing} methods create a textual listing of the discretized values.
-#' This is useful to describe
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray
-#' results in a scientific manuscript.
+#' (See \code{\link{do_disc}} for generating discretized data.) This is useful
+#' to describe OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype
+#' microarray results in a scientific manuscript.
 #'
 #' @param object \code{\link{OPM}} object, \code{\link{OPMS}} object or well
 #'   name or index. If missing, defaults to the selection of all possible
@@ -617,22 +617,18 @@ to_sentence.logical <- function(x, html, ...) {
 #' @family naming-functions
 #' @seealso base::strtrim base::abbreviate
 #' @keywords attribute character category
-#' @details The purpose of the \code{\link{OPM}} and \code{\link{OPMS}} methods
-#'   for \code{wells} should be obvious. The default method is intended for
-#'   providing a quick overview of the substrates contained in one to several
-#'   plates if \code{full} is \code{TRUE}. If \code{full} is \code{FALSE}, it
-#'   can be used to study the effect of the well-index translation and well-name
+#' @details
+#'   Do not confuse \code{wells} this with \code{\link{well}}. The purpose of
+#'   the \code{\link{OPM}} and \code{\link{OPMS}} methods for \code{wells}
+#'   should be obvious. The default method is intended for providing a quick
+#'   overview of the substrates contained in one to several plates if
+#'   \code{full} is \code{TRUE}. If \code{full} is \code{FALSE}, it can be used
+#'   to study the effect of the well-index translation and well-name
 #'   normalization approaches as used by \pkg{opm}, particularly by the
 #'   subsetting methods (see \code{\link{[}}).
-#'
-#'   See \code{\link{do_disc}} for generating discretized data.
-#'
-#' @note Do not confuse \code{wells} this with \code{\link{well}}.
 #' @examples
 #'
-#' ## wells()
-#'
-#' # 'OPM' method
+#' ## wells() 'OPM' method
 #' data(vaas_1)
 #' (x <- wells(vaas_1, full = FALSE))[1:10]
 #' (y <- wells(vaas_1, full = TRUE))[1:10]
@@ -640,13 +636,13 @@ to_sentence.logical <- function(x, html, ...) {
 #' # string lengths differ depending on selection
 #' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 #'
-#' # 'OPM' method
+#' ## wells() 'OPM' method
 #' data(vaas_4)
 #' (xx <- wells(vaas_4, full = FALSE))[1:10]
 #' # wells are guaranteed to be uniform within OPMS objects
 #' stopifnot(identical(x, xx))
 #'
-#' # default method
+#' ## wells() default method
 #' x <- c("A01", "B10")
 #' (y <- wells(x, plate = "PM1"))
 #' stopifnot(nchar(y) > nchar(x))
@@ -658,9 +654,7 @@ to_sentence.logical <- function(x, html, ...) {
 #' stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
 #' stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
 #'
-#' ## listing()
-#'
-#' # 'OPMD' method
+#' ## listing() 'OPMD' method
 #' data(vaas_1)
 #'
 #' # this yields one sentence for each kind of reaction:
@@ -678,7 +672,7 @@ to_sentence.logical <- function(x, html, ...) {
 #' stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
 #'   !is.null(names(x)))
 #'
-#' # 'OPMS' method
+#' ## listing() 'OPMS' method
 #' data(vaas_4)
 #'
 #' # no grouping, no names (numbering used instead for row names)
@@ -815,7 +809,8 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
 #' @param search Character scalar indicating the search mode. \describe{
 #'   \item{exact}{Query names must exactly match (parts of) the well
 #'   annotations.}
-#'   \item{glob}{Shell globbing is used.}
+#'   \item{glob}{Shell globbing is used. See \code{\link{glob_to_regex}} for a
+#'   description of globbing patterns.}
 #'   \item{approx}{Approximate matching is used; the number or proportion of
 #'   errors allowed is set using \code{max.dev}, and neither globbing or
 #'   regular-expression matching is done in that case.}
@@ -850,7 +845,6 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
 #'   spelling, use \code{find_substrate}. This spelling is not guaranteed
 #'   to be stable between distinct \pkg{opm} releases.
 #'
-#' @note See \code{\link{glob_to_regex}} for a description of globbing patterns.
 #' @seealso base::grep base::agrep
 #' @family naming-functions
 #' @keywords character utilities

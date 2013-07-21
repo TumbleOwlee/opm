@@ -110,10 +110,17 @@
 #'   suitable for phylogenetic studies with programs such as \acronym{PAUP*} and
 #'   \acronym{RAxML}. These accept only discrete characters with at most 32
 #'   states, coded as 0 to 9 followed by A to V. For the full export one
-#'   additionally needs \code{\link{phylo_data}}.
+#'   additionally needs \code{\link{phylo_data}}. The matrix method is just a
+#'   wrapper that takes care of the matrix dimensions, and the data-frame method
+#'   is a wrapper for that method.
 #'
-#'   The matrix method is just a wrapper that takes care of the matrix
-#'   dimensions, and the data-frame method is a wrapper for that method.
+#'   The term \sQuote{character} as used here has nothing to do \emph{per se}
+#'   with the eponymous mode or class of \R. Rather, the term is borrowed from
+#'   taxonomic classification in biology, where, technically, a single
+#'   \sQuote{character} is stored in one column of a data matrix if each
+#'   organism is stored in one row. Characters are the \emph{quasi-independent
+#'   units} of evolution on the one hand and of phylogenetic reconstruction (and
+#'   thus taxonomic classification) on the other hand.
 #'
 #'   The scoring function to be maximized by \code{best_cutoff} is calculated as
 #'   follows. All values in \code{x} are divided into those larger then the
@@ -124,15 +131,6 @@
 #'   frequent of the two categories. This is done to avoid trivial solutions
 #'   with minimal and maximal cutoffs, causing all values to be placed in the
 #'   same category.
-#'
-#' @note The term \sQuote{character} as used here has nothing to do \emph{per
-#'   se} with the eponymous mode or class of \R. Rather, the term is borrowed
-#'   from taxonomic classification in biology, where, technically, a single
-#'   \sQuote{character} is stored in one column of a data matrix if each
-#'   organism is stored in one row. Characters are the \emph{quasi-independent
-#'   units} of evolution on the one hand and of phylogenetic reconstruction (and
-#'   thus taxonomic classification) on the other hand.
-#'
 #' @export
 #' @family discretization-functions
 #' @seealso base::cut stats::optimize
@@ -432,7 +430,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 #'   \code{TRUE} this cannot be guaranteed any more. To enforce consistency,
 #'   use \code{opm_opt(strict.OPMD = TRUE)}.
 #'
-#' @note The discretized values can be queried for using \code{\link{has_disc}}
+#'   The discretized values can be queried for using \code{\link{has_disc}}
 #'   and received using \code{\link{discretized}}.
 #'
 #' @export
@@ -560,7 +558,7 @@ setMethod("do_disc", OPMA, function(object, cutoff, groups = FALSE,
     stop(sprintf(
       "'cutoff' must be a non-empty vector if applied to %s objects",
       class(object)))
-  x <- aggregated(object, subset = map_grofit_names(subset, ci = FALSE)[[1L]],
+  x <- aggregated(object, subset = map_param_names(subset, ci = FALSE)[[1L]],
     ci = FALSE)[1L, ]
   x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")
   settings <- list(if (is.numeric(cutoff))
@@ -636,7 +634,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     combined <- !length(groups)
 
   # extra step necessary here because extract() allows 'disc'
-  subset <- unname(match.arg(subset, unlist(map_grofit_names(plain = TRUE))))
+  subset <- unname(match.arg(subset, unlist(map_param_names(plain = TRUE))))
 
   x <- extract(object = object, as.labels = groups, subset = subset,
     ci = FALSE, full = FALSE, dataframe = FALSE, dups = "ignore", ...)

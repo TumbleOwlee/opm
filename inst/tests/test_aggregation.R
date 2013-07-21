@@ -89,7 +89,7 @@ test_that("OPMS objects can be aggregated using the fast method", {
   agg.got <- aggregated(fast.agg)
   expect_is(agg.got, "list")
   expect_equal(length(agg.got), length(fast.agg))
-  expect_true(all(sapply(agg.got, is.matrix)))
+  expect_true(all(vapply(agg.got, is.matrix, NA)))
   other.agg <- aggregated(SMALL.AGG)
   for (agg in agg.got) {
     expect_equal(colnames(agg)[1:10], colnames(other.agg))

@@ -300,14 +300,13 @@ setMethod("opm_problems", "character", function(object) {
 #' Attach slots
 #'
 #' Attach the contents of all slots, except for the measurements, to another
-#' object. Useful in conversions (coercions).
+#' object. Useful in conversions (coercions). This method is deliberately
+#' \strong{not} defined for \code{\link{OPMS}} objects.
 #'
 #' @param object \code{\link{OPM}} object.
 #' @param other Arbitrary other object.
 #' @return \code{other} with additional attributes.
 #' @keywords internal
-#' @note This method is deliberately \strong{not} defined for \code{\link{OPMS}}
-#'   objects.
 #'
 setGeneric("attach_attr", function(object, ...) standardGeneric("attach_attr"))
 
@@ -417,7 +416,7 @@ setMethod("opma_problems", "matrix", function(object, orig.data, settings) {
     if (method %in% KNOWN_METHODS$aggregation) {
       # Check row names
       got <- rownames(object)
-      bad <- got[got != map_grofit_names()]
+      bad <- got[got != map_param_names()]
       if (length(bad))
         errs <- c(errs, paste("missing row name in aggregated data:", bad))
     } else
@@ -472,7 +471,7 @@ setAs(from = OPMA, to = "list", function(from) {
 
 setAs(from = "list", to = OPMA, function(from) {
   select_aggr <- function(x, wanted) {
-    x <- repair_na_strings(lapply(x, `[`, unlist(map_grofit_names())))
+    x <- repair_na_strings(lapply(x, `[`, unlist(map_param_names())))
     x <- do.call(cbind, x[wanted])
     must(mode(x) <- "numeric")
     x # should now be matrix, reduced to the known wells, parameters and CIs

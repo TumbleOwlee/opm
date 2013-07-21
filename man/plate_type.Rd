@@ -151,7 +151,7 @@ plate_type(copy <- gen_iii(vaas_4, "eco"))
 stopifnot(!identical(vaas_4, copy)) # as above
 }
 \seealso{
-  base::strtrim base::abbreviate base::gsub
+  base::strtrim base::abbreviate base::gsu
 
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}}, \code{\link{listing}},
