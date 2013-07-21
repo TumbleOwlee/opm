@@ -755,7 +755,7 @@ setMethod("extract", OPMS, function(object, as.labels,
   }
 
   # Collect parameters in a matrix
-  subset <- match.arg(subset, c(unlist(map_param_names(plain = TRUE)), "disc"))
+  subset <- match.arg(subset, c(unlist(map_grofit_names(plain = TRUE)), "disc"))
   if (subset == "disc") {
     ci <- FALSE
     result <- discretized(object)
@@ -863,7 +863,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   result <- as.data.frame(sapply(aggr.mean[, seq_len(gl), drop = FALSE],
     rep, each = 3L))
   colnames(result) <- names(as.groups)
-  result[, RESERVED_NAMES[["parameter"]]] <- as.factor(unlist(map_param_names(
+  result[, RESERVED_NAMES[["parameter"]]] <- as.factor(unlist(map_grofit_names(
     subset = as.character(object[1L, param.pos]), ci = TRUE)))
 
   # Reduce to numeric part and get CIs from means and variances.

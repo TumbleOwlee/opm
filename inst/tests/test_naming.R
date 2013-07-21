@@ -99,14 +99,14 @@ test_that("the plate type of OPMS objects can be changed", {
 ################################################################################
 
 
-## map_param_names
+## map_grofit_names
 test_that("curve parameter names can be mapped", {
-  x <- map_param_names()
+  x <- map_grofit_names()
   expect_true(all(CURVE_PARAMS %in% unlist(x)))
-  y <- map_param_names(opm.fast = TRUE)
+  y <- map_grofit_names(opm.fast = TRUE)
   expect_true(!any(names(y) %in% names(x)))
   expect_equivalent(x, y)
-  x <- map_param_names(plain = TRUE)
+  x <- map_grofit_names(plain = TRUE)
   expect_true(setequal(unlist(x), param_names()))
 })
 

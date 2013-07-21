@@ -417,7 +417,7 @@ setMethod("opma_problems", "matrix", function(object, orig.data, settings) {
     if (method %in% KNOWN_METHODS$aggregation) {
       # Check row names
       got <- rownames(object)
-      bad <- got[got != map_param_names()]
+      bad <- got[got != map_grofit_names()]
       if (length(bad))
         errs <- c(errs, paste("missing row name in aggregated data:", bad))
     } else
@@ -472,7 +472,7 @@ setAs(from = OPMA, to = "list", function(from) {
 
 setAs(from = "list", to = OPMA, function(from) {
   select_aggr <- function(x, wanted) {
-    x <- repair_na_strings(lapply(x, `[`, unlist(map_param_names())))
+    x <- repair_na_strings(lapply(x, `[`, unlist(map_grofit_names())))
     x <- do.call(cbind, x[wanted])
     must(mode(x) <- "numeric")
     x # should now be matrix, reduced to the known wells, parameters and CIs

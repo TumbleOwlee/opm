@@ -79,7 +79,7 @@ THEOR_RANGE <- c(0, 400)
 
 
 # Curve parameters
-# N.B.: The order must be kept in sync with map_param_names() and with the
+# N.B.: The order must be kept in sync with map_grofit_names() and with the
 # functions that fetch the name of lambda using CURVE_PARAMS[2L]. So this should
 # not be changed unless great care is taken.
 #

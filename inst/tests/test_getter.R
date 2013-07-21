@@ -15,10 +15,37 @@ if (!exists("TEST.DIR"))
 test_that("all measurements are accessible", {
   m.got <- measurements(OPMS.INPUT)
   expect_is(m.got, "list")
-  expect_true(all(sapply(m.got, is.matrix)))
+  expect_true(all(vapply(m.got, is.matrix, NA)))
   m.got <- measurements(OPMS.INPUT, 3L)
   expect_is(m.got, "list")
-  expect_true(all(sapply(m.got, is.matrix)))
+  expect_true(all(vapply(m.got, is.matrix, NA)))
+})
+
+
+## well
+test_that("the content of the wells can be subset", {
+  w.got <- well(OPMS.INPUT)
+  expect_is(w.got, "list")
+  expect_true(all(vapply(w.got, is.matrix, NA)))
+  expect_true(all(!vapply(w.got, function(x) is.null(rownames(x)), NA)))
+  w.got <- well(OPMS.INPUT, 3L)
+  expect_is(w.got, "matrix")
+  expect_equal(nrow(w.got), length(OPMS.INPUT))
+  w.got <- well(OPMS.INPUT, 3L:4L)
+  expect_is(w.got, "list")
+  expect_true(all(vapply(w.got, is.matrix, NA)))
+})
+
+
+## hours
+test_that("hours can be explicitely queried", {
+  expect_equal(hours(OPM.1), 95.75) # see also the examples
+  h.got <- hours(OPMS.INPUT)
+  expect_is(h.got, "numeric")
+  expect_equal(length(h.got), length(OPMS.INPUT))
+  h.got <- hours(OPMS.INPUT, what = "all")
+  expect_is(h.got, "matrix")
+  expect_equal(nrow(h.got), length(OPMS.INPUT))
 })
 
 
@@ -90,32 +117,6 @@ test_that("the entire OMSS object can be subset", {
 ################################################################################
 
 
-## well
-test_that("the content of the wells can be subset", {
-  w.got <- well(OPMS.INPUT)
-  expect_is(w.got, "list")
-  expect_true(all(sapply(w.got, is.matrix)))
-  w.got <- well(OPMS.INPUT, 3L)
-  expect_is(w.got, "matrix")
-  expect_equal(nrow(w.got), length(OPMS.INPUT))
-  w.got <- well(OPMS.INPUT, 3L:4L)
-  expect_is(w.got, "list")
-  expect_true(all(sapply(w.got, is.matrix)))
-})
-
-
-## hours
-test_that("hours can be explicitely queried", {
-  expect_equal(hours(OPM.1), 95.75) # see also the examples
-  h.got <- hours(OPMS.INPUT)
-  expect_is(h.got, "numeric")
-  expect_equal(length(h.got), length(OPMS.INPUT))
-  h.got <- hours(OPMS.INPUT, what = "all")
-  expect_is(h.got, "matrix")
-  expect_equal(nrow(h.got), length(OPMS.INPUT))
-})
-
-
 ## max
 test_that("maxima can be explicitely queried", {
   expect_equal(351, max(OPM.1))
@@ -167,7 +168,8 @@ test_that("CSV data can be accessed", {
   # Picking CSV data
   picked <- csv_data(OPM.1, c("File", "Setup Time"))
   expect_is(picked, "character")
-  expect_equivalent(picked, c(filename(OPM.1), setup_time(OPM.1)))
+  expect_equivalent(picked,
+    c(csv_data(OPM.1, what = "filename"), csv_data(OPM.1, what = "setup_time")))
   missing.key <- "19825761285616"
   error.msg <- paste("could not find key", missing.key)
   expect_error(csv_data(OPM.1, c("File", missing.key)), error.msg)
@@ -178,28 +180,39 @@ test_that("CSV data can be accessed", {
 })
 
 
-## filename
+## csv_data
 test_that("filename of example object can be explicitely queried", {
-  expect_equal(filename(OPM.1), INFILES[1L])
+  expect_equal(csv_data(OPM.1, what = "filename"), INFILES[1L])
 })
+
+## filename
+## UNTESTED
 
 
 ## setup_time
 test_that("setup times can be explicitely queried", {
-  expect_equal(setup_time(OPM.1), "8/30/2010 11:28:54 AM")
-  st.got <- setup_time(OPMS.INPUT)
+  expect_equal(csv_data(OPM.1, what = "setup_time"), "8/30/2010 11:28:54 AM")
+  st.got <- csv_data(OPMS.INPUT, what = "setup_time")
   expect_is(st.got, "character")
   expect_equal(length(st.got), length(OPMS.INPUT))
 })
 
 
-## position
+## setup_time
+## UNTESTED
+
+
+## csv_data
 test_that("plate positions can be explicitely queried", {
-  expect_equal(position(OPM.1), "21-B")
-  p.got <- position(OPMS.INPUT)
+  expect_equal(csv_data(OPM.1, what = "position"), "21-B")
+  p.got <- csv_data(OPMS.INPUT, what = "position")
   expect_is(p.got, "character")
   expect_equal(length(p.got), length(OPMS.INPUT))
 })
+
+
+## position
+## UNTESTED
 
 
 ## has_aggr
@@ -352,7 +365,7 @@ test_that("OPMS example data can be thinned out", {
 
 
 ## %k%
-test_that("OPM metadata keys can be queried with %k%", {
+test_that("OPM metadata can be queried with %k%", {
   expect_false("Organism" %k% OPM.1)
   expect_true("Organism" %k% OPM.WITH.MD)
   expect_true(c("Organism", "File") %k% OPM.WITH.MD)
@@ -362,8 +375,8 @@ test_that("OPM metadata keys can be queried with %k%", {
 })
 
 ## %k%
-test_that("OPM metadata keys can be queried with %k% and a formula", {
-  f <- ~ Organism == "Bacillus simplex"
+test_that("OPM metadata can be queried with %k% and a formula", {
+  f <- ignored ~ Organism == "Bacillus simplex"
   got <- f %k% OPM.WITH.MD # must do this outside of expect()
   expect_true(got)
   got <- OPM.WITH.MD %k% f
@@ -385,7 +398,7 @@ test_that("OPM metadata keys can be queried with %k% and a formula", {
 })
 
 ## %k%
-test_that("OPMS metadata keys can be queried with %k%", {
+test_that("OPMS metadata can be queried with %k%", {
   expect_equal(c(TRUE, TRUE), "organism" %k% OPMS.INPUT)
   expect_equal(c(TRUE, TRUE), c("organism", "run") %k% OPMS.INPUT)
   expect_equal(c(FALSE, FALSE), "not there" %k% OPMS.INPUT)
@@ -396,47 +409,54 @@ test_that("OPMS metadata keys can be queried with %k%", {
 })
 
 ## %k%
-test_that("OPMS metadata keys can be queried with %k% and a formula", {
-  f <- ~ organism
-  got <- f %k% OPMS.INPUT
-  expect_equal(c(TRUE, TRUE), got)
-  got <- OPMS.INPUT %k% f
-  expect_equal(c(TRUE, TRUE), got)
-  f <- ~ organism + run # symbols are there, operations fails
-  got <- f %k% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %k% f
-  expect_equal(c(FALSE, FALSE), got)
-  f <- ~ c(organism, run) # symbols are there, operations succeeds
-  got <- f %k% OPMS.INPUT
-  expect_equal(c(TRUE, TRUE), got)
-  got <- OPMS.INPUT %k% f
-  expect_equal(c(TRUE, TRUE), got)
+test_that("OPMS metadata can be queried with %k% and a formula/expression", {
+  for (f in list(junk ~ organism, expression(organism))) {
+    got <- f %k% OPMS.INPUT
+    expect_equal(c(TRUE, TRUE), got)
+    got <- OPMS.INPUT %k% f
+    expect_equal(c(TRUE, TRUE), got)
+  }
+  # symbols are there, operations fails
+  for (f in list(junk ~ organism + run, expression(organism + run))) {
+    got <- f %k% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %k% f
+    expect_equal(c(FALSE, FALSE), got)
+  }
+  # symbols are there, operations succeeds
+  for (f in list(junk ~ c(organism, run), expression(c(organism, run)))) {
+    f <- ~ c(organism, run)
+    got <- f %k% OPMS.INPUT
+    expect_equal(c(TRUE, TRUE), got)
+    got <- OPMS.INPUT %k% f
+    expect_equal(c(TRUE, TRUE), got)
+  }
 })
 
 ## %k%
-test_that("OPMS metadata keys can be queried with %k% and a formula #2", {
-  f <- ~ not.there
-  got <- f %k% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %k% f
-  expect_equal(c(FALSE, FALSE), got)
-  # this should work but does not because of test_that():
-  #not.there <- 42L
-  #got <- f %k% OPMS.INPUT
-  #expect_equal(c(TRUE, TRUE), got)
-  #got <- OPMS.INPUT %k% f
-  #expect_equal(c(TRUE, TRUE), got)
-  #rm(not.there)
-  got <- f %k% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %k% f
-  expect_equal(c(FALSE, FALSE), got)
+test_that("OPMS metadata can be queried with %k% and formula/expression #2", {
+  for (f in list(ignored ~ not.there, expression(not.there))) {
+    got <- f %k% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %k% f
+    expect_equal(c(FALSE, FALSE), got)
+    # this should work but does not because of test_that():
+    #not.there <- 42L
+    #got <- f %k% OPMS.INPUT
+    #expect_equal(c(TRUE, TRUE), got)
+    #got <- OPMS.INPUT %k% f
+    #expect_equal(c(TRUE, TRUE), got)
+    #rm(not.there)
+    got <- f %k% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %k% f
+    expect_equal(c(FALSE, FALSE), got)
+  }
 })
 
 
 ## %k%
-test_that("OPMS metadata keys can be queried with %k% and a formula #3", {
+test_that("OPMS metadata can be queried with %k% and formula #3", {
   f <- ~ organism == "dummy"
   got <- f %k% OPMS.INPUT
   expect_equal(c(TRUE, TRUE), got)
@@ -459,7 +479,7 @@ test_that("OPMS metadata keys can be queried with %k% and a formula #3", {
 
 
 ## %K%
-test_that("OPM metadata keys can be queried with %K%", {
+test_that("OPM metadata can be queried with %K%", {
   expect_false("Organism" %K% OPM.1)
   expect_false("Organism" %K% OPM.1)
   expect_true("Organism" %K% OPM.WITH.MD)
@@ -470,29 +490,31 @@ test_that("OPM metadata keys can be queried with %K%", {
 })
 
 ## %K%
-test_that("OPM metadata keys can be queried with %K% and a formula", {
-  f <- ~ Organism == "Bacillus simplex"
-  got <- f %K% OPM.WITH.MD # must do this outside of expect()
-  expect_true(got)
-  got <- OPM.WITH.MD %K% f
-  expect_true(got)
-  got <- f %K% OPM.1
-  expect_false(got)
-  got <- OPM.1 %K% f
-  expect_false(got)
-  Organism <- 'Elephas maximus'
-  got <- f %K% OPM.1
-  expect_false(got) # difference to %k%
-  got <- f %K% OPM.1
-  expect_false(got)
-  got <- f %K% OPM.WITH.MD
-  expect_true(got)
-  got <- OPM.WITH.MD %K% f
-  expect_true(got)
+test_that("OPM metadata can be queried with %K% and formula/expression", {
+  for (f in list(ignored ~ Organism == "Bacillus simplex",
+      expression(Organism == "Bacillus simplex"))) {
+    got <- f %K% OPM.WITH.MD # must do this outside of expect()
+    expect_true(got)
+    got <- OPM.WITH.MD %K% f
+    expect_true(got)
+    got <- f %K% OPM.1
+    expect_false(got)
+    got <- OPM.1 %K% f
+    expect_false(got)
+    Organism <- 'Elephas maximus'
+    got <- f %K% OPM.1
+    expect_false(got) # difference to %k%
+    got <- f %K% OPM.1
+    expect_false(got)
+    got <- f %K% OPM.WITH.MD
+    expect_true(got)
+    got <- OPM.WITH.MD %K% f
+    expect_true(got)
+  }
 })
 
 ## %K%
-test_that("OPMS metadata keys can be queried with %K%", {
+test_that("OPMS metadata can be queried with %K%", {
   expect_equal(c(TRUE, TRUE), "organism" %K% OPMS.INPUT)
   expect_equal(c(FALSE, FALSE), c("organism", "run") %K% OPMS.INPUT)
   expect_equal(c(FALSE, FALSE), "not there" %K% OPMS.INPUT)
@@ -503,7 +525,7 @@ test_that("OPMS metadata keys can be queried with %K%", {
 })
 
 ## %K%
-test_that("OPMS metadata keys can be queried with %K% and a formula", {
+test_that("OPMS metadata can be queried with %K% and a formula", {
   f <- ~ organism
   got <- f %K% OPMS.INPUT
   expect_equal(c(TRUE, TRUE), got)
@@ -522,27 +544,28 @@ test_that("OPMS metadata keys can be queried with %K% and a formula", {
 })
 
 ## %K%
-test_that("OPMS metadata keys can be queried with %K% and a formula #2", {
-  f <- ~ not.there
-  got <- f %K% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %K% f
-  expect_equal(c(FALSE, FALSE), got)
-  not.there <- 42L
-  got <- f %K% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %K% f
-  expect_equal(c(FALSE, FALSE), got)
-  rm(not.there)
-  got <- f %K% OPMS.INPUT
-  expect_equal(c(FALSE, FALSE), got)
-  got <- OPMS.INPUT %K% f
-  expect_equal(c(FALSE, FALSE), got)
+test_that("OPMS metadata can be queried with %K% and formula/expression #2", {
+  for (f in list(junk ~ not.there, expression(not.there))) {
+    got <- f %K% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %K% f
+    expect_equal(c(FALSE, FALSE), got)
+    not.there <- 42L
+    got <- f %K% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %K% f
+    expect_equal(c(FALSE, FALSE), got)
+    rm(not.there)
+    got <- f %K% OPMS.INPUT
+    expect_equal(c(FALSE, FALSE), got)
+    got <- OPMS.INPUT %K% f
+    expect_equal(c(FALSE, FALSE), got)
+  }
 })
 
 
 ## %K%
-test_that("OPMS metadata keys can be queried with %K% and a formula #3", {
+test_that("OPMS metadata can be queried with %K% and formula #3", {
   f <- ~ organism == "dummy"
   got <- f %K% OPMS.INPUT
   expect_equal(c(TRUE, TRUE), got)
@@ -583,17 +606,21 @@ test_that("metadata can be queried with %q%", {
 })
 
 ## %q%
-test_that("OPM metadata keys can be queried with %q% and a formula", {
-  f <- ~ Organism == "Bacillus simplex"
-  expect_error(f %q% OPM.1)
-  expect_error(OPM.1 %q% f)
-  expect_true(f %q% OPM.WITH.MD)
-  expect_true(OPM.WITH.MD %q% f)
-  f <- ~ Organism == "Bacillus subtilis"
-  expect_error(f %q% OPM.1)
-  expect_error(OPM.1 %q% f)
-  expect_false(f %q% OPM.WITH.MD)
-  expect_false(OPM.WITH.MD %q% f)
+test_that("OPM metadata can be queried with %q% and formula/expression", {
+  for (f in list(junk ~ Organism == "Bacillus simplex",
+      expression(Organism == "Bacillus simplex"))) {
+    expect_error(f %q% OPM.1)
+    expect_error(OPM.1 %q% f)
+    expect_true(f %q% OPM.WITH.MD)
+    expect_true(OPM.WITH.MD %q% f)
+  }
+  for (f in list(junk ~ Organism == "Bacillus subtilis",
+      expression(Organism == "Bacillus subtilis"))) {
+    expect_error(f %q% OPM.1)
+    expect_error(OPM.1 %q% f)
+    expect_false(f %q% OPM.WITH.MD)
+    expect_false(OPM.WITH.MD %q% f)
+  }
   # this should work but does not because of test_that():
   #Organism <- "Bacillus subtilis"
   #expect_true(f %q% OPM.1)
@@ -626,22 +653,21 @@ test_that("OPM metadata can be queried with %Q%", {
 })
 
 ## %Q%
-test_that("OPM metadata keys can be queried with %Q% and a formula", {
-  f <- ~ Organism == "Bacillus simplex"
-  expect_error(f %Q% OPM.1)
-  expect_error(OPM.1 %Q% f)
-  expect_true(f %Q% OPM.WITH.MD)
-  expect_true(OPM.WITH.MD %Q% f)
-  f <- ~ Organism == "Bacillus subtilis"
-  expect_error(f %Q% OPM.1)
-  expect_error(OPM.1 %Q% f)
-  expect_false(f %Q% OPM.WITH.MD)
-  expect_false(OPM.WITH.MD %Q% f)
-  Organism <- "Bacillus subtilis"
-  expect_error(f %Q% OPM.1)
-  expect_error(OPM.1 %Q% f)
-  expect_false(f %Q% OPM.WITH.MD)
-  expect_false(OPM.WITH.MD %Q% f)
+test_that("OPM metadata can be queried with %Q% and formula/expression", {
+  for (f in list(ignored ~ Organism == "Bacillus simplex",
+      expression(Organism == "Bacillus simplex"))) {
+    expect_error(f %Q% OPM.1)
+    expect_error(OPM.1 %Q% f)
+    expect_true(f %Q% OPM.WITH.MD)
+    expect_true(OPM.WITH.MD %Q% f)
+  }
+  for (f in list(ignored ~ Organism == "Bacillus subtilis",
+      expression(Organism == "Bacillus subtilis"))) {
+    expect_error(f %Q% OPM.1)
+    expect_error(OPM.1 %Q% f)
+    expect_false(f %Q% OPM.WITH.MD)
+    expect_false(OPM.WITH.MD %Q% f)
+  }
 })
 
 ## %Q%

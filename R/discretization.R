@@ -560,7 +560,7 @@ setMethod("do_disc", OPMA, function(object, cutoff, groups = FALSE,
     stop(sprintf(
       "'cutoff' must be a non-empty vector if applied to %s objects",
       class(object)))
-  x <- aggregated(object, subset = map_param_names(subset, ci = FALSE)[[1L]],
+  x <- aggregated(object, subset = map_grofit_names(subset, ci = FALSE)[[1L]],
     ci = FALSE)[1L, ]
   x <- discrete(x, range = cutoff, gap = TRUE, output = "logical")
   settings <- list(if (is.numeric(cutoff))
@@ -636,7 +636,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
     combined <- !length(groups)
 
   # extra step necessary here because extract() allows 'disc'
-  subset <- unname(match.arg(subset, unlist(map_param_names(plain = TRUE))))
+  subset <- unname(match.arg(subset, unlist(map_grofit_names(plain = TRUE))))
 
   x <- extract(object = object, as.labels = groups, subset = subset,
     ci = FALSE, full = FALSE, dataframe = FALSE, dups = "ignore", ...)

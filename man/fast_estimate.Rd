@@ -57,7 +57,9 @@
   Quickly estimate the curve parameters AUC (area under the
   curve) or A (maximum height). This is normally not
   directly called by an \pkg{opm} user but via
-  \code{\link{do_aggr}}.
+  \code{\link{do_aggr}} and might eventually be made
+  internal to the package and inaccessible, so it is
+  advisable to not use this function directly.
 }
 \examples{
 data(vaas_1)

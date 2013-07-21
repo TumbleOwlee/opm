@@ -3,11 +3,12 @@
 \alias{\%k\%}
 \alias{infix.k}
 \alias{infix.largek}
-\title{Search in metadata keys}
+\title{Query metadata keys}
 \arguments{
-  \item{x}{Character vector, factor, list or formula used
-  as query. See \sQuote{Details}. \code{x} and \code{table}
-  can swap their places.}
+  \item{x}{Character vector, factor, list, formula,
+  expression or \code{\link{WMD}} object used as query. See
+  \sQuote{Details}. \code{x} and \code{table} can swap
+  their places.}
 
   \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
   object. \code{x} and \code{table} can swap their places.}
@@ -18,7 +19,8 @@
 }
 \description{
   Search for the presence of metadata keys, either using a
-  vector, factor, list or formula.
+  vector, factor, list, formula, expression or
+  \code{\link{WMD}} object.
 }
 \details{
   The behaviour of these methods depends on the object used
@@ -43,6 +45,9 @@
   This is based on \code{\link{contains}} with the
   \code{values} argument set to \code{FALSE}.
 
+  \item When supplying a \code{\link{WMD}} object as query,
+  its metadata will be used in a list query.
+
   \item The factor method first converts \code{x} to
   \sQuote{character} mode.
 
@@ -53,9 +58,12 @@
   metadata are looked up in the enclosing environment
   \code{infix.k} or only in the base environment
   \code{infix.largek}. But note also that missing objects
-  are not the only potential reason of failure. } See
-  \code{\link{subset}} for usage examples with
-  \code{\link{OPMS}} objects.
+  are not the only potential reason of failure.
+
+  \item The expression method works like the formula
+  method, using the entire expression in place of the right
+  side of the formula. } See \code{\link{subset}} for usage
+  examples with \code{\link{OPMS}} objects.
 }
 \examples{
 # The dataset contains the metadata keys 'Species' and 'Experiment' but
@@ -93,6 +101,9 @@ stopifnot(!c("Species", "Experiment") \%K\% vaas_1)
 
 stopifnot(list(Experiment = "whatever") \%k\% vaas_1) # key present
 stopifnot(list(Species = "ignored") \%k\% vaas_1) # key present
+
+stopifnot(vaas_1 \%k\% vaas_1) # obviously
+stopifnot(vaas_1 \%K\% vaas_1)
 
 # This fails because we query with a named sublist but the 'Species'
 # metadata entry is not even a list.
@@ -133,15 +144,23 @@ rm(missing.name) # tidy up
 \alias{\%k\%,character,WMD-method}
 \alias{infix.k,list,WMD-method}
 \alias{\%k\%,list,WMD-method}
+\alias{infix.k,WMD,WMD-method}
+\alias{\%k\%,WMD,WMD-method}
 \alias{infix.k,formula,WMD-method}
 \alias{\%k\%,formula,WMD-method}
+\alias{infix.k,expression,WMD-method}
+\alias{\%k\%,expression,WMD-method}
 \alias{infix.largek,character,WMD-method}
 \alias{\%K\%,character,WMD-method}
 \alias{infix.largek-methods}
 \alias{infix.largek,list,WMD-method}
 \alias{\%K\%,list,WMD-method}
+\alias{infix.largek,WMD,WMD-method}
+\alias{\%K\%,WMD,WMD-method}
 \alias{infix.largek,formula,WMD-method}
 \alias{\%K\%,formula,WMD-method}
+\alias{infix.largek,expression,WMD-method}
+\alias{\%K\%,expression,WMD-method}
 \alias{infix.k,factor,WMD-method}
 \alias{\%k\%,factor,WMD-method}
 \alias{infix.largek-methods}
@@ -153,6 +172,12 @@ rm(missing.name) # tidy up
 \alias{infix.largek-methods}
 \alias{infix.largek,list,OPMS-method}
 \alias{\%K\%,list,OPMS-method}
+\alias{infix.k-methods}
+\alias{infix.k,WMD,OPMS-method}
+\alias{\%k\%,WMD,OPMS-method}
+\alias{infix.largek-methods}
+\alias{infix.largek,WMD,OPMS-method}
+\alias{\%K\%,WMD,OPMS-method}
 \alias{infix.k-methods}
 \alias{infix.k,character,OPMS-method}
 \alias{\%k\%,character,OPMS-method}
@@ -172,6 +197,12 @@ rm(missing.name) # tidy up
 \alias{infix.largek,formula,OPMS-method}
 \alias{\%K\%,formula,OPMS-method}
 \alias{infix.k-methods}
+\alias{infix.k,expression,OPMS-method}
+\alias{\%k\%,expression,OPMS-method}
+\alias{infix.largek-methods}
+\alias{infix.largek,expression,OPMS-method}
+\alias{\%K\%,expression,OPMS-method}
+\alias{infix.k-methods}
 \alias{infix.k,WMD,ANY-method}
 \alias{\%k\%,WMD,ANY-method}
 \alias{infix.largek-methods}
@@ -188,13 +219,21 @@ rm(missing.name) # tidy up
 
   \S4method{\%k\%}{list,WMD}(x, table) 
 
+  \S4method{\%k\%}{WMD,WMD}(x, table) 
+
   \S4method{\%k\%}{formula,WMD}(x, table) 
+
+  \S4method{\%k\%}{expression,WMD}(x, table) 
 
   \S4method{\%K\%}{character,WMD}(x, table) 
 
   \S4method{\%K\%}{list,WMD}(x, table) 
 
+  \S4method{\%K\%}{WMD,WMD}(x, table) 
+
   \S4method{\%K\%}{formula,WMD}(x, table) 
+
+  \S4method{\%K\%}{expression,WMD}(x, table) 
 
   \S4method{\%k\%}{factor,WMD}(x, table) 
 
@@ -203,6 +242,10 @@ rm(missing.name) # tidy up
   \S4method{\%k\%}{list,OPMS}(x, table) 
 
   \S4method{\%K\%}{list,OPMS}(x, table) 
+
+  \S4method{\%k\%}{WMD,OPMS}(x, table) 
+
+  \S4method{\%K\%}{WMD,OPMS}(x, table) 
 
   \S4method{\%k\%}{character,OPMS}(x, table) 
 
@@ -215,6 +258,10 @@ rm(missing.name) # tidy up
   \S4method{\%k\%}{formula,OPMS}(x, table) 
 
   \S4method{\%K\%}{formula,OPMS}(x, table) 
+
+  \S4method{\%k\%}{expression,OPMS}(x, table) 
+
+  \S4method{\%K\%}{expression,OPMS}(x, table) 
 
   \S4method{\%k\%}{WMD,ANY}(x, table) 
 

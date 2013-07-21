@@ -11,8 +11,10 @@
 - glob_to_regex() is now an S3 generic function
 
 - new plate_type() method
+- new infix-operator methods for querying metadata
 - csv_data() gets a 'what' argument
 - explicit length() method for OPM objects
+- well() gets a 'use.names' argument
 
 - streamlined the documentation (merged many entries) in the manual
 

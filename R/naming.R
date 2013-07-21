@@ -388,7 +388,7 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 #' @return Named list with old names as keys, new ones as values.
 #' @keywords internal
 #'
-map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
+map_grofit_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
     opm.fast = FALSE) {
   part.1 <- as.list(CURVE_PARAMS)
   names(part.1) <- if (opm.fast)

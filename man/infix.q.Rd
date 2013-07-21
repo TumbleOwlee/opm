@@ -5,9 +5,10 @@
 \alias{infix.q}
 \title{Query metadata}
 \arguments{
-  \item{x}{Character vector, factor, list or formula used
-  as query. See \sQuote{Details}. \code{x} and \code{table}
-  can swap their places.}
+  \item{x}{Character vector, factor, list, formula,
+  expression or \code{\link{WMD}} object used as query. See
+  \sQuote{Details}. \code{x} and \code{table} can swap
+  their places.}
 
   \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
   object. \code{x} and \code{table} can swap their places.}
@@ -18,7 +19,8 @@
 }
 \description{
   Search for the presence of metadata values for given
-  keys, either using a vector, factor, list or formula.
+  keys, either using a vector, factor, list, formula,
+  expression or \code{\link{WMD}} object.
 }
 \details{
   The behaviour of these methods depends on the object used
@@ -47,6 +49,9 @@
   over the character-based search is that it allows for a
   nested query.
 
+  \item When supplying a \code{\link{WMD}} object as query,
+  its metadata will be used in a list query.
+
   \item The factor method first converts \code{x} to
   \sQuote{character} mode.
 
@@ -61,9 +66,12 @@
   the enclosing environment (\code{infix.q}) or only in the
   base environment (\code{infix.largeq}). The former
   approach is less strict.  Because of missing objects and
-  other reasons the method might nevertheless fail. } See
-  \code{\link{subset}} for usage examples with
-  \code{\link{OPMS}} objects.
+  other reasons the method might nevertheless fail.
+
+  \item The expression method works like the formula
+  method, using the entire expression in place of the right
+  side of the formula. } See \code{\link{subset}} for usage
+  examples with \code{\link{OPMS}} objects.
 }
 \examples{
 # The dataset contains the metadata keys 'Species' and 'Experiment' with the
@@ -117,6 +125,9 @@ stopifnot(!list(Experiment = c("First replicate",
 stopifnot(list() \%q\% vaas_1) # empty query always results
 stopifnot(list() \%Q\% vaas_1)
 
+stopifnot(vaas_1 \%q\% vaas_1) # obviously
+stopifnot(vaas_1 \%Q\% vaas_1)
+
 ## Formulas for querying
 
 stopifnot((~ Experiment == "First replicate") \%q\% vaas_1)
@@ -148,15 +159,23 @@ rm(missing.name) # tidy up
 \alias{\%q\%,character,WMD-method}
 \alias{infix.q,list,WMD-method}
 \alias{\%q\%,list,WMD-method}
+\alias{infix.q,WMD,WMD-method}
+\alias{\%q\%,WMD,WMD-method}
 \alias{infix.q,formula,WMD-method}
 \alias{\%q\%,formula,WMD-method}
+\alias{infix.q,expression,WMD-method}
+\alias{\%q\%,expression,WMD-method}
 \alias{infix.largeq,character,WMD-method}
 \alias{\%Q\%,character,WMD-method}
 \alias{infix.largeq-methods}
 \alias{infix.largeq,list,WMD-method}
 \alias{\%Q\%,list,WMD-method}
+\alias{infix.largeq,WMD,WMD-method}
+\alias{\%Q\%,WMD,WMD-method}
 \alias{infix.largeq,formula,WMD-method}
 \alias{\%Q\%,formula,WMD-method}
+\alias{infix.largeq,expression,WMD-method}
+\alias{\%Q\%,expression,WMD-method}
 \alias{infix.q,factor,WMD-method}
 \alias{\%q\%,factor,WMD-method}
 \alias{infix.largeq-methods}
@@ -168,6 +187,12 @@ rm(missing.name) # tidy up
 \alias{infix.largeq-methods}
 \alias{infix.largeq,list,OPMS-method}
 \alias{\%Q\%,list,OPMS-method}
+\alias{infix.q-methods}
+\alias{infix.q,WMD,OPMS-method}
+\alias{\%q\%,WMD,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,WMD,OPMS-method}
+\alias{\%Q\%,WMD,OPMS-method}
 \alias{infix.q-methods}
 \alias{infix.q,character,OPMS-method}
 \alias{\%q\%,character,OPMS-method}
@@ -187,6 +212,12 @@ rm(missing.name) # tidy up
 \alias{infix.largeq,formula,OPMS-method}
 \alias{\%Q\%,formula,OPMS-method}
 \alias{infix.q-methods}
+\alias{infix.q,expression,OPMS-method}
+\alias{\%q\%,expression,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,expression,OPMS-method}
+\alias{\%Q\%,expression,OPMS-method}
+\alias{infix.q-methods}
 \alias{infix.q,WMD,ANY-method}
 \alias{\%q\%,WMD,ANY-method}
 \alias{infix.largeq-methods}
@@ -203,13 +234,21 @@ rm(missing.name) # tidy up
 
   \S4method{\%q\%}{list,WMD}(x, table) 
 
+  \S4method{\%q\%}{WMD,WMD}(x, table) 
+
   \S4method{\%q\%}{formula,WMD}(x, table) 
+
+  \S4method{\%q\%}{expression,WMD}(x, table) 
 
   \S4method{\%Q\%}{character,WMD}(x, table) 
 
   \S4method{\%Q\%}{list,WMD}(x, table) 
 
+  \S4method{\%Q\%}{WMD,WMD}(x, table) 
+
   \S4method{\%Q\%}{formula,WMD}(x, table) 
+
+  \S4method{\%Q\%}{expression,WMD}(x, table) 
 
   \S4method{\%q\%}{factor,WMD}(x, table) 
 
@@ -218,6 +257,10 @@ rm(missing.name) # tidy up
   \S4method{\%q\%}{list,OPMS}(x, table) 
 
   \S4method{\%Q\%}{list,OPMS}(x, table) 
+
+  \S4method{\%q\%}{WMD,OPMS}(x, table) 
+
+  \S4method{\%Q\%}{WMD,OPMS}(x, table) 
 
   \S4method{\%q\%}{character,OPMS}(x, table) 
 
@@ -230,6 +273,10 @@ rm(missing.name) # tidy up
   \S4method{\%q\%}{formula,OPMS}(x, table) 
 
   \S4method{\%Q\%}{formula,OPMS}(x, table) 
+
+  \S4method{\%q\%}{expression,OPMS}(x, table) 
+
+  \S4method{\%Q\%}{expression,OPMS}(x, table) 
 
   \S4method{\%q\%}{WMD,ANY}(x, table) 
 

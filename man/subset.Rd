@@ -5,13 +5,13 @@
 \arguments{
   \item{x}{\code{\link{OPMS}} object.}
 
-  \item{query}{Logical, numeric or character vector, list,
-  or formula. If a logical or numeric vector, \code{query}
-  is directly used as the first argument of
-  \code{\link{[}}, and all following arguments, if any, are
-  ignored. If a list, formula or a character vector, it is
-  used for conducting a query based on one of the infix
-  operators as described below.}
+  \item{query}{Logical or numeric vector or object accepted
+  as query by the infix operators. If a logical or numeric
+  vector, \code{query} is directly used as the first
+  argument of \code{\link{[}}, and all following arguments,
+  if any, are ignored. If otherwise, it is used for
+  conducting a query based on one of the infix operators as
+  described below.}
 
   \item{values}{Logical scalar. If \code{TRUE}, the values
   of \code{query} are also considered (by using

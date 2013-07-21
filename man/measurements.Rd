@@ -17,6 +17,10 @@
   \item{drop}{Logical scalar. If only a single well was
   selected, simplify it to a vector?}
 
+  \item{use.names}{Logical scalar indicating whether the
+  time points should be used as names for the
+  measurements.}
+
   \item{what}{Character scalar determining the output mode
   as follows: \describe{ \item{all}{Numeric vector: all
   time points, in order.} \item{interval}{The difference
@@ -44,7 +48,9 @@
 
   \code{wells} yields a numeric matrix or vector, depending
   on \code{i} and \code{drop}. It will always ignore the
-  time points, in contrast to \code{measurements}.
+  time points as values, in contrast to
+  \code{measurements}. But depending on \code{use.names}
+  they would be inserted as names.
 
   The return value of \code{hours} is dependent on the
   \code{what} argument; see there.
@@ -73,7 +79,7 @@ head(x <- well(vaas_1, "B04")) # => numeric vector
 stopifnot(is.numeric(x), length(x) == 384)
 head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
 stopifnot(is.matrix(x), dim(x) == c(384, 2))
-# selecting adjacent wells is easer if using a formula
+# selecting adjacent wells is easer when using a formula
 head(x <- well(vaas_1, c("B12", "C01", "C02")))
 stopifnot(is.matrix(x), dim(x) == c(384, 3))
 head(y <- well(vaas_1, ~ B12:C02)) # => same result
@@ -132,7 +138,7 @@ stopifnot(length(x) == 4, x == 95.75)
 \usage{
   \S4method{measurements}{OPM}(object, i) 
 
-  \S4method{well}{OPM}(object, i, drop = TRUE) 
+  \S4method{well}{OPM}(object, i, drop = TRUE, use.names = TRUE) 
 
   \S4method{hours}{OPM}(object,
     what = c("max", "all", "size", "summary", "interval", "minmax")) 

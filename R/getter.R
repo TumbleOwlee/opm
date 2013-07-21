@@ -19,6 +19,8 @@
 #'   sequences of well coordinates. See the examples.
 #' @param drop Logical scalar. If only a single well was selected, simplify it
 #'   to a vector?
+#' @param use.names Logical scalar indicating whether the time points should
+#'   be used as names for the measurements.
 #' @param what Character scalar determining the output mode as follows:
 #'   \describe{
 #'     \item{all}{Numeric vector: all time points, in order.}
@@ -41,8 +43,9 @@
 #'   argument refers only to the remaining matrix.
 #'
 #'   \code{wells} yields a numeric matrix or vector, depending on \code{i} and
-#'   \code{drop}. It will always ignore the time points, in contrast to
-#'   \code{measurements}.
+#'   \code{drop}. It will always ignore the time points as values, in contrast
+#'   to \code{measurements}. But depending on \code{use.names} they would be
+#'   inserted as names.
 #'
 #'   The return value of \code{hours} is dependent on the \code{what} argument;
 #'   see there.
@@ -67,7 +70,7 @@
 #' stopifnot(is.numeric(x), length(x) == 384)
 #' head(x <- well(vaas_1, c("B08", "C07"))) # => numeric matrix
 #' stopifnot(is.matrix(x), dim(x) == c(384, 2))
-#' # selecting adjacent wells is easer if using a formula
+#' # selecting adjacent wells is easer when using a formula
 #' head(x <- well(vaas_1, c("B12", "C01", "C02")))
 #' stopifnot(is.matrix(x), dim(x) == c(384, 3))
 #' head(y <- well(vaas_1, ~ B12:C02)) # => same result
@@ -117,9 +120,11 @@ setMethod("measurements", OPM, function(object, i) {
 #'
 setGeneric("well", function(object, ...) standardGeneric("well"))
 
-setMethod("well", OPM, function(object, i, drop = TRUE) {
-  object@measurements[, -1L, drop = FALSE][,
-    well_index(i, colnames(object@measurements)[-1L]), drop = drop]
+setMethod("well", OPM, function(object, i, drop = TRUE, use.names = TRUE) {
+  x <- object@measurements[, -1L, drop = FALSE]
+  if (L(use.names))
+    rownames(x) <- object@measurements[, 1L]
+  x[, well_index(i, colnames(object@measurements)[-1L]), drop = drop]
 }, sealed = SEALED)
 
 #= hours measurements
@@ -811,7 +816,7 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
       SOFTWARE, software))
 
   # generate subset
-  wanted <- unlist(map_param_names(subset, ci))
+  wanted <- unlist(map_grofit_names(subset, ci))
   result <- object@aggregated[wanted, , drop = FALSE]
   if (CURVE_PARAMS[2L] %in% subset)
     result <- trim_lambda(result, hours(object), trim = trim)
@@ -897,11 +902,11 @@ setMethod("disc_settings", OPMD, function(object) {
 #' might be of use in testing.
 #'
 #' @param x \code{\link{OPMS}} object.
-#' @param query Logical, numeric or character vector, list, or formula. If a
-#'   logical or numeric vector, \code{query} is directly used as the first
-#'   argument of \code{\link{[}}, and all following arguments, if any, are
-#'   ignored. If a list, formula or a character vector, it is used for
-#'   conducting a query based on one of the infix operators as described below.
+#' @param query Logical or numeric vector or object accepted as query by the
+#'   infix operators. If a logical or numeric vector, \code{query} is directly
+#'   used as the first argument of \code{\link{[}}, and all following arguments,
+#'   if any, are ignored. If otherwise, it is used for conducting a query based
+#'   on one of the infix operators as described below.
 #' @param values Logical scalar. If \code{TRUE}, the values of \code{query} are
 #'   also considered (by using \code{\link{infix.q}} or
 #'   \code{\link{infix.largeq}}). If \code{FALSE} only the keys are considered
@@ -1293,17 +1298,18 @@ lapply(c(
 #
 
 
-#' Search in metadata keys
+#' Query metadata keys
 #'
 #' Search for the presence of metadata keys, either using a vector, factor,
-#' list or formula.
+#' list, formula, expression or \code{\link{WMD}} object.
 #'
 #' @name %k%
 #' @aliases infix.k
 #' @rdname infix.k
 #'
-#' @param x Character vector, factor, list or formula used as query. See
-#'   \sQuote{Details}. \code{x} and \code{table} can swap their places.
+#' @param x Character vector, factor, list, formula, expression or
+#'   \code{\link{WMD}} object used as query. See \sQuote{Details}. \code{x} and
+#'   \code{table} can swap their places.
 #' @param table \code{\link{WMD}} or \code{\link{OPMS}} object. \code{x} and
 #'   \code{table} can swap their places.
 #' @return Logical vector of the length of the \code{\link{WMD}} or
@@ -1332,6 +1338,9 @@ lapply(c(
 #'   recursively (by using, of course, a nested query list). This is based on
 #'   \code{\link{contains}} with the \code{values} argument set to \code{FALSE}.
 #'
+#'   \item When supplying a \code{\link{WMD}} object as query, its metadata will
+#'   be used in a list query.
+#'
 #'   \item The factor method first converts \code{x} to \sQuote{character} mode.
 #'
 #'   \item The formula method attempts to evaluate the right side of the formula
@@ -1340,6 +1349,9 @@ lapply(c(
 #'   metadata are looked up in the enclosing environment \code{infix.k} or only
 #'   in the base environment \code{infix.largek}. But note also that missing
 #'   objects are not the only potential reason of failure.
+#'
+#'   \item The expression method works like the formula method, using the
+#'   entire expression in place of the right side of the formula.
 #' }
 #' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #'
@@ -1380,6 +1392,9 @@ lapply(c(
 #'
 #' stopifnot(list(Experiment = "whatever") %k% vaas_1) # key present
 #' stopifnot(list(Species = "ignored") %k% vaas_1) # key present
+#'
+#' stopifnot(vaas_1 %k% vaas_1) # obviously
+#' stopifnot(vaas_1 %K% vaas_1)
 #'
 #' # This fails because we query with a named sublist but the 'Species'
 #' # metadata entry is not even a list.
@@ -1422,9 +1437,20 @@ setMethod("%k%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = FALSE)
 }, sealed = SEALED)
 
+setMethod("%k%", c(WMD, WMD), function(x, table) {
+  contains(table@metadata, x@metadata, values = FALSE)
+}, sealed = SEALED)
+
 setMethod("%k%", c("formula", WMD), function(x, table) {
   tryCatch({
     eval(x[[length(x)]], table@metadata, parent.frame())
+    TRUE
+  }, error = function(e) FALSE)
+}, sealed = SEALED)
+
+setMethod("%k%", c("expression", WMD), function(x, table) {
+  tryCatch({
+    eval(x, table@metadata, parent.frame())
     TRUE
   }, error = function(e) FALSE)
 }, sealed = SEALED)
@@ -1449,9 +1475,20 @@ setMethod("%K%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = FALSE)
 }, sealed = SEALED)
 
+setMethod("%K%", c(WMD, WMD), function(x, table) {
+  contains(table@metadata, x@metadata, values = FALSE)
+}, sealed = SEALED)
+
 setMethod("%K%", c("formula", WMD), function(x, table) {
   tryCatch({
     eval(x[[length(x)]], table@metadata, baseenv())
+    TRUE
+  }, error = function(e) FALSE)
+}, sealed = SEALED)
+
+setMethod("%K%", c("expression", WMD), function(x, table) {
+  tryCatch({
+    eval(x, table@metadata, baseenv())
     TRUE
   }, error = function(e) FALSE)
 }, sealed = SEALED)
@@ -1463,14 +1500,15 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' Query metadata
 #'
 #' Search for the presence of metadata values for given keys, either using a
-#' vector, factor, list or formula.
+#' vector, factor, list, formula, expression or \code{\link{WMD}} object.
 #'
 #' @name %q%
 #' @aliases infix.q
 #' @rdname infix.q
 #'
-#' @param x Character vector, factor, list or formula used as query. See
-#'   \sQuote{Details}. \code{x} and \code{table} can swap their places.
+#' @param x Character vector, factor, list, formula, expression or
+#'   \code{\link{WMD}} object used as query. See \sQuote{Details}. \code{x} and
+#'   \code{table} can swap their places.
 #' @param table \code{\link{WMD}} or \code{\link{OPMS}} object. \code{x} and
 #'   \code{table} can swap their places.
 #' @return Logical vector of the length of the \code{\link{WMD}} or
@@ -1498,6 +1536,9 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #'   using a list over the character-based search is that it allows for a nested
 #'   query.
 #'
+#'   \item When supplying a \code{\link{WMD}} object as query, its metadata will
+#'   be used in a list query.
+#'
 #'   \item The factor method first converts \code{x} to \sQuote{character} mode.
 #'
 #'   \item The formula method attempts to evaluate the right side of the formula
@@ -1510,6 +1551,9 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #'   environment (\code{infix.largeq}). The former approach is less strict.
 #'   Because of missing objects and other reasons the method might nevertheless
 #'   fail.
+#'
+#'   \item The expression method works like the formula method, using the
+#'   entire expression in place of the right side of the formula.
 #' }
 #' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
 #' @exportMethod "%q%"
@@ -1570,6 +1614,9 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' stopifnot(list() %q% vaas_1) # empty query always results
 #' stopifnot(list() %Q% vaas_1)
 #'
+#' stopifnot(vaas_1 %q% vaas_1) # obviously
+#' stopifnot(vaas_1 %Q% vaas_1)
+#'
 #' ## Formulas for querying
 #'
 #' stopifnot((~ Experiment == "First replicate") %q% vaas_1)
@@ -1606,8 +1653,16 @@ setMethod("%q%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = TRUE, exact = FALSE)
 }, sealed = SEALED)
 
+setMethod("%q%", c(WMD, WMD), function(x, table) {
+  contains(table@metadata, x@metadata, values = TRUE, exact = FALSE)
+}, sealed = SEALED)
+
 setMethod("%q%", c("formula", WMD), function(x, table) {
   eval(x[[length(x)]], table@metadata, parent.frame())
+}, sealed = SEALED)
+
+setMethod("%q%", c("expression", WMD), function(x, table) {
+  eval(x, table@metadata, parent.frame())
 }, sealed = SEALED)
 
 #= infix.largeq infix.q
@@ -1631,8 +1686,16 @@ setMethod("%Q%", c("list", WMD), function(x, table) {
   contains(table@metadata, x, values = TRUE, exact = TRUE)
 }, sealed = SEALED)
 
+setMethod("%Q%", c(WMD, WMD), function(x, table) {
+  contains(table@metadata, x@metadata, values = TRUE, exact = TRUE)
+}, sealed = SEALED)
+
 setMethod("%Q%", c("formula", WMD), function(x, table) {
   eval(x[[length(x)]], table@metadata, baseenv())
+}, sealed = SEALED)
+
+setMethod("%Q%", c("expression", WMD), function(x, table) {
+  eval(x, table@metadata, baseenv())
 }, sealed = SEALED)
 
 
@@ -1676,6 +1739,21 @@ lapply(c(
   }, sealed = SEALED)
 })
 
+# OPM methods with function(x, table, ...) signature (infix operators).
+#
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c(WMD, OPMS), function(x, table) {
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+  }, sealed = SEALED)
+})
+
 lapply(c(
     #+
     `%k%`,
@@ -1711,6 +1789,19 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("formula", OPMS), function(x, table) {
+    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c("expression", OPMS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })

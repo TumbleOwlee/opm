@@ -139,7 +139,7 @@ test_that("missing metadata result in an error if requested", {
 ## metadata
 test_that("metadata have be included in example OPM object", {
   expect_is(OPM.WITH.MD, "OPM")
-  exp.list <- list(File = filename(OPM.1), Organism = ORGN)
+  exp.list <- list(File = csv_data(OPM.1, what = "filename"), Organism = ORGN)
   expect_equal(metadata(OPM.WITH.MD), exp.list)
   expect_equal(metadata(OPM.WITH.MD, "Organism"), ORGN)
   expect_equal(metadata(OPM.WITH.MD, list("File", "Organism")), exp.list)
