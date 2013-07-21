@@ -811,7 +811,7 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
       SOFTWARE, software))
 
   # generate subset
-  wanted <- unlist(map_grofit_names(subset, ci))
+  wanted <- unlist(map_param_names(subset, ci))
   result <- object@aggregated[wanted, , drop = FALSE]
   if (CURVE_PARAMS[2L] %in% subset)
     result <- trim_lambda(result, hours(object), trim = trim)
