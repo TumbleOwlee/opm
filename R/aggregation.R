@@ -158,44 +158,6 @@ summary.splines_bootstrap <- function (object, ...) {
     return(table)
 }
 
-################################################################################
-
-
-## NOTE: Not an S4 method because there are no arguments
-
-#' Names of curve parameters
-#'
-#' Yield the names of the estimated curve parameters used internally and in the
-#' output. Alternatively, yield names that should not be used in metadata
-#' entries because they are used as predefined column names by functions such
-#' as \code{\link{flatten}}.
-#'
-#' @param what Character scalar. Which kind of names to obtain.
-#' @return Character vector.
-#' @details In addition to the results of
-#'   \code{param_names("reserved.md.names")}, it should be avoided to use
-#'   metadata keys that start with a dot, as such keys might also be created
-#'   intermediarily by methods that have to compile metadata together with
-#'   other information.
-#' @export
-#' @family aggregation-functions
-#' @keywords utilities
-#' @examples
-#' (x <- param_names())
-#' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
-#' (x <- param_names("reserved"))
-#' stopifnot(is.character(x), length(x) > 1, identical(unique(x), x))
-#' stopifnot(param_names("split.at") %in% x)
-#'
-param_names <- function(
-    what = c("param.names", "reserved.md.names", "split.at")) {
-  case(match.arg(what),
-    param.names = CURVE_PARAMS,
-    reserved.md.names = unname(RESERVED_NAMES),
-    split.at = RESERVED_NAMES[["parameter"]]
-  )
-}
-
 
 ################################################################################
 

@@ -209,8 +209,8 @@ stopifnot(identical(copy, vaas_4))
   \code{\link{batch_opm}}, \code{\link{batch_process}},
   \code{\link{clean_filenames}}, \code{\link{explode_dir}},
   \code{\link{file_pattern}}, \code{\link{glob_to_regex}},
-      \code{\link{opm_files}}, \code{\link{read_opm}},
-  \code{\link{read_single_opm}}, \code{\link{split_files}}
+      \code{\link{read_opm}}, \code{\link{read_single_opm}},
+  \code{\link{split_files}}
 }
 \keyword{IO}
 \keyword{attribute}

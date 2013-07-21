@@ -1,6 +1,7 @@
 \name{plate_type}
+\alias{gen_iii}
 \alias{plate_type}
-\title{Plate type used or normalized}
+\title{Plate type displayed or modified}
 \arguments{
   \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
   object, or character vector of original plate name(s), or
@@ -35,36 +36,63 @@
   indicator, if any? Only relevant for the character or
   factor method.}
 
+  \item{to}{Character scalar indicating the plate type.
+  User-defined plate types must be given literally. For
+  generation-III plates, use \sQuote{gen.iii}; for
+  ecoplates, use \sQuote{eco}; the remaining allowed values
+  are only \sQuote{sf.n2} and \sQuote{sf.p2}, but matching
+  is case-insensitive.}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
 \value{
   Character scalar in the case of the \code{\link{OPM}} and
-  \code{\link{OPMS}} methods, otherwise a character vector
-  with the same length than \code{object}, or a
-  corresponding factor. If \code{object} is not given, a
-  character vector of normalized plate-type names.
+  \code{\link{OPMS}} methods of \code{plate_type},
+  otherwise a character vector with the same length than
+  \code{object}, or a corresponding factor.  If
+  \code{object} is not given, a character vector of
+  normalized plate-type names.
+
+  \code{gen_iii} returns a novel \code{\link{OPMX}} object.
 }
 \description{
   Get the type of the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-  used in the measuring, normalize plate-type names, or
-  display known names.
+  used in the measuring, normalize plate-type names,
+  display known names, or modify the plate type after
+  inputting the plate data.
 }
 \details{
-  The \code{\link{OPM}} and \code{\link{OPMS}} methods are
-  convenience methods for one of the more important entries
-  of \code{\link{csv_data}} with additional options useful
-  for creating plot titles.
+  The \code{\link{OPM}} and \code{\link{OPMS}} methods of
+  \code{plate_type} are convenience methods for one of the
+  more important entries of \code{\link{csv_data}} with
+  additional options useful for creating plot titles.
 
   The character method normalizes the names of
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM
   plates to the internally used naming scheme. Unrecognized
-  names are returned unchanged. This needs not normally be
+  names are returned unchanged.  This needs not normally be
   called by the \pkg{opm} user but might be of interest.
 
   Factors are treated by passing their levels through the
   character method.
+
+  \code{gen_iii} change the plate type of an
+  \code{\link{OPM}} object to \sQuote{Generation III} or
+  another plate type. This is currently the only function
+  to change plate names. It is intended for Generation-III
+  plates which were run like PM plates. Usually they will
+  be annotated as some PM plate by the
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  system. In contrast, input ID-mode plates are
+  automatically detected (see
+  \code{\link{read_single_opm}}).
+
+  The actual spelling of the plate type used might (in
+  theory) differ between distinct versions of \pkg{opm} but
+  is internally consistent. It is an error to set one of
+  the PM plate types or to assign an unknown plate type.
 }
 \examples{
 ## 'OPM' method
@@ -105,34 +133,50 @@ stopifnot(is.factor(z), z == x) # same result after conversion
 ## 'missing' method
 (x <- plate_type())
 stopifnot(is.character(x), plate_type(vaas_1) \%in\% x)
+
+## changing the plate type
+
+# 'OPM' method
+data(vaas_1)
+plate_type(copy <- gen_iii(vaas_1))
+stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
+plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
+stopifnot(!identical(vaas_1, copy))
+
+# 'OPMS' method
+data(vaas_4)
+plate_type(copy <- gen_iii(vaas_4))
+stopifnot(identical(vaas_4, copy)) # as above
+plate_type(copy <- gen_iii(vaas_4, "eco"))
+stopifnot(!identical(vaas_4, copy)) # as above
 }
 \seealso{
   base::strtrim base::abbreviate base::gsub
 
-  Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{dim}},
-  \code{\link{disc_settings}}, \code{\link{discretized}},
-  \code{\link{duplicated}}, \code{\link{filename}},
-  \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{minmax}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{well}}
+  Other naming-functions: \code{\link{find_positions}},
+  \code{\link{find_substrate}}, \code{\link{listing}},
+  \code{\link{opm_files}}, \code{\link{param_names}},
+  \code{\link{select_colors}},
+  \code{\link{substrate_info}}, \code{\link{wells}}
 }
 \keyword{attribute}
 \keyword{character}
+\keyword{manip}
 \keyword{utilities}
 
 \docType{methods}
 \alias{plate_type-methods}
+\alias{plate_type,OPMS-method}
 \alias{plate_type,OPM-method}
 \alias{plate_type,character-method}
 \alias{plate_type,factor-method}
 \alias{plate_type,missing-method}
-\alias{plate_type,OPMS-method}
+\alias{gen_iii,OPM-method}
+\alias{gen_iii-methods}
+\alias{gen_iii,OPMS-method}
 \usage{
+  \S4method{plate_type}{OPMS}(object, ...) 
+
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
     subtype = FALSE) 
 
@@ -145,6 +189,8 @@ stopifnot(is.character(x), plate_type(vaas_1) \%in\% x)
 
   \S4method{plate_type}{missing}(object, ...) 
 
-  \S4method{plate_type}{OPMS}(object, ...) 
+  \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
+
+  \S4method{gen_iii}{OPMS}(object, ...) 
 
 }

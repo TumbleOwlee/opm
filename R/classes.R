@@ -46,7 +46,8 @@ setMethod("update_settings_list", "list", function(x) {
 #' Virtual classes of the opm package
 #'
 #' Classes that are virtual and thus are not directly dealt with by an
-#' \pkg{opm} user.
+#' \pkg{opm} user: \acronym{WMD}, \acronym{MOA}, \acronym{FOE}, \acronym{OPMX}
+#' and \sQuote{YAML_VIA_LIST}.
 #'
 #' @details
 #' \acronym{WMD} is an acronym for \sQuote{with metadata}.
@@ -113,7 +114,9 @@ setClass(WMD,
 
 #' Real classes of the opm package
 #'
-#' Classes whose members can be generated and manipulated by an \pkg{opm} user.
+#' Classes whose members can directly be generated and manipulated by an
+#' \pkg{opm} user: \acronym{OPM}, \acronym{OPMA}, \acronym{OPMD} and
+#' \acronym{OPMS}.
 #'
 #' @details
 #' \acronym{OPM} is an acronym for
@@ -125,61 +128,67 @@ setClass(WMD,
 #' organised metadata. Objects of this class are usually created by inputting
 #' files with \code{\link{read_single_opm}} or \code{\link{read_opm}}.
 #'
-#'   Regarding the coercion of this class to other classes (see the \code{as}
-#'   method from the \pkg{methods} package), consider the following:
-#'   \itemize{
-#'     \item The coercion of this class (and its child classes) to a list (and
-#'     vice versa) relies on a mapping between slot names and keys in the list,
-#'     i.e. the list must be appropriately named. For instance, this is the
-#'     mechanism when reading from and writing to \acronym{YAML}, see
-#'     \code{\link{to_yaml}}.
-#'     \item Coercions to other data frames and matrices first coerce the
-#'     \code{\link{measurements}} and then add the other slots as attributes.
-#'     \item Methods such as \code{\link{flatten}} and \code{\link{extract}}
-#'     might be way more appropriate for converting \code{\link{OPM}} objects.
-#'   }
+#' \acronym{OPM} inherits from \code{\link{WMD}} and, hence, has all its
+#' methods.
+#'
+#' Regarding the coercion of this class to other classes (see the \code{as}
+#' method from the \pkg{methods} package), consider the following:
+#' \itemize{
+#'   \item The coercion of this class (and its child classes) to a list (and
+#'   vice versa) relies on a mapping between slot names and keys in the list,
+#'   i.e. the list must be appropriately named. For instance, this is the
+#'   mechanism when reading from and writing to \acronym{YAML}, see
+#'   \code{\link{to_yaml}}.
+#'   \item Coercions to other data frames and matrices first coerce the
+#'   \code{\link{measurements}} and then add the other slots as attributes.
+#'   \item Methods such as \code{\link{flatten}} and \code{\link{extract}} might
+#'   be way more appropriate for converting \acronym{OPM} objects.
+#' }
 #'
 #' \acronym{OPMA} is an acronym for \sQuote{\acronym{OPM}, aggregated}. This is
 #' the class for holding single-plate
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
 #' together with aggregated values. Objects of this class are usually created by
-#' calling \code{\link{do_aggr}} on an \code{\link{OPM}} object, or by inputting
+#' calling \code{\link{do_aggr}} on an \acronym{OPM} object, or by inputting
 #' files with \code{\link{read_single_opm}} or \code{\link{read_opm}} if these
 #' files already contain aggregated data.
+#'
+#' \acronym{OPMA} inherits from \acronym{OPM} and, hence, has all its methods.
 #'
 #' \acronym{OPMD} is an acronym for \sQuote{\acronym{OPM}, discretized}. This is
 #' the class for holding single-plate
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
 #' together with aggregated \strong{and} discretized values. Objects of this
 #' class are usually created by calling \code{\link{do_disc}} on an
-#' \code{\link{OPMA}} object, or by inputting files with
+#' \acronym{OPMA} object, or by inputting files with
 #' \code{\link{read_single_opm}} or \code{\link{read_opm}} if these files
 #' already contain discretized data.
 #'
-#'   The discretized data are considered as \sQuote{consistent} with the curve
-#'   parameter from which they have been estimated if no \code{FALSE} value
-#'   corresponds to curve parameter larger than the curve parameter of any
-#'   \code{TRUE} value; \code{NA} values are not considered when checking
-#'   consistency. The \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
-#'   determines whether an error or only a warning is issued in the case of
-#'   inconsistency.
+#' \acronym{OPMD} inherits from \acronym{OPMA} and, hence, has all its methods.
+#'
+#' The discretized data are considered as \sQuote{consistent} with the curve
+#' parameter from which they have been estimated if no \code{FALSE} value
+#' corresponds to curve parameter larger than the curve parameter of any
+#' \code{TRUE} value; \code{NA} values are not considered when checking
+#' consistency. The \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
+#' determines whether an error or only a warning is issued in the case of
+#' inconsistency.
 #'
 #' \acronym{OPMS} is the class for holding multi-plate
 #' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
 #' with or without aggregated or discretized values. Regarding the name:
 #' \acronym{OPMS} is just the plural of \acronym{OPM}. Objects of this class are
 #' usually created by calling \code{\link{opms}} or other combination functions
-#' on \code{\link{OPM}} or \code{\link{OPM}}-derived objects, or by inputting
-#' files with \code{\link{read_opm}} if these files altogether contain more than
-#' a single plate. The data may have been obtained from distinct organisms
-#' and/or replicates, but \strong{must} correspond to the same plate type and
+#' on \acronym{OPM} or derived objects, or by inputting files with
+#' \code{\link{read_opm}} if these files altogether contain more than a single
+#' plate. The data may have been obtained from distinct organisms and/or
+#' replicates, but \strong{must} correspond to the same plate type and
 #' \strong{must} contain the same wells.
 #'
-#'   As a rule, OPMS has the same methods as the \code{\link{OPM}} class, but
-#'   adapted to a collection of more than one \code{\link{OPM}} object. Also,
-#'   OPMS can hold \code{\link{OPMD}} and \code{\link{OPMA}} as well as
-#'   \code{\link{OPM}} objects, even though this is not indicated for all its
-#'   methods in this manual.
+#' As a rule, OPMS has the same methods as the \acronym{OPM} class, but adapted
+#' to a collection of more than one \acronym{OPM} object. Also, \acronym{OPMS}
+#' can hold \acronym{OPMD} and \acronym{OPMA} as well as \acronym{OPM} objects,
+#' even though this is not indicated for all its methods in this manual.
 #'
 #' @examples
 #' # conversion of a list to an OPM object is tolerant against re-orderings

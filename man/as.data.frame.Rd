@@ -148,12 +148,10 @@ stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
   utils::write.table stats::reshape pkgutils::flatten
 
   Other conversion-functions: \code{\link{extract}},
-  \code{\link{extract_columns}}, \code{\link{gen_iii}},
-  \code{\link{merge}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{sort}},
-  \code{\link{thin_out}}, \code{\link{to_yaml}},
-  \code{\link{unique}}
+  \code{\link{extract_columns}}, \code{\link{merge}},
+  \code{\link{oapply}}, \code{\link{plates}},
+  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{to_yaml}}, \code{\link{unique}}
 }
 \keyword{dplot}
 \keyword{manip}

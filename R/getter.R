@@ -546,10 +546,13 @@ setMethod("seq", OPMS, function(...) {
 #' @param object \code{\link{OPM}} or \code{\link{OPMS}} object.
 #' @param keys Character vector (or other objects usable as vector index). An
 #'   optional sub-selection. If empty (the default), all \acronym{CSV} data are
-#'   returned. By default it is an error to select non-existing items.
+#'   returned. By default it is an error to select non-existing items. Ignored
+#'   unless \code{what} is \sQuote{select}.
 #' @param strict Logical scalar indicating whether or not it is an error if
-#'   \code{keys} are not found.
-#' @param what Character scalar specifying a subset of the data.
+#'   \code{keys} are not found. Ignored unless \code{what} is \sQuote{select}.
+#' @param what Character scalar specifying a subset of the data. If
+#'   \sQuote{select}, use \code{keys} and \code{strict}. Otherwise a shortcut
+#'   for one of the more important \acronym{CSV} entries.
 #' @param ... Optional arguments passed between the methods.
 #' @return Named character vector (unnamed character scalar in the case of
 #'   \code{filename}, \code{setup_time} and \code{filename} and if \code{what}
@@ -651,168 +654,6 @@ setGeneric("position", function(object, ...) standardGeneric("position"))
 setMethod("position", OPM, function(object) {
   warning("this function is deprecated -- use csv_data() instead")
   csv_data(object, what = "position")
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Plate type used or normalized
-#'
-#' Get the type of the OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-#' used in the measuring, normalize plate-type names, or display known names.
-#'
-#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object, or character
-#'   vector of original plate name(s), or factor. If missing, the function
-#'   displays the plate types \pkg{opm} knows about.
-#' @param full Logical scalar. If \code{TRUE}, add (or replace by) the full name
-#'   of the plate type (if available); otherwise, return it as-is.
-#' @param in.parens Logical scalar. This and the five next arguments work like
-#'   the eponymous ones of \code{\link{wells}}, but here are applied to the
-#'   plate name. See there for details.
-#' @param max Numeric scalar.
-#' @param clean Logical scalar.
-#' @param brackets Logical scalar.
-#' @param word.wise Logical scalar.
-#' @param paren.sep Character scalar.
-#' @param downcase Logical scalar.
-#' @param normalize Logical scalar. Attempt to normalize the plate-type string
-#'   before interpreting it?
-#' @param subtype Logical scalar. Keep the plate subtype indicator, if any? Only
-#'   relevant for the character or factor method.
-#' @param ... Optional arguments passed between the methods.
-#'
-#' @return Character scalar in the case of the \code{\link{OPM}} and
-#'   \code{\link{OPMS}} methods, otherwise a character vector with the same
-#'   length than \code{object}, or a corresponding factor. If \code{object} is
-#'   not given, a character vector of normalized plate-type names.
-#'
-#' @details The \code{\link{OPM}} and \code{\link{OPMS}} methods are convenience
-#'   methods for one of the more important entries of \code{\link{csv_data}}
-#'   with additional options useful for creating plot titles.
-#'
-#' The character method normalizes the names of
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM plates to the
-#' internally used naming scheme. Unrecognized names are returned unchanged.
-#' This needs not normally be called by the \pkg{opm} user but might be of
-#' interest.
-#'
-#' Factors are treated by passing their levels through the character method.
-#'
-#' @export
-#' @family getter-functions
-#' @seealso base::strtrim base::abbreviate base::gsub
-#' @keywords attribute utilities character
-#' @examples
-#'
-#' ## 'OPM' method
-#' data(vaas_1)
-#' (x <- plate_type(vaas_1, full = FALSE))
-#' (y <- plate_type(vaas_1, full = TRUE))
-#' (z <- plate_type(vaas_1, full = TRUE, in.parens = FALSE))
-#' # strings lengths differ depending on the selection
-#' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
-#'
-#' \dontrun{
-#'
-#' # Splitting a list of 'OPM' objects according to the plate type is easy:
-#' x <- split(x), sapply(x, plate_type))
-#' # but see also opms() and read_opm(), which can do this internally
-#' }
-#'
-#' ## 'OPMS' method
-#' data(vaas_4)
-#' (xx <- plate_type(vaas_4, full = FALSE))
-#' # plate type is guaranteed to be uniform within an OPMS object
-#' stopifnot(identical(x, xx))
-#'
-#' ## character and factor methods
-#'
-#' # Entirely unrecognized strings are returned as-is
-#' (x <- plate_type(letters))
-#' stopifnot(identical(x, letters))
-#'
-#' # Something more realistic
-#' (x <- plate_type(y <- c("PM1", "PM-11C", "PMM04-a"), subtype = TRUE))
-#' stopifnot(x != y)
-#'
-#' # Factors
-#' (z <- plate_type(as.factor(y), subtype = TRUE))
-#' stopifnot(is.factor(z), z == x) # same result after conversion
-#'
-#' ## 'missing' method
-#' (x <- plate_type())
-#' stopifnot(is.character(x), plate_type(vaas_1) %in% x)
-#'
-setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))
-
-setMethod("plate_type", OPM, function(object, ..., normalize = FALSE,
-    subtype = FALSE) {
-  plate_type(object = object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]], ...,
-    normalize = normalize, subtype = subtype)
-}, sealed = SEALED)
-
-setMethod("plate_type", "character", function(object, full = FALSE,
-    in.parens = TRUE, max = 100L, clean = TRUE, brackets = FALSE,
-    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
-    normalize = TRUE, subtype = FALSE) {
-  do_normalize <- function(object, subtype) {
-    normalize_pm <- function(x, subtype) {
-      x <- sub("^PMM", "PM-M", x, perl = TRUE)
-      x <- sub("^PM-MTOX", "PM-M TOX", x, perl = TRUE)
-      x <- sub("([A-Z]+)$", if (subtype)
-        "-\\1"
-      else
-        "", x, perl = TRUE)
-      sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, perl = TRUE)
-    }
-    normalize_sf <- function(x, subtype) {
-      x <- if (subtype)
-        sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, perl = TRUE), perl = TRUE)
-      else
-        sub(SP_PATTERN, "\\1", x, perl = TRUE)
-      x <- sub("^(G|SF)([NP])", "SF-\\2", x, perl = TRUE)
-      sub("^GENIII", "Gen III", x, perl = TRUE)
-    }
-    result <- toupper(gsub("\\W", "", object, perl = TRUE))
-    pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, perl = TRUE)
-    result[pm] <- normalize_pm(result[pm], subtype)
-    sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], perl = TRUE)
-    result[sf] <- normalize_sf(result[sf], subtype)
-    result[bad] <- object[bad <- !(pm | sf)]
-    result
-  }
-  LL(full, downcase, in.parens, normalize, subtype)
-  result <- if (normalize)
-    do_normalize(object, subtype)
-  else
-    object
-  if (!full)
-    return(result)
-  pos <- match(result, names(PLATE_MAP))
-  if (any(bad <- is.na(pos))) {
-    warning("cannot find full name of plate ", result[bad][1L])
-    return(result)
-  }
-  full.name <- PLATE_MAP[pos]
-  if (downcase)
-    full.name <- substrate_info(full.name, "downcase")
-  if (in.parens)
-    result <- add_in_parens(str.1 = result, str.2 = full.name, max = max,
-      clean = clean, brackets = brackets, word.wise = word.wise,
-      paren.sep = paren.sep)
-  else
-    result <- trim_string(str = full.name, max = max, clean = clean,
-      word.wise = word.wise)
-  result
-}, sealed = SEALED)
-
-setMethod("plate_type", "factor", function(object, ...) {
-  map_values(object = object, mapping = plate_type, ...)
-}, sealed = SEALED)
-
-setMethod("plate_type", "missing", function(object, ...) {
-  names(PLATE_MAP)
 }, sealed = SEALED)
 
 
@@ -1051,7 +892,9 @@ setMethod("disc_settings", OPMD, function(object) {
 #'
 #' Select a subset of the plates in an \code{\link{OPMS}} object based on the
 #' content of the metadata. Alternatively, select a common subset of time points
-#' from all plates.
+#' from all plates. \code{thin_out} keeps only each n-th time point from
+#' \code{\link{OPM}} measurements. This is a mainly experimental function that
+#' might be of use in testing.
 #'
 #' @param x \code{\link{OPMS}} object.
 #' @param query Logical, numeric or character vector, list, or formula. If a
@@ -1101,10 +944,19 @@ setMethod("disc_settings", OPMD, function(object) {
 #'   Otherwise, \code{use} is taken directly as the one-latter name of the infix
 #'   operators to use for plate selection, overriding \code{values} and
 #'   \code{exact}.
+#'
+#' @param object \code{\link{OPMX}} object.
+#' @param factor Numeric scalar >= 1 indicating how much the dataset shall be
+#'   thinned out.
+#' @param drop Logical scalar. See \code{\link{[}}.
+#' @param ... Optional arguments passed between the methods.
+#'
 #' @export
 #' @return \code{NULL} or \code{\link{OPM}} or \code{\link{OPMS}} object. This
 #'   depends on how many plates are selected; see \code{\link{[}} for details.
-#'
+#' @details Thinning the plates out is experimental insofar as it has
+#'   \strong{not} been tested whether and how this could sensibly be applied
+#'   before aggregating the data.
 #' @family getter-functions
 #' @keywords manip
 #' @seealso base::`[` base::`[[` base::subset
@@ -1161,6 +1013,27 @@ setMethod("disc_settings", OPMD, function(object) {
 #' # select all wells that have non-negative reactions in at least one plate
 #' dim(y <- subset(vaas_4, use = "N", invert = TRUE))
 #' stopifnot(dim(y)[3] > dim(x)[3])
+#'
+#' ## thin_out()
+#'
+#' # 'OPM' method
+#' data(vaas_1)
+#' (x <- dim(vaas_1))
+#' stopifnot(identical(x, c(384L, 96L)))
+#' copy <- thin_out(vaas_1, 10) # keep every 10th time point and measurement
+#' (x <- dim(copy))
+#' stopifnot(identical(x, c(38L, 96L)), has_aggr(copy))
+#' copy <- thin_out(vaas_1, 10, drop = TRUE) # also remove the parameters
+#' (x <- dim(copy))
+#' stopifnot(identical(x, c(38L, 96L)), !has_aggr(copy))
+#'
+#' # 'OPMS' method
+#' data(vaas_4)
+#' (x <- dim(vaas_4))
+#' stopifnot(identical(x, c(4L, 384L, 96L)))
+#' copy <- thin_out(vaas_4, 10)
+#' (x <- dim(copy))
+#' stopifnot(identical(x, c(4L, 38L, 96L)))
 #'
 setGeneric("subset")
 
@@ -1231,6 +1104,25 @@ setMethod("subset", OPMS, function(x, query, values = TRUE,
   if (invert)
     pos <- !pos
   x[pos, , ]
+}, sealed = SEALED)
+
+#= thin_out subset
+
+#' @rdname subset
+#' @export
+#'
+setGeneric("thin_out", function(object, ...) standardGeneric("thin_out"))
+
+setMethod("thin_out", OPM, function(object, factor, drop = FALSE) {
+  if (L(factor) < 1)
+    stop("'factor' must be >= 1")
+  idx <- seq_len(dim(object)[1L])
+  idx <- idx[idx %% factor == 0L]
+  object[idx, , drop = drop]
+}, sealed = SEALED)
+
+setMethod("thin_out", OPMS, function(object, ...) {
+  new(OPMS, plates = lapply(X = object@plates, FUN = thin_out, ...))
 }, sealed = SEALED)
 
 
@@ -1404,39 +1296,49 @@ lapply(c(
 #' Search in metadata keys
 #'
 #' Search for the presence of metadata keys, either using a vector, factor,
-#' list or formula. Depending on the arguments, the behaviour differs from
-#' \code{\link{infix.largek}}.
+#' list or formula.
 #'
 #' @name %k%
 #' @aliases infix.k
 #' @rdname infix.k
 #'
-#' @param x Character vector, factor, list or formula. See \sQuote{Details}.
-#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#' @param x Character vector, factor, list or formula used as query. See
+#'   \sQuote{Details}. \code{x} and \code{table} can swap their places.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object. \code{x} and
+#'   \code{table} can swap their places.
 #' @return Logical vector of the length of the \code{\link{WMD}} or
 #'   \code{\link{OPMS}} object.
 #' @exportMethod "%k%"
 #' @export
 #~ @family getter-functions
 #' @keywords attribute
-#' @note The two arguments can swap their places.
+#'
 #' @details The behaviour of these methods depends on the object used as query.
+#'   \code{infix.largek} is usually stricter than \code{infix.k}, sometimes
+#'   equivalent.
 #' \itemize{
-#'   \item Using a character vector as query, this method tests whether all
+#'   \item Using a character vector as query, \code{infix.k} tests whether all
 #'   given keys are present in the top-level names of the metadata (these may be
 #'   nested, but all sublists are ignored here). An empty query vector results
 #'   in \code{TRUE}. Note that the values of the character vector, not its
-#'   names, if any, are used for querying the metadata.
-#'   \item Using a list as query, this method tests whether all given keys are
+#'   names, if any, are used for querying the metadata. In contrast,
+#'   \code{infix.largek} tests whether a given key is present in the metadata
+#'   and fetches an object that is not \code{NULL}. If the key has a length > 1,
+#'   sublists are queried.
+#'
+#'   \item Using a list as query, both methods tests whether all given keys are
 #'   present in the names of the metadata. This works like the character method,
 #'   but because a query list is given, the comparison of keys can be applied
 #'   recursively (by using, of course, a nested query list). This is based on
 #'   \code{\link{contains}} with the \code{values} argument set to \code{FALSE}.
+#'
 #'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'
 #'   \item The formula method attempts to evaluate the right side of the formula
 #'   in the context of the metadata of \code{table} and returns whether or not
-#'   this fails (yields an error). But symbols that are not found within the
-#'   metadata are looked up in the enclosing environment. Note also that missing
+#'   this fails (yields an error). Symbols that are not found within the
+#'   metadata are looked up in the enclosing environment \code{infix.k} or only
+#'   in the base environment \code{infix.largek}. But note also that missing
 #'   objects are not the only potential reason of failure.
 #' }
 #' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
@@ -1449,16 +1351,33 @@ lapply(c(
 #' # In the following we use stopifnot(), which fails unless all arguments
 #' # passed are TRUE.
 #'
-#' # Character method
+#' ## Character methods
+#'
+#' # Zero-element queries
+#' stopifnot(character() %k% vaas_1) # always results
+#' stopifnot(character() %K% vaas_1)
+#'
+#' # Single-element queries
 #' stopifnot("Experiment" %k% vaas_1) # present
+#' stopifnot("Experiment" %K% vaas_1) # present
 #' stopifnot("Species" %k% vaas_1) # present
+#' stopifnot("Species" %K% vaas_1)  # present
 #' stopifnot(!"Run" %k% vaas_1) # missing
-#' stopifnot(c("Species", "Experiment") %k% vaas_1) # all present
+#' stopifnot(!"Run" %K% vaas_1) # missing
+#' stopifnot(!"Organism" %k% vaas_1) # missing
+#' stopifnot(!"Trial" %K% vaas_1) # missing
+#'
+#' # Multi-element queries
 #' stopifnot(!c("Species", "Trial") %k% vaas_1) # only one present
 #' stopifnot(!c("Organism", "Experiment") %k% vaas_1) # only one present
-#' stopifnot(character() %k% vaas_1) # empty query always results
+#' stopifnot(c("Species", "Experiment") %k% vaas_1) # all present
+#' # querying with %K% and vectors of length > 1 mean nested queries; compare
+#' # this to the behavior of %k%!
+#' stopifnot(!c("Species", "Experiment") %K% vaas_1)
+#' # i.e. "Experiment" is not within "Species".
 #'
-#' # List method
+#' ## List methods
+#'
 #' stopifnot(list(Experiment = "whatever") %k% vaas_1) # key present
 #' stopifnot(list(Species = "ignored") %k% vaas_1) # key present
 #'
@@ -1479,12 +1398,18 @@ lapply(c(
 #'
 #' # Formulas for querying, compare with list examples above
 #' stopifnot((~ Experiment) %k% vaas_1) # key present
+#' stopifnot((~ Experiment) %K% vaas_1)
 #' stopifnot(vaas_1 %k% ~ Experiment) # key present, no parens needed
+#' stopifnot(vaas_1 %K% ~ Experiment)
 #' stopifnot(vaas_1 %k% ~ Species) # key present, no parens needed
+#' stopifnot(vaas_1 %K% ~ Species)
 #' stopifnot(!vaas_1 %k% ~ Species$Epithet) # nested key not present
+#' stopifnot(!vaas_1 %K% ~ Species$Epithet)
 #' stopifnot(!vaas_1 %k% ~ missing.name) # key not present
+#' stopifnot(!vaas_1 %K% ~ missing.name)
 #' missing.name <- "abc"
 #' stopifnot(vaas_1 %k% ~ missing.name) # key found in enclosing environment
+#' stopifnot(!vaas_1 %K% ~ missing.name) # enclosing environment ignored
 #' rm(missing.name) # tidy up
 #'
 setGeneric("%k%", function(x, table) standardGeneric("%k%"))
@@ -1504,84 +1429,13 @@ setMethod("%k%", c("formula", WMD), function(x, table) {
   }, error = function(e) FALSE)
 }, sealed = SEALED)
 
+#= infix.largek infix.k
 
-################################################################################
-
-
-#' Search in metadata keys (strict version)
-#'
-#' Search for the presence of metadata keys, either using a vector, factor,
-#' list or formula. Depending on the arguments, the behaviour differs from
-#' \code{\link{infix.k}}.
-#'
 #' @name %K%
 #' @aliases infix.largek
-#' @rdname infix.largek
-#'
-#' @param x Character vector, factor, list or formula. See \sQuote{Details}.
-#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
-#' @return Logical vector of the length of the \code{\link{WMD}} or
-#'   \code{\link{OPMS}} object.
-#' @note The two arguments can swap their places.
-#' @details The behaviour of these methods depends on the object used as query.
-#' \itemize{
-#'   \item Using a character vector as query, this method tests whether a given
-#'   key is present in the metadata and fetches an object that is not
-#'   \code{NULL}. If the key has a length > 1, sublists are queried. An empty
-#'   vector results in \code{TRUE}. Note that the values of the character
-#'   vector, not its names, if any, are used for querying the metadata.
-#'   \item Using a list as query, this function behaves like
-#'   \code{\link{infix.k}}.
-#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
-#'   \item The formula method attempts to evaluate the right side of the formula
-#'   in the context of the metadata of \code{table} and returns whether or not
-#'   this fails (yields an error). In contrast to \code{infix.k}, symbols that
-#'   are not found within the metadata are looked up in the base environment.
-#'   But note that missing objects are not the only potential reason of failure.
-#' }
-#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
-#' @export
+#' @rdname infix.k
 #' @exportMethod "%K%"
-#~ @family getter-functions
-#' @keywords attribute
-#'
-#' @examples
-#'
-#' # The dataset contains the metadata keys 'Species' and 'Experiment' but
-#' # neither 'Trial' nor 'Organism' nor 'Run':
-#' data(vaas_1)
-#' # In the following we use stopifnot(), which fails unless all arguments
-#' # passed are TRUE.
-#'
-#' # Character method
-#'
-#' # Single-element queries
-#' stopifnot("Experiment" %K% vaas_1) # present
-#' stopifnot("Species" %K% vaas_1)  # present
-#' stopifnot(!"Run" %K% vaas_1) # not present
-#' stopifnot(!"Trial" %K% vaas_1) # not present
-#' stopifnot(!"Organism" %k% vaas_1) # not present
-#'
-#' # Zero-element queries
-#' stopifnot(character() %K% vaas_1) # always results
-#'
-#' # Querying with vectors of length > 1 mean nested queries; compare this to
-#' # the behavior of %k%!
-#' stopifnot(!c("Species", "Experiment") %K% vaas_1)
-#' # I.e. "Experiment" is not within "Species".
-#'
-#' # List method
-#' # See %k% -- the behavior is identical for lists.
-#'
-#' # Formulas for querying, compare with %k%
-#' stopifnot((~ Experiment) %K% vaas_1) # key present
-#' stopifnot(vaas_1 %K% ~ Experiment) # key present, no parens needed
-#' stopifnot(vaas_1 %K% ~ Species) # key present, no parens needed
-#' stopifnot(!vaas_1 %K% ~ Species$Epithet) # nested key not present
-#' stopifnot(!vaas_1 %K% ~ missing.name) # key not present
-#' missing.name <- "abc"
-#' stopifnot(!vaas_1 %K% ~ missing.name) # enclosing environment ignored
-#' rm(missing.name) # tidy up
+#' @export
 #'
 setGeneric("%K%", function(x, table) standardGeneric("%K%"))
 
@@ -1606,45 +1460,54 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 ################################################################################
 
 
-#' Query metadata (non-exact version)
+#' Query metadata
 #'
 #' Search for the presence of metadata values for given keys, either using a
-#' vector, factor, list or formula. Depending on the arguments, the behaviour
-#' differs from \code{\link{infix.largeq}}.
+#' vector, factor, list or formula.
 #'
 #' @name %q%
 #' @aliases infix.q
 #' @rdname infix.q
 #'
 #' @param x Character vector, factor, list or formula used as query. See
-#'   \sQuote{Details}.
-#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
+#'   \sQuote{Details}. \code{x} and \code{table} can swap their places.
+#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object. \code{x} and
+#'   \code{table} can swap their places.
 #' @return Logical vector of the length of the \code{\link{WMD}} or
 #'   \code{\link{OPMS}} object.
-#' @note The two arguments can swap their places.
+#'
 #' @details The behaviour of these methods depends on the object used as query.
+#'   \code{infix.largeq} is usually stricter than \code{infix.q}, sometimes
+#'   equivalent.
 #' \itemize{
+#'
 #'   \item Using a character vector as query, this tests whether all given query
 #'   keys are present in the top-level names of the metadata and refer to the
 #'   same query elements. The \code{names} of the vector are used to select
-#'   elements from the top level of the metadata. These elements are then
-#'   converted to \sQuote{character} mode before comparison with the values of
-#'   \code{x}. A non-empty vector without a \code{names} attribute is accepted
-#'   but will always yield \code{FALSE}. In contrast, an entirely empty vector
-#'   yields \code{TRUE}.
+#'   elements from the top level of the metadata. When using \code{infix.q},
+#'   these elements are then converted to \sQuote{character} mode before
+#'   comparison with the values of \code{x}. A non-empty vector without a
+#'   \code{names} attribute is accepted but will always yield \code{FALSE}. In
+#'   contrast, an entirely empty vector yields \code{TRUE}.
+#'
 #'   \item Using a list, a non-exact query with a query list is conducted.  The
 #'   comparison is applied recursively using \code{\link{contains}} with the
-#'   \code{values} argument set to \code{TRUE} but \code{exact} set to
-#'   \code{FALSE}. The main advantage of using a list over the character-based
-#'   search is that it allows for a nested query.
+#'   \code{values} argument set to \code{TRUE} and \code{exact} set to either
+#'   \code{FALSE} (\code{infix.q}) or \code{TRUE} (\code{infix.largeq}). The
+#'   latter might be too strict for most applications. The main advantage of
+#'   using a list over the character-based search is that it allows for a nested
+#'   query.
+#'
 #'   \item The factor method first converts \code{x} to \sQuote{character} mode.
+#'
 #'   \item The formula method attempts to evaluate the right side of the formula
 #'   in the context of the metadata of \code{table} and returns the result. For
 #'   the \code{\link{WMD}} method, is is up to the user to ensure that the
 #'   result is a logical scalar, but the method would succeed anyway. The
-#'   \code{\link{OPMS}} yields an error unless each plate yields a logical
-#'   scalar. Symbols that are not found within the metadata are looked up in the
-#'   enclosing environment. This is less strict than \code{\link{infix.largeq}}.
+#'   \code{\link{OPMS}} method yields an error unless each plate yields a
+#'   logical scalar. Symbols that are not found within the metadata are looked
+#'   up in the enclosing environment (\code{infix.q}) or only in the base
+#'   environment (\code{infix.largeq}). The former approach is less strict.
 #'   Because of missing objects and other reasons the method might nevertheless
 #'   fail.
 #' }
@@ -1660,22 +1523,34 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' # values 'Escherichia coli' and 'First replicate':
 #' data(vaas_1)
 #'
-#' # Character method
+#' ## Character methods
+#'
 #' stopifnot(!"Experiment" %q% vaas_1) # wrong query here; compare to %k%
 #' stopifnot(!"First replicate" %q% vaas_1) # again wrong query
 #' stopifnot(c(Experiment = "First replicate") %q% vaas_1) # correct query
+#' stopifnot(c(Experiment = "First replicate") %Q% vaas_1)
 #'
 #' stopifnot(!"Species" %q% vaas_1) # wrong query
 #' stopifnot(!"Escherichia coli" %q% vaas_1) # wrong query
 #' stopifnot(c(Species = "Escherichia coli") %q% vaas_1) # correct query
 #'
+#' # This does not work because the value has the wrong type
+#' stopifnot(!c(`Plate number` = "6") %Q% vaas_1)
+#' # Compare to %q%
+#' stopifnot(c(`Plate number` = "6") %q% vaas_1)
+#'
 #' stopifnot(c(Species = "Escherichia coli",
 #'   Experiment = "First replicate") %q% vaas_1) # combined query, all TRUE
+#' stopifnot(c(Species = "Escherichia coli",
+#'   Experiment = "First replicate") %Q% vaas_1) # all present
 #'
 #' stopifnot(character() %q% vaas_1) # empty query always results
+#' stopifnot(character() %Q% vaas_1)
 #'
-#' # List method
+#' ## List methods
+#'
 #' stopifnot(list(Experiment = "First replicate") %q% vaas_1)
+#' stopifnot(list(Experiment = "First replicate") %Q% vaas_1) # present
 #'
 #' # Choice among alternatives
 #' stopifnot(list(Experiment = c("First replicate",
@@ -1687,17 +1562,33 @@ setMethod("%K%", c("formula", WMD), function(x, table) {
 #' stopifnot(list(Experiment = c("First replicate", "Second replicate"),
 #'   Species = c("Escherichia coli", "Bacillus subtilis")) %q% vaas_1)
 #'
-#' stopifnot(list() %q% vaas_1) # empty query
+#' # Choice among alternatives is not done here: this query fails unless this
+#' # two-element vector is contained. Compare to %q%.
+#' stopifnot(!list(Experiment = c("First replicate",
+#'   "Second replicate")) %Q% vaas_1)
 #'
-#' # Formulas for querying, compare with %Q%
+#' stopifnot(list() %q% vaas_1) # empty query always results
+#' stopifnot(list() %Q% vaas_1)
+#'
+#' ## Formulas for querying
+#'
 #' stopifnot((~ Experiment == "First replicate") %q% vaas_1)
+#' stopifnot((~ Experiment == "First replicate") %Q% vaas_1)
 #' stopifnot(vaas_1 %q% ~ Experiment == "First replicate")
+#' stopifnot(vaas_1 %Q% ~ Experiment == "First replicate")
 #' stopifnot(vaas_1 %q% ~ Species == "Escherichia coli")
+#' stopifnot(vaas_1 %Q% ~ Species == "Escherichia coli")
 #' stopifnot(vaas_1 %q% ~ Species != "Bacillus subtilis")
+#' stopifnot(vaas_1 %Q% ~ Species != "Bacillus subtilis")
+#'
 #' x <- try(vaas_1 %q% ~ missing.name == "abc", silent = TRUE) # fails
 #' stopifnot(inherits(x, "try-error"))
-#' missing.name <- "abc"  # enclosing environment considered
+#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # also fails
+#' stopifnot(inherits(x, "try-error"))
+#' missing.name <- "abc"  # enclosing environment considered or ignored
 #' stopifnot(vaas_1 %q% ~ missing.name == "abc")
+#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # still fails
+#' stopifnot(inherits(x, "try-error"))
 #' rm(missing.name) # tidy up
 #'
 #' # examples for OPMS methods are given under subset()
@@ -1719,95 +1610,13 @@ setMethod("%q%", c("formula", WMD), function(x, table) {
   eval(x[[length(x)]], table@metadata, parent.frame())
 }, sealed = SEALED)
 
+#= infix.largeq infix.q
 
-################################################################################
-
-
-#' Query metadata (strict version)
-#'
-#' Search for the presence of metadata values for given keys, either using a
-#' vector, factor, list or formula. Depending on the arguments, the behaviour
-#' differs from \code{\link{infix.q}}.
-#'
 #' @name %Q%
 #' @aliases infix.largeq
-#' @rdname infix.largeq
-#'
-#' @param x Character vector, factor, list for formula used as query. See
-#'   \sQuote{Details}.
-#' @param table \code{\link{WMD}} or \code{\link{OPMS}} object.
-#' @note The two arguments can swap their places.
-#' @details The behaviour of these methods depends on the object used as query.
-#' \itemize{
-#'   \item Using a character vector as query, this tests whether all given query
-#'   keys are present in the top-level names of the metadata and refer to the
-#'   same query elements (without coercion to character). The result is
-#'   identical to the one of \code{\link{infix.q}} except for the fact that
-#'   metadata elements are not coerced to \sQuote{character} mode, making the
-#'   query more strict.
-#'   \item Using a list, this conducts an exact query with this query list. The
-#'   comparison is applied recursively using \code{\link{contains}} with the
-#'   arguments \code{values} and \code{exact} set to \code{TRUE}. This might be
-#'   too strict for most applications. The main advantage of using a list over
-#'   the character-based search is that it allows one a nested query.
-#'   \item The factor method first converts \code{x} to \sQuote{character} mode.
-#'   \item The formula method attempts to evaluate the right side of the formula
-#'   in the context of the metadata of \code{table} and returns the result. For
-#'   the \code{\link{WMD}} method, is is up to the user to ensure that the
-#'   result is a logical scalar, but the method would succeed anyway. The
-#'   \code{\link{OPMS}} yields an error unless each plate yield a logical
-#'   scalar. Symbols that are not found within the metadata are looked up in the
-#'   only in the base environment. This is stricter than \code{\link{infix.q}}.
-#'   Because of missing objects and other reasons the method might fail.
-#' }
-#' See \code{\link{subset}} for usage examples with \code{\link{OPMS}} objects.
-#' @return Logical scalar.
+#' @rdname infix.q
 #' @exportMethod "%Q%"
 #' @export
-#~ @family getter-functions
-#' @keywords attribute
-#'
-#' @examples
-#'
-#' # The dataset contains the metadata keys 'Species' and 'Experiment' with the
-#' # values 'Escherichia coli' and 'First replicate':
-#' data(vaas_1)
-#'
-#' # Character method
-#' stopifnot(c(Experiment = "First replicate") %Q% vaas_1)
-#'
-#' # This does not work because the value has the wrong type
-#' stopifnot(!c(`Plate number` = "6") %Q% vaas_1)
-#' # Compare to %q%
-#' stopifnot(c(`Plate number` = "6") %q% vaas_1)
-#'
-#' # Combined query
-#' stopifnot(c(Species = "Escherichia coli",
-#'   Experiment = "First replicate") %Q% vaas_1) # all present
-#'
-#' stopifnot(character() %Q% vaas_1) # empty query always results
-#'
-#' # List method
-#' stopifnot(list(Experiment = "First replicate") %Q% vaas_1) # present
-#'
-#' # Choice among alternatives is not done here: this query fails unless this
-#' # two-element vector is contained. Compare to %q%.
-#' stopifnot(!list(Experiment = c("First replicate",
-#'   "Second replicate")) %Q% vaas_1)
-#'
-#' stopifnot(list() %Q% vaas_1) # empty query always result
-#'
-#' # Formulas for querying, compare with %q%
-#' stopifnot((~ Experiment == "First replicate") %Q% vaas_1)
-#' stopifnot(vaas_1 %Q% ~ Experiment == "First replicate")
-#' stopifnot(vaas_1 %Q% ~ Species == "Escherichia coli")
-#' stopifnot(vaas_1 %Q% ~ Species != "Bacillus subtilis")
-#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # fails
-#' stopifnot(inherits(x, "try-error"))
-#' missing.name <- "abc" # enclosing environment will be ignored
-#' x <- try(vaas_1 %Q% ~ missing.name == "abc", silent = TRUE) # still fails
-#' stopifnot(inherits(x, "try-error"))
-#' rm(missing.name) # tidy up
 #'
 setGeneric("%Q%", function(x, table) standardGeneric("%Q%"))
 

@@ -67,11 +67,10 @@ write(to_yaml(x), "out.yml")
 
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},
-  \code{\link{flatten}}, \code{\link{gen_iii}},
-  \code{\link{merge}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{sort}},
-  \code{\link{thin_out}}, \code{\link{unique}}
+  \code{\link{flatten}}, \code{\link{merge}},
+  \code{\link{oapply}}, \code{\link{plates}},
+  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{unique}}
 }
 \keyword{IO}
 \keyword{character}

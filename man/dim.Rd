@@ -71,9 +71,9 @@ stopifnot(identical(x, y))
   \code{\link{filename}}, \code{\link{has_aggr}},
   \code{\link{has_disc}}, \code{\link{hours}},
   \code{\link{max}}, \code{\link{measurements}},
-  \code{\link{minmax}}, \code{\link{plate_type}},
-  \code{\link{position}}, \code{\link{setup_time}},
-  \code{\link{subset}}, \code{\link{well}}
+  \code{\link{minmax}}, \code{\link{position}},
+  \code{\link{setup_time}}, \code{\link{subset}},
+  \code{\link{thin_out}}, \code{\link{well}}
 }
 \keyword{attribute}
 

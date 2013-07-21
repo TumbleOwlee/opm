@@ -184,37 +184,6 @@ test_that("filename of example object can be explicitely queried", {
 })
 
 
-## plate_type
-test_that("plate types can be explicitely queried", {
-  expect_equal(plate_type(OPM.1), "PM01")
-  pt.got <- plate_type(OPMS.INPUT)
-  expect_is(pt.got, "character")
-  expect_equal(length(pt.got), 1L)
-})
-
-
-## plate_type
-test_that("plate names can be normalized", {
-  # Normal input arguments
-  x <- c("<strange>", "PM-M3 A", "PM09", "pm10b", "pmM10D", "PM1")
-  exp <- c("<strange>", "PM-M03-A", "PM09", "PM10-B", "PM-M10-D", "PM01")
-  got <- plate_type(x, subtype = TRUE)
-  expect_equal(got, exp)
-  # Microstation plates
-  x <- c("<strange>", "ECO", "SFN2", "GP2", "SF-N2", "G-N2")
-  exp <- c("<strange>", "ECO", "SF-N2", "SF-P2", "SF-N2", "SF-N2")
-  got <- plate_type(x, subtype = TRUE)
-  expect_equal(got, exp)
-  # The internally used names must already be normalized
-  standard.names <- names(PLATE_MAP)
-  expect_equal(plate_type(standard.names), standard.names)
-  appended <- paste(standard.names, letters)
-  #cat(appended[plate_type(appended) != standard.names])
-  expect_equal(plate_type(appended), standard.names)
-  expect_equal(names(PLATE_MAP), colnames(WELL_MAP))
-})
-
-
 ## setup_time
 test_that("setup times can be explicitely queried", {
   expect_equal(setup_time(OPM.1), "8/30/2010 11:28:54 AM")
@@ -345,6 +314,27 @@ test_that("the plates can be subset based on common time points", {
   expect_equal(as.vector(oapply(got, dim)), c(50L, 96L, 50L, 96L))
   got <- subset(x, use = "t")
   expect_equal(as.vector(oapply(got, dim)), c(50L, 96L, 50L, 96L))
+})
+
+
+## thin_out
+test_that("OPM example data can be thinned out", {
+  expect_error(thin_out(OPM.1, 0.5), "'factor' must be >= 1")
+  thin <- thin_out(OPM.1, 1)
+  expect_equal(OPM.1, thin)
+  thin <- thin_out(OPM.1, 2)
+  dims <- dim(thin)
+  dims[1L] <- dims[1] * 2
+  expect_equal(dims, dim(OPM.1))
+})
+
+## thin_out
+test_that("OPMS example data can be thinned out", {
+  dims <- dim(OPMS.INPUT)
+  dims[2L] <- floor(dims[2L] / 10)
+  thin <- thin_out(OPMS.INPUT, 10)
+  expect_equal(dim(thin), dims)
+  expect_equal(metadata(thin), metadata(OPMS.INPUT))
 })
 
 

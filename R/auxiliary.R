@@ -2003,16 +2003,21 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'
 #' Get and set global \pkg{opm} options.
 #'
-#' @param x Character scalar or list. If not given, all current settings are
-#'   returned (as a named list). If a list, it is expected to contain key-value
-#'   pairs that can be set. In that case, it is an error if a key is unknown or
-#'   if the value's class(es) is/are not compatible with the previously stored
-#'   value's class(es). If \code{x} is a character scalar, it is used for
-#'   querying for a value.
+#' @param x Character scalar or list or missing. If not given, all current
+#'   settings are returned (as a named list). If \code{x} is a character scalar,
+#'   it is used for querying for a single value.
+#'
+#'   If \code{x} is a list, it is expected to contain key-value pairs that can
+#'   be set. In that case, it is an error if a key is unknown, i.e. it is an
+#'   error to use a name that is not already contained (\pkg{opm} would never
+#'   query for it anyway). It is also illegal to attempt set novel values whose
+#'   classes are not identical to, or derived from, the classes of the old
+#'   value.
+#'
 #' @param ... Optional arguments. If \code{x} is missing, these arguments are
 #'   concatenated into a list and used as if \code{x} was given as a list (see
 #'   above). That is, the argument names are used as the keys for setting
-#'   values.
+#'   values. This is usally easier than working with a list.
 #' @return List or atomic vector. If one to several values are set, the previous
 #'   entries are returned invisibly.
 #' @family auxiliary-functions
@@ -2083,10 +2088,8 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'       parsing the \code{\link{setup_time}} entries (in the given order). Also
 #'       relevant for \code{\link{merge}} by default.}
 #'   }
-#'   It is an error to set novel values whose classes are not identical to, or
-#'   derived from, the classes of the old value. It is also an error to use a
-#'   name that is not already contained (\pkg{opm} would never query for it
-#'   anyway).
+#'   For parameter names used by \pkg{opm} that cannot be modified by the user
+#'   see \code{\link{param_names}}.
 #' @keywords utilities
 #' @seealso base::options base::getOption
 #' @export

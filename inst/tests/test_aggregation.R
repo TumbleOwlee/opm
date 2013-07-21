@@ -27,12 +27,6 @@ if (!exists("TEST.DIR"))
 ## UNTESTED
 
 
-## param_names
-test_that("param_names() is consistent with other settings", {
-  expect_true(OPM_OPTIONS$curve.param %in% c(param_names(), "disc"))
-})
-
-
 ################################################################################
 
 

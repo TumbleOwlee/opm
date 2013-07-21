@@ -273,9 +273,6 @@ test_that("explode_dir deals with non-existing files", {
   expect_warning(explode_dir(x, missing.error = FALSE))
 })
 
-## opm_files
-## UNTESTED
-
 
 ################################################################################
 #

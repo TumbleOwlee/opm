@@ -173,8 +173,7 @@ if (length(test.files) > 0) { # if the folder is found
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{glob_to_regex}},
-      \code{\link{opm_files}}, \code{\link{split_files}},
-  \code{\link{to_metadata}}
+      \code{\link{split_files}}, \code{\link{to_metadata}}
 }
 \keyword{IO}
 

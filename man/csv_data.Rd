@@ -11,13 +11,17 @@
   \item{keys}{Character vector (or other objects usable as
   vector index). An optional sub-selection. If empty (the
   default), all \acronym{CSV} data are returned. By default
-  it is an error to select non-existing items.}
+  it is an error to select non-existing items. Ignored
+  unless \code{what} is \sQuote{select}.}
 
   \item{strict}{Logical scalar indicating whether or not it
-  is an error if \code{keys} are not found.}
+  is an error if \code{keys} are not found. Ignored unless
+  \code{what} is \sQuote{select}.}
 
   \item{what}{Character scalar specifying a subset of the
-  data.}
+  data. If \sQuote{select}, use \code{keys} and
+  \code{strict}. Otherwise a shortcut for one of the more
+  important \acronym{CSV} entries.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -82,8 +86,8 @@ stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
   \code{\link{has_aggr}}, \code{\link{has_disc}},
   \code{\link{hours}}, \code{\link{max}},
   \code{\link{measurements}}, \code{\link{minmax}},
-  \code{\link{plate_type}}, \code{\link{seq}},
-  \code{\link{subset}}, \code{\link{well}}
+  \code{\link{seq}}, \code{\link{subset}},
+  \code{\link{thin_out}}, \code{\link{well}}
 }
 \keyword{attribute}
 

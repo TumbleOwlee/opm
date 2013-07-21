@@ -13,7 +13,8 @@
 \title{Virtual classes of the opm package}
 \description{
   Classes that are virtual and thus are not directly dealt
-  with by an \pkg{opm} user.
+  with by an \pkg{opm} user: \acronym{WMD}, \acronym{MOA},
+  \acronym{FOE}, \acronym{OPMX} and \sQuote{YAML_VIA_LIST}.
 }
 \details{
   \acronym{WMD} is an acronym for \sQuote{with metadata}.

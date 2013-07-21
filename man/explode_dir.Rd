@@ -289,9 +289,9 @@ stopifnot(identical(as.factor(y), z))
 
   Other io-functions: \code{\link{batch_opm}},
   \code{\link{clean_filenames}},
-  \code{\link{collect_template}}, \code{\link{opm_files}},
-  \code{\link{read_opm}}, \code{\link{read_single_opm}},
-  \code{\link{split_files}}, \code{\link{to_metadata}}
+  \code{\link{collect_template}}, \code{\link{read_opm}},
+  \code{\link{read_single_opm}}, \code{\link{split_files}},
+  \code{\link{to_metadata}}
 }
 \keyword{IO}
 \keyword{character}

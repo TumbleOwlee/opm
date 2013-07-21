@@ -107,7 +107,10 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 \seealso{
   base::grep base::agrep
 
-  Other naming-functions: \code{\link{listing}},
+  Other naming-functions: \code{\link{gen_iii}},
+  \code{\link{listing}}, \code{\link{opm_files}},
+  \code{\link{param_names}}, \code{\link{plate_type}},
+  \code{\link{select_colors}},
   \code{\link{substrate_info}}, \code{\link{wells}}
 }
 \keyword{character}

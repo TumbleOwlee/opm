@@ -4,6 +4,98 @@ library(testthat)
 context("Testing the opm naming functions")
 
 
+
+################################################################################
+
+
+## opm_files
+## UNTESTED
+
+
+## param_names
+test_that("param_names() is consistent with other settings", {
+  expect_true(OPM_OPTIONS$curve.param %in% c(param_names(), "disc"))
+})
+
+
+## select_colors
+test_that("predefined color sets can be obtained", {
+  for (arg in as.character(formals(select_colors)[[1L]])[-1L]) {
+    got <- select_colors(arg)
+    expect_is(got, "character")
+    expect_true(length(got) >= 10L)
+  }
+})
+
+
+################################################################################
+
+
+## plate_type
+test_that("plate types can be explicitely queried", {
+  expect_equal(plate_type(OPM.1), "PM01")
+  pt.got <- plate_type(OPMS.INPUT)
+  expect_is(pt.got, "character")
+  expect_equal(length(pt.got), 1L)
+})
+
+
+## plate_type
+test_that("plate names can be normalized", {
+  # Normal input arguments
+  x <- c("<strange>", "PM-M3 A", "PM09", "pm10b", "pmM10D", "PM1")
+  exp <- c("<strange>", "PM-M03-A", "PM09", "PM10-B", "PM-M10-D", "PM01")
+  got <- plate_type(x, subtype = TRUE)
+  expect_equal(got, exp)
+  # Microstation plates
+  x <- c("<strange>", "ECO", "SFN2", "GP2", "SF-N2", "G-N2")
+  exp <- c("<strange>", "ECO", "SF-N2", "SF-P2", "SF-N2", "SF-N2")
+  got <- plate_type(x, subtype = TRUE)
+  expect_equal(got, exp)
+  # The internally used names must already be normalized
+  standard.names <- names(PLATE_MAP)
+  expect_equal(plate_type(standard.names), standard.names)
+  appended <- paste(standard.names, letters)
+  #cat(appended[plate_type(appended) != standard.names])
+  expect_equal(plate_type(appended), standard.names)
+  expect_equal(names(PLATE_MAP), colnames(WELL_MAP))
+})
+
+
+################################################################################
+
+
+## gen_iii
+test_that("the plate type can be changed to generation 3", {
+  gen.3 <- gen_iii(OPM.1)
+  expect_is(gen.3, "OPM")
+  expect_equal(plate_type(gen.3), SPECIAL_PLATES[["gen.iii"]])
+  expect_equal(metadata(gen.3), metadata(OPM.1))
+  expect_equal(length(which(csv_data(gen.3) != csv_data(OPM.1))), 1L)
+})
+
+## gen_iii
+test_that("the plate type can be changed to ecoplate", {
+  eco <- gen_iii(OPM.1, "ECO")
+  expect_is(eco, "OPM")
+  expect_equal(plate_type(eco), SPECIAL_PLATES[["eco"]])
+  expect_equal(metadata(eco), metadata(OPM.1))
+  expect_equal(length(which(csv_data(eco) != csv_data(OPM.1))), 1L)
+})
+
+## gen_iii
+test_that("the plate type of OPMS objects can be changed", {
+  x <- gen_iii(OPMS.INPUT)
+  expect_equal(class(x), class(OPMS.INPUT))
+  expect_equal(dim(x), dim(OPMS.INPUT))
+  expect_false(plate_type(x) == plate_type(OPMS.INPUT))
+  x <- gen_iii(OPMS.INPUT, "Eco")
+  expect_equal(class(x), class(OPMS.INPUT))
+  expect_equal(dim(x), dim(OPMS.INPUT))
+  expect_false(plate_type(x) == plate_type(OPMS.INPUT))
+})
+
+
 ################################################################################
 
 

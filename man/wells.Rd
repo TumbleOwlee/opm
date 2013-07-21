@@ -201,7 +201,9 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
   base::strtrim base::abbreviate
 
   Other naming-functions: \code{\link{find_positions}},
-  \code{\link{find_substrate}},
+  \code{\link{find_substrate}}, \code{\link{gen_iii}},
+  \code{\link{opm_files}}, \code{\link{param_names}},
+  \code{\link{plate_type}}, \code{\link{select_colors}},
   \code{\link{substrate_info}}
 }
 \keyword{attribute}

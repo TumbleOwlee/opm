@@ -185,8 +185,7 @@ stopifnot(mode(y) == "numeric")
 \seealso{
   grofit::grofit
 
-  Other aggregation-functions: \code{\link{fast_estimate}},
-  \code{\link{param_names}}
+  Other aggregation-functions: \code{\link{fast_estimate}}
 }
 \keyword{smooth}
 

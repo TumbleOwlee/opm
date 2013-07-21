@@ -149,8 +149,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
 
   Other plotting-functions: \code{\link{ci_plot}},
   \code{\link{level_plot}}, \code{\link{radial_plot}},
-  \code{\link{select_colors}}, \code{\link{summary}},
-  \code{\link{xy_plot}}
+  \code{\link{summary}}, \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

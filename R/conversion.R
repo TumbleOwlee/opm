@@ -114,23 +114,40 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 ################################################################################
 
 
-#' Get available plates
+#' Get available plates or apply function to them
 #'
-#' Get all plates contained in an \code{\link{OPMS}} object or a list, or create
-#' a list containing a single \code{\link{OPM}} object as element. The list
-#' method traverses the input recursively and skips all objects of other classes
-#' than \code{\link{OPM}}.
+#' Get all \code{plates} contained in an \code{\link{OPMS}} object or a list, or
+#' create a list containing a single \code{\link{OPM}} object as element. The
+#' list method traverses the input recursively and skips all objects of other
+#' classes than \code{\link{OPM}}. \code{oapply} applies a function to all
+#' \code{\link{OPM}} objects within an \code{\link{OPMS}} object. Optionally it
+#' simplifies the result to an \code{\link{OPMS}} object if possible, or other
+#' structures simpler than a list.
 #'
 #' @param object List, \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @return List of \code{\link{OPM}} objects (may be empty instead if
-#'   \code{object} is a list).
+#' @param fun A function. Should copy with an \code{\link{OPM}} object as first
+#'   argument. The \code{\link{OPM}} method of \code{oapply} simply applies
+#'   \code{fun} once (to \code{object}).
+#' @param ... Optional other arguments passed to \code{fun}.
+#' @param simplify Logical scalar. If \code{FALSE}, the result is a list. If
+#'   \code{TRUE}, it is attempted to simplify the result to a vector or matrix
+#'   or to an \code{\link{OPMS}} object (if the result is a list of
+#'   \code{\link{OPM}} or \code{\link{OPMA}} objects). If this is impossible, a
+#'   list is returned.
+#'
+#' @return For \code{plates}, a list of \code{\link{OPM}} objects (may be empty
+#'   instead if \code{object} is a list). The result of \code{oapply} depends on
+#'   \code{fun} and \code{simplify}: a list, vector, matrix or
+#'   \code{\link{OPMS}} object are possible outcomes.
 #' @export
 #' @family conversion-functions
-#' @keywords attribute
-#' @note See also \code{\link{opms}}, which is somewhat similar but more
-#'   flexible.
-#' @seealso base::list base::as.list
+#' @keywords attribute manip
+#' @note See also \code{\link{opms}}, which is somewhat similar to the list
+#'   method of \code{plates} but more flexible.
+#' @seealso base::list base::as.list base::sapply
 #' @examples
+#'
+#' ## plates()
 #'
 #' # 'OPM' method
 #' data(vaas_1)
@@ -147,6 +164,12 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 #' summary(x <- plates(x)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 5, sapply(x, inherits, what = "OPM"))
 #'
+#' ## oapply()
+#' summary(x <- oapply(vaas_4, identity)) # trivial
+#' stopifnot(identical(x, vaas_4))
+#' summary(x <- oapply(vaas_4, identity, simplify = FALSE)) # => yields list
+#' stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
+#'
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
 
 setMethod("plates", OPMS, function(object) {
@@ -161,38 +184,10 @@ setMethod("plates", "list", function(object) {
   to_opm_list.list(object, TRUE, TRUE, FALSE)
 }, sealed = SEALED)
 
+#= oapply plates
 
-################################################################################
-
-
-#' Apply method for OPMS objects
-#'
-#' Apply a function to all \code{\link{OPM}} or \code{\link{OPMA}} objects
-#' within an \code{\link{OPMS}} object. Optionally simplify the result to an
-#' \code{\link{OPMS}} object if possible, or other structures simpler than a
-#' list.
-#'
-#' @param object \code{\link{OPMS}} object. An \code{\link{OPM}} method is also
-#'   defined but simply applies \code{fun} once (to \code{object}).
-#' @param fun A function. Should expect an  \code{\link{OPM}} (or
-#'   \code{\link{OPMA}}) object as first argument.
-#' @param ... Optional other arguments passed to \code{fun}.
-#' @param simplify Logical scalar. If \code{FALSE}, the result is a list. If
-#'   \code{TRUE}, it is attempted to simplify the result to a vector or matrix
-#'   or to an \code{\link{OPMS}} object (if the result is a list of
-#'   \code{\link{OPM}} or \code{\link{OPMA}} objects). If this is impossible, a
-#'   list is returned.
+#' @rdname plates
 #' @export
-#' @return List, vector, matrix or \code{\link{OPMS}} object.
-#' @family conversion-functions
-#' @keywords manip
-#' @seealso base::sapply
-#' @examples
-#' data(vaas_4)
-#' summary(x <- oapply(vaas_4, identity)) # trivial
-#' stopifnot(identical(x, vaas_4))
-#' summary(x <- oapply(vaas_4, identity, simplify = FALSE)) # => yields list
-#' stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 #'
 setGeneric("oapply", function(object, ...) standardGeneric("oapply"))
 
@@ -208,135 +203,6 @@ setMethod("oapply", OPMS, function(object, fun, ..., simplify = TRUE) {
   result
 }, sealed = SEALED)
 
-
-
-################################################################################
-
-
-#' Thin out the measurements
-#'
-#' Thin out some \code{\link{OPM}} measurements by keeping only each n-th time
-#' point. A mainly experimental function that might be of use in testing.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param factor Numeric scalar >= 1 indicating how much the dataset shall be
-#'   thinned out.
-#' @param drop Logical scalar. See \code{\link{[}}.
-#' @param ... Optional arguments passed between the methods.
-#' @export
-#' @return \code{\link{OPM}} object.
-#' @family conversion-functions
-#' @details Thinning the plates out is experimental insofar as it has
-#'   \strong{not} been tested whether and how this could sensibly be applied
-#'   before aggregating the data.
-#' @keywords manip
-#'
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' (x <- dim(vaas_1))
-#' stopifnot(identical(x, c(384L, 96L)))
-#' copy <- thin_out(vaas_1, 10) # keep every 10th time point and measurement
-#' (x <- dim(copy))
-#' stopifnot(identical(x, c(38L, 96L)), has_aggr(copy))
-#' copy <- thin_out(vaas_1, 10, drop = TRUE) # also remove the parameters
-#' (x <- dim(copy))
-#' stopifnot(identical(x, c(38L, 96L)), !has_aggr(copy))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' (x <- dim(vaas_4))
-#' stopifnot(identical(x, c(4L, 384L, 96L)))
-#' copy <- thin_out(vaas_4, 10)
-#' (x <- dim(copy))
-#' stopifnot(identical(x, c(4L, 38L, 96L)))
-#'
-setGeneric("thin_out", function(object, ...) standardGeneric("thin_out"))
-
-setMethod("thin_out", OPM, function(object, factor, drop = FALSE) {
-  if (L(factor) < 1)
-    stop("'factor' must be >= 1")
-  idx <- seq_len(dim(object)[1L])
-  idx <- idx[idx %% factor == 0L]
-  object[idx, , drop = drop]
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Change to Generation III (or other plate type)
-#'
-#' Change the plate type of an \code{\link{OPM}} object to \sQuote{Generation
-#' III} or another plate type.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param to Character scalar indicating the plate type. User-defined plate
-#'   types must be given literally. For generation-III plates, use
-#'   \sQuote{gen.iii}; for ecoplates, use \sQuote{eco}; the remaining allowed
-#'   values are only \sQuote{sf.n2} and \sQuote{sf.p2}, but matching is
-#'   case-insensitive.
-#' @param ... Optional arguments passed between the methods.
-#' @return Novel \code{\link{OPM}} object.
-#' @export
-#' @details This is currently the only function to change plate names. It is
-#'   intended for Generation-III plates which were run like PM plates. Usually
-#'   they will be annotated as some PM plate by the
-#'   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} system. In contrast,
-#'   input ID-mode plates are automatically detected (see
-#'   \code{\link{read_single_opm}}).
-#'
-#'   The actual spelling of the plate type used might (in theory) differ between
-#'   distinct versions of \pkg{opm} but is internally consistent. It is an error
-#'   to set one of the PM plate types or to assign an unknown plate type.
-#' @keywords manip
-#' @family conversion-functions
-#' @examples
-#'
-#' # 'OPM' method
-#' data(vaas_1)
-#' plate_type(copy <- gen_iii(vaas_1))
-#' stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
-#' plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
-#' stopifnot(!identical(vaas_1, copy))
-#'
-#' # 'OPMS' method
-#' data(vaas_4)
-#' plate_type(copy <- gen_iii(vaas_4))
-#' stopifnot(identical(vaas_4, copy)) # as above
-#' plate_type(copy <- gen_iii(vaas_4, "eco"))
-#' stopifnot(!identical(vaas_4, copy)) # as above
-#'
-setGeneric("gen_iii", function(object, ...) standardGeneric("gen_iii"))
-
-setMethod("gen_iii", OPM, function(object, to = "gen.iii") {
-  to <- match.arg(tolower(to), names(SPECIAL_PLATES))
-  object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]] <- SPECIAL_PLATES[[to]]
-  object
-}, sealed = SEALED)
-
-
-################################################################################
-################################################################################
-#
-# Automatically generated conversion functions
-#
-
-
-# Based on OPM methods with function(object, ...) signature that return OPM(A)
-# objects.
-#
-lapply(c(
-    #+
-    gen_iii,
-    thin_out
-    #-
-  ), FUN = function(func_) {
-  setMethod(func_, OPMS, function(object, ...) {
-    new(OPMS, plates = lapply(object@plates, FUN = func_, ...))
-  }, sealed = SEALED)
-})
 
 
 ################################################################################

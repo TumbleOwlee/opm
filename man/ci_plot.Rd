@@ -119,8 +119,7 @@ stopifnot(is.character(x), identical(length(x), 4L))
 
   Other plotting-functions: \code{\link{heat_map}},
   \code{\link{level_plot}}, \code{\link{radial_plot}},
-  \code{\link{select_colors}}, \code{\link{summary}},
-  \code{\link{xy_plot}}
+  \code{\link{summary}}, \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

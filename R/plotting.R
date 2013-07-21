@@ -482,64 +482,6 @@ setMethod("negative_control", OPMX, function(object, neg.ctrl) {
 
 ## NOTE: not an S4 method because check is done using match.arg()
 
-#' Select colours
-#'
-#' Select a set of colours for plotting. See \code{\link{xy_plot}} for usage
-#' example. This is not normally directly called by an \pkg{opm} user but could
-#' be used for testing before doing some serious plotting.
-#'
-#' @param set Character scalar. Name of the colour vector to use. Colour vectors
-#'   have been optimized for maximum contrast between adjacent colours, either
-#'   manually or using \code{max_rgb_contrast} from the \pkg{pkgutils} package.
-#'   Names ending in \sQuote{.i} indicate vectors in inverse order (compared to
-#'   the vector with the same name except \sQuote{.i}).
-#' @export
-#' @return Character vector (names of colours).
-#' @family plotting-functions
-#' @keywords color
-#' @seealso grDevices::colors grDevices::rainbow grDevices::grey
-#' @references \url{http://www.colorbrewer.org}
-#' @examples
-#' (x <- select_colors("nora"))
-#' (y <- select_colors("nora.i")) # same in reverse order
-#' stopifnot(is.character(x), length(x) > 0L, identical(x, rev(y)))
-#'
-select_colors <- function(
-    set = c("w3c", "w3c.i", "nora", "nora.i", "brewer", "brewer.i",
-      "roseo", "roseo.i")) {
-  # Names of W3c colours (except white) sorted so as to maximize contrast
-  # between adjacent colours. See pkgutils::max_rgb_contrast().
-  w3c.colors <- W3C_COLORS[c("teal", "purple", "olive", "black", "silver",
-    "blue", "lime", "red", "aqua", "fuchsia", "yellow", "navy", "green",
-    "maroon", "gray")]
-  # Colours manually selected and sorted by Nora Buddruhs for maximum contrast.
-  noras.colors <- c("midnightblue", "darkred", "darkgreen", "orange",
-    "lightslateblue", "seashell4", "saddlebrown", "firebrick2",
-    "palevioletred3", "purple4")
-  # Shades of pink...
-  roseo.colors <- c("maroon1", "palevioletred3", "hotpink1",
-    "mediumvioletred", "violetred3", "deeppink3", "lightcoral", "pink1",
-    "indianred3", "magenta1")
-  # Colours from two ColorBrewer palettes, sorted so as to maximize contrast
-  # between adjacent colours.
-  brewer.colors <- c(
-    "#CAB2D6", "#A6CEE3", "#80B1D3", "#CCEBC5", "#FDB462", "#8DD3C7",
-    "#33A02C", "#B3DE69", "#B15928", "#FF7F00", "#1F78B4", "#B2DF8A",
-    "#6A3D9A", "#E31A1C", "#FFED6F", "#FFFF99", "#FB8072", "#FFFFB3",
-    "#FDBF6F", "#D9D9D9", "#FB9A99", "#FCCDE5", "#BC80BD", "#BEBADA"
-  )
-  case(match.arg(set),
-    w3c = w3c.colors, w3c.i = rev(w3c.colors),
-    nora = noras.colors, nora.i = rev(noras.colors),
-    brewer = brewer.colors, brewer.i = rev(brewer.colors),
-    roseo = roseo.colors, roseo.i = rev(roseo.colors)
-  )
-}
-
-
-################################################################################
-
-
 #' Safely select colors.
 #'
 #' Call \code{\link{select_colors}} and if this does not work return the input

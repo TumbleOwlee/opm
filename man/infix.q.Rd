@@ -1,13 +1,16 @@
 \name{\%q\%}
+\alias{\%Q\%}
 \alias{\%q\%}
+\alias{infix.largeq}
 \alias{infix.q}
-\title{Query metadata (non-exact version)}
+\title{Query metadata}
 \arguments{
   \item{x}{Character vector, factor, list or formula used
-  as query. See \sQuote{Details}.}
+  as query. See \sQuote{Details}. \code{x} and \code{table}
+  can swap their places.}
 
   \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
-  object.}
+  object. \code{x} and \code{table} can swap their places.}
 }
 \value{
   Logical vector of the length of the \code{\link{WMD}} or
@@ -16,66 +19,85 @@
 \description{
   Search for the presence of metadata values for given
   keys, either using a vector, factor, list or formula.
-  Depending on the arguments, the behaviour differs from
-  \code{\link{infix.largeq}}.
 }
 \details{
   The behaviour of these methods depends on the object used
-  as query. \itemize{ \item Using a character vector as
-  query, this tests whether all given query keys are
-  present in the top-level names of the metadata and refer
-  to the same query elements. The \code{names} of the
-  vector are used to select elements from the top level of
-  the metadata. These elements are then converted to
-  \sQuote{character} mode before comparison with the values
-  of \code{x}. A non-empty vector without a \code{names}
-  attribute is accepted but will always yield \code{FALSE}.
-  In contrast, an entirely empty vector yields \code{TRUE}.
+  as query.  \code{infix.largeq} is usually stricter than
+  \code{infix.q}, sometimes equivalent. \itemize{
+
+  \item Using a character vector as query, this tests
+  whether all given query keys are present in the top-level
+  names of the metadata and refer to the same query
+  elements. The \code{names} of the vector are used to
+  select elements from the top level of the metadata. When
+  using \code{infix.q}, these elements are then converted
+  to \sQuote{character} mode before comparison with the
+  values of \code{x}. A non-empty vector without a
+  \code{names} attribute is accepted but will always yield
+  \code{FALSE}. In contrast, an entirely empty vector
+  yields \code{TRUE}.
+
   \item Using a list, a non-exact query with a query list
   is conducted.  The comparison is applied recursively
   using \code{\link{contains}} with the \code{values}
-  argument set to \code{TRUE} but \code{exact} set to
-  \code{FALSE}. The main advantage of using a list over the
-  character-based search is that it allows for a nested
-  query.  \item The factor method first converts \code{x}
-  to \sQuote{character} mode.  \item The formula method
-  attempts to evaluate the right side of the formula in the
-  context of the metadata of \code{table} and returns the
-  result. For the \code{\link{WMD}} method, is is up to the
-  user to ensure that the result is a logical scalar, but
-  the method would succeed anyway. The \code{\link{OPMS}}
-  yields an error unless each plate yields a logical
-  scalar. Symbols that are not found within the metadata
-  are looked up in the enclosing environment. This is less
-  strict than \code{\link{infix.largeq}}.  Because of
-  missing objects and other reasons the method might
-  nevertheless fail. } See \code{\link{subset}} for usage
-  examples with \code{\link{OPMS}} objects.
-}
-\note{
-  The two arguments can swap their places.
+  argument set to \code{TRUE} and \code{exact} set to
+  either \code{FALSE} (\code{infix.q}) or \code{TRUE}
+  (\code{infix.largeq}). The latter might be too strict for
+  most applications. The main advantage of using a list
+  over the character-based search is that it allows for a
+  nested query.
+
+  \item The factor method first converts \code{x} to
+  \sQuote{character} mode.
+
+  \item The formula method attempts to evaluate the right
+  side of the formula in the context of the metadata of
+  \code{table} and returns the result. For the
+  \code{\link{WMD}} method, is is up to the user to ensure
+  that the result is a logical scalar, but the method would
+  succeed anyway. The \code{\link{OPMS}} method yields an
+  error unless each plate yields a logical scalar. Symbols
+  that are not found within the metadata are looked up in
+  the enclosing environment (\code{infix.q}) or only in the
+  base environment (\code{infix.largeq}). The former
+  approach is less strict.  Because of missing objects and
+  other reasons the method might nevertheless fail. } See
+  \code{\link{subset}} for usage examples with
+  \code{\link{OPMS}} objects.
 }
 \examples{
 # The dataset contains the metadata keys 'Species' and 'Experiment' with the
 # values 'Escherichia coli' and 'First replicate':
 data(vaas_1)
 
-# Character method
+## Character methods
+
 stopifnot(!"Experiment" \%q\% vaas_1) # wrong query here; compare to \%k\%
 stopifnot(!"First replicate" \%q\% vaas_1) # again wrong query
 stopifnot(c(Experiment = "First replicate") \%q\% vaas_1) # correct query
+stopifnot(c(Experiment = "First replicate") \%Q\% vaas_1)
 
 stopifnot(!"Species" \%q\% vaas_1) # wrong query
 stopifnot(!"Escherichia coli" \%q\% vaas_1) # wrong query
 stopifnot(c(Species = "Escherichia coli") \%q\% vaas_1) # correct query
 
+# This does not work because the value has the wrong type
+stopifnot(!c(`Plate number` = "6") \%Q\% vaas_1)
+# Compare to \%q\%
+stopifnot(c(`Plate number` = "6") \%q\% vaas_1)
+
 stopifnot(c(Species = "Escherichia coli",
   Experiment = "First replicate") \%q\% vaas_1) # combined query, all TRUE
+stopifnot(c(Species = "Escherichia coli",
+  Experiment = "First replicate") \%Q\% vaas_1) # all present
 
 stopifnot(character() \%q\% vaas_1) # empty query always results
+stopifnot(character() \%Q\% vaas_1)
 
-# List method
+## List methods
+
 stopifnot(list(Experiment = "First replicate") \%q\% vaas_1)
+stopifnot(list(Experiment = "First replicate") \%Q\% vaas_1) # present
 
 # Choice among alternatives
 stopifnot(list(Experiment = c("First replicate",
@@ -87,17 +109,33 @@ stopifnot(!list(Experiment = c("Second replicate",
 stopifnot(list(Experiment = c("First replicate", "Second replicate"),
   Species = c("Escherichia coli", "Bacillus subtilis")) \%q\% vaas_1)
 
-stopifnot(list() \%q\% vaas_1) # empty query
+# Choice among alternatives is not done here: this query fails unless this
+# two-element vector is contained. Compare to \%q\%.
+stopifnot(!list(Experiment = c("First replicate",
+  "Second replicate")) \%Q\% vaas_1)
 
-# Formulas for querying, compare with \%Q\%
+stopifnot(list() \%q\% vaas_1) # empty query always results
+stopifnot(list() \%Q\% vaas_1)
+
+## Formulas for querying
+
 stopifnot((~ Experiment == "First replicate") \%q\% vaas_1)
+stopifnot((~ Experiment == "First replicate") \%Q\% vaas_1)
 stopifnot(vaas_1 \%q\% ~ Experiment == "First replicate")
+stopifnot(vaas_1 \%Q\% ~ Experiment == "First replicate")
 stopifnot(vaas_1 \%q\% ~ Species == "Escherichia coli")
+stopifnot(vaas_1 \%Q\% ~ Species == "Escherichia coli")
 stopifnot(vaas_1 \%q\% ~ Species != "Bacillus subtilis")
+stopifnot(vaas_1 \%Q\% ~ Species != "Bacillus subtilis")
+
 x <- try(vaas_1 \%q\% ~ missing.name == "abc", silent = TRUE) # fails
 stopifnot(inherits(x, "try-error"))
-missing.name <- "abc"  # enclosing environment considered
+x <- try(vaas_1 \%Q\% ~ missing.name == "abc", silent = TRUE) # also fails
+stopifnot(inherits(x, "try-error"))
+missing.name <- "abc"  # enclosing environment considered or ignored
 stopifnot(vaas_1 \%q\% ~ missing.name == "abc")
+x <- try(vaas_1 \%Q\% ~ missing.name == "abc", silent = TRUE) # still fails
+stopifnot(inherits(x, "try-error"))
 rm(missing.name) # tidy up
 
 # examples for OPMS methods are given under subset()
@@ -112,20 +150,54 @@ rm(missing.name) # tidy up
 \alias{\%q\%,list,WMD-method}
 \alias{infix.q,formula,WMD-method}
 \alias{\%q\%,formula,WMD-method}
+\alias{infix.largeq,character,WMD-method}
+\alias{\%Q\%,character,WMD-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,list,WMD-method}
+\alias{\%Q\%,list,WMD-method}
+\alias{infix.largeq,formula,WMD-method}
+\alias{\%Q\%,formula,WMD-method}
 \alias{infix.q,factor,WMD-method}
 \alias{\%q\%,factor,WMD-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,factor,WMD-method}
+\alias{\%Q\%,factor,WMD-method}
+\alias{infix.q-methods}
 \alias{infix.q,list,OPMS-method}
 \alias{\%q\%,list,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,list,OPMS-method}
+\alias{\%Q\%,list,OPMS-method}
+\alias{infix.q-methods}
 \alias{infix.q,character,OPMS-method}
 \alias{\%q\%,character,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,character,OPMS-method}
+\alias{\%Q\%,character,OPMS-method}
+\alias{infix.q-methods}
 \alias{infix.q,factor,OPMS-method}
 \alias{\%q\%,factor,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,factor,OPMS-method}
+\alias{\%Q\%,factor,OPMS-method}
+\alias{infix.q-methods}
 \alias{infix.q,formula,OPMS-method}
 \alias{\%q\%,formula,OPMS-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,formula,OPMS-method}
+\alias{\%Q\%,formula,OPMS-method}
+\alias{infix.q-methods}
 \alias{infix.q,WMD,ANY-method}
 \alias{\%q\%,WMD,ANY-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,WMD,ANY-method}
+\alias{\%Q\%,WMD,ANY-method}
+\alias{infix.q-methods}
 \alias{infix.q,OPMS,ANY-method}
 \alias{\%q\%,OPMS,ANY-method}
+\alias{infix.largeq-methods}
+\alias{infix.largeq,OPMS,ANY-method}
+\alias{\%Q\%,OPMS,ANY-method}
 \usage{
   \S4method{\%q\%}{character,WMD}(x, table) 
 
@@ -133,18 +205,38 @@ rm(missing.name) # tidy up
 
   \S4method{\%q\%}{formula,WMD}(x, table) 
 
+  \S4method{\%Q\%}{character,WMD}(x, table) 
+
+  \S4method{\%Q\%}{list,WMD}(x, table) 
+
+  \S4method{\%Q\%}{formula,WMD}(x, table) 
+
   \S4method{\%q\%}{factor,WMD}(x, table) 
+
+  \S4method{\%Q\%}{factor,WMD}(x, table) 
 
   \S4method{\%q\%}{list,OPMS}(x, table) 
 
+  \S4method{\%Q\%}{list,OPMS}(x, table) 
+
   \S4method{\%q\%}{character,OPMS}(x, table) 
+
+  \S4method{\%Q\%}{character,OPMS}(x, table) 
 
   \S4method{\%q\%}{factor,OPMS}(x, table) 
 
+  \S4method{\%Q\%}{factor,OPMS}(x, table) 
+
   \S4method{\%q\%}{formula,OPMS}(x, table) 
+
+  \S4method{\%Q\%}{formula,OPMS}(x, table) 
 
   \S4method{\%q\%}{WMD,ANY}(x, table) 
 
+  \S4method{\%Q\%}{WMD,ANY}(x, table) 
+
   \S4method{\%q\%}{OPMS,ANY}(x, table) 
+
+  \S4method{\%Q\%}{OPMS,ANY}(x, table) 
 
 }

@@ -301,12 +301,10 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
   base::matrix base::as.matrix base::cbind
 
   Other conversion-functions: \code{\link{as.data.frame}},
-  \code{\link{flatten}}, \code{\link{gen_iii}},
-  \code{\link{merge}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{sort}},
-  \code{\link{thin_out}}, \code{\link{to_yaml}},
-  \code{\link{unique}}
+  \code{\link{flatten}}, \code{\link{merge}},
+  \code{\link{oapply}}, \code{\link{plates}},
+  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{to_yaml}}, \code{\link{unique}}
 }
 \keyword{dplot}
 \keyword{htest}

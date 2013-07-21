@@ -96,61 +96,6 @@ test_that("the plates can be obtained as a list", {
 ## UNTESTED -- but see examples and tests for subsetting
 
 
-## thin_out
-test_that("OPM example data can be thinned out", {
-  expect_error(thin_out(OPM.1, 0.5), "'factor' must be >= 1")
-  thin <- thin_out(OPM.1, 1)
-  expect_equal(OPM.1, thin)
-  thin <- thin_out(OPM.1, 2)
-  dims <- dim(thin)
-  dims[1L] <- dims[1] * 2
-  expect_equal(dims, dim(OPM.1))
-})
-
-## thin_out
-test_that("OPMS example data can be thinned out", {
-  dims <- dim(OPMS.INPUT)
-  dims[2L] <- floor(dims[2L] / 10)
-  thin <- thin_out(OPMS.INPUT, 10)
-  expect_equal(dim(thin), dims)
-  expect_equal(metadata(thin), metadata(OPMS.INPUT))
-})
-
-
-################################################################################
-
-
-## gen_iii
-test_that("the plate type can be changed to generation 3", {
-  gen.3 <- gen_iii(OPM.1)
-  expect_is(gen.3, "OPM")
-  expect_equal(plate_type(gen.3), SPECIAL_PLATES[["gen.iii"]])
-  expect_equal(metadata(gen.3), metadata(OPM.1))
-  expect_equal(length(which(csv_data(gen.3) != csv_data(OPM.1))), 1L)
-})
-
-## gen_iii
-test_that("the plate type can be changed to ecoplate", {
-  eco <- gen_iii(OPM.1, "ECO")
-  expect_is(eco, "OPM")
-  expect_equal(plate_type(eco), SPECIAL_PLATES[["eco"]])
-  expect_equal(metadata(eco), metadata(OPM.1))
-  expect_equal(length(which(csv_data(eco) != csv_data(OPM.1))), 1L)
-})
-
-## gen_iii
-test_that("the plate type of OPMS objects can be changed", {
-  x <- gen_iii(OPMS.INPUT)
-  expect_equal(class(x), class(OPMS.INPUT))
-  expect_equal(dim(x), dim(OPMS.INPUT))
-  expect_false(plate_type(x) == plate_type(OPMS.INPUT))
-  x <- gen_iii(OPMS.INPUT, "Eco")
-  expect_equal(class(x), class(OPMS.INPUT))
-  expect_equal(dim(x), dim(OPMS.INPUT))
-  expect_false(plate_type(x) == plate_type(OPMS.INPUT))
-})
-
-
 ################################################################################
 
 
