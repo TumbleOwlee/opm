@@ -108,7 +108,7 @@ test_that("HTML tables can be created and information added", {
     html.args = html_args(meta = letters)))
 
   z <- phylo_data(x, "html", html.args = html_args(
-    meta = c(a = 99, b = 1:3), meta = structure(letters, .Names = LETTERS)))
+    meta = c(a = 99, b = 1:3), meta = structure(letters, names = LETTERS)))
   expect_equal(length(y) + 3L, length(z))
 
   z <- phylo_data(x, "html", comments = "This is a title")

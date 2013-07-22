@@ -391,7 +391,7 @@ test_that("annotations can be added with word-wise abbreviation", {
 
 ## list2html
 test_that("HTML can be recursively generated", {
-  x <- list(a = 63, c = list(b = letters, structure(LETTERS, .Names = letters)))
+  x <- list(a = 63, c = list(b = letters, structure(LETTERS, names = letters)))
   got <- list2html(x)
   expect_is(got, "character")
   expect_equal(length(got), 1L)

@@ -163,6 +163,7 @@ Based on this meta-information, a variety of visual and statistical comparison t
 
 The Phenotype MicroArray (PM) system is capable of measuring a large number of phenotypes in a high-throughput system that uses such as tetrazolium detection approach.
 About 2,000 distinct physiological challenges, such as the metabolism of single carbon sources for energy gain, the metabolism under varying osmolyte concentrations, and the response to varying growth-inhibitory substances are included in the PM microtiter plates \citep{bochner2001, bochner2009}.
+The system is applicable, in principle, to each kind of cultivated cells and also to environmental probes, even though some kinds of cells, such as those from plant cell cultures, well cause a reduction of the dye but are too large to be handled in the 96-well layout \citep{ijms140715141}.
 The OmniLog\textregistered \ PM system records the colour formation in an automated setting (every 15 minutes) throughout the duration of the experiment, which may last up to several days.
 Thus the experimenter ends up with high-dimensional sets of longitudinal data, the PM respiration kinetics.
 For a detailed introduction into the experimental setup for obtaining OmniLog\textregistered \ PM respiration kinetic data we refer to the OmniLog\textregistered \ website (\url{http://www.biolog.com/}) and the associated hardware and software manuals.

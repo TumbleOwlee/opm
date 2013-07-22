@@ -49,7 +49,7 @@ for (i in 1:length(x)) {
   # Creates data frame without converting strings to factors.
   #
   md <- to_metadata(csv_data(x[[i]]))
-  
+
   # Create replicate IDs if they are not included.
   #
   if (!replicate %in% names(md)) {
@@ -62,7 +62,7 @@ for (i in 1:length(x)) {
   # data frame from the CSV data, of course.
   #
   metadata(x[[i]]) <- md[, c(organism, replicate)]
-  
+
 }
 
 ################################################################################
@@ -78,7 +78,7 @@ for (i in 1:length(x)) {
   #
   x[[i]] <- do_aggr(x[[i]], boot = 0, cores = 8, method = "splines",
     options = set_spline_options("smooth.spline"))
-  
+
   # The discretization is using exact k-means partitioning, without estimation
   # of an intermediary state. This is OK if > 1 replicates are there and one can
   # calculate ambiguity in another manner (see below).
