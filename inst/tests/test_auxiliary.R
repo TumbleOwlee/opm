@@ -15,6 +15,22 @@ context("Testing the helper functions of the OPM package")
 ## UNTESTED
 
 
+## get_and_remember
+test_that("we can memoize queries", {
+  query <- letters[1L:5L]
+  prefix <- "TEST."
+  expect_false(any(vapply(paste0(prefix, query), exists, NA, MEMOIZED)))
+  qfun <- function(x) as.list(rep.int(42L, length(x)))
+  result <- get_and_remember(query, prefix, NA, qfun)
+  expect_equal(names(result), query)
+  expect_true(all(vapply(paste0(prefix, query), exists, NA, MEMOIZED)))
+  result.2 <- get_and_remember(query, prefix, NA, qfun)
+  expect_equal(result.2, result)
+  expect_true(all(vapply(paste0(prefix, query), exists, NA, MEMOIZED)))
+  rm(list = paste0(prefix, query), envir = MEMOIZED)
+})
+
+
 ## md_data_frame
 ## UNTESTED
 

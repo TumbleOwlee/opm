@@ -42,6 +42,74 @@ opm_string <- function(version = FALSE) {
 ################################################################################
 
 
+#' Get data and memoize them
+#'
+#' Using queries and a function, search for information that is not already
+#' stored, and store it in the hash table for memoization.
+#'
+#' @param x Character vector of query IDs. Empty and \code{NA} elements will
+#'   not be used as query but yield \code{default}. All other elements are
+#'   pased to \code{getfun} either together or element-by-element.
+#' @param prefix Character scalar to prepend to the IDs for storing them in the
+#'   hash table. Should be specific for this kind of data.
+#' @param default R object to insert for each value of \code{x} that is either
+#'   \code{NA} or empty or contains information but yields \code{NULL} values
+#'   in the query result.
+#' @param getfun Function used for obtaining results. If \code{single} is
+#'   \code{TRUE} it should accept an element of \code{x} as first argument.
+#'   Otherwise the entire vector \code{x} is the first argument, and the result
+#'   must be a list of the same length than the passed subset of \code{x}. If
+#'   it has names, they must be set-equal to the passed subset of \code{x}, as
+#'   they will be used to order the query results using this subset of \code{x}.
+#'   Irrespective of \code{single}, \code{NULL} elements must be used in the
+#'   return values of \code{getfun} to indicate failure.
+#' @param single Logical scalar modifying the use of \code{getfun}.
+#' @param ... Optional arguments passed to \code{getfun}.
+#' @return A list of the same length than \code{x}, with \code{x} as names.
+#' @keywords internal
+#'
+get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
+  do_get <- function(x, envir) {
+    result <- vector("list", length(x))
+    need <- !vapply(keys <- paste0(prefix, x), exists, NA, envir)
+    result[!need] <- mget(keys[!need], envir)
+    if (!any(need))
+      return(result)
+    if (single) {
+      result[need] <- lapply(X = x[need], FUN = getfun, ...)
+    } else {
+      if (!is.list(got <- getfun(x[need], ...)))
+        stop("'getfun' did not return a list")
+      if (length(got) != sum(need))
+        stop("length discrepancy between 'getfun' result and query")
+      if (is.null(names(got)))
+        result[need] <- got
+      else if (setequal(names(got), x[need]))
+        result[need] <- got[x[need]]
+      else
+        stop("naming discrepancy between 'getfun' result and query")
+    }
+    if (any(bad <- vapply(result[need], is.null, NA))) {
+      warning(listing(x[need][bad], "could not find ", style = "sentence"))
+      result[need][bad] <- rep.int(list(default), sum(bad))
+    }
+    list2env(structure(result[need][!bad], names = keys[need][!bad]), envir)
+    result
+  }
+  if (!is.character(x))
+    stop("'x' must be a character vector (of query IDs)")
+  result <- vector("list", length(x))
+  ok <- !is.na(x) & nzchar(x)
+  result[!ok] <- rep.int(list(default), sum(!ok))
+  result[ok] <- do_get(x[ok], MEMOIZED)
+  names(result) <- x
+  result
+}
+
+
+################################################################################
+
+
 #' Convert to metadata-like data frame
 #'
 #' A helper function for \code{\link{to_metadata}}.
