@@ -951,6 +951,7 @@ setMethod("extract_columns", "data.frame", function(object, what,
           result[, names(what)[i]] <- join(object, what[[i]], sep)
       if (length(as.labels))
         rownames(result) <- join(object, as.labels, sep)
+      attr(result, "joined.columns") <- c(attr(result, "joined.columns"), what)
     } else {
       result <- join(object, what, sep)
       if (length(as.labels))

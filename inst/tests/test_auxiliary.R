@@ -133,42 +133,61 @@ test_that("CAS numbers are recognized", {
 ## metadata_key
 test_that("we can convert formulas to formulas for use as metadata keys", {
 
-  var <- c("A", "B")
-  f <- ~ a $ b $ c + I(var) * ("d" + e) + c("f", "g", "h") | i$"j"
+  v <- c("A", "B")
+  f <- ~ a $ b $ c + I(v) * ("d" + e) + c("f", "g", "h") | i$"j"
   got <- metadata_key(f, TRUE)
   expect_equal(got, ~ a.b.c + A.B * (d + e) + c(f, g, h) | i.j)
 
-  f <- ~ a $ b $ c + I(var) * J("d" + e) + c("f", "g", "h") | i$"j"
+  f <- ~ a $ b $ c + I(v) * J("d" + e) + c("f", "g", "h") | i$"j"
   got <- metadata_key(f, TRUE)
   expect_equal(attr(got, "combine"), list(d.e = c("d", "e")))
   expect_equal(got, ~ a.b.c + A.B * d.e + c(f, g, h) | i.j)
 
-  f <- ~ a $ b $ c + I(var) * J("d", e$r) + c("f", "g", "h") | i$"j"
+  f <- ~ a $ b $ c + I(v) * J("d", e$r) + c("f", "g", "h") | i$"j"
   old <- opm_opt(comb.key.join = "#")
   got <- metadata_key(f, TRUE)
   expect_equal(attr(got, "combine"), list(`d#e.r` = c("d", "e.r")))
   expect_equal(got, ~ a.b.c + A.B * `d#e.r` + c(f, g, h) | i.j)
   opm_opt(comb.key.join = old$comb.key.join)
 
+  f <- Value ~ k & foo.bar.baz
+  got <- metadata_key(f, TRUE)
+  expect_equal(got, f)
+  got <- metadata_key(f, TRUE, syntactic = TRUE)
+  expect_equal(got, f)
+  f2 <- Value ~ k & `foo.bar?baz`
+  got <- metadata_key(f2, TRUE)
+  expect_equal(got, f2)
+  got <- metadata_key(f2, TRUE, syntactic = TRUE)
+  expect_equal(got, f)
+
 })
 
 
 ## metadata_key
 test_that("we can convert formulas to lists for use as metadata keys", {
-  var <- c("A", "B")
-  f <- ~ a $ b $ c + I(var) * ("d" + e) + c("f", "g", "h") | i$"j"
+  v <- c("A", "B")
+  f <- ~ a $ b $ c + I(v) * ("d ?" + e) + c("f", "g", "h") | i$"j"
 
   got <- metadata_key(f, FALSE)
   wanted <- list(a.b.c = c("a", "b", "c"), A.B = c("A", "B"),
-    d = "d", e = "e", f = "f", g = "g", h = "h", i.j = c("i", "j"))
+    `d ?` = "d ?", e = "e", f = "f", g = "g", h = "h", i.j = c("i", "j"))
+  expect_equal(got, wanted)
+  got <- metadata_key(f, FALSE, syntactic = TRUE)
+  pos <- match("d ?", names(wanted))
+  names(wanted)[pos] <- wanted[[pos]] <- "d.."
   expect_equal(got, wanted)
 
   got <- metadata_key(f, FALSE, remove = c("A.B", "i.j"))
   wanted <- list(a.b.c = c("a", "b", "c"),
-    d = "d", e = "e", f = "f", g = "g", h = "h")
+    `d ?` = "d ?", e = "e", f = "f", g = "g", h = "h")
+  expect_equal(got, wanted)
+  got <- metadata_key(f, FALSE, syntactic = TRUE, remove = c("A.B", "i.j"))
+  pos <- match("d ?", names(wanted))
+  names(wanted)[pos] <- wanted[[pos]] <- "d.."
   expect_equal(got, wanted)
 
-  f <- ~ a $ b $ c + I(var) * J("d" + e + E$F) + c("f", "g", "h") | i$"j"
+  f <- ~ a $ b $ c + I(v) * J("d" + e + E$F) + c("f", "g", "h") | i$"j"
   got <- metadata_key(f, FALSE)
   wanted <- list(a.b.c = c("a", "b", "c"), A.B = c("A", "B"),
     d = "d", e = "e", E.F = c("E", "F"), f = "f", g = "g", h = "h",
@@ -189,13 +208,16 @@ test_that("we can convert formulas to lists for use as metadata keys", {
 ## metadata_key
 test_that("we can convert lists for use as formulas", {
 
-  x <- list(c("a", "b"), list(K = "t", I = c("D", "E")))
+  x <- list(c("a", "b c"), list(K = "t", I = c("D", "E")))
   got <- metadata_key(x, TRUE)
-  expect_equal(got, ~ a.b + K + I)
+  expect_equal(got, ~ `a.b c` + K + I)
   got <- metadata_key(x, TRUE, ops = c("+", "|"))
-  expect_equal(got, ~ a.b + K | I)
-  got <- metadata_key(x, TRUE, remove = "K")
-  expect_equal(got, ~ a.b + I)
+  expect_equal(got, ~ `a.b c` + K | I)
+  got <- metadata_key(x, TRUE, remove = "K", ops = c("+", "|"))
+  expect_equal(got, ~ `a.b c` + I)
+
+  got <- metadata_key(x, TRUE, syntactic = TRUE)
+  expect_equal(got, ~ a.b.c + K + I)
 
   x <- list("run")
   got <- metadata_key(x, TRUE)
@@ -205,7 +227,7 @@ test_that("we can convert lists for use as formulas", {
 
 
 ## metadata_key
-test_that("some edge cases are correctly handled", {
+test_that("some edge cases are correctly handled by metadata_key()", {
   x <- character()
   names(x) <- character()
   expect_error(metadata_key(x, TRUE))

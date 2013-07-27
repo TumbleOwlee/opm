@@ -225,7 +225,7 @@ setMethod("opm_mcp", OPMS, function(object, model, linfct = 1L,
     m.type = "glm", glht.args = list(), ops = "+", output = "mcp", ...) {
   annotation <- list(plate.type = plate_type(object))
   object <- extract(object = object, dataframe = TRUE, ...,
-    as.labels = metadata_key(model, FALSE, ops = ops,
+    as.labels = metadata_key(model, FALSE, ops = ops, syntactic = FALSE,
       remove = RESERVED_NAMES[c("well", "value", "parameter")]))
   attr(object, opm_string()) <- annotation
   opm_mcp(object = object, model = model, linfct = linfct, ops = ops,
@@ -246,9 +246,50 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
       f[[2L]] <- as.name(RESERVED_NAMES[["value"]])
       f
     }
-    enforce_left_side(metadata_key(model, TRUE, ops = ops))
+    enforce_left_side(metadata_key(model, TRUE, ops = ops, syntactic = TRUE))
   }
-  convert_hypothesis_spec <- function(linfct, model) {
+
+  # Generate all pairs of factor levels for a given data column, considering
+  # column joining if applicable. Resulting character vector can be passed to
+  # multcomp::mcp().
+  level_pairs <- function(spec, column, data) {
+    spec_to_column_names <- function(spec, joined) {
+      if (nchar(spec) < 7L)
+        spec <- "1"
+      else
+        spec <- unlist(strsplit(spec, substr(spec, 6L, 6L), TRUE))[-1L]
+      if (!all(grepl("^\\d+$", spec, FALSE, TRUE)))
+        return(spec)
+      spec <- as.integer(spec)
+      if (is.null(joined)) # TODO: this would never yield pairs at the moment
+        joined <- as.list(structure(column, names = column))
+      joined <- joined[[column]][spec]
+    }
+    pair_indices <- function(x) {
+      last <- length(nums <- seq_along(x))
+      do.call(rbind, lapply(nums[-last], FUN = function(j)
+        cbind(I = seq.int(j + 1L, last), J = j)))
+    }
+    all_pairs <- function(x) {
+      idx <- pair_indices(x <- unique.default(x))
+      sprintf("%s - %s == 0L", x[idx[, 1L]], x[idx[, 2L]])
+    }
+    spec <- spec_to_column_names(spec, attr(data, "joined.columns"))
+    #print(spec)
+    groups <- split(as.character(data[, column]), data[, spec])
+    groups <- lapply(groups, unique.default)
+    result <- unlist(lapply(groups, all_pairs))
+    #print(result)
+    if (!length(result))
+      stop("no pairs found -- are selected factors constant?")
+    result
+  }
+
+  # Convert the 'linfct' argument into its final from. 'model' is needed when
+  # getting column names from it if given as positions within the model, 'data'
+  # is necessary when computing on factor levels.
+  #
+  convert_hypothesis_spec <- function(linfct, model, data) {
     if (!length(linfct))
       stop("hypothesis definition 'linfct' must not be empty")
     # note that the glht() methods actually dispatch over 'linfct'...
@@ -270,9 +311,18 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     if (is.null(names(result)))
       names(result) <- rep(get("contrast.type", OPM_OPTIONS),
         length.out = length(result))
-    result <- structure(names(result), names = result)
-    do.call(multcomp::mcp, as.list(result))
+    # At this stage we have a character vector with contrast types as names and
+    # column names as values. Names and values are now swapped and then passed
+    # as list to multcomp::mcp().
+    result <- as.list(structure(names(result), names = result))
+    # Special treatments for special contrast types must be done here.
+    convert <- grepl("^Pairs", result, FALSE, TRUE)
+    result[convert] <- mapply(FUN = level_pairs, spec = result[convert],
+      column = names(result)[convert], MoreArgs = list(data = data),
+      SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    do.call(multcomp::mcp, result)
   }
+
   convert_data <- function(object, split.at, model) {
     param.pos <- assert_splittable_matrix(object, split.at)
     # create reshaped data frame and set temporary helper column '_ID' to avoid
@@ -292,12 +342,18 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     # the next step would combine the columns that have not yet been combined
     if (is.list(attr(model, "combine")))
       object <- extract_columns(object, attr(model, "combine"), direct = TRUE)
+    if (!is.null(joined <- attr(object, "joined.columns"))) {
+      names(joined) <- make.names(names(joined))
+      joined <- lapply(joined, make.names)
+    }
+    colnames(object) <- make.names(colnames(object))
     object
   }
-  contrast_matrices <- function(object, linfct) {
+  contrast_matrices <- function(data, linfct) {
+    linfct <- convert_hypothesis_spec(linfct, model, data)
     if (!inherits(linfct, "mcp"))
       stop("in 'contrast' mode, 'linfct' must yield an object of class 'mcp'")
-    n <- lapply(object[, names(linfct), drop = FALSE], table)
+    n <- lapply(data[, names(linfct), drop = FALSE], table)
     mapply(multcomp::contrMat, n = n, type = linfct, SIMPLIFY = FALSE)
   }
 
@@ -306,16 +362,16 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   case(match.arg(output),
     data = return(convert_data(object, split.at, model)),
     model = return(model),
-    linfct = return(convert_hypothesis_spec(linfct, model)),
-    contrast = return(contrast_matrices(
-      convert_data(object, split.at, model),
-      convert_hypothesis_spec(linfct, model))),
+    linfct = return(convert_hypothesis_spec(linfct, model,
+      convert_data(object, split.at, model))),
+    contrast = return(contrast_matrices(convert_data(object, split.at, model),
+      linfct)),
     mcp = NULL
   )
 
   annotation <- attr(object, opm_string())
   object <- convert_data(object, split.at, model)
-  linfct <- convert_hypothesis_spec(linfct, model)
+  linfct <- convert_hypothesis_spec(linfct, model, object)
 
   # necessary at this stage because otherwise glht() does not find its
   # dependencies

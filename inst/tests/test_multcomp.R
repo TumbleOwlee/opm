@@ -23,6 +23,7 @@ test_that("opm_mcp runs without actually performing mcp", {
   x <- opm_mcp(EXPL.DF, model = list("organism", "run"), output = "data")
   expect_is(x, "data.frame")
   expect_equal(dim(x), c(384L, 5L))
+  expect_equal(attr(x, "joined.columns"), NULL)
   y <- opm_mcp(EXPL.DF, model = ~ organism + run, output = "data")
   expect_equal(x, y)
   y <- opm_mcp(EXPL.OPMS, model = ~ organism + run, output = "data")
@@ -31,10 +32,21 @@ test_that("opm_mcp runs without actually performing mcp", {
   y <- opm_mcp(EXPL.OPMS, model = ~ J(organism + run), output = "data")
   expect_equal(dim(y), c(384L, 6L))
   expect_equivalent(x, y[, setdiff(colnames(y), "organism.run")])
+  expect_equal(attr(y, "joined.columns"),
+    list(organism.run = c("organism", "run")))
   # with the wells
   y <- opm_mcp(EXPL.OPMS, model = ~ J(organism, Well) + run, output = "data")
   expect_equal(dim(y), c(384L, 6L))
   expect_equivalent(x, y[, setdiff(colnames(y), "organism.Well")])
+  expect_equal(attr(y, "joined.columns"),
+    list(organism.Well = c("organism", "Well")))
+  # with the wells
+  y <- opm_mcp(EXPL.OPMS, model = ~ J(organism, Well, run), output = "data")
+  expect_equal(dim(y), c(384L, 6L))
+  expect_equivalent(x, y[, setdiff(colnames(y), "organism.Well.run")])
+  expect_equal(attr(y, "joined.columns"),
+    list(organism.Well.run = c("organism", "Well", "run")))
+
 })
 
 
@@ -72,6 +84,7 @@ test_that("opm_mcp converts numeric 'linfct' arguments", {
     run = opm_opt("contrast.type")))
 })
 
+
 ## opm_mcp
 test_that("opm_mcp converts other 'linfct' arguments", {
   got <- opm_mcp(EXPL.DF, model = list("organism", "run"),
@@ -83,6 +96,24 @@ test_that("opm_mcp converts other 'linfct' arguments", {
   expect_equal(got, multcomp::mcp(organism = opm_opt("contrast.type"),
     run = opm_opt("contrast.type")))
 })
+
+
+## opm_mcp
+test_that("opm_mcp converts pair-like 'linfct' arguments", {
+  got <- opm_mcp(EXPL.DF, model = ~ J(Well, run) + organism,
+    linfct = c(Pairs = 1L), output = "linfct")
+  expect_is(got$Well.run, "character")
+  expect_equal(length(got$Well.run), 96L) # one comparison per well
+  expect_equal(do.call(multcomp::mcp, list(Well.run = got$Well.run)), got)
+  got.2 <- opm_mcp(EXPL.DF, model = ~ J(Well, run) + organism,
+    linfct = c(Pairs.Well = 1L), output = "linfct")
+  expect_equal(got, got.2)
+  expect_error(opm_mcp(EXPL.DF, model = ~ J(Well, organism) + run,
+    linfct = c(Pairs = 1L), output = "linfct")) # no pairs
+  expect_error(opm_mcp(EXPL.DF, model = ~ J(Well, organism) + run,
+    linfct = c(Pairs = 1L), output = "linfct")) # no pairs
+})
+
 
 ## opm_mcp
 test_that("opm_mcp generates contrast matrices", {

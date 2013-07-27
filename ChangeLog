@@ -15,6 +15,8 @@
 - csv_data() gets a 'what' argument
 - explicit length() method for OPM objects
 - well() gets a 'use.names' argument
+- opm_mcp() now handles non-syntactical names in metadata (converts them
+  for multcomp::glht()) and computes specific 'Pairs...' contrast-types
 
 - streamlined the documentation (merged many entries) in the manual
 

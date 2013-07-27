@@ -69,26 +69,27 @@ opm_string <- function(version = FALSE) {
 #' @keywords internal
 #'
 get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
-  do_get <- function(x, envir) {
+  do_get <- function(x, envir, prefix, default, getfun, single, ...) {
+    do_query <- function(x, single, getfun, ...) {
+      if (single)
+        return(lapply(X = x, FUN = getfun, ...))
+      if (!is.list(result <- getfun(x, ...)))
+        stop("'getfun' did not return a list")
+      if (length(result) != length(x))
+        stop("length discrepancy between 'getfun' result and query")
+      if (is.null(names(result)))
+        result
+      else if (all(names(result) %in% x))
+        result[x]
+      else
+        stop("naming discrepancy between 'getfun' result and query")
+    }
     result <- vector("list", length(x))
     need <- !vapply(keys <- paste0(prefix, x), exists, NA, envir)
     result[!need] <- mget(keys[!need], envir)
     if (!any(need))
       return(result)
-    if (single) {
-      result[need] <- lapply(X = x[need], FUN = getfun, ...)
-    } else {
-      if (!is.list(got <- getfun(x[need], ...)))
-        stop("'getfun' did not return a list")
-      if (length(got) != sum(need))
-        stop("length discrepancy between 'getfun' result and query")
-      if (is.null(names(got)))
-        result[need] <- got
-      else if (setequal(names(got), x[need]))
-        result[need] <- got[x[need]]
-      else
-        stop("naming discrepancy between 'getfun' result and query")
-    }
+    result[need] <- do_query(x[need], single, getfun, ...)
     if (any(bad <- vapply(result[need], is.null, NA))) {
       warning(listing(x[need][bad], "could not find ", style = "sentence"))
       result[need][bad] <- rep.int(list(default), sum(bad))
@@ -101,7 +102,7 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
   result <- vector("list", length(x))
   ok <- !is.na(x) & nzchar(x)
   result[!ok] <- rep.int(list(default), sum(!ok))
-  result[ok] <- do_get(x[ok], MEMOIZED)
+  result[ok] <- do_get(x[ok], MEMOIZED, prefix, default, getfun, single, ...)
   names(result) <- x
   result
 }
@@ -123,7 +124,7 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
 md_data_frame <- function(object, stringsAsFactors, optional, ...) {
   data_frameable <- function(x) {
     oneify <- function(x) {
-      x[vapply(x, length, 0L) == 0L] <- NA
+      x[!vapply(x, length, 0L)] <- NA
       x[bad] <- lapply(x[bad <- vapply(x, length, 0L) != 1L], list)
       x
     }
@@ -134,14 +135,14 @@ md_data_frame <- function(object, stringsAsFactors, optional, ...) {
     oneify(x)
   }
   x <- lapply(object, data_frameable)
-  keys <- unique.default(unlist(lapply(x, names), recursive = FALSE))
-  result <- matrix(NA, length(x), length(keys), dimnames = list(NULL, keys))
+  keys <- unique.default(unlist(lapply(x, names), FALSE))
+  result <- matrix(NA, length(x), length(keys), FALSE, list(NULL, keys))
   result <- as.data.frame(x = result, stringsAsFactors = FALSE,
     optional = TRUE, ...)
   for (i in seq_along(x))
     result[i, names(x[[i]])] <- x[[i]]
   if (stringsAsFactors)
-    for (i in which(vapply(result, typeof, "") == "character"))
+    for (i in which(vapply(result, is.character, NA)))
       result[, i] <- as.factor(result[, i])
   if (!optional)
     names(result) <- make.names(names(result))
@@ -439,6 +440,8 @@ is_cas <- function(x) {
 #' @param to.formula Logical scalar indicating whether conversion to a formula
 #'   should be conducted.
 #' @param remove Names of elements to be deleted after conversion to list.
+#' @param syntactic Logical scalar indicating whether names should be converted
+#'   to syntactic names.
 #' @param ops Character vector containing the operators to use when converting
 #'   a list to a formula. Recycled if necessary.
 #' @inheritParams print
@@ -467,19 +470,23 @@ metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {
 #' @rdname metadata_key
 #' @method metadata_key factor
 #'
-metadata_key.factor <- function(x, to.formula = FALSE, remove = NULL, ...) {
-  metadata_key.character(as.character(x), to.formula, remove, ...)
+metadata_key.factor <- function(x, ...) {
+  metadata_key.character(as.character(x), ...)
 }
 
 #' @rdname metadata_key
 #' @method metadata_key character
 #'
-metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
+metadata_key.character <- function(x, to.formula = FALSE, remove = NULL,
+    syntactic = FALSE, ...) {
   if (length(x) == 1L && x %in% remove)
     return(NULL)
-  if (to.formula)
+  if (to.formula) {
+    if (syntactic)
+      x <- make.names(x)
     return(create_formula("~ `%s`",
       paste(x, collapse = get("key.join", OPM_OPTIONS))))
+  }
   if (is.null(names(x)))
     names(x) <- x
   x
@@ -488,8 +495,8 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL, ...) {
 #' @rdname metadata_key
 #' @method metadata_key list
 #'
-metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
-    ...) {
+metadata_key.list <- function(x, to.formula = FALSE, remove = NULL,
+    syntactic = FALSE, ops = "+", ...) {
   join <- function(x) vapply(x, paste0, "",
     collapse = get("key.join", OPM_OPTIONS))
   if (is.null(names(x <- flatten(x))))
@@ -497,6 +504,10 @@ metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
   else
     names(x)[bad] <- join(x[bad <- !nzchar(names(x)) | is.na(names(x))])
   x <- x[!names(x) %in% remove]
+  if (syntactic) {
+    names(x) <- make.names(names(x))
+    x <- lapply(x, make.names)
+  }
   if (!to.formula)
     return(x)
   fmt <- case(length(x), stop("'x' must not be empty"), "",
@@ -507,8 +518,8 @@ metadata_key.list <- function(x, to.formula = FALSE, remove = NULL, ops = "+",
 #' @rdname metadata_key
 #' @method metadata_key formula
 #'
-metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL, ...,
-    full.eval = !to.formula, envir = parent.frame()) {
+metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL,
+    syntactic = FALSE, ..., full.eval = !to.formula, envir = parent.frame()) {
   elem_type <- function(name) switch(as.character(name),
     `::` =, `:::` =, `$` =, `@` = 1L, # operators with highest precedence
     `I` = 2L, # protected formula elements
@@ -587,17 +598,26 @@ metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL, ...,
     comb_names(apply_to_tail(x, rec_replace)),
     apply_to_tail(x, rec_replace)
   ))
+  rec_make_names <- function(x) {
+    if (is.name(x))
+      as.name(make.names(x)) # make.names() converts to character mode
+    else
+      apply_to_tail(x, rec_make_names)
+  }
   result <- if (to.formula)
     rec_replace(x[[length(x)]])
   else
     rec_listify(x[[length(x)]])
   if (full.eval) {
     result <- metadata_key(x = eval(result, enclos = envir), remove = remove,
-      ...)
+      syntactic = syntactic, ...)
     if (length(result))
       attr(result, "combine") <- final_comb_list(combine, remove)
     result
   } else {
+    # 'result' is a formula at this stage
+    if (syntactic)
+      result <- rec_make_names(result)
     x[[length(x)]] <- result
     attr(x, "combine") <- final_comb_list(combine, remove)
     x
