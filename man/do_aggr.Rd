@@ -2,15 +2,20 @@
 \alias{do_aggr}
 \title{Aggregate kinetics using curve-parameter estimation}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object. There is also a helper method for matrix
-  objects.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}}
+  object or matrix as output by \code{\link{measurements}},
+  i.e. with the time points in the first columns and the
+  measurements in the remaining columns (there must be at
+  least two). For deviations from this scheme see
+  \code{time.pos} and \code{transposed}.}
 
   \item{boot}{Integer scalar. Number of bootstrap
   replicates used to estimate 95-percent confidence
   intervals (CIs) for the parameters. Set this to zero to
   omit bootstrapping, resulting in \code{NA} entries for
-  the CIs.}
+  the CIs. Note that under the default settings of the
+  matrix method for \code{as.pe}, bootstrapping is also
+  necessary to obtain the point estimate.}
 
   \item{verbose}{Logical scalar. Print progress messages?}
 
@@ -26,10 +31,9 @@
   The \code{boot} and \code{verbose} settings, as the most
   important ones, are added separately (see above). The
   verbose mode is not very useful in parallel processing.
-  For its use in \sQuote{opm-fast} mode, see
-  \code{\link{fast_estimate}}.  With \code{method}
-  \dQuote{spline.fit}, options can be specified using the
-  function \code{\link{set_spline_options}}.}
+  With \code{method} \dQuote{spline.fit}, options can be
+  specified using the function
+  \code{\link{set_spline_options}}.}
 
   \item{method}{Character scalar. The aggregation method to
   use. Currently only the following methods are supported:
@@ -38,37 +42,54 @@
   splines via \code{smooth.spline}) to opm data.
   Recommended.} \item{grofit}{The \code{grofit} function in
   the eponymous package, with spline fitting as default.}
-  \item{opm-fast}{The native, faster parameter estimation.
-  This will only yield two of the four parameters, the area
-  under the curve and the maximum height. The area under
-  the curve is estimated as the sum of the areas given by
-  the trapezoids defined by each pair of adjacent time
-  points. The maximum height is just the result of
-  \code{max}. By default the median of the bootstrap values
-  is used as point estimate. For details see the argument
-  \code{as.pe} of the function
-  \code{\link{fast_estimate}}.} }}
+  \item{opm-fast}{The native, faster parameter estimation
+  implemented in the matrix method. This will only yield
+  two of the four parameters, the area under the curve and
+  the maximum height. The area under the curve is estimated
+  as the sum of the areas given by the trapezoids defined
+  by each pair of adjacent time points. The maximum height
+  is just the result of \code{max}. By default the median
+  of the bootstrap values is used as point estimate. For
+  details see \code{as.pe}.} }}
 
   \item{plain}{Logical scalar. If \code{TRUE}, only the
   aggregated values are returned (as a matrix, for details
   see below). Otherwise they are integrated in an
   \code{\link{OPMA}} object together with \code{object}.}
 
-  \item{by}{List, passed by the matrix method to
-  \code{aggregate} from the \pkg{stats} package. Can also
-  be another vector, which is then used as single list
-  element.}
+  \item{what}{Character scalar. Which parameter to
+  estimate. Currently only two are supported.}
 
-  \item{fun}{Function, passed by the matrix method as
-  \code{FUN} argument to \code{aggregate} from the
-  \pkg{stats} package.}
+  \item{ci}{Confidence interval to use in the output.
+  Ignored if \code{boot} is not positive.}
 
-  \item{sep}{Character scalar. Used for joining the vectors
-  within \code{by} together to form row names.}
+  \item{as.pe}{Character scalar determining what to output
+  as the point estimate. Either \sQuote{median},
+  \sQuote{mean} or \sQuote{pe}; the first two calculate the
+  point estimate from the bootstrapping replicates, the
+  third one use the point estimate from the raw data. If
+  \code{boot} is 0, \code{as.pe} is reset to \sQuote{pe},
+  if necessary, and a warning is issued.}
 
-  \item{...}{Arguments passed from the \code{\link{OPMS}}
-  to the \code{\link{OPM}} method, and from the matrix
-  method to \code{fun}.}
+  \item{ci.type}{Character scalar determining the way the
+  confidence intervals are calculated. Either
+  \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
+  \code{boot.ci} from the \pkg{boot} package for details.}
+
+  \item{time.pos}{Character or integer scalar indicating
+  the position of the column (or row, see next argument)
+  with the time points.}
+
+  \item{transposed}{Character or integer scalar indicating
+  whether the matrix is transposed compared to the
+  default.}
+
+  \item{raw}{Logical scalar. Return the raw bootstrapping
+  result without CI estimation and construction of the
+  usually resulting matrix?}
+
+  \item{...}{Optional arguments passed between the methods
+  or to \code{boot} from the eponymous package.}
 }
 \value{
   If \code{plain} is \code{FALSE}, an \code{\link{OPMA}}
@@ -77,8 +98,13 @@
   with an additional \sQuote{settings} attribute containing
   the (potentially modified) list proved via the
   \code{settings} argument, and a \sQuote{method} attribute
-  corresponding to the \code{method} argument. The matrix
-  method returns a matrix.
+  corresponding to the \code{method} argument.
+
+  The matrix method returns a numeric matrix with three
+  rows (point estimate, lower and upper CI) and as many
+  columns as data columns (or rows) in \code{object}. If
+  \code{raw} is \code{TRUE}, it returns an object of the
+  class \sQuote{boot}.
 }
 \description{
   Aggregate the kinetic data using curve-parameter
@@ -113,6 +139,11 @@
   \sQuote{settings} attributes could be obtained as
   components of the list returned by
   \code{aggr_settings(x)}.
+
+  The matrix method quickly estimates the curve parameters
+  AUC (area under the curve) or A (maximum height). This is
+  normally not directly called by an \pkg{opm} user but via
+  the other \code{do_aggr} methods.
 
   The aggregated values can be queried for using
   \code{\link{has_aggr}} and received using
@@ -154,11 +185,9 @@ stopifnot(cor.test(auc.fast, auc.grofit)$estimate > 0.999)
 }
 
 # matrix method
-x <- matrix(1:10, ncol = 2, dimnames = list(letters[1:5], LETTERS[1:2]))
-grps <- c("a", "b", "a", "b", "a")
-(y <- do_aggr(x, by = grps, fun = mean))
-stopifnot(is.matrix(y), dim(y) == c(2, 2), colnames(y) == colnames(x))
-stopifnot(mode(y) == "numeric")
+data(vaas_1)
+(x <- do_aggr(measurements(vaas_1)))[, 1:3]
+stopifnot(identical(dim(x), c(3L, 96L)))
 }
 \references{
   Brisbin, I. L., Collins, C. T., White, G. C., McCallum,
@@ -183,22 +212,22 @@ stopifnot(mode(y) == "numeric")
 }
 \seealso{
   grofit::grofit
-
-  Other aggregation-functions: \code{\link{fast_estimate}}
 }
 \keyword{smooth}
 
 \docType{methods}
 \alias{do_aggr-methods}
 \alias{do_aggr,OPM-method}
-\alias{do_aggr,matrix-method}
 \alias{do_aggr,OPMS-method}
+\alias{do_aggr,matrix-method}
 \usage{
   \S4method{do_aggr}{OPM}(object, boot = 100L, verbose = FALSE,
     cores = 1L, options = list(), method = "grofit", plain = FALSE) 
 
-  \S4method{do_aggr}{matrix}(object, by, fun, sep = ".", ...) 
-
   \S4method{do_aggr}{OPMS}(object, ...) 
+
+  \S4method{do_aggr}{matrix}(object, what = c("AUC", "A"),
+    boot = 100L, ci = 0.95, as.pe = "median", ci.type = "norm",
+    time.pos = 1L, transposed = FALSE, raw = FALSE, ...) 
 
 }

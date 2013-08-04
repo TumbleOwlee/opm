@@ -293,3 +293,29 @@ test_that("linfct as predefined matrix-object", {
   expect_equal(length(coef(x)), 4)
 })
 
+
+## opm_mcp
+test_that("non-syntactic names can be present", {
+  x <- EXPL.DF[, 1:10]
+  colnames(x)[colnames(x) == "run"] <- "run nonsys"
+  y <- opm_mcp(x, output = "data",
+    model = ~ J(Well, `run nonsys`), linfct = c(Pairs = 1))
+  expect_is(y, "data.frame")
+  expect_equal(dim(y), c(28, 6))
+})
+
+
+## opm_mcp
+test_that("'Pairs' contrast type can be combined with non-syntactic names", {
+  x <- EXPL.DF[, 1:10]
+  colnames(x)[colnames(x) == "run"] <- "run nonsys"
+  y <- opm_mcp(x, output = "mcp", model = ~ J(Well, `run nonsys`),
+    linfct = c(Pairs.Well = 1))
+  expect_is(y, "glht")
+  expect_equal(y$type, "User-defined")
+  expect_true(is.list(y))
+  expect_equal(length(y), 9)
+  expect_equal(length(coef(y)), 7)
+})
+
+

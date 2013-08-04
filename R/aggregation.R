@@ -87,6 +87,7 @@ extract_curve_params.grofit <- function(x, ...) {
 #' @method extract_curve_params opm_model
 #'
 extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
+  x <- as.gam(x)
   pred <- fitted(x)
   x <- get_data(x)[, 1]
   ## quick and dirty
@@ -159,6 +160,67 @@ summary.splines_bootstrap <- function (object, ...) {
 ################################################################################
 
 
+#' CI and point-estimate calculation
+#'
+#' Get point estimates and CIs (if possible) from the result of \code{boot}.
+#'
+#' @param x Object of class \sQuote{boot}.
+#' @param ci Numeric scalar. See \code{\link{do_aggr}}.
+#' @param as.pe Character scalar. See \code{\link{do_aggr}}.
+#' @param type Character scalar. See \code{\link{boot.ci}} from the \pkg{boot}
+#'   package.
+#' @param fill.nas Logical scalar. Assume that if the CI borders are both
+#'   \code{NA} bootstrapping yielded constant values if the point estimate is
+#'   not \code{NA}, and replace the CI borders by the point estimate in such
+#'   cases.
+#' @param ... Optional arguments passed to \code{\link{boot.ci}} from the
+#'   \pkg{boot} package.
+#' @return See \code{\link{do_aggr}}.
+#'
+#' @keywords internal
+#'
+pe_and_ci <- function(x, ...) UseMethod("pe_and_ci")
+
+#' @rdname pe_and_ci
+#' @method pe_and_ci boot
+#'
+pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
+    type = c("basic", "perc", "norm"), fill.nas = FALSE, ...) {
+  LL(ci, fill.nas)
+  as.pe <- match.arg(as.pe)
+  type <- match.arg(type)
+  if (nrow(x$t)) {
+    cis <- lapply(seq_along(x$t0), FUN = boot.ci, boot.out = x, conf = ci,
+      type = type, ...)
+    ok <- !vapply(cis, is.null, NA)
+    cis[!ok] <- list(c(NA_real_, NA_real_))
+    cis[ok] <- lapply(cis[ok], `[[`, type, exact = FALSE)
+    cis[ok] <- lapply(lapply(cis[ok], c), tail, 2L)
+    cis <- do.call(cbind, cis)
+  } else {
+    if (as.pe != "pe") {
+      warning("zero bootstrap replicates -- using real point estimate")
+      as.pe <- "pe"
+    }
+    cis <- matrix(nrow = 2L, ncol = length(x$t0), data = NA_real_)
+  }
+  rownames(cis) <- c("ci.low", "ci.high")
+  point.est <- case(as.pe,
+    median = apply(x$t, 2L, median),
+    mean = colMeans(x$t),
+    pe = x$t0
+  )
+  if (fill.nas) {
+    boot.nas <- !is.na(x$t0) & is.na(cis[1L, ]) & is.na(cis[2L, ])
+    cis[2L, boot.nas] <- cis[1L, boot.nas] <- x$t0[boot.nas]
+  }
+  rbind(point.est, cis)
+}
+
+
+################################################################################
+
+
 #' Aggregate kinetics using curve-parameter estimation
 #'
 #' Aggregate the kinetic data using curve-parameter estimation, i.e. infer
@@ -167,11 +229,16 @@ summary.splines_bootstrap <- function (object, ...) {
 #' the aggregated values in a novel \code{\link{OPMA}} object together with
 #' previously collected information.
 #'
-#' @param object \code{\link{OPM}} or \code{\link{OPMS}} object. There is also
-#'   a helper method for matrix objects.
+#' @param object \code{\link{OPM}}, \code{\link{OPMS}} object or matrix as
+#'   output by \code{\link{measurements}}, i.e. with the time points in the
+#'   first columns and the measurements in the remaining columns (there must be
+#'   at least two). For deviations from this scheme see \code{time.pos} and
+#'   \code{transposed}.
 #' @param boot Integer scalar. Number of bootstrap replicates used to estimate
 #'   95-percent confidence intervals (CIs) for the parameters. Set this to zero
-#'   to omit bootstrapping, resulting in \code{NA} entries for the CIs.
+#'   to omit bootstrapping, resulting in \code{NA} entries for the CIs. Note
+#'   that under the default settings of the matrix method for \code{as.pe},
+#'   bootstrapping is also necessary to obtain the point estimate.
 #' @param verbose Logical scalar. Print progress messages?
 #' @param cores Integer scalar. Number of cores to use. Setting this to a value
 #'   > 1 requires that \code{mclapply} from the \pkg{parallel} package can be
@@ -182,7 +249,6 @@ summary.splines_bootstrap <- function (object, ...) {
 #'   \code{grofit.control} in the \pkg{grofit} package. The \code{boot} and
 #'   \code{verbose} settings, as the most important ones, are added separately
 #'   (see above). The verbose mode is not very useful in parallel processing.
-#'   For its use in \sQuote{opm-fast} mode, see \code{\link{fast_estimate}}.
 #'   With \code{method} \dQuote{spline.fit}, options can be specified using the
 #'   function \code{\link{set_spline_options}}.
 #' @param method Character scalar. The aggregation method to use. Currently
@@ -193,27 +259,38 @@ summary.splines_bootstrap <- function (object, ...) {
 #'     Recommended.}
 #'     \item{grofit}{The \code{grofit} function in the eponymous package, with
 #'     spline fitting as default.}
-#'     \item{opm-fast}{The native, faster parameter estimation. This will only
-#'     yield two of the four parameters, the area under the curve and the
-#'     maximum height. The area under the curve is estimated as the sum of the
-#'     areas given by the trapezoids defined by each pair of adjacent time
-#'     points. The maximum height is just the result of \code{max}. By default
-#'     the median of the bootstrap values is used as point estimate. For details
-#'     see the argument \code{as.pe} of the function
-#'     \code{\link{fast_estimate}}.}
+#'     \item{opm-fast}{The native, faster parameter estimation implemented in
+#'     the matrix method. This will only yield two of the four parameters, the
+#'     area under the curve and the maximum height. The area under the curve is
+#'     estimated as the sum of the areas given by the trapezoids defined by each
+#'     pair of adjacent time points. The maximum height is just the result of
+#'     \code{max}. By default the median of the bootstrap values is used as
+#'     point estimate. For details see \code{as.pe}.}
 #'   }
 #' @param plain Logical scalar. If \code{TRUE}, only the aggregated values are
 #'   returned (as a matrix, for details see below). Otherwise they are
 #'   integrated in an \code{\link{OPMA}} object together with \code{object}.
-#' @param by List, passed by the matrix method to \code{aggregate} from the
-#'   \pkg{stats} package. Can also be another vector, which is then used as
-#'   single list element.
-#' @param fun Function, passed by the matrix method as \code{FUN} argument to
-#'   \code{aggregate} from the \pkg{stats} package.
-#' @param sep Character scalar. Used for joining the vectors within \code{by}
-#'   together to form row names.
-#' @param ... Arguments passed from the \code{\link{OPMS}} to the
-#'   \code{\link{OPM}} method, and from the matrix method to \code{fun}.
+#' @param what Character scalar. Which parameter to estimate. Currently only two
+#'   are supported.
+#' @param ci Confidence interval to use in the output. Ignored if \code{boot} is
+#'   not positive.
+#' @param as.pe Character scalar determining what to output as the point
+#'   estimate. Either \sQuote{median}, \sQuote{mean} or \sQuote{pe}; the first
+#'   two calculate the point estimate from the bootstrapping replicates, the
+#'   third one use the point estimate from the raw data. If \code{boot} is 0,
+#'   \code{as.pe} is reset to \sQuote{pe}, if necessary, and a warning is
+#'   issued.
+#' @param ci.type Character scalar determining the way the confidence intervals
+#'   are calculated. Either \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
+#'   \code{boot.ci} from the \pkg{boot} package for details.
+#' @param time.pos Character or integer scalar indicating the position of the
+#'   column (or row, see next argument) with the time points.
+#' @param transposed Character or integer scalar indicating whether the matrix
+#'   is transposed compared to the default.
+#' @param raw Logical scalar. Return the raw bootstrapping result without CI
+#'   estimation and construction of the usually resulting matrix?
+#' @param ... Optional arguments passed between the methods or to \code{boot}
+#'   from the eponymous package.
 #'
 #' @export
 #' @return If \code{plain} is \code{FALSE}, an \code{\link{OPMA}} object.
@@ -221,7 +298,12 @@ summary.splines_bootstrap <- function (object, ...) {
 #'   \code{\link{aggregated}} but with an additional \sQuote{settings} attribute
 #'   containing the (potentially modified) list proved via the \code{settings}
 #'   argument, and a \sQuote{method} attribute corresponding to the
-#'   \code{method} argument. The matrix method returns a matrix.
+#'   \code{method} argument.
+#'
+#'   The matrix method returns a numeric matrix with three rows (point estimate,
+#'   lower and upper CI) and as many columns as data columns (or rows) in
+#'   \code{object}. If \code{raw} is \code{TRUE}, it returns an object of the
+#'   class \sQuote{boot}.
 #'
 #' @family aggregation-functions
 #' @seealso grofit::grofit
@@ -244,6 +326,10 @@ summary.splines_bootstrap <- function (object, ...) {
 #'   \code{aggregated(x)}, whereas the \sQuote{method} and the \sQuote{settings}
 #'   attributes could be obtained as components of the list returned by
 #'   \code{aggr_settings(x)}.
+#'
+#'   The matrix method quickly estimates the curve parameters AUC (area under
+#'   the curve) or A (maximum height). This is normally not directly called by
+#'   an \pkg{opm} user but via the other \code{do_aggr} methods.
 #'
 #'   The aggregated values can be queried for using \code{\link{has_aggr}}
 #'   and received using \code{\link{aggregated}}.
@@ -298,11 +384,9 @@ summary.splines_bootstrap <- function (object, ...) {
 #' }
 #'
 #' # matrix method
-#' x <- matrix(1:10, ncol = 2, dimnames = list(letters[1:5], LETTERS[1:2]))
-#' grps <- c("a", "b", "a", "b", "a")
-#' (y <- do_aggr(x, by = grps, fun = mean))
-#' stopifnot(is.matrix(y), dim(y) == c(2, 2), colnames(y) == colnames(x))
-#' stopifnot(mode(y) == "numeric")
+#' data(vaas_1)
+#' (x <- do_aggr(measurements(vaas_1)))[, 1:3]
+#' stopifnot(identical(dim(x), c(3L, 96L)))
 #'
 setGeneric("do_aggr", function(object, ...) standardGeneric("do_aggr"))
 
@@ -384,8 +468,8 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         options <- insert(as.list(options), boot = boot, .force = FALSE)
         mat <- measurements(object)
         result <- rbind(
-          do.call(fast_estimate, c(list(x = mat, what = "AUC"), options)),
-          do.call(fast_estimate, c(list(x = mat, what = "A"), options)),
+          do.call(do_aggr, c(list(object = mat, what = "AUC"), options)),
+          do.call(do_aggr, c(list(object = mat, what = "A"), options)),
           matrix(nrow = 6L, ncol = ncol(mat) - 1L, data = NA_real_)
         )
         rownames(result)[7L:9L] <- sub("^[^.]+", "lambda",
@@ -413,6 +497,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
         if (options$save.models) {
             opm_models <- lapply(result, function(x) x$model)
             names(opm_models) <- wells
+            class(opm_models) <- "opm_models"
             if (is.null(options$filename))
               options$filename <- paste0("opm_models_",
                 format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData")
@@ -449,164 +534,36 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
 
 }, sealed = SEALED)
 
-setMethod("do_aggr", "matrix", function(object, by, fun, sep = ".", ...) {
-  if (is.atomic(by))
-    by <- list(by = by)
-  ## TODO: check for faster alternatives
-  result <- aggregate(x = object, by = by, FUN = fun, ..., simplify = TRUE)
-  rn <- result[, by.cols <- seq_along(by), drop = FALSE]
-  rn <- apply(rn, 1L, paste, collapse = sep)
-  result <- as.matrix(result[, -by.cols, drop = FALSE])
-  rownames(result) <- rn
-  result
-}, sealed = SEALED)
-
 setMethod("do_aggr", "OPMS", function(object, ...) {
   new(OPMS, plates = lapply(X = object@plates, FUN = do_aggr, ...))
 }, sealed = SEALED)
 
-
-################################################################################
-
-
-#' CI and point-estimate calculation
-#'
-#' Get point estimates and CIs (if possible) from the result of \code{boot}.
-#'
-#' @param x Object of class \sQuote{boot}.
-#' @param ci Numeric scalar. See \code{\link{fast_estimate}}.
-#' @param as.pe Character scalar. See \code{\link{fast_estimate}}.
-#' @param type Character scalar. See \code{\link{boot.ci}} from the \pkg{boot}
-#'   package.
-#' @param fill.nas Logical scalar. Assume that if the CI borders are both
-#'   \code{NA} bootstrapping yielded constant values if the point estimate is
-#'   not \code{NA}, and replace the CI borders by the point estimate in such
-#'   cases.
-#' @param ... Optional arguments passed to \code{\link{boot.ci}} from the
-#'   \pkg{boot} package.
-#' @return See \code{\link{fast_estimate}}.
-#'
-#' @keywords internal
-#'
-pe_and_ci <- function(x, ...) UseMethod("pe_and_ci")
-
-#' @rdname pe_and_ci
-#' @method pe_and_ci boot
-#'
-pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
-    type = c("basic", "perc", "norm"), fill.nas = FALSE, ...) {
-  LL(ci, fill.nas)
-  as.pe <- match.arg(as.pe)
-  type <- match.arg(type)
-  if (nrow(x$t)) {
-    cis <- lapply(seq_along(x$t0), FUN = boot.ci, boot.out = x, conf = ci,
-      type = type, ...)
-    ok <- !vapply(cis, is.null, NA)
-    cis[!ok] <- list(c(NA_real_, NA_real_))
-    cis[ok] <- lapply(cis[ok], `[[`, type, exact = FALSE)
-    cis[ok] <- lapply(lapply(cis[ok], c), tail, 2L)
-    cis <- do.call(cbind, cis)
-  } else {
-    if (as.pe != "pe") {
-      warning("zero bootstrap replicates -- using real point estimate")
-      as.pe <- "pe"
-    }
-    cis <- matrix(nrow = 2L, ncol = length(x$t0), data = NA_real_)
-  }
-  rownames(cis) <- c("ci.low", "ci.high")
-  point.est <- case(as.pe,
-    median = apply(x$t, 2L, median),
-    mean = colMeans(x$t),
-    pe = x$t0
-  )
-  if (fill.nas) {
-    boot.nas <- !is.na(x$t0) & is.na(cis[1L, ]) & is.na(cis[2L, ])
-    cis[2L, boot.nas] <- cis[1L, boot.nas] <- x$t0[boot.nas]
-  }
-  rbind(point.est, cis)
-}
-
-
-################################################################################
-
-
-#' Fast curve-parameter estimation
-#'
-#' Quickly estimate the curve parameters AUC (area under the curve) or A
-#' (maximum height). This is normally not directly called by an \pkg{opm} user
-#' but via \code{\link{do_aggr}} and might eventually be made internal to the
-#' package and inaccessible, so it is advisable to not use this function
-#' directly.
-#'
-#' @param x Matrix as output by \code{\link{measurements}}, i.e. with the time
-#'   points in the first columns and the measurements in the remaining columns
-#'   (there must be at least two). For deviations from this scheme see
-#'   \code{time.pos} and \code{transposed}.
-#' @param what Character scalar. Which parameter to estimate. Currently only two
-#'   are supported.
-#' @param boot Integer scalar. Number of bootstrap replicates. Note that under
-#'   the default settings for \code{as.pe}, bootstrapping is also necessary to
-#'   obtain the point estimate.
-#' @param ci Confidence interval to use in the output. Ignored if \code{boot} is
-#'   not positive.
-#' @param as.pe Character scalar determining what to output as the point
-#'   estimate. Either \sQuote{median}, \sQuote{mean} or \sQuote{pe}; the first
-#'   two calculate the point estimate from the bootstrapping replicates, the
-#'   third one use the point estimate from the raw data. If \code{boot} is 0,
-#'   \code{as.pe} is reset to \sQuote{pe}, if necessary, and a warning is
-#'   issued.
-#' @param ci.type Character scalar determining the way the confidence intervals
-#'   are calculated. Either \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
-#'   \code{boot.ci} from the \pkg{boot} package for details.
-#' @param time.pos Character or integer scalar indicating the position of the
-#'   column (or row, see next argument) with the time points.
-#' @param transposed Character or integer scalar indicating whether the matrix
-#'   is transposed compared to the default.
-#' @param raw Logical scalar. Return the raw bootstrapping result without CI
-#'   estimation and construction of the usually resulting matrix?
-#' @param ... Optional arguments passed to \code{boot} from the eponymous
-#'   package.
-#'
-#' @export
-#' @return Numeric matrix with three rows (point estimate, lower and upper CI)
-#'   and as many columns as data columns (or rows) in \code{x}. If \code{raw} is
-#'   \code{TRUE}, an object of the class \sQuote{boot}.
-#' @family aggregation-functions
-#' @seealso boot::boot grofit::grofit
-#' @keywords smooth
-#'
-#' @examples
-#' data(vaas_1)
-#' (x <- fast_estimate(measurements(vaas_1)))[, 1:3]
-#' stopifnot(identical(dim(x), c(3L, 96L)))
-#'
-setGeneric("fast_estimate", function(x, ...) standardGeneric("fast_estimate"))
-
-setMethod("fast_estimate", "matrix", function(x, what = c("AUC", "A"),
+setMethod("do_aggr", "matrix", function(object, what = c("AUC", "A"),
     boot = 100L, ci = 0.95, as.pe = "median", ci.type = "norm",
     time.pos = 1L, transposed = FALSE, raw = FALSE, ...) {
   LL(time.pos, boot, ci, transposed, raw)
   if (transposed)
-    x <- t(x)
-  y <- x[, time.pos]
-  x <- x[, -time.pos, drop = FALSE]
-  x.colnames <- colnames(x)
+    object <- t(object)
+  y <- object[, time.pos]
+  object <- object[, -time.pos, drop = FALSE]
+  object.colnames <- colnames(object)
   ## i arguments are required by boot
   case(what <- match.arg(what),
     A = boot_fun <- function(x, i) apply(x[i, ], 2L, max),
     AUC = {
-      n.obs <- nrow(x)
+      n.obs <- nrow(object)
       y <- y[-1L] - y[-n.obs]
-      x <- 0.5 * (x[-1L, , drop = FALSE] + x[-n.obs, , drop = FALSE])
+      object <- 0.5 * (object[-1L, , drop = FALSE] +
+        object[-n.obs, , drop = FALSE])
       boot_fun <- function(x, i) colSums(x[i, , drop = FALSE] * y[i])
     }
   )
-  result <- boot(data = x, statistic = boot_fun, R = boot, ...)
+  result <- boot(data = object, statistic = boot_fun, R = boot, ...)
   if (raw)
     return(result)
   result <- pe_and_ci(result, ci = ci, as.pe = as.pe, type = ci.type,
     fill.nas = what == "A")
-  colnames(result) <- x.colnames
+  colnames(result) <- object.colnames
   rownames(result) <- paste(what, rownames(result), sep = ".")
   result
 }, sealed = SEALED)

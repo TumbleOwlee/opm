@@ -3,10 +3,8 @@
 ## - think about save.spline.fit option; perhaps this can be done
 ##   by having all the fittig in an extra function which doesn't
 ##   return the spline within do_aggr but does return it elsewise
-## - why is "shortcut" in the METHODS constant?
 ## - I am not sure that the AUC function in fast_estimate works correctly!
 ##   The indexing seems to be at the wrong point.
-## - %*% is a correct operator (and doesn't need to be written as % * % !!!)
 ## - in fast_estimate, one should swap x and y:
 ##     y <- x[, time.pos]                 ## predictor (x-axis)
 ##     x <- x[, -time.pos, drop = FALSE]  ## outcome (y-axis)
@@ -58,6 +56,8 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
   method <- options$est.method
   knots <- options$knots
   class <- options$class
+  correlation <- options$correlation
+
   if (is.null(weights))
     weights <- rep(1, nrow(data))
 
@@ -87,8 +87,13 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
   if (type == "p.spline" || type == "tp.spline") {
       ## REMOVED ... from gam.
       ## Reintroduce possibility to "..." via options
-      mod <- gam(fm, data = data, gamma = options$gamma, method = method,
-        weights = weights)
+      if (!is.null(correlation)) {
+        mod <- gamm(fm, data = data, gamma = options$gamma, method = method,
+          weights = weights, correlation = correlation)
+      } else {
+        mod <- gam(fm, data = data, gamma = options$gamma, method = method,
+          weights = weights)
+      }
       mod$call <- call
   } else {
       mod <- do.call("smooth.spline", eval(parse(text = fm)))
@@ -116,13 +121,20 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
 #'   penalization of models that are too close to the data and thus not
 #'   smooth enough.
 #' @param est.method Character scalar. The smoothing parameter estimation
-#'   method. Currently, only \code{"REML"} and \code{"GCV"} are supported. This
-#'   argument is ignored for \code{type = "smooth.spline"}. For details see
-#'   \code{\link[mgcv]{gam}} (see package \pkg{mgcv}).
+#'   method. Currently, only \code{"REML"}, code{"ML"} and \code{"GCV"} are
+#'   supported. This argument is ignored for \code{type = "smooth.spline"}. For
+#'   details see \code{\link[mgcv]{gam}} and \code{\link[mgcv]{gamm}}
+#'   (see package \pkg{mgcv}).
 #' @param s.par list. Further arguments to be passed to the smoother
 #'   \code{\link[mgcv]{s}} (see package \pkg{mgcv}). Note that the \pkg{mgcv}
 #'   options \code{k} and \code{bs} are specified using \code{type} and
 #'   \code{knots} in \pkg{opm}.
+#' @param correlation An optional \code{"corStruct"} object (see
+#'   \code{\link{corClasses}}) as used to define correlation structures in
+#'   package \pkg{nlme}. For better coverage of confidence intervals and
+#'   slightly improved spline fits it is adviced to use an AR process of order 1
+#'   or 2. However, this correction for auto-correlated error terms results in
+#'   increased run time.
 #' @param save.models Should the models be saved (on the disk) for further
 #'   inspections and plotting?
 #' @param filename Filename of the models. Per default a name is auto-generated
@@ -137,8 +149,8 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
 #' @export
 set_spline_options <- function(type = c("tp.spline",
     "p.spline", "smooth.spline"),
-    knots = NULL, gamma = 1, est.method = c("REML", "GCV"), s.par = NULL,
-    save.models = FALSE, filename = NULL, ...) {
+    knots = NULL, gamma = 1, est.method = c("REML", "ML", "GCV"), s.par = NULL,
+    correlation = NULL, save.models = FALSE, filename = NULL, ...) {
 
   if (!missing(...))
     warning(sQuote("..."), " currently not passed to fitting functions")
@@ -147,6 +159,12 @@ set_spline_options <- function(type = c("tp.spline",
     ifelse(type == "p.spline", "psp", "smooth.spline"))
 
   method <- match.arg(est.method)
+  if (est.method == "ML" && is.null(correlation))
+    stop(sQuote(paste0("est.method = ", dQuote("ML"))), " can only be used if ",
+      sQuote("correlation"), " is specified")
+  if (est.method == "GCV" && !is.null(correlation))
+    stop(sQuote(paste0("est.method = ", dQuote("GCV"))),
+      " can only be used if no ", sQuote("correlation"), " is specified")
   if (type == "smoothing-splines" && !is.null(s.par))
     warning(sQuote("s.par"), " ignored if ",
       sQuote('type = "smoothing-splines"'))
@@ -156,8 +174,8 @@ set_spline_options <- function(type = c("tp.spline",
       " set to TRUE")
   }
   list(type = type, knots = knots, gamma = gamma, est.method = method,
-    s.par = s.par, save.models = save.models, filename = filename,
-    class = class, ...)
+    s.par = s.par, correlation = correlation, save.models = save.models,
+    filename = filename, class = class, ...)
 }
 
 ################################################################################
@@ -180,12 +198,12 @@ set_spline_options <- function(type = c("tp.spline",
 #' @method predict smooth.spline_model
 #' @S3method predict smooth.spline_model
 predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
-    if (is.null(newdata)) {
-        ## get data from fitted model
-        newdata <- get_data(object)
-    }
-    newX <- newdata[, object$names[1]]
-    stats:::predict.smooth.spline(object, x = newX, deriv = 0)$y
+  if (is.null(newdata)) {
+    ## get data from fitted model
+    newdata <- get_data(object)
+  }
+  newX <- newdata[, object$names[1]]
+  stats:::predict.smooth.spline(object, x = newX, deriv = 0)$y
 }
 
 ################################################################################
@@ -195,9 +213,12 @@ predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
 #' @description Plot splines derived from \code{\link{do_aggr}} or
 #'   \code{\link{fit_spline}}.
 #'
-#' @param x Spline fit.
+#' @param x A list of class \code{"opm_model"} or \code{"opm_models"}.
 #' @param plot.data Logical. Should the data be added to the plot?
 #' @param plot.spline Logical. Should the spline be plotted?
+#' @param confint Logical. Should the (point-wise) confidence interval
+#'   be plotted?
+#' @param level level of confidence interval.
 #' @param col Color of observed data. Per default a semi-transparent grey
 #'   value is used. For details see \code{\link{par}} (Section Color
 #'   Specification).
@@ -208,6 +229,10 @@ predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
 #' @param lty.spline Line type of fitted spline.
 #'   For details see \code{\link{par}}.
 #' @param lwd.spline Line width of fitted spline.
+#'   For details see \code{\link{par}}.
+#' @param lty.confint Line type of confidence interval.
+#'   For details see \code{\link{par}}.
+#' @param lwd.confint  Line width of confidence interval.
 #'   For details see \code{\link{par}}.
 #' @param ... Further arguments to be passed to \code{\link{plot}} and
 #'   \code{\link{lines}}.
@@ -221,15 +246,42 @@ predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
 #' @method plot opm_model
 #' @S3method plot opm_model
 plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
-    col = rgb(0, 0, 0, 0.3), pch = 20, col.spline = "red",
-    lty.spline = "solid", lwd.spline = 1, ...) {
+  confint = TRUE, level = 0.95, col = rgb(0, 0, 0, 0.3), pch = 20,
+  col.spline = "red", lty.spline = "solid", lwd.spline = 1,
+  lty.confint = "dashed", lwd.confint = 1, ...) {
 
-    if (!plot.data && ! plot.spline)
-        stop("Nothing to be plotted")
-    data <- get_data(x)
-    plot_helper(data, col = col, pch = pch, plot.data = plot.data, ...)
-    if (plot.spline)
-        lines(x, col = col.spline, lty = lty.spline, lwd = lwd.spline, ...)
+  x <- as.gam(x)
+  if (!plot.data && ! plot.spline)
+    stop("Nothing to be plotted")
+  data <- get_data(x)
+  plot_helper(data, col = col, pch = pch, plot.data = plot.data, ...)
+  if (plot.spline)
+    lines(x, confint = confint, level = level, col = col.spline,
+      lty = lty.spline, lwd = lwd.spline, lty.confint = lty.confint,
+      lwd.confint = lwd.confint, ...)
+}
+
+#' @rdname plot.opm_model
+#' @param which character vector or numeric vector specifying the wells to be
+#'   plotted.
+#'
+#' ## CURRENTLY NOT EXPORTED
+#' @keywords internal
+#~ @keywords hplot methods
+#'
+#' @method plot opm_models
+#' @S3method plot opm_models
+plot.opm_models <- function(x, which = NULL, plot.data = TRUE,
+  plot.spline = TRUE, confint = TRUE, level = 0.95,
+  col = rgb(0, 0, 0, 0.3), pch = 20, col.spline = "red",
+  lty.spline = "solid", lwd.spline = 1, lty.confint = "dashed", lwd.confint = 1,
+  ...) {
+
+  invisible(lapply(x[which], plot, plot.data = plot.data,
+    plot.spline = plot.spline, confint = confint, level = level, col = col,
+    pch = pch, col.spline = col.spline, lty.spline = lty.spline,
+    lwd.spline = lwd.spline, lty.confint = lty.confint,
+    lwd.confint = lwd.confint, ...))
 }
 
 ################################################################################
@@ -239,10 +291,17 @@ plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
 #' @description Add a fitted spline function to an existing plot.
 #'
 #' @param x Spline fit.
+#' @param confint Logical. Should the (point-wise) confidence interval
+#'   be plotted?
+#' @param level level of confidence interval.
 #' @param col Color of fitted spline specified for example by a character
 #'   string. For details see \code{\link{par}} (Section Color Specification).
 #' @param lty Line type of fitted spline. For details see \code{\link{par}}.
 #' @param lwd Line width of fitted spline. For details see \code{\link{par}}.
+#' @param lty.confint Line type of confidence interval.
+#'   For details see \code{\link{par}}.
+#' @param lwd.confint  Line width of confidence interval.
+#'   For details see \code{\link{par}}.
 #' @param ... Further arguments to be passed to \code{\link{lines}}
 #' @author Benjamin Hofner
 #'
@@ -252,11 +311,40 @@ plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
 #'
 #' @method lines opm_model
 #' @S3method lines opm_model
-lines.opm_model <- function(x, col = "red", lty = "solid", lwd = 1, ...) {
-    pred <- predict(x)
+lines.opm_model <- function(x, confint = TRUE, level = 0.95,
+  col = "red", lty = "solid", lwd = 1, lty.confint = "dashed", lwd.confint = 1,
+  ...) {
+    x <- as.gam(x)
+    pred <- predict(x, se = TRUE)
     x <- get_data(x)[, 1]
     ix <- order(x)
-    lines(x[ix], pred[ix], col = col, lty = lty, lwd = lwd, ...)
+    lines(x[ix], pred$fit[ix], col = col, lty = lty, lwd = lwd, ...)
+    if (confint) {
+      quantile <- 1 - (1 - level) * 0.5
+      lines(x[ix], pred$fit[ix] + qnorm(quantile) * pred$se.fit[ix], col = col,
+        lty = lty.confint, lwd = lwd.confint, ...)
+      lines(x[ix], pred$fit[ix] - qnorm(quantile) * pred$se.fit[ix], col = col,
+        lty = lty.confint, lwd = lwd.confint, ...)
+    }
+}
+
+#' @rdname lines.opm_model
+#' @param which character vector or numeric vector specifying the wells to be
+#'   plotted.
+#'
+#' ## CURRENTLY NOT EXPORTED
+#' @keywords internal
+#~ @keywords aplot methods
+#'
+#' @method lines opm_models
+#' @S3method lines opm_models
+lines.opm_models <- function(x, which = NULL, confint = TRUE, level = 0.95,
+  col = "red", lty = "solid", lwd = 1, lty.confint = "dashed", lwd.confint = 1,
+  ...) {
+
+  invisible(lapply(x[which], lines, confint = confint, level = level, col = col,
+    lty = lty, lwd = lwd, lty.confint = lty.confint, lwd.confint = lwd.confint,
+    ...))
 }
 
 
@@ -475,6 +563,7 @@ get_data <- function(x)
 #' @method get_data tp_model
 #' @S3method get_data tp_model
 get_data.psp_model <- get_data.tp_model <- function(x) {
+    x <- as.gam(x)
     data <- x$model
     data <- data[, c(2, 1)]
     return(data)
@@ -486,7 +575,23 @@ get_data.psp_model <- get_data.tp_model <- function(x) {
 #' @method get_data smooth.spline_model
 #' @S3method get_data smooth.spline_model
 get_data.smooth.spline_model <- function(x) {
+    x <- as.gam(x)
     data <- as.data.frame(x$data)
     names(data)[1:2] <- x$names
     return(data)
+}
+
+
+as.gam <- function(x, ...)
+  UseMethod("as.gam")
+
+as.gam.opm_model <- function(x, ...) {
+  ret <- x
+  if (inherits(x, "gamm")) {
+    ## keep special classes
+    classes <- class(x)[1:2]
+    ret <- x$gam
+    class(ret) <- c(classes, class(ret))
+  }
+  return(ret)
 }

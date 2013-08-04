@@ -17,10 +17,14 @@
 #'   using \code{model}.
 #'
 #' @param model A model formula, or a character vector or a list containing the
-#'   names of factors to be included in the model for fitting. For model
-#'   specifications using formulas in general, see \code{formula} (in the
-#'   \pkg{stats} package). For the way models are used by \pkg{opm} for
-#'   selecting metadata entries, see \code{\link{metadata}}.
+#'   names of factors to be included in the model for fitting.
+#'   In order to join two or more metadata-variables into one factor use
+#'   pseudofunction \code{J} (described in \code{\link{extract}}). This is
+#'   necessary especially when \code{linfct = Pairs}, see the examples below.
+#'   For model specifications using formulas in general, see \code{formula} (in
+#'   the \pkg{stats} package).
+#'   For the way models are used by \pkg{opm} for selecting metadata entries,
+#'   see \code{\link{metadata}}.
 #'
 #'   If \code{object} is of class \code{\link{OPMS}}, \code{model} is passed to
 #'   \code{\link{extract}} after removal of the relevant reserved names (see
@@ -28,7 +32,10 @@
 #'   formula as they are always contained in the resulting data frame. If
 #'   \code{model} is a list or vector, it is used for selecting metadata, too,
 #'   and for running the tests automatically converted to a formula, using one
-#'   to several operators as specified with \code{ops}.
+#'   to several operators as specified with \code{ops}. Non-syntactical names
+#'   within \code{formula} are converted to syntactical ones for use with
+#'   \code{glht}. This is done in the same way in the data frame passed to that
+#'   function.
 #'
 #'   If the \code{output} argument is set to \sQuote{model}, the function
 #'   returns the converted \code{model} argument, which is useful in exploring
@@ -37,14 +44,32 @@
 #' @param linfct A specification of the linear hypotheses to be tested
 #'   analogously to \code{linfct} in \code{glht}. A variety of objects can be
 #'   used for this argument: \itemize{
+#'
 #'   \item One of the classes of objects accepted by \code{glht} from the
 #'   \pkg{multcomp} package as \code{linfct} argument. Such objects will not be
 #'   modified. Linear functions can be specified by either the matrix of
 #'   coefficients or by symbolic descriptions of one or more linear hypotheses.
-#'   See also \code{contrMat} from the \pkg{multcomp} package.
+#'   The set of existing types of contrast is extended by the contrast type
+#'   \sQuote{Pairs}. Here all pair-wise comparison concerning the first entry in
+#'   \code{model} are computed. Alternatively, the factor which levels should
+#'   determine the pairs can be addressed directly with, for example
+#'   \code{linfct = c(Pairs.Well = 1)}.
+#'   The Dunnett-type contrast has the special feature, that users are free to
+#'   directly define the group which should serve as the control or base in the
+#'   set of contrasts. Analogously to \code{Pairs}, the name of the level,
+#'   separated from the string 'Dunnett' by any sign, can be stated.
+#'   See examples below and in the Vignettes and further \code{contrMat} from
+#'   the \pkg{multcomp} package.
+#'   For situations where metadata have non-syntactic names, special signs are
+#'   exchanged against dots. When applying \code{linfct = c(Pairs = 1)} or
+#'   \code{linfct = c(Dunnett = 1)} with the above mentioned extension, the sign
+#'   between the linfct-name and the metadata-name must not be a dot.
+#'
 #'   \item An object inheriting from the \sQuote{AsIs} as created by \code{I}
-#'   from the \pkg{base} package. Such objects will be converted to an argument
-#'   list for and then passed to \code{mcp} from the \pkg{multcomp} package.
+#'   from the \pkg{base} package. Such objects, irrespective of their class,
+#'   will be converted to an argument list for and then passed to \code{mcp}
+#'   from the \pkg{multcomp} package.
+#'
 #'   \item Other objects will be treated as a selection of factors from the data
 #'   just like \code{model}, i.e. they will be converted like any
 #'   \code{\link{metadata}} key (but note that character vectors would be passed
@@ -54,6 +79,7 @@
 #'   passed to \code{mcp}. Otherwise \code{opm_opt("contrast.type")} would be
 #'   used. (See the \code{type} argument of \code{contrMat}.) The modified
 #'   object would then be used as the argument list in a call to \code{mcp}.
+#'
 #'   }
 #'   After the conversions, if any, this argument is passed to \code{glht} as
 #'   \code{linfct} argument.
@@ -98,7 +124,8 @@
 #'     column for the measured values, one factorial variable determining the
 #'     well, one factorial variable for the curve parameter (see
 #'     \code{\link{param_names}}) and additional factorial variables selected by
-#'     \code{model} as factors. Such a data frame might be of use for
+#'     \code{model} as factors. The column names are converted to syntactical
+#'     names. Such a data frame might be of use for
 #'     model-building approaches not covered by this function.}
 #'     \item{model}{The \code{model} argument \emph{after} the conversions
 #'     conducted by \code{opm_mcp}, if any.}
@@ -130,18 +157,18 @@
 #'   Since either the user or this function itself makes use of \code{mcp}, we
 #'   refer to the \sQuote{Details} section of the \code{glht} function. The
 #'   \code{mcp} function must be used with care when defining parameters of
-#'   interest in two-way ANOVA or ANCOVA models. The definition of treatment
-#'   differences might be problem-specific. An automated determination of the
-#'   parameters of interest would be impossible and thus only comparisons for
-#'   the main effects (ignoring covariates and interactions) would be generated
-#'   and a warning issued.
+#'   interest in two-way \acronym{ANOVA} or \acronym{ANCOVA} models. The
+#'   definition of treatment differences might be problem-specific. An automated
+#'   determination of the parameters of interest would be impossible and thus
+#'   only comparisons for the main effects (ignoring covariates and
+#'   interactions) would be generated and a warning issued.
 #'
 #' @examples
 #'
 #' # helper function for plotting with better suitable margins
 #' plot_with_margin <- function(x, mar, ...) {
 #'   old.mar <- par(mar = mar)
-#'   on.exit(par(old.mar))
+#'   on.exit(par(old.mar)) # tidy up
 #'   plot(x, ...)
 #' }
 #'
@@ -174,21 +201,27 @@
 #' (x <- opm_mcp(vaas_4, model = list("Species"), m.type = "lm",
 #'   linfct = c(Dunnett = 1))) # refers to 'Species'
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 1)
-#' plot_with_margin(x, c(3, 20, 3, 2)) # creating an informative plot
+#' plot_with_margin(x, c(3, 20, 3, 2), main = "Species")
 #'
 #' # comparison of only A01 - A04 against each other, Tukey style
 #' # note that the left side of the model is set automatically
 #' (x <- opm_mcp(vaas_4[, , 1:4],
 #'   model = ~ Well + Species, m.type = "lm",
-#'   linfct = c(Tukey = 1))) # refers to 'Well'
+#'   linfct = c(Tukey = 1))) # the number refers to 'Well'
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 6)
-#' plot_with_margin(x, c(3, 18, 3, 2)) # creating an informative plot
+#' plot_with_margin(x, c(3, 18, 3, 2), main = "Tukey, A01 - A04")
 #'
-#' # Dunnett-type comparison
+#' # Dunnett-type comparison of selected wells
 #' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ Well,
 #'   m.type = "lm", linfct = c(Dunnett = 1)))
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 3)
-#' plot_with_margin(x, c(3, 20, 3, 2)) # creating an informative plot
+#' plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, A01 vs. A02 - A04")
+#' # by default 'Dunnett' uses first level as reference
+#'
+#' # Dunnett-type comparison with selected control-group
+#' (x <- opm_mcp(vaas_4[, , 1:10], output = "mcp", model = ~ Well,
+#'   linfct = c(`Dunnett.A05 (D-Cellobiose)` = 1)))
+#' plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, vs. A05")
 #'
 #' # manually defined contrast matrix
 #' (contr <- opm_mcp(vaas_4[, , 1:4], linfct = c(Tukey = 1),
@@ -196,27 +229,49 @@
 #' contr <- contr$Well[c(1:3, 6), ] # select comparisons of interest
 #' (x <- opm_mcp(vaas_4[, , 1:4],
 #'   model = ~ Well, m.type = "lm", linfct = contr)) # run tests
-#' plot_with_margin(x, c(3, 20, 3, 2)) # creating an informative plot
+#' plot_with_margin(x, c(3, 20, 3, 2), main = "My own contrasts")
+#'
+#' # joining of selected metadata using pseudofunction J
+#' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well + Species),
+#'   linfct = c(Dunnett = 1), full = FALSE)) # use short well names
+#' plot_with_margin(x, c(3, 22, 3, 2), main = "Dunnett, Well/Species joined")
+#'
+#' # comparing wells pairwise regarding the tested species
+#' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well + Species),
+#'   linfct = c(Pairs.Well = 1), full = FALSE)) # use short well names
+#' plot_with_margin(x, c(3, 22, 3, 2), main = "Wells compared between species")
+#' # i.e. 'Pairs.Well' means 'Pairs' type of comparison for each 'Well'
+#' # separately within a joined factor (the first one in 'model', hence
+#' # 'c(Pairs.Well = 1)', with '1' referring to the elements of 'model').
+#'
+#' # pairwise comparison of Species regarding the tested strains
+#' xx <- c(vaas_4, vaas_4) # temporary test data
+#' (x <- opm_mcp(xx[, , 1:4], model = ~ J(Strain + Species),
+#'   linfct = c(Pairs.Species = 1), full = FALSE)) # use short well names
+#' plot_with_margin(x, c(3, 22, 3, 2), main = "Strains compared within species")
+#' # i.e. 'Pairs.Species' means 'Pairs' type of comparison for each 'Species'
+#' # separately within a joined factor (the first one in 'model', hence
+#' # 'c(Pairs.Species = 1)', with '1' referring to the elements of 'model').
 #'
 #' ## data-frame method (usually unnecessary to directly apply it)
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"), subset = "A",
 #'   dataframe = TRUE)
 #'
-#' # without performing the MCP
+#' # without the tests, returning the converted data frame
 #' head(y <- opm_mcp(x, output = "data", model = list("Species", "Strain")))
 #' stopifnot(is.data.frame(y), dim(y) == c(384, 5)) # same result as above
 #'
-#' # now with conducting the test
+#' # now with conducting the tests
 #' (y <- opm_mcp(x, model = "Species", m.type = "lm",
 #'   linfct = c(Dunnett = 1)))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
-#' plot_with_margin(y, c(3, 20, 3, 2)) # creating an informative plot
+#' plot_with_margin(y, c(3, 20, 3, 2), main = "Species (from data frame)")
 #'
 #' # testing for subsets of object
 #' (y <- opm_mcp(subset(x, x$Species == "Escherichia coli"),
 #'   linfct = c(Dunnett = 1), model = "Strain", m.type = "lm"))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
-#' plot_with_margin(y, c(3, 15, 3, 2)) # creating an informative plot
+#' plot_with_margin(y, c(3, 15, 3, 2), main = "Dunnett (from data frame)")
 #'
 setGeneric("opm_mcp",
   function(object, ...) standardGeneric("opm_mcp"))
@@ -238,7 +293,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     output = c("mcp", "data", "model", "linfct", "contrast"),
     split.at = param_names("split.at")) {
 
-  # helper functions
+  ## helper functions
+
   convert_model <- function(model, ops) {
     enforce_left_side <- function(f) {
       if (length(f) < 3L) # f must be a formula
@@ -253,7 +309,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   # column joining if applicable. Resulting character vector can be passed to
   # multcomp::mcp().
   level_pairs <- function(spec, column, data) {
-    spec_to_column_names <- function(spec, joined) {
+    spec_to_column_names <- function(spec, joined, column) {
       if (nchar(spec) < 7L)
         spec <- "1"
       else
@@ -263,29 +319,43 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
       spec <- as.integer(spec)
       if (is.null(joined)) # TODO: this would never yield pairs at the moment
         joined <- as.list(structure(column, names = column))
-      joined <- joined[[column]][spec]
+      joined[[column]][spec]
     }
     pair_indices <- function(x) {
       last <- length(nums <- seq_along(x))
-      do.call(rbind, lapply(nums[-last], FUN = function(j)
-        cbind(I = seq.int(j + 1L, last), J = j)))
+      do.call(rbind, lapply(nums[-last],
+        FUN = function(j) cbind(I = seq.int(j + 1L, last), J = j)))
     }
     all_pairs <- function(x) {
       idx <- pair_indices(x <- unique.default(x))
-      sprintf("%s - %s == 0L", x[idx[, 1L]], x[idx[, 2L]])
+      sprintf("`%s` - `%s` == 0L", x[idx[, 1L]], x[idx[, 2L]])
     }
-    spec <- spec_to_column_names(spec, attr(data, "joined.columns"))
-    #print(spec)
+    spec <- spec_to_column_names(spec, attr(data, "joined.columns"), column)
     groups <- split(as.character(data[, column]), data[, spec])
-    groups <- lapply(groups, unique.default)
     result <- unlist(lapply(groups, all_pairs))
-    #print(result)
     if (!length(result))
       stop("no pairs found -- are selected factors constant?")
     result
   }
 
-  # Convert the 'linfct' argument into its final from. 'model' is needed when
+  # Create a Dunnett contrast matrix with using 'level', hopefully found in the
+  # 'column' of 'data', as base.
+  #
+  dunnett_with_base <- function(data, column, level) {
+    f <- as.factor(data[, column])
+    if (grepl("^\\d+$", level, FALSE, TRUE)) {
+      base <- as.integer(level)
+      if (base > length(levels(f)))
+        stop(sprintf("level no. %i does not exist", base))
+    } else {
+      base <- match(level, levels(f), nomatch = 0L)
+      if (!base)
+        stop(sprintf("level '%s' does not exist", level))
+    }
+    multcomp::contrMat(c(table(f)), "Dunnett", base)
+  }
+
+  # Convert the 'linfct' argument into its final form. 'model' is needed when
   # getting column names from it if given as positions within the model, 'data'
   # is necessary when computing on factor levels.
   #
@@ -316,10 +386,15 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     # as list to multcomp::mcp().
     result <- as.list(structure(names(result), names = result))
     # Special treatments for special contrast types must be done here.
-    convert <- grepl("^Pairs", result, FALSE, TRUE)
-    result[convert] <- mapply(FUN = level_pairs, spec = result[convert],
-      column = names(result)[convert], MoreArgs = list(data = data),
-      SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    if (any(convert <- grepl("^Pairs", result, FALSE, TRUE)))
+      result[convert] <- mapply(FUN = level_pairs, spec = result[convert],
+        column = names(result)[convert], MoreArgs = list(data = data),
+        SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    if (any(convert <- grepl("^Dunnett..+", result, FALSE, TRUE)))
+      result[convert] <- mapply(FUN = dunnett_with_base,
+        level = substr(result, 9L, nchar(result))[convert],
+        column = names(result)[convert], MoreArgs = list(data = data),
+        SIMPLIFY = FALSE, USE.NAMES = FALSE)
     do.call(multcomp::mcp, result)
   }
 
@@ -349,7 +424,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     colnames(object) <- make.names(colnames(object))
     object
   }
-  contrast_matrices <- function(data, linfct) {
+  contrast_matrices <- function(data, linfct, model) {
     linfct <- convert_hypothesis_spec(linfct, model, data)
     if (!inherits(linfct, "mcp"))
       stop("in 'contrast' mode, 'linfct' must yield an object of class 'mcp'")
@@ -365,7 +440,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     linfct = return(convert_hypothesis_spec(linfct, model,
       convert_data(object, split.at, model))),
     contrast = return(contrast_matrices(convert_data(object, split.at, model),
-      linfct)),
+      linfct, model)),
     mcp = NULL
   )
 

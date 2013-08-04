@@ -27,6 +27,10 @@ if (!exists("TEST.DIR"))
 ## UNTESTED
 
 
+## pe_and_ci
+## UNTESTED
+
+
 ################################################################################
 
 
@@ -97,47 +101,6 @@ test_that("OPMS objects can be aggregated using the fast method", {
   }
 
 })
-
-
-## do_aggr
-test_that("matrices can be aggregated", {
-
-  x <- matrix(1:10, ncol = 2L)
-  colnames(x) <- LETTERS[1:2]
-  rownames(x) <- letters[1:5]
-
-  groups <- list(Y = c("a", "a", "b", "a", "b"))
-  got <- do_aggr(x, groups, mean)
-  expect_is(got, "matrix")
-  expect_equal(rownames(got), levels(as.factor(groups$Y)))
-  expect_equal(colnames(got), colnames(x))
-
-  groups <- c(groups, list(Z = rep("z", 5L)))
-  got <- do_aggr(x, groups, mean)
-  expect_is(got, "matrix")
-  exp.rn <- paste(levels(as.factor(groups$Y)), levels(as.factor(groups$Z)),
-    sep = ".")
-  expect_equal(rownames(got), exp.rn)
-  expect_equal(colnames(got), colnames(x))
-
-  got <- do_aggr(x, groups, mean, sep = "||")
-  exp.rn <- paste(levels(as.factor(groups$Y)), levels(as.factor(groups$Z)),
-    sep = "||")
-  expect_equal(rownames(got), exp.rn)
-  expect_equal(colnames(got), colnames(x))
-
-})
-
-
-################################################################################
-
-
-## pe_and_ci
-## UNTESTED
-
-
-## fast_estimate
-## UNTESTED
 
 
 ################################################################################
