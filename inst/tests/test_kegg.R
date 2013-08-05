@@ -88,7 +88,12 @@ test_that("glht-object", {
 })
 
 
-x <- annotation_vector(THIN.AGG[1], "A", output = "numeric")
+#x <- annotation_vector(THIN.AGG[1], "A", output = "numeric")
 
 
-x <- annotation_vector(THIN.AGG[1], "A", output = "logical")
+#x <- annotation_vector(THIN.AGG[1], "A", output = "logical")
+
+
+
+## get_info
+## UNTESTED

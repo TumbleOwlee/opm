@@ -171,6 +171,7 @@
 #'   on.exit(par(old.mar)) # tidy up
 #'   plot(x, ...)
 #' }
+#' do.plot <- FALSE # change this to see the plots
 #'
 #' ## OPMS method
 #' data(vaas_4)
@@ -201,7 +202,8 @@
 #' (x <- opm_mcp(vaas_4, model = list("Species"), m.type = "lm",
 #'   linfct = c(Dunnett = 1))) # refers to 'Species'
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 1)
-#' plot_with_margin(x, c(3, 20, 3, 2), main = "Species")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 20, 3, 2), main = "Species")
 #'
 #' # comparison of only A01 - A04 against each other, Tukey style
 #' # note that the left side of the model is set automatically
@@ -209,19 +211,22 @@
 #'   model = ~ Well + Species, m.type = "lm",
 #'   linfct = c(Tukey = 1))) # the number refers to 'Well'
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 6)
-#' plot_with_margin(x, c(3, 18, 3, 2), main = "Tukey, A01 - A04")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 18, 3, 2), main = "Tukey, A01 - A04")
 #'
 #' # Dunnett-type comparison of selected wells
 #' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ Well,
 #'   m.type = "lm", linfct = c(Dunnett = 1)))
 #' stopifnot(inherits(x, "glht"), length(coef(x)) == 3)
-#' plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, A01 vs. A02 - A04")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, A01 vs. A02 - A04")
 #' # by default 'Dunnett' uses first level as reference
 #'
 #' # Dunnett-type comparison with selected control-group
-#' (x <- opm_mcp(vaas_4[, , 1:10], output = "mcp", model = ~ Well,
+#' (x <- opm_mcp(vaas_4[, , 1:5], output = "mcp", model = ~ Well,
 #'   linfct = c(`Dunnett.A05 (D-Cellobiose)` = 1)))
-#' plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, vs. A05")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 20, 3, 2), main = "Dunnett, vs. A05")
 #'
 #' # manually defined contrast matrix
 #' (contr <- opm_mcp(vaas_4[, , 1:4], linfct = c(Tukey = 1),
@@ -229,17 +234,21 @@
 #' contr <- contr$Well[c(1:3, 6), ] # select comparisons of interest
 #' (x <- opm_mcp(vaas_4[, , 1:4],
 #'   model = ~ Well, m.type = "lm", linfct = contr)) # run tests
-#' plot_with_margin(x, c(3, 20, 3, 2), main = "My own contrasts")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 20, 3, 2), main = "My own contrasts")
 #'
 #' # joining of selected metadata using pseudofunction J
 #' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well + Species),
 #'   linfct = c(Dunnett = 1), full = FALSE)) # use short well names
-#' plot_with_margin(x, c(3, 22, 3, 2), main = "Dunnett, Well/Species joined")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 22, 3, 2), main = "Dunnett, Well/Species joined")
 #'
 #' # comparing wells pairwise regarding the tested species
 #' (x <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well + Species),
 #'   linfct = c(Pairs.Well = 1), full = FALSE)) # use short well names
-#' plot_with_margin(x, c(3, 22, 3, 2), main = "Wells compared between species")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 22, 3, 2),
+#'     main = "Wells compared between species")
 #' # i.e. 'Pairs.Well' means 'Pairs' type of comparison for each 'Well'
 #' # separately within a joined factor (the first one in 'model', hence
 #' # 'c(Pairs.Well = 1)', with '1' referring to the elements of 'model').
@@ -248,10 +257,16 @@
 #' xx <- c(vaas_4, vaas_4) # temporary test data
 #' (x <- opm_mcp(xx[, , 1:4], model = ~ J(Strain + Species),
 #'   linfct = c(Pairs.Species = 1), full = FALSE)) # use short well names
-#' plot_with_margin(x, c(3, 22, 3, 2), main = "Strains compared within species")
+#' if (do.plot)
+#'   plot_with_margin(x, c(3, 22, 3, 2),
+#'     main = "Strains compared within species")
 #' # i.e. 'Pairs.Species' means 'Pairs' type of comparison for each 'Species'
 #' # separately within a joined factor (the first one in 'model', hence
 #' # 'c(Pairs.Species = 1)', with '1' referring to the elements of 'model').
+#'
+#' ## one could check the number of calculated tests as follows:
+#' #if (nrow(confint(result)$confint) > 20L)
+#' #  warning("number of performed comparisons exceeds 20")
 #'
 #' ## data-frame method (usually unnecessary to directly apply it)
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"), subset = "A",
@@ -265,13 +280,15 @@
 #' (y <- opm_mcp(x, model = "Species", m.type = "lm",
 #'   linfct = c(Dunnett = 1)))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
-#' plot_with_margin(y, c(3, 20, 3, 2), main = "Species (from data frame)")
+#' if (do.plot)
+#'   plot_with_margin(y, c(3, 20, 3, 2), main = "Species (from data frame)")
 #'
 #' # testing for subsets of object
 #' (y <- opm_mcp(subset(x, x$Species == "Escherichia coli"),
 #'   linfct = c(Dunnett = 1), model = "Strain", m.type = "lm"))
 #' stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
-#' plot_with_margin(y, c(3, 15, 3, 2), main = "Dunnett (from data frame)")
+#' if (do.plot)
+#'   plot_with_margin(y, c(3, 15, 3, 2), main = "Dunnett (from data frame)")
 #'
 setGeneric("opm_mcp",
   function(object, ...) standardGeneric("opm_mcp"))
@@ -338,8 +355,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     result
   }
 
-  # Create a Dunnett contrast matrix with using 'level', hopefully found in the
-  # 'column' of 'data', as base.
+  # Create a Dunnett contrast matrix using 'level' as base, which is hopefully
+  # found in the 'column' of 'data'.
   #
   dunnett_with_base <- function(data, column, level) {
     f <- as.factor(data[, column])
@@ -458,10 +475,6 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   model <- do.call(match.arg(m.type), list(formula = model, data = object))
   glht.args <- c(list(model = model, linfct = linfct), as.list(glht.args))
   result <- do.call(glht, glht.args)
-
-  # check the number of calculated tests
-  if (length(confint(result)$confint[, 1L]) > 20L)
-    warning("number of performed comparisons exceeds 20")
 
   attr(result, opm_string()) <- annotation
   result

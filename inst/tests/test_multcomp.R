@@ -238,9 +238,11 @@ test_that("without model, linfct and glht.arg specified", {
 ## opm_mcp
 test_that("with model, linfct and glht.arg specified", {
   # number of performed comparisons exceeds 20
-  expect_warning(x <- opm_mcp(EXPL.DF, model = ~ Well, m.type = "lm",
+  #expect_warning(
+  x <- opm_mcp(EXPL.DF, model = ~ Well, m.type = "lm",
     linfct = multcomp::mcp(Well = "Dunnett"),
-    glht.arg = list(alternative = "less")))
+    glht.arg = list(alternative = "less"))
+  #)
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))

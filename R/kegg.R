@@ -85,3 +85,57 @@ annotation_vector <- function(object, subset = opm_opt("curve.param"),
 
 ################################################################################
 
+
+## TODO: must assess whether this can be integrated in substrate_info()
+
+
+#' Get KEGG information
+#'
+#' Search in \acronym{KEGG} using a substrate IDs. Requires the \pkg{KEGGREST}
+#' package.
+#'
+#' @param object Vector of substrate IDs or \code{\link{OPMX}} object.
+#' @return An object of class \sQuote{kegg_compounds}, which is a named list
+#'   (using the original query IDs as the names; if this fails, a warning is
+#'   issued) of entries of class \sQuote{kegg_compound}. IDs that are not found
+#'   yield empty \sQuote{kegg_compound} objects, as do missing IDs (\code{NA}
+#'   values).
+#' @export
+#' @keywords internal
+#' @seealso substrate_info
+#'
+setGeneric("get_info", function(object, ...) standardGeneric("get_info"))
+
+setMethod("get_info", "OPMX", function(object, what = "kegg", ...) {
+  structure(get_info(substrate_info(object, what), what),
+    names = wells(object, ...))
+}, sealed = FALSE)
+
+setMethod("get_info", "character", function(object, what = "kegg") {
+  chunks <- function(x, n) split.default(x,
+    rep(seq.int(ceiling(length(x) / n)), each = n)[seq_along(x)])
+  get_kegg <- function(x, prepend) {
+    compound_object <- function(x) {
+      pos <- match(c("EXACT_MASS", "MOL_WEIGHT"), names(x), 0L)
+      for (p in pos[pos > 0L])
+        x[[p]] <- as.numeric(x[[p]])
+      class(x) <- c("kegg_compound", "print_easy")
+      x
+    }
+    run_keggrest <- function(x, prepend) {
+      result <- lapply(chunks(paste0(prepend, x), 10), KEGGREST::keggGet)
+      result <- lapply(unlist(result, FALSE), compound_object)
+      names(result) <- vapply(result, `[[`, "", "ENTRY")
+      stopifnot(all(names(result) %in% x))
+      structure(result[x], names = x)
+    }
+    structure(get_and_remember(x, "KEGG.", compound_object(list()),
+      run_keggrest, FALSE, prepend), class = c("kegg_compounds", "print_easy"))
+  }
+  case(match.arg(what),
+    kegg = get_kegg(object, "cpd:")
+  )
+}, sealed = FALSE)
+
+
+################################################################################

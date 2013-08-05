@@ -2,6 +2,8 @@
 
 library(testthat)
 context("Testing the phylogeny-related functions of the OPM package")
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
 
 
 SIMPLE.MATRIX <- matrix(LETTERS[1:10], ncol = 2L)
@@ -398,5 +400,6 @@ test_that("nexus matrices can be created with other conversions", {
   expect_true("begin paup;" %in% z)
 
 })
+
 
 
