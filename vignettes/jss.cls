@@ -391,7 +391,8 @@
 \newcommand{\jsssubsubsec}[2][default]{\vskip \preSskip%
   \pdfbookmark[3]{#1}{Subsubsection.\thesubsubsection.#1}%
   \refstepcounter{subsubsection}%
-  {\large \textit{#2}} \nopagebreak
+  %\textbf{\large \textit{#2}} \nopagebreak
+  {\large \thesubsubsection. #2} \nopagebreak
   \vskip \postSskip \nopagebreak}
 \newcommand{\jsssubsubsecnn}[1]{\vskip \preSskip%
   {\textit{\large #1}} \nopagebreak

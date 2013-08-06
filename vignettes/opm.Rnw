@@ -33,6 +33,7 @@
 %Yellow box (paragraph)
 \def\rcscom#1{\noindent\newline\vspace*{0.5cm}\colorbox{yellow}{\parbox{\textwidth}{#1}}\vspace*{0.5cm}}
 
+
 %% needed for CRAN checking
 %\VignetteIndexEntry{Using opm}
 
@@ -52,7 +53,7 @@
 \Plainauthor{L.A.I. Vaas, J. Sikorski, B. Hofner, N. Buddruhs, A. Fiebig, H.-P. Klenk, M. G\"{o}ker}
 
 % main title, first page
-\Plaintitle{opm: An R package for analysing OmniLog\textregistered \ Phenotype MicroArray Data}
+\Plaintitle{opm: An R package for analysing OmniLog Phenotype MicroArray Data}
 
 % short title, header on every 2nd page
 \Shorttitle{Phenotype MicroArray Data}
@@ -73,6 +74,9 @@ It is also possible to discretize the curve parameters and to export them for re
 Tabular and textual summaries suitable for, e.g., taxonomic journals can also be automatically created and customized.
 Export and import in the \proglang{YAML} (or \proglang{JSON}) markup language (or as character-separated values) facilitates the data exchange among labs.
 All methods are exemplified using real-world data sets that are part of the \pkg{opm} \proglang{R} package or are included in the accompanying data package \pkg{opmdata}.
+
+This the tutorial of \pkg{opm} in the version of \today{}.
+
 }
 
 \Keywords{Bootstrap, Cell Lines, \pkg{grofit}, Growth Curves, \pkg{lattice}, Metadata, Microbiology, Respiration Kinetics, Splines, \proglang{YAML}, \proglang{JSON}, \proglang{CSV}}
@@ -112,6 +116,7 @@ All methods are exemplified using real-world data sets that are part of the \pkg
 \section[Introduction]{Introduction}\label{introduction}
 
 \subsection[Preamble for ``eager to start'' readers]{Preamble for ``eager to start'' readers}\label{preamble}
+
 
 % Please avoid repetition as far as possible.
 % No details here, only links.
