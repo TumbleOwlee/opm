@@ -110,35 +110,27 @@
   instead.
 }
 \examples{
-## as.data.frame()
-
-## OPMD method
-data(vaas_1)
+## OPMD method of as.data.frame()
 summary(x <- as.data.frame(vaas_1))
 stopifnot(is.data.frame(x), nrow(x) == 96)
 
-## OPMS method
-data(vaas_4)
-summary(x <- as.data.frame(vaas_4))
-stopifnot(is.data.frame(x), nrow(x) == 96 * 4)
+## OPMS method of as.data.frame()
+summary(x <- as.data.frame(vaas_4[, , 1:10]))
+stopifnot(is.data.frame(x), nrow(x) == 10 * 4)
 
-## flatten()
-
-# OPM method
-data(vaas_1)
+## OPM method of flatten()
 # distinct numbers of columns due to distinct selection settings
 head(x <- flatten(vaas_1))
 stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
 head(x <- flatten(vaas_1, fixed = "TEST", include = "Strain"))
 stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 5L)))
 
-# OPMS method
-data(vaas_4)
+## OPMS method of flatten()
 # distinct numbers of columns due to distinct selection settings
-head(x <- flatten(vaas_4))
-stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
-head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
-stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
+head(x <- flatten(vaas_4[, , 1:10]))
+stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 4L)))
+head(x <- flatten(vaas_4[, , 1:10], fixed = "TEST", include = ~ Strain))
+stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 }
 \seealso{
   utils::write.table stats::reshape pkgutils::flatten

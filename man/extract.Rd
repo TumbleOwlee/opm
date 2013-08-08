@@ -196,7 +196,6 @@
 }
 \examples{
 ## 'OPMS' method
-data(vaas_4)
 opm_opt("curve.param") # default parameter
 
 # generate matrix (containing the parameter given above)
@@ -259,7 +258,6 @@ ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 0, y = 0)
 ## extract_columns()
 
 # 'OPMS' method
-data(vaas_4)
 
 # Create data frame
 (x <- extract_columns(vaas_4, what = list("Species", "Strain")))

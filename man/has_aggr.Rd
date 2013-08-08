@@ -20,13 +20,8 @@
   its child classes.
 }
 \examples{
-# 'OPM' methods
-data(vaas_1)
-stopifnot(has_aggr(vaas_1), has_disc(vaas_1))
-
-# 'OPMS' methods
-data(vaas_4)
-stopifnot(has_aggr(vaas_4), has_disc(vaas_4))
+stopifnot(has_aggr(vaas_1), has_disc(vaas_1)) # OPM methods
+stopifnot(has_aggr(vaas_4), has_disc(vaas_4)) # OPMS methods
 }
 \seealso{
   Other getter-functions: \code{\link{aggr_settings}},

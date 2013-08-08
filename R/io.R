@@ -82,8 +82,8 @@ read_new_opm <- function(filename) {
 #'
 read_old_opm <- function(filename) {
 
-  strip <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE),
-    perl = TRUE)
+  strip <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE),
+    FALSE, TRUE)
 
   prepare_comments <- function(x, filename) {
     ok <- nzchar(n <- strip(vapply(x, `[[`, "", 1L)))
@@ -141,7 +141,7 @@ read_microstation_opm <- function(filename) {
     fileEncoding = opm_opt("file.encoding"))
   names(x)[!nzchar(names(x))] <- "N.N."
   pat <- ": Dual Wavelength O\\.D\\.$"
-  wells <- grep(pat, names(x), perl = TRUE, value = TRUE)
+  wells <- grep(pat, names(x), FALSE, TRUE, value = TRUE)
   if (length(wells) != 96L)
     stop("expected 96 column names ending in ': Dual Wavelength O.D.'")
   wanted <- c("Plate Type", "Created", "Plate Number", "Incubation Time", wells)
@@ -149,7 +149,7 @@ read_microstation_opm <- function(filename) {
   x <- x[, wanted, drop = FALSE]
   x <- cbind(filename, x, stringsAsFactors = FALSE)
   names(x) <- c(CSV_NAMES[c("FILE", "PLATE_TYPE", "SETUP", "POS")], HOUR,
-    clean_coords(sub(pat, "", wells, perl = TRUE)))
+    clean_coords(sub(pat, "", wells, FALSE, TRUE)))
   pos <- seq_len(4L)
   x <- to_opm_list.list(lapply(seq_len(nrow(x)), function(i) {
     list(csv_data = as.list(x[i, pos, drop = FALSE]),
@@ -547,8 +547,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
   create_outfile_names <- function(infiles, outdir, out.ext) {
     if (length(outdir) == 0L || all(!nzchar(outdir)))
       outdir <- dirname(infiles)
-    result <- sub(in.ext, "", basename(infiles), perl = TRUE,
-      ignore.case = TRUE)
+    result <- sub(in.ext, "", basename(infiles), TRUE, TRUE)
     result <- paste(result, sub("^\\.+", "", out.ext), sep = ".")
     file.path(outdir, result)
   }
@@ -583,7 +582,7 @@ file_pattern <- function(
   LL(literally, compressed)
   result <- if (literally) {
     x <- make_pat("([^.]+)", compressed, "^.*?\\.%s$")
-    x <- sub(x, "\\1", type, perl = TRUE)
+    x <- sub(x, "\\1", type, FALSE, TRUE)
     if (all(same <- x == basename(type))) { # assuming extensions
       type <- x
       bad <- "^\\w+$"
@@ -591,7 +590,7 @@ file_pattern <- function(
       type <- x[!same]
       bad <- "^\\w+(\\.\\w+)?$"
     }
-    if (any(bad <- !grepl(bad, type <- unique.default(type), perl = TRUE)))
+    if (any(bad <- !grepl(bad, type <- unique.default(type), FALSE, TRUE)))
       stop("'type' must contain word characters (only): ", type[bad][1L])
     case(length(type), stop("'type' must be non-empty"), type,
       sprintf("(%s)", paste(type, collapse = "|")))
@@ -612,7 +611,7 @@ glob_to_regex <- function(object) UseMethod("glob_to_regex")
 #'
 glob_to_regex.character <- function(object) {
   # TODO: one should perhaps also check for '|'
-  x <- glob2rx(gsub("([+^$])", "\\\\\\1", object, perl = TRUE))
+  x <- glob2rx(gsub("([+^$])", "\\\\\\1", object, FALSE, TRUE))
   attributes(x) <- attributes(object)
   x
 }
@@ -957,7 +956,6 @@ read_single_opm <- function(filename) {
 #' }
 #'
 #' # OPM method
-#' data(vaas_1)
 #' (x <- collect_template(vaas_1)) # => data frame, one row per plate
 #' stopifnot(identical(dim(x), c(1L, 3L)))
 #' (x <- collect_template(vaas_1, add.cols = c("A", "B")))
@@ -965,7 +963,6 @@ read_single_opm <- function(filename) {
 #' # see include_metadata() for how to use this to add metadata information
 #'
 #' # OPMS method
-#' data(vaas_4)
 #' (x <- collect_template(vaas_4)) # => data frame, one row per plate
 #' stopifnot(identical(dim(x), c(4L, 3L)))
 #' (x <- collect_template(vaas_4, add.cols = c("A", "B")))
@@ -990,12 +987,10 @@ read_single_opm <- function(filename) {
 #' stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
 #'
 #' # WMD method
-#' data(vaas_1)
 #' (x <- to_metadata(vaas_1)) # one row per OPM object
 #' stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
 #'
 #' # OPMS method
-#' data(vaas_4)
 #' (x <- to_metadata(vaas_4)) # one row per OPM object
 #' stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
 #' copy <- vaas_4
@@ -1639,10 +1634,10 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 
   create_outnames <- function(files, compressed, outdir) {
     file.pat <- file_pattern("any", compressed = compressed, literally = FALSE)
-    out.base <- sub(file.pat, "", files, perl = TRUE, ignore.case = TRUE)
+    out.base <- sub(file.pat, "", files, TRUE, TRUE)
     out.ext <- substring(files, nchar(out.base) + 2L)
     if (compressed)
-      out.ext <- sub("\\.[^.]+$", "", out.ext, perl = TRUE)
+      out.ext <- sub("\\.[^.]+$", "", out.ext, FALSE, TRUE)
     if (length(outdir) && all(nzchar(outdir)))
       out.base <- file.path(outdir, basename(out.base))
     list(base = out.base, ext = out.ext)
@@ -1680,10 +1675,10 @@ clean_filenames <- function(x, overwrite = FALSE, demo = FALSE,
     empty.tmpl = "__EMPTY__%05i__") {
   empty.idx <- 0L
   clean_parts <- function(x) {
-    x <- gsub("[^\\w-]+", "_", x, perl = TRUE)
-    x <- gsub("_*-_*", "-", x, perl = TRUE)
-    x <- gsub("-+", "-", gsub("_+", "_", x, perl = TRUE), perl = TRUE)
-    x <- sub("[_-]+$", "", sub("^[_-]+", "", x, perl = TRUE), perl = TRUE)
+    x <- gsub("[^\\w-]+", "_", x, FALSE, TRUE)
+    x <- gsub("_*-_*", "-", x, FALSE, TRUE)
+    x <- gsub("-+", "-", gsub("_+", "_", x, FALSE, TRUE), FALSE, TRUE)
+    x <- sub("[_-]+$", "", sub("^[_-]+", "", x, FALSE, TRUE), FALSE, TRUE)
     x <- x[nzchar(x)]
     if (!length(x))
       x <- sprintf(empty.tmpl, empty.idx <<- empty.idx + 1L)

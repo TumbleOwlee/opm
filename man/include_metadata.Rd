@@ -84,7 +84,6 @@
 }
 \examples{
 ## include_metadata()
-data(vaas_1)
 
 (x <- collect_template(vaas_1, add.cols = "Location")) # generate data frame
 x[1, "Location"] <- "Braunschweig" # insert additional information
@@ -95,7 +94,6 @@ stopifnot(identical(metadata(copy, "Location"), "Braunschweig"))
 ## map_metadata()
 
 # WMD methods
-data(vaas_1)
 
 # WMD+function method
 copy <- map_metadata(vaas_1, identity)
@@ -133,7 +131,6 @@ stopifnot(identical(copy, # same result with expression
 stopifnot(identical(x, metadata(vaas_1))) # nothing to modify in that case
 
 # OPMS method
-data(vaas_4)
 
 # using a function
 copy <- map_metadata(vaas_4, identity)

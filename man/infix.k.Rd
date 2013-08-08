@@ -68,7 +68,6 @@
 \examples{
 # The dataset contains the metadata keys 'Species' and 'Experiment' but
 # neither 'Trial' nor 'Organism' nor 'Run':
-data(vaas_1)
 # In the following we use stopifnot(), which fails unless all arguments
 # passed are TRUE.
 

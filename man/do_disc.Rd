@@ -104,7 +104,6 @@
 }
 \examples{
 ## OPMA method
-data(vaas_1)
 
 # arbitrary threshold, no ambiguity
 summary(x <- do_disc(vaas_1, cutoff = 100))
@@ -137,7 +136,6 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 
 
 ## OPMS method
-data(vaas_4)
 
 # arbitrary threshold, no ambiguity, no groups
 x <- do_disc(vaas_4, cutoff = 100)

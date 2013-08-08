@@ -97,8 +97,6 @@
   wells.
 }
 \examples{
-data(vaas_4)
-
 x <- ci_plot(vaas_4[, , 1:3], as.labels = list("Species", "Strain"),
   subset = "A", x = "bottomright", legend.field = NULL)
 # note that the values on the y axes are drawn to scale

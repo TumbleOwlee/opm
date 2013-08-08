@@ -74,9 +74,8 @@
   examples with \code{\link{OPMS}} objects.
 }
 \examples{
-# The dataset contains the metadata keys 'Species' and 'Experiment' with the
-# values 'Escherichia coli' and 'First replicate':
-data(vaas_1)
+# The dataset vaas_1 contains the metadata keys 'Species' and 'Experiment'
+# with the values 'Escherichia coli' and 'First replicate'.
 
 ## Character methods
 

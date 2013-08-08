@@ -83,7 +83,6 @@
 }
 \examples{
 ## OPM(A) method
-data(vaas_1)
 
 # complete dataset, full 96-well plates
 (x <- dim(vaas_1))
@@ -108,7 +107,6 @@ stopifnot(!has_aggr(copy), !identical(copy, vaas_1))
 
 
 ## OPMS method
-data(vaas_4)
 
 # Create OPMS object with fewer plates (the first two ones)
 x <- vaas_4[1:2]

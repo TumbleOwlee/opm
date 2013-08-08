@@ -100,7 +100,6 @@
   sensibly be applied before aggregating the data.
 }
 \examples{
-data(vaas_4) # example OPMS object
 # simple object comparison function
 mustbe <- function(a, b) stopifnot(identical(a, b))
 
@@ -155,7 +154,6 @@ stopifnot(dim(y)[3] > dim(x)[3])
 ## thin_out()
 
 # 'OPM' method
-data(vaas_1)
 (x <- dim(vaas_1))
 stopifnot(identical(x, c(384L, 96L)))
 copy <- thin_out(vaas_1, 10) # keep every 10th time point and measurement
@@ -166,7 +164,6 @@ copy <- thin_out(vaas_1, 10, drop = TRUE) # also remove the parameters
 stopifnot(identical(x, c(38L, 96L)), !has_aggr(copy))
 
 # 'OPMS' method
-data(vaas_4)
 (x <- dim(vaas_4))
 stopifnot(identical(x, c(4L, 384L, 96L)))
 copy <- thin_out(vaas_4, 10)

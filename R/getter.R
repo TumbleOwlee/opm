@@ -56,7 +56,6 @@
 #' @examples
 #'
 #' # 'OPM' methods
-#' data(vaas_1)
 #'
 #' head(x <- measurements(vaas_1))[, 1:5] # => numeric matrix
 #' stopifnot(is.matrix(x), is.numeric(x))
@@ -88,7 +87,7 @@
 #' stopifnot(identical(x, 384L))
 #'
 #' # 'OPMS' methods
-#' data(vaas_4)
+#'
 #' summary(x <- measurements(vaas_4)) # => list of numeric matrices
 #' stopifnot(is.list(x), length(x) == length(vaas_4))
 #' stopifnot(sapply(x, is.matrix), sapply(x, is.numeric))
@@ -234,7 +233,6 @@ setMethod("hours", OPM, function(object,
 #' @examples
 #'
 #' ## OPM(A) method
-#' data(vaas_1)
 #'
 #' # complete dataset, full 96-well plates
 #' (x <- dim(vaas_1))
@@ -259,7 +257,6 @@ setMethod("hours", OPM, function(object,
 #'
 #'
 #' ## OPMS method
-#' data(vaas_4)
 #'
 #' # Create OPMS object with fewer plates (the first two ones)
 #' x <- vaas_4[1:2]
@@ -399,7 +396,6 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #' @examples
 #'
 #' # OPM method
-#' data(vaas_1)
 #' (x <- max(vaas_1))
 #' (y <- max(vaas_1, 1)) # this is the negative control
 #' stopifnot(x > y) # i.e., some stronger reactions present
@@ -407,7 +403,6 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
 #' stopifnot(max(vaas_1) > x) # obviously
 #'
 #' # OPMS method
-#' data(vaas_4)
 #' (x <- max(vaas_4))
 #' (y <- max(vaas_4, 1)) # this is the negative control
 #' stopifnot(x > y) # i.e., some stronger reactions present
@@ -482,7 +477,6 @@ setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
 #' @examples
 #'
 #' # OPM methods
-#' data(vaas_1)
 #' (x <- dim(vaas_1))
 #' stopifnot(identical(x, c(384L, 96L)))
 #' (x <- length(vaas_1))
@@ -491,7 +485,6 @@ setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
 #' stopifnot(inherits(x, "try-error"))
 #'
 #' # OPMS methods
-#' data(vaas_4)
 #' (x <- dim(vaas_4)) # 2nd value needs not be correct for all plates
 #' stopifnot(identical(x, c(4L, 384L, 96L)))
 #' (x <- length(vaas_4))
@@ -572,7 +565,6 @@ setMethod("seq", OPMS, function(...) {
 #' @examples
 #'
 #' # 'OPM' method
-#' data(vaas_1)
 #'
 #' (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
 #' stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
@@ -589,7 +581,6 @@ setMethod("seq", OPMS, function(...) {
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
 #'
 #' # 'OPMS' method
-#' data(vaas_4)
 #'
 #' (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 #' stopifnot(is.character(x), length(x) == 4)
@@ -683,14 +674,8 @@ setMethod("position", OPM, function(object) {
 #' @family getter-functions
 #' @keywords attribute
 #' @examples
-#'
-#' # 'OPM' methods
-#' data(vaas_1)
-#' stopifnot(has_aggr(vaas_1), has_disc(vaas_1))
-#'
-#' # 'OPMS' methods
-#' data(vaas_4)
-#' stopifnot(has_aggr(vaas_4), has_disc(vaas_4))
+#' stopifnot(has_aggr(vaas_1), has_disc(vaas_1)) # OPM methods
+#' stopifnot(has_aggr(vaas_4), has_disc(vaas_4)) # OPMS methods
 #'
 setGeneric("has_aggr", function(object, ...) standardGeneric("has_aggr"))
 
@@ -756,7 +741,6 @@ setMethod("has_disc", OPM, function(object) {
 #' @examples
 #'
 #' # 'OPMA' methods
-#' data(vaas_1)
 #' # Get full matrix
 #' (x <- aggregated(vaas_1))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
@@ -771,7 +755,6 @@ setMethod("has_disc", OPM, function(object) {
 #' stopifnot(is.list(x), !is.null(names(x)))
 #'
 #' # 'OPMS' methods
-#' data(vaas_4)
 #' summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
 #' # settings
@@ -855,7 +838,6 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' @examples
 #'
 #' # 'OPM' methods
-#' data(vaas_1)
 #' (x <- discretized(vaas_1))[1:3] # => logical vector
 #' stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
@@ -863,7 +845,6 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' stopifnot(is.list(x), !is.null(names(x)))
 #'
 #' # 'OPMS' methods
-#' data(vaas_4)
 #' (x <- discretized(vaas_4))[, 1:3] # => logical matrix
 #' stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 #' stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
@@ -967,7 +948,6 @@ setMethod("disc_settings", OPMD, function(object) {
 #' @seealso base::`[` base::`[[` base::subset
 #' @examples
 #'
-#' data(vaas_4) # example OPMS object
 #' # simple object comparison function
 #' mustbe <- function(a, b) stopifnot(identical(a, b))
 #'
@@ -1022,7 +1002,6 @@ setMethod("disc_settings", OPMD, function(object) {
 #' ## thin_out()
 #'
 #' # 'OPM' method
-#' data(vaas_1)
 #' (x <- dim(vaas_1))
 #' stopifnot(identical(x, c(384L, 96L)))
 #' copy <- thin_out(vaas_1, 10) # keep every 10th time point and measurement
@@ -1033,7 +1012,6 @@ setMethod("disc_settings", OPMD, function(object) {
 #' stopifnot(identical(x, c(38L, 96L)), !has_aggr(copy))
 #'
 #' # 'OPMS' method
-#' data(vaas_4)
 #' (x <- dim(vaas_4))
 #' stopifnot(identical(x, c(4L, 384L, 96L)))
 #' copy <- thin_out(vaas_4, 10)
@@ -1166,7 +1144,6 @@ setMethod("thin_out", OPMS, function(object, ...) {
 #' @examples
 #'
 #' # 'OPM' methods
-#' data(vaas_1)
 #' (x <- duplicated(vaas_1)) # 1 element => nothing duplicated
 #' stopifnot(identical(x, FALSE))
 #'
@@ -1176,7 +1153,6 @@ setMethod("thin_out", OPMS, function(object, ...) {
 #' stopifnot(identical(x, 0L)) # no organisms duplicated
 #'
 #' # 'OPMS' methods
-#' data(vaas_4)
 #' stopifnot(!duplicated(vaas_4)) # => no complete plates duplicated
 #' stopifnot(!duplicated(vaas_4, what = list("Species", "Strain")))
 #' # => no organisms duplicated
@@ -1359,7 +1335,6 @@ lapply(c(
 #'
 #' # The dataset contains the metadata keys 'Species' and 'Experiment' but
 #' # neither 'Trial' nor 'Organism' nor 'Run':
-#' data(vaas_1)
 #' # In the following we use stopifnot(), which fails unless all arguments
 #' # passed are TRUE.
 #'
@@ -1563,9 +1538,8 @@ setMethod("%K%", c("expression", WMD), function(x, table) {
 #'
 #' @examples
 #'
-#' # The dataset contains the metadata keys 'Species' and 'Experiment' with the
-#' # values 'Escherichia coli' and 'First replicate':
-#' data(vaas_1)
+#' # The dataset vaas_1 contains the metadata keys 'Species' and 'Experiment'
+#' # with the values 'Escherichia coli' and 'First replicate'.
 #'
 #' ## Character methods
 #'

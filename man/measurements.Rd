@@ -63,7 +63,6 @@
 }
 \examples{
 # 'OPM' methods
-data(vaas_1)
 
 head(x <- measurements(vaas_1))[, 1:5] # => numeric matrix
 stopifnot(is.matrix(x), is.numeric(x))
@@ -95,7 +94,7 @@ stopifnot(identical(x, 0.25))
 stopifnot(identical(x, 384L))
 
 # 'OPMS' methods
-data(vaas_4)
+
 summary(x <- measurements(vaas_4)) # => list of numeric matrices
 stopifnot(is.list(x), length(x) == length(vaas_4))
 stopifnot(sapply(x, is.matrix), sapply(x, is.numeric))

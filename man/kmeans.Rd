@@ -132,7 +132,6 @@
   cases because they contain a copy of the input data.
 }
 \examples{
-data(vaas_4)
 x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 x.km <- run_kmeans(x, k = 1:10)
 

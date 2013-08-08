@@ -350,7 +350,6 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #' @examples
 #'
 #' # OPM method
-#' data(vaas_1)
 #'
 #' # Run a fast estimate of A and AUC without bootstrapping
 #' copy <- do_aggr(vaas_1, method = "opm-fast", boot = 0,
@@ -384,7 +383,6 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 #' }
 #'
 #' # matrix method
-#' data(vaas_1)
 #' (x <- do_aggr(measurements(vaas_1)))[, 1:3]
 #' stopifnot(identical(dim(x), c(3L, 96L)))
 #'
@@ -473,9 +471,9 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
           matrix(nrow = 6L, ncol = ncol(mat) - 1L, data = NA_real_)
         )
         rownames(result)[7L:9L] <- sub("^[^.]+", "lambda",
-          rownames(result)[1L:3L], perl = TRUE)
+          rownames(result)[1L:3L], FALSE, TRUE)
         rownames(result)[10L:12L] <- sub("^[^.]+", "mu",
-          rownames(result)[1L:3L], perl = TRUE)
+          rownames(result)[1L:3L], FALSE, TRUE)
         map <- map_param_names(opm.fast = TRUE)
         result <- result[names(map), , drop = FALSE]
         rownames(result) <- as.character(map)

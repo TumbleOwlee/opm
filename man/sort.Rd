@@ -86,7 +86,6 @@
 }
 \examples{
 ## 'OPMS' methods
-data(vaas_4)
 
 # Existing keys
 stopifnot(is.unsorted(metadata(vaas_4, "Strain")))
@@ -137,7 +136,6 @@ stopifnot(length(y) == length(vaas_4) * 2, !identical(x, y))
 stopifnot(is.null(rep(vaas_4, 0)))
 
 ## 'OPM' methods
-data(vaas_1)
 summary(x <- sort(vaas_1))
 stopifnot(identical(x, vaas_1))
 dim(x <- unique(vaas_1)) # trivial

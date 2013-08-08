@@ -165,7 +165,6 @@ plot.kmeanss <- function(x, xlab = "Number of clusters",
 #' @seealso graphics::hist graphics::abline Ckmeans.1d.dp::Ckmeans.1d.dp
 #' @examples
 #'
-#' data(vaas_4)
 #' x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 #' x.km <- run_kmeans(x, k = 1:10)
 #'
@@ -317,7 +316,6 @@ prepare_k <- function(k) {
 #'   in one dimension by dynamic programming. \emph{The R Journal} \strong{3},
 #'   p. 29--33.
 #' @examples
-#' data(vaas_4)
 #' x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 #' summary(x.km <- run_kmeans(x, k = 1:10)) # => 'kmeanss' object
 #' stopifnot(inherits(x.km, "kmeanss"), length(x.km) == 10)

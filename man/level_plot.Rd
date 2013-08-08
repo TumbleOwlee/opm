@@ -66,12 +66,10 @@
 }
 \examples{
 # OPM method
-data(vaas_1)
 level_plot(vaas_1, main = "Levelplot example")
 
 # OPMS method
 \dontrun{
-data(vaas_4)
 # headers include species and strain
 level_plot(vaas_4, include = c("Species", "Strain"))
 }

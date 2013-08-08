@@ -22,7 +22,6 @@
   Assign subsets of \code{\link{OPMS}} objects.
 }
 \examples{
-data(vaas_4)
 copy <- vaas_4
 copy[5] <- NULL # has no effect
 stopifnot(identical(vaas_4, copy))

@@ -49,7 +49,6 @@
 }
 \examples{
 # 'OPMA' methods
-data(vaas_1)
 # Get full matrix
 (x <- aggregated(vaas_1))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
@@ -64,7 +63,6 @@ stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
 stopifnot(is.list(x), !is.null(names(x)))
 
 # 'OPMS' methods
-data(vaas_4)
 summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
 # settings

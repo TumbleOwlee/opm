@@ -151,7 +151,6 @@
 }
 \examples{
 # OPM method
-data(vaas_1)
 
 # Run a fast estimate of A and AUC without bootstrapping
 copy <- do_aggr(vaas_1, method = "opm-fast", boot = 0,
@@ -185,7 +184,6 @@ stopifnot(cor.test(auc.fast, auc.grofit)$estimate > 0.999)
 }
 
 # matrix method
-data(vaas_1)
 (x <- do_aggr(measurements(vaas_1)))[, 1:3]
 stopifnot(identical(dim(x), c(3L, 96L)))
 }

@@ -39,7 +39,6 @@
 }
 \examples{
 # 'OPM' methods
-data(vaas_1)
 (x <- duplicated(vaas_1)) # 1 element => nothing duplicated
 stopifnot(identical(x, FALSE))
 
@@ -49,7 +48,6 @@ stopifnot(identical(x, 0L)) # no complete plate duplicated
 stopifnot(identical(x, 0L)) # no organisms duplicated
 
 # 'OPMS' methods
-data(vaas_4)
 stopifnot(!duplicated(vaas_4)) # => no complete plates duplicated
 stopifnot(!duplicated(vaas_4, what = list("Species", "Strain")))
 # => no organisms duplicated

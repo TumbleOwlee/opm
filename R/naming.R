@@ -222,7 +222,6 @@ select_colors <- function(
 #' @examples
 #'
 #' ## 'OPM' method
-#' data(vaas_1)
 #' (x <- plate_type(vaas_1, full = FALSE))
 #' (y <- plate_type(vaas_1, full = TRUE))
 #' (z <- plate_type(vaas_1, full = TRUE, in.parens = FALSE))
@@ -237,7 +236,6 @@ select_colors <- function(
 #' }
 #'
 #' ## 'OPMS' method
-#' data(vaas_4)
 #' (xx <- plate_type(vaas_4, full = FALSE))
 #' # plate type is guaranteed to be uniform within an OPMS object
 #' stopifnot(identical(x, xx))
@@ -263,14 +261,12 @@ select_colors <- function(
 #' ## changing the plate type
 #'
 #' # 'OPM' method
-#' data(vaas_1)
 #' plate_type(copy <- gen_iii(vaas_1))
 #' stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
 #' plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
 #' stopifnot(!identical(vaas_1, copy))
 #'
 #' # 'OPMS' method
-#' data(vaas_4)
 #' plate_type(copy <- gen_iii(vaas_4))
 #' stopifnot(identical(vaas_4, copy)) # as above
 #' plate_type(copy <- gen_iii(vaas_4, "eco"))
@@ -290,26 +286,26 @@ setMethod("plate_type", "character", function(object, full = FALSE,
     normalize = TRUE, subtype = FALSE) {
   do_normalize <- function(object, subtype) {
     normalize_pm <- function(x, subtype) {
-      x <- sub("^PMM", "PM-M", x, perl = TRUE)
-      x <- sub("^PM-MTOX", "PM-M TOX", x, perl = TRUE)
+      x <- sub("^PMM", "PM-M", x, FALSE, TRUE)
+      x <- sub("^PM-MTOX", "PM-M TOX", x, FALSE, TRUE)
       x <- sub("([A-Z]+)$", if (subtype)
         "-\\1"
       else
-        "", x, perl = TRUE)
-      sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, perl = TRUE)
+        "", x, FALSE, TRUE)
+      sub("([^\\d])(\\d)([^\\d]|$)", "\\10\\2\\3", x, FALSE, TRUE)
     }
     normalize_sf <- function(x, subtype) {
       x <- if (subtype)
-        sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, perl = TRUE), perl = TRUE)
+        sub("-$", "", sub(SP_PATTERN, "\\1-\\2", x, FALSE, TRUE), FALSE, TRUE)
       else
-        sub(SP_PATTERN, "\\1", x, perl = TRUE)
-      x <- sub("^(G|SF)([NP])", "SF-\\2", x, perl = TRUE)
-      sub("^GENIII", "Gen III", x, perl = TRUE)
+        sub(SP_PATTERN, "\\1", x, FALSE, TRUE)
+      x <- sub("^(G|SF)([NP])", "SF-\\2", x, FALSE, TRUE)
+      sub("^GENIII", "Gen III", x, FALSE, TRUE)
     }
-    result <- toupper(gsub("\\W", "", object, perl = TRUE))
-    pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, perl = TRUE)
+    result <- toupper(gsub("\\W", "", object, FALSE, TRUE))
+    pm <- grepl("^PM(M(TOX)?)?\\d+[A-Z]*$", result, FALSE, TRUE)
     result[pm] <- normalize_pm(result[pm], subtype)
-    sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], perl = TRUE)
+    sf[sf] <- grepl(SP_PATTERN, result[sf <- !pm], FALSE, TRUE)
     result[sf] <- normalize_sf(result[sf], subtype)
     result[bad] <- object[bad <- !(pm | sf)]
     result
@@ -453,11 +449,11 @@ well_index <- function(x, names) {
 #'
 clean_coords <- function(x) {
   do_clean <- function(x) {
-    x <- sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE), perl = TRUE)
+    x <- sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE), FALSE, TRUE)
     sprintf("%s%02i", toupper(substring(x, 1L, 1L)),
-      as.integer(sub("^[A-Za-z]+", "", x, perl = TRUE)))
+      as.integer(sub("^[A-Za-z]+", "", x, FALSE, TRUE)))
   }
-  if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, perl = TRUE)))
+  if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, FALSE, TRUE)))
     x[bad] <- do_clean(x[bad])
   x
 }
@@ -629,7 +625,6 @@ to_sentence.logical <- function(x, html, ...) {
 #' @examples
 #'
 #' ## wells() 'OPM' method
-#' data(vaas_1)
 #' (x <- wells(vaas_1, full = FALSE))[1:10]
 #' (y <- wells(vaas_1, full = TRUE))[1:10]
 #' (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))[1:10]
@@ -637,7 +632,6 @@ to_sentence.logical <- function(x, html, ...) {
 #' stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 #'
 #' ## wells() 'OPM' method
-#' data(vaas_4)
 #' (xx <- wells(vaas_4, full = FALSE))[1:10]
 #' # wells are guaranteed to be uniform within OPMS objects
 #' stopifnot(identical(x, xx))
@@ -655,7 +649,6 @@ to_sentence.logical <- function(x, html, ...) {
 #' stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
 #'
 #' ## listing() 'OPMD' method
-#' data(vaas_1)
 #'
 #' # this yields one sentence for each kind of reaction:
 #' (x <- listing(vaas_1, NULL))
@@ -673,7 +666,6 @@ to_sentence.logical <- function(x, html, ...) {
 #'   !is.null(names(x)))
 #'
 #' ## listing() 'OPMS' method
-#' data(vaas_4)
 #'
 #' # no grouping, no names (numbering used instead for row names)
 #' (x <- listing(vaas_4[1:2], as.groups = NULL))
@@ -994,6 +986,12 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   the beginning) is also opened in the default web browser; if negative, the
 #'   \acronym{URL}s are only returned. It is an error to try this with those
 #'   values of \code{what} that do not yield an \acronym{ID}.
+#' @param download Logical scalar indicating whether, using the available IDs,
+#'   substrate information should be queried from the according web services and
+#'   returned in customized objects. Note that this is unavailable for most
+#'   values of \code{what}. At the moment only \sQuote{kegg} and \sQuote{drug}
+#'   can be queried for if the \pkg{KEGGREST} package is available. This would
+#'   yield S3 objects of the class \sQuote{kegg_compounds}.
 #' @param ... Optional other arguments passed between the methods.
 #' @export
 #' @return The character method returns a character vector with \code{object}
@@ -1004,7 +1002,8 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   method, using their own substrates. Depending on the \code{browse}
 #'   argument, the returned \acronym{ID}s might have been converted to
 #'   \acronym{URL}s, and as a side effect tabs in the default web browser might
-#'   have been opened.
+#'   have been opened. For suitable values of \code{what}, setting
+#'   \code{download} to \code{TRUE} yielded special objects as described above.
 #' @details The generated \acronym{URL}s should provide plenty of information
 #'   on the respective substrate. In the case of \acronym{ChEBI}, \acronym{KEGG}
 #'   and \acronym{Metacyc}, much information is directly displayed on the page
@@ -1070,10 +1069,8 @@ setMethod("find_positions", OPM, function(object, ...) {
 #' stopifnot(length(x[[1]]) > length(x[[2]]))
 #'
 #' # OPM and OPMS methods
-#' data(vaas_1)
 #' (x <- substrate_info(vaas_1[, 1:3], "all"))
 #' stopifnot(inherits(x, "substrate_data"))
-#' data(vaas_4)
 #' (y <- substrate_info(vaas_4[, , 1:3], "all"))
 #' stopifnot(identical(x, y))
 #' \dontrun{
@@ -1087,7 +1084,7 @@ setGeneric("substrate_info",
 
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "html", "all"), browse = 0L, ...) {
+      "greek", "html", "all"), browse = 0L, download = FALSE, ...) {
   create_url <- function(x, how) {
     base <- URL_BASE[match.arg(how, names(URL_BASE))]
     x <- sub("^CAS\\s+", "", x, TRUE, TRUE)
@@ -1110,7 +1107,7 @@ setMethod("substrate_info", "character", function(object,
     good_case <- function(x) {
       bad <- nchar(x) > 1L # avoid changing acronyms and chemical elements
       bad[bad] <- !grepl("^(pH|[a-z]?[A-Z][A-Z]+|([A-Z][a-z]?\\d*)+)$", x[bad],
-        perl = TRUE)
+        FALSE, TRUE)
       x[bad] <- tolower(x[bad])
       x
     }
@@ -1142,6 +1139,8 @@ setMethod("substrate_info", "character", function(object,
       lapply(head(result[!is.na(result)], browse), browseURL)
   }
   names(result) <- object
+  if (L(download))
+    result <- web_query(result, what)
   result
 }, sealed = SEALED)
 

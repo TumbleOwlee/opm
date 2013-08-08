@@ -38,6 +38,15 @@
   error to try this with those values of \code{what} that
   do not yield an \acronym{ID}.}
 
+  \item{download}{Logical scalar indicating whether, using
+  the available IDs, substrate information should be
+  queried from the according web services and returned in
+  customized objects. Note that this is unavailable for
+  most values of \code{what}. At the moment only
+  \sQuote{kegg} and \sQuote{drug} can be queried for if the
+  \pkg{KEGGREST} package is available. This would yield S3
+  objects of the class \sQuote{kegg_compounds}.}
+
   \item{...}{Optional other arguments passed between the
   methods.}
 }
@@ -53,7 +62,9 @@
   \code{browse} argument, the returned \acronym{ID}s might
   have been converted to \acronym{URL}s, and as a side
   effect tabs in the default web browser might have been
-  opened.
+  opened. For suitable values of \code{what}, setting
+  \code{download} to \code{TRUE} yielded special objects as
+  described above.
 }
 \description{
   Return information on substrates such as their
@@ -94,10 +105,8 @@ stopifnot(nchar(x) > nchar(c("a-D-Glucose", "a-D-Gloucose")))
 stopifnot(length(x[[1]]) > length(x[[2]]))
 
 # OPM and OPMS methods
-data(vaas_1)
 (x <- substrate_info(vaas_1[, 1:3], "all"))
 stopifnot(inherits(x, "substrate_data"))
-data(vaas_4)
 (y <- substrate_info(vaas_4[, , 1:3], "all"))
 stopifnot(identical(x, y))
 \dontrun{
@@ -167,7 +176,7 @@ stopifnot(identical(x, y))
 \usage{
   \S4method{substrate_info}{character}(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "html", "all"), browse = 0L, ...) 
+      "greek", "html", "all"), browse = 0L, download = FALSE, ...) 
 
   \S4method{substrate_info}{substrate_match}(object, ...) 
 

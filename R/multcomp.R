@@ -174,7 +174,6 @@
 #' do.plot <- FALSE # change this to see the plots
 #'
 #' ## OPMS method
-#' data(vaas_4)
 #'
 #' # return the intermediary data frame, do not conduct statistical tests
 #' head(x <- opm_mcp(vaas_4, model = list("Species", "Strain"),

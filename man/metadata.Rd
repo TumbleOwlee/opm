@@ -68,7 +68,6 @@
 }
 \examples{
 # 'OPM' methods
-data(vaas_1)
 
 (x <- metadata(vaas_1, "Strain"))
 stopifnot(x == "DSM30083T")
@@ -82,14 +81,12 @@ stopifnot(names(x) == x) # mapping metadata values to themselves
 # See map_metadata() for a potential usage of the metadata_chars() result
 
 # 'OPMS' methods
-data(vaas_4)
 
 (x <- metadata(vaas_4, "Strain"))
 stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
 (y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
 stopifnot(identical(x, y))
 
-data(vaas_4)
 (x <- metadata_chars(vaas_4, values = TRUE)) # the values
 (y <- metadata_chars(vaas_4, values = FALSE)) # the keys
 stopifnot(length(x) > length(y))

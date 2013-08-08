@@ -96,7 +96,6 @@
 }
 \examples{
 ## 'OPM' method
-data(vaas_1)
 (x <- plate_type(vaas_1, full = FALSE))
 (y <- plate_type(vaas_1, full = TRUE))
 (z <- plate_type(vaas_1, full = TRUE, in.parens = FALSE))
@@ -111,7 +110,6 @@ x <- split(x), sapply(x, plate_type))
 }
 
 ## 'OPMS' method
-data(vaas_4)
 (xx <- plate_type(vaas_4, full = FALSE))
 # plate type is guaranteed to be uniform within an OPMS object
 stopifnot(identical(x, xx))
@@ -137,14 +135,12 @@ stopifnot(is.character(x), plate_type(vaas_1) \%in\% x)
 ## changing the plate type
 
 # 'OPM' method
-data(vaas_1)
 plate_type(copy <- gen_iii(vaas_1))
 stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
 plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
 stopifnot(!identical(vaas_1, copy))
 
 # 'OPMS' method
-data(vaas_4)
 plate_type(copy <- gen_iii(vaas_4))
 stopifnot(identical(vaas_4, copy)) # as above
 plate_type(copy <- gen_iii(vaas_4, "eco"))

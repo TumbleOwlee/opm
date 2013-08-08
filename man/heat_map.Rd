@@ -127,8 +127,6 @@
   object and pass the result to the matrix method.
 }
 \examples{
-data(vaas_4)
-
 # Matrix method (usually unnecessary, see below)
 x <- extract(vaas_4, as.labels = list("Strain"),
   as.groups = list("Species"))

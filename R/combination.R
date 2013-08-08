@@ -112,7 +112,6 @@ try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
 #' @exportMethod "[<-"
 #' @export
 #' @examples
-#' data(vaas_4)
 #' copy <- vaas_4
 #' copy[5] <- NULL # has no effect
 #' stopifnot(identical(vaas_4, copy))
@@ -173,8 +172,6 @@ setMethod("[<-", c(OPMS, "ANY", "missing", OPMS), function(x, i, j, value) {
 #' @seealso base::c
 #' @keywords manip
 #' @examples
-#'
-#' data(vaas_1, vaas_4)
 #'
 #' # Adding nothing
 #' dim(x <- c(vaas_1))
@@ -299,9 +296,8 @@ setMethod("+", c(OPMS, "list"), function(e1, e2) {
 #'   Note that \code{\link{read_opm}} already has plate-type selection options.
 #' @examples
 #'
-#' ## Testing distinct OPM/OPMS combinations -- all should work
-#' data(vaas_1, vaas_4)
-#' # Note the number of contained plates in the generated objects.
+#' ## Testing distinct OPM/OPMS combinations -- all should work.
+#' ## Note the number of contained plates in the generated objects.
 #'
 #' (x <- opms()) # 0 objects
 #' stopifnot(is.null(x))

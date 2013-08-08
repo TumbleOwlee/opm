@@ -133,15 +133,15 @@ safe_labels <- function(x, format, enclose = TRUE, pad = FALSE,
   }
   nexus_quote <- function(x) sprintf("'%s'", gsub("'", "''", x, fixed = TRUE))
   clean_html <- function(x) {
-    x <- gsub("&(?!([A-Za-z]+|#\\d+);)", "&amp;", x, perl = TRUE)
+    x <- gsub("&(?!([A-Za-z]+|#\\d+);)", "&amp;", x, FALSE, TRUE)
     x <- gsub(">", "&gt;", gsub("<", "&lt;", x, fixed = TRUE), fixed = TRUE)
     gsub("\"", "&quot;", x, fixed = TRUE)
   }
   clean_from <- function(x, pat) {
     pat <- sprintf("[%s]+", pat)
-    x <- sub(sprintf("^%s", pat), "", x, perl = TRUE)
-    x <- sub(sprintf("%s$", pat), "", x, perl = TRUE)
-    gsub(pat, "_", x, perl = TRUE)
+    x <- sub(sprintf("^%s", pat), "", x, FALSE, TRUE)
+    x <- sub(sprintf("%s$", pat), "", x, FALSE, TRUE)
+    gsub(pat, "_", x, FALSE, TRUE)
   }
   surround <- function(x, start, end, enclose) {
     if (enclose)
@@ -560,7 +560,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
   labels <- safe_labels(labels, format = how, enclose = enclose, pad = TRUE)
   if (dups <- anyDuplicated(labels))
     stop(sprintf("duplicated organism label (row name) '%s'", labels[dups]))
-  datatype <- if (grepl("^\\s+", x[1L], perl = TRUE))
+  datatype <- if (grepl("^\\s+", x[1L], FALSE, TRUE))
     "continuous"
   else
     "standard"
@@ -774,14 +774,13 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' stopifnot(identical(length(y.hennig), hennig.len.1 - 1L))
 #'
 #' ## examples with real data and HTML
-#' data(vaas_4)
 #'
 #' # setting the CSS file that comes with opm as default
 #' opm_opt(css.file = grep("[.]css$", opm_files("auxiliary"), value = TRUE))
 #'
 #' # see discrete() for the conversion and note the OPMS example below: one
 #' # could also get the results directly from OPMS objects
-#' x <- extract(vaas_4, as.labels = list("Species", "Strain"),
+#' x <- extract(vaas_4[, , 1:10], as.labels = list("Species", "Strain"),
 #'   in.parens = FALSE)
 #' x <- discrete(x, range = TRUE, gap = TRUE)
 #' echo(y <- phylo_data(x, format = "html",
@@ -792,7 +791,8 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #'
 #' # now with joining of the results per species (and changing the organism
 #' # description accordingly)
-#' x <- extract(vaas_4, as.labels = list("Species"), in.parens = FALSE)
+#' x <- extract(vaas_4[, , 1:10], as.labels = list("Species"),
+#'   in.parens = FALSE)
 #' x <- discrete(x, range = TRUE, gap = TRUE)
 #' echo(y <- phylo_data(x, format = "html", join = TRUE,
 #'   html.args = html_args(organisms.start = "Species: ")))
@@ -804,15 +804,15 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' # distinct between all organisms.
 #'
 #' # 'OPMS' method, yielding the same results than above but directly
-#' echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-#'   join = TRUE, extract.args = list(in.parens = FALSE),
+#' echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+#'   format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
 #'   html.args = html_args(organisms.start = "Species: ")))
 #' # the timestamps might differ, but otherwise the result is as above
 #' stopifnot(length(y) == length(yy) && length(which(y != yy)) < 2)
 #'
 #' # appending user-defined sections
-#' echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-#'   join = TRUE, extract.args = list(in.parens = FALSE),
+#' echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+#'   format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
 #'   html.args = html_args(organisms.start = "Species: ",
 #'   append = list(section.1 = "additional text", section.2 = "more text"))))
 #' stopifnot(length(y) < length(yy), length(which(!y %in% yy)) < 2)
@@ -832,9 +832,9 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' stopifnot(longer(y.noconst, y.nouninf))
 #'
 #' # getting real numbers, not discretized ones
-#' echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-#'   join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
-#'   discrete.args = NULL,
+#' echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+#'   format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
+#'   subset = "A", discrete.args = NULL,
 #'   html.args = html_args(organisms.start = "Species: ")))
 #' stopifnot(is_html(yy), length(yy) == length(y) - 1) # no symbols list
 #' # the highlighting is also used here, based on the following heuristic:
@@ -843,9 +843,9 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' # is is constant
 #'
 #' # this can also be used for formats other than HTML (but not all make sense)
-#' echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
-#'   join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
-#'   discrete.args = NULL))
+#' echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+#'   format = "hennig", join = TRUE, extract.args = list(in.parens = FALSE),
+#'   subset = "A", discrete.args = NULL))
 #' stopifnot(is.character(yy), length(yy) > 10)
 #'
 #' ## 'OPMD_Listing' method

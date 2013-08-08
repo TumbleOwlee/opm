@@ -219,14 +219,13 @@ echo(y.hennig <- phylo_data(x, format = "hennig"))
 stopifnot(identical(length(y.hennig), hennig.len.1 - 1L))
 
 ## examples with real data and HTML
-data(vaas_4)
 
 # setting the CSS file that comes with opm as default
 opm_opt(css.file = grep("[.]css$", opm_files("auxiliary"), value = TRUE))
 
 # see discrete() for the conversion and note the OPMS example below: one
 # could also get the results directly from OPMS objects
-x <- extract(vaas_4, as.labels = list("Species", "Strain"),
+x <- extract(vaas_4[, , 1:10], as.labels = list("Species", "Strain"),
   in.parens = FALSE)
 x <- discrete(x, range = TRUE, gap = TRUE)
 echo(y <- phylo_data(x, format = "html",
@@ -237,7 +236,8 @@ stopifnot(is_html(y))
 
 # now with joining of the results per species (and changing the organism
 # description accordingly)
-x <- extract(vaas_4, as.labels = list("Species"), in.parens = FALSE)
+x <- extract(vaas_4[, , 1:10], as.labels = list("Species"),
+  in.parens = FALSE)
 x <- discrete(x, range = TRUE, gap = TRUE)
 echo(y <- phylo_data(x, format = "html", join = TRUE,
   html.args = html_args(organisms.start = "Species: ")))
@@ -249,15 +249,15 @@ stopifnot(is_html(y))
 # distinct between all organisms.
 
 # 'OPMS' method, yielding the same results than above but directly
-echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-  join = TRUE, extract.args = list(in.parens = FALSE),
+echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+  format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
   html.args = html_args(organisms.start = "Species: ")))
 # the timestamps might differ, but otherwise the result is as above
 stopifnot(length(y) == length(yy) && length(which(y != yy)) < 2)
 
 # appending user-defined sections
-echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-  join = TRUE, extract.args = list(in.parens = FALSE),
+echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+  format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
   html.args = html_args(organisms.start = "Species: ",
   append = list(section.1 = "additional text", section.2 = "more text"))))
 stopifnot(length(y) < length(yy), length(which(!y \%in\% yy)) < 2)
@@ -277,9 +277,9 @@ echo(y.noconst <- phylo_data(x, "html", delete = "const", join = TRUE))
 stopifnot(longer(y.noconst, y.nouninf))
 
 # getting real numbers, not discretized ones
-echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "html",
-  join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
-  discrete.args = NULL,
+echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+  format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
+  subset = "A", discrete.args = NULL,
   html.args = html_args(organisms.start = "Species: ")))
 stopifnot(is_html(yy), length(yy) == length(y) - 1) # no symbols list
 # the highlighting is also used here, based on the following heuristic:
@@ -288,9 +288,9 @@ stopifnot(is_html(yy), length(yy) == length(y) - 1) # no symbols list
 # is is constant
 
 # this can also be used for formats other than HTML (but not all make sense)
-echo(yy <- phylo_data(vaas_4, as.labels = "Species", format = "hennig",
-  join = TRUE, extract.args = list(in.parens = FALSE), subset = "A",
-  discrete.args = NULL))
+echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
+  format = "hennig", join = TRUE, extract.args = list(in.parens = FALSE),
+  subset = "A", discrete.args = NULL))
 stopifnot(is.character(yy), length(yy) > 10)
 
 ## 'OPMD_Listing' method

@@ -47,12 +47,10 @@
 }
 \examples{
 # plates(), 'OPM' method
-data(vaas_1)
 summary(x <- plates(vaas_1)) # => list of OPM objects
 stopifnot(is.list(x), length(x) == 1L, sapply(x, inherits, what = "OPM"))
 
 # plates(), 'OPMS' method
-data(vaas_4)
 summary(x <- plates(vaas_4)) # => list of OPM objects
 stopifnot(is.list(x), length(x) == 4L, sapply(x, inherits, what = "OPM"))
 

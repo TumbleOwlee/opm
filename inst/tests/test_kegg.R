@@ -95,5 +95,10 @@ test_that("glht-object", {
 
 
 
-## get_info
+## web_query
 ## UNTESTED
+
+
+## collect
+## UNTESTED
+

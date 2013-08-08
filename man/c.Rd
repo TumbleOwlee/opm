@@ -32,8 +32,6 @@
   with other objects.
 }
 \examples{
-data(vaas_1, vaas_4)
-
 # Adding nothing
 dim(x <- c(vaas_1))
 stopifnot(identical(x, vaas_1))

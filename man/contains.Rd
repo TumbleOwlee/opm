@@ -67,7 +67,6 @@ stopifnot(contains(x, y, exact = TRUE, values = FALSE))
 # see particularly infix-q and infix-k for more examples
 
 # OPMS/OPM method
-data(vaas_4)
 stopifnot(contains(vaas_4, vaas_4[3])) # single one contained
 stopifnot(contains(vaas_4, vaas_4)) # all contained
 stopifnot(!contains(vaas_4[3], vaas_4)) # OPMS cannot be contained in OPM

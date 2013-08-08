@@ -42,7 +42,6 @@
 }
 \examples{
 # OPM methods
-data(vaas_1)
 (x <- dim(vaas_1))
 stopifnot(identical(x, c(384L, 96L)))
 (x <- length(vaas_1))
@@ -51,7 +50,6 @@ stopifnot(identical(x, 1L)) # 1 plate contained
 stopifnot(inherits(x, "try-error"))
 
 # OPMS methods
-data(vaas_4)
 (x <- dim(vaas_4)) # 2nd value needs not be correct for all plates
 stopifnot(identical(x, c(4L, 384L, 96L)))
 (x <- length(vaas_4))

@@ -111,6 +111,9 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
 ################################################################################
 
 
+## TODO: this should be replace by a call to collect() once ready.
+
+
 #' Convert to metadata-like data frame
 #'
 #' A helper function for \code{\link{to_metadata}}.
@@ -766,8 +769,8 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
     simplify = FALSE, keep.const = TRUE, list.wise = FALSE,
     strip.white = list.wise) {
 
-  strip_white <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, perl = TRUE),
-    perl = TRUE)
+  strip_white <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE),
+    FALSE, TRUE)
 
   p0 <- function(x) paste(x, collapse = "")
 
@@ -820,7 +823,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
   yields_constant <- function(char, x) {
     splits_constant <- function(char, x, ...)
       is_constant(vapply(strsplit(x, char, ...), length, 0L))
-    if (splits_constant(sprintf("[%s]+", char), x, perl = TRUE))
+    if (splits_constant(sprintf("[%s]+", char), x, FALSE, TRUE))
       2L
     else if (splits_constant(char, x, fixed = TRUE))
       1L
@@ -830,7 +833,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
 
   # collect words after splitting and mark their occurrences
   word_occurrences <- function(x, split, strip.white) {
-    x <- strsplit(x, sprintf("[%s]", p0(split)), perl = TRUE)
+    x <- strsplit(x, sprintf("[%s]", p0(split)), FALSE, TRUE)
     if (strip.white)
       x <- lapply(x, strip_white)
     chars <- unlist(x, recursive = FALSE)
@@ -870,7 +873,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
   # Check and apply split characters
   yields.const <- vapply(split, yields_constant, 0L, object)
   split <- char_group(split[yields.const == 1L], split[yields.const == 2L])
-  object <- do.call(rbind, strsplit(object, split, perl = TRUE))
+  object <- do.call(rbind, strsplit(object, split, FALSE, TRUE))
   if (strip.white)
     object[] <- strip_white(object)
   simple_if(object, keep.const, simplify)
@@ -940,12 +943,12 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
     trim.len <- max(0L, max - nchar(append))
     if (word.wise) {
       if (clean)
-        x <- gsub("\\W", "", x, perl = TRUE)
+        x <- gsub("\\W", "", x, FALSE, TRUE)
       result <- abbreviate(x, minlength = trim.len, strict = TRUE)
     } else {
       result <- strtrim(x, trim.len)
       if (clean)
-        result <- sub("\\W+$", "", result, perl = TRUE)
+        result <- sub("\\W+$", "", result, FALSE, TRUE)
     }
     result
   }
@@ -1077,7 +1080,7 @@ html_head <- function(title, css, meta) {
   } else
     title <- NULL
   if (length(css <- css[nzchar(css)])) {
-    is.abs.path <- grepl("^(/|[a-zA-Z]:)", css, perl = TRUE)
+    is.abs.path <- grepl("^(/|[a-zA-Z]:)", css, FALSE, TRUE)
     css[is.abs.path] <- sprintf("file://%s", css[is.abs.path])
     css <- vapply(css, function(y) {
       single_tag("link", rel = "stylesheet", type = "text/css", href = y)
@@ -1875,7 +1878,7 @@ repair_na_strings <- function(object, ...) UseMethod("repair_na_strings")
 #'
 repair_na_strings.character <- function(object, ...) {
   object[grepl("^(\\s*NA|\\.na(\\.(real|integer|character))?)$", object,
-    perl = TRUE)] <- NA_character_
+    FALSE, TRUE)] <- NA_character_
   object
 }
 
@@ -2012,7 +2015,6 @@ insert.list <- function(object, other, ..., .force = FALSE, .strict = FALSE) {
 #' # see particularly infix-q and infix-k for more examples
 #'
 #' # OPMS/OPM method
-#' data(vaas_4)
 #' stopifnot(contains(vaas_4, vaas_4[3])) # single one contained
 #' stopifnot(contains(vaas_4, vaas_4)) # all contained
 #' stopifnot(!contains(vaas_4[3], vaas_4)) # OPMS cannot be contained in OPM
@@ -2295,7 +2297,7 @@ setMethod("update", CMAT, function(object,
       )
     },
     {
-      bad <- case(sub("^delete\\.", "", how, perl = TRUE),
+      bad <- case(sub("^delete\\.", "", how, FALSE, TRUE),
         ambig = if (typeof(object) == "list")
           case(typeof(object[[1L]]),
             integer = apply(object, 2L, has_ambig),

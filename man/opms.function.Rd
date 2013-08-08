@@ -55,9 +55,8 @@
   selection options.
 }
 \examples{
-## Testing distinct OPM/OPMS combinations -- all should work
-data(vaas_1, vaas_4)
-# Note the number of contained plates in the generated objects.
+## Testing distinct OPM/OPMS combinations -- all should work.
+## Note the number of contained plates in the generated objects.
 
 (x <- opms()) # 0 objects
 stopifnot(is.null(x))

@@ -47,8 +47,7 @@
   The \code{CMAT} method is only for internal use.
 }
 \examples{
-data(vaas_4) # merge() is biologically unreasonable for these data!
-summary(x <- merge(vaas_4))
+summary(x <- merge(vaas_4)) # biologically unreasonable for these data!
 stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 }
 \references{

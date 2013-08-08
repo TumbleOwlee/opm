@@ -175,7 +175,6 @@
 #' stopifnot(y == yy)
 #'
 #' # K-means based discretization of PM data (prefer do_disc() for this)
-#' data(vaas_4)
 #' x <- extract(vaas_4, as.labels = list("Species", "Strain"),
 #'   in.parens = FALSE)
 #' (y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]
@@ -448,7 +447,6 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 #' @examples
 #'
 #' ## OPMA method
-#' data(vaas_1)
 #'
 #' # arbitrary threshold, no ambiguity
 #' summary(x <- do_disc(vaas_1, cutoff = 100))
@@ -481,7 +479,6 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 #'
 #'
 #' ## OPMS method
-#' data(vaas_4)
 #'
 #' # arbitrary threshold, no ambiguity, no groups
 #' x <- do_disc(vaas_4, cutoff = 100)

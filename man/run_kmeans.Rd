@@ -28,7 +28,6 @@
   algorithm from the \pkg{Ckmeans.1d.dp} package.
 }
 \examples{
-data(vaas_4)
 x <- as.vector(extract(vaas_4, as.labels = NULL, subset = "A"))
 summary(x.km <- run_kmeans(x, k = 1:10)) # => 'kmeanss' object
 stopifnot(inherits(x.km, "kmeanss"), length(x.km) == 10)

@@ -150,7 +150,6 @@ if (length(test.files) > 0) { # if the files are found
 }
 
 # OPM method
-data(vaas_1)
 (x <- collect_template(vaas_1)) # => data frame, one row per plate
 stopifnot(identical(dim(x), c(1L, 3L)))
 (x <- collect_template(vaas_1, add.cols = c("A", "B")))
@@ -158,7 +157,6 @@ stopifnot(identical(dim(x), c(1L, 5L))) # => data frame with more columns
 # see include_metadata() for how to use this to add metadata information
 
 # OPMS method
-data(vaas_4)
 (x <- collect_template(vaas_4)) # => data frame, one row per plate
 stopifnot(identical(dim(x), c(4L, 3L)))
 (x <- collect_template(vaas_4, add.cols = c("A", "B")))
@@ -183,12 +181,10 @@ x <- list(a = 7:8, `b c` = letters[1:2])
 stopifnot(!identical(names(x), names(x1)), identical(names(x), names(x2)))
 
 # WMD method
-data(vaas_1)
 (x <- to_metadata(vaas_1)) # one row per OPM object
 stopifnot(is.data.frame(x), nrow(x) == length(vaas_1), ncol(x) > 0)
 
 # OPMS method
-data(vaas_4)
 (x <- to_metadata(vaas_4)) # one row per OPM object
 stopifnot(is.data.frame(x), nrow(x) == length(vaas_4), ncol(x) > 0)
 copy <- vaas_4

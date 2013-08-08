@@ -44,7 +44,6 @@
 }
 \examples{
 # 'OPM' method
-data(vaas_1)
 
 (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
 stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
@@ -61,7 +60,6 @@ stopifnot(identical(x, " 7-B"))
 stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
 
 # 'OPMS' method
-data(vaas_4)
 
 (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 stopifnot(is.character(x), length(x) == 4)

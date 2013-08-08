@@ -30,13 +30,11 @@
 #' @examples
 #'
 #' # OPM method
-#' data(vaas_1)
 #' (x <- summary(vaas_1))
 #' stopifnot(is.list(x), is.object(x))
 #' vaas_1 # calls show()
 #'
 #' # OPMS method
-#' data(vaas_4)
 #' (x <- summary(vaas_4))
 #' stopifnot(is.list(x), length(x) == 4L, all(sapply(x, is.list)),
 #'   is.object(x))
@@ -117,7 +115,7 @@ print.OPMD_Listing <- function(x, ...) {
 #'
 print.OPMS_Listing <- function(x, ...) {
   for (name in rownames(x)) {
-    cat(name, gsub(".", "-", name, perl = TRUE), sep = "\n")
+    cat(name, gsub(".", "-", name, FALSE, TRUE), sep = "\n")
     cat(formatDL(x[name, ], ...), sep = "\n")
     cat("\n")
   }
@@ -655,7 +653,6 @@ default_color_regions <- function(colors, space, bias, n) {
 #' @examples
 #'
 #' # OPM method
-#' data(vaas_1)
 #' \dontrun{
 #' xy_plot(vaas_1) # note the default main title built from the plate type
 #' }
@@ -671,7 +668,6 @@ default_color_regions <- function(colors, space, bias, n) {
 #' xy_plot(x, neg.ctrl = 100, col = "pink", base.col = "yellow", main = "Ugly")
 #'
 #' # OPMS method
-#' data(vaas_4)
 #' \dontrun{
 #' # Color by species and strain; note default main title
 #' xy_plot(vaas_4, include = c("Species", "Strain"))
@@ -947,12 +943,10 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
 #' @examples
 #'
 #' # OPM method
-#' data(vaas_1)
 #' level_plot(vaas_1, main = "Levelplot example")
 #'
 #' # OPMS method
 #' \dontrun{
-#' data(vaas_4)
 #' # headers include species and strain
 #' level_plot(vaas_4, include = c("Species", "Strain"))
 #' }
@@ -1082,9 +1076,6 @@ setMethod("level_plot", OPMS, function(x, main = list(),
 #' @seealso graphics::plot
 #' @keywords hplot
 #' @examples
-#'
-#' data(vaas_4)
-#'
 #' x <- ci_plot(vaas_4[, , 1:3], as.labels = list("Species", "Strain"),
 #'   subset = "A", x = "bottomright", legend.field = NULL)
 #' # note that the values on the y axes are drawn to scale
@@ -1278,8 +1269,6 @@ setMethod("ci_plot", OPMS, function(object, as.labels,
 #' @keywords hplot
 #'
 #' @examples
-#'
-#' data(vaas_4)
 #'
 #' # Matrix method (usually unnecessary, see below)
 #' x <- extract(vaas_4, as.labels = list("Strain"),

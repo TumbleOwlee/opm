@@ -12,6 +12,7 @@
   instead
 - glob_to_regex() is now an S3 generic function
 
+- substrate_info() gets a 'download' argument
 - new spline-fitting facilities (see set_spline_options())
 - new plate_type() method
 - new infix-operator methods for querying metadata

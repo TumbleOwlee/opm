@@ -155,7 +155,6 @@
 }
 \examples{
 # OPM method
-data(vaas_1)
 \dontrun{
 xy_plot(vaas_1) # note the default main title built from the plate type
 }
@@ -171,7 +170,6 @@ xy_plot(x, neg.ctrl = 100)
 xy_plot(x, neg.ctrl = 100, col = "pink", base.col = "yellow", main = "Ugly")
 
 # OPMS method
-data(vaas_4)
 \dontrun{
 # Color by species and strain; note default main title
 xy_plot(vaas_4, include = c("Species", "Strain"))

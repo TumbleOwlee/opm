@@ -58,10 +58,7 @@
   \code{value} is a formula or a data frame, see below).
 }
 \examples{
-############################################################
-#
-# WMD methods
-data(vaas_1)
+## WMD methods
 
 # WMD/missing/list method
 copy <- vaas_1
@@ -120,10 +117,7 @@ stopifnot(metadata(copy, "Strain") != metadata(vaas_1, "Strain"))
 metadata(copy, as.factor("Strain")) <- metadata(vaas_1, "Strain")
 stopifnot(metadata(copy, "Strain") == metadata(vaas_1, "Strain"))
 
-############################################################
-#
-# OPMS methods
-data(vaas_4)
+## OPMS methods
 
 # OPMS/missing/list method
 copy <- vaas_4

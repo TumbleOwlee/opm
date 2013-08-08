@@ -192,7 +192,6 @@ stopifnot(identical(dim(x), dim(y)))
 stopifnot(y == yy)
 
 # K-means based discretization of PM data (prefer do_disc() for this)
-data(vaas_4)
 x <- extract(vaas_4, as.labels = list("Species", "Strain"),
   in.parens = FALSE)
 (y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]

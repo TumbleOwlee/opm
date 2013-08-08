@@ -54,8 +54,7 @@
 #' @family conversion-functions
 #' @keywords manip
 #' @examples
-#' data(vaas_4) # merge() is biologically unreasonable for these data!
-#' summary(x <- merge(vaas_4))
+#' summary(x <- merge(vaas_4)) # biologically unreasonable for these data!
 #' stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 #'
 setGeneric("merge")
@@ -150,12 +149,10 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 #' @seealso base::list base::as.list base::sapply
 #' @examples
 #' # plates(), 'OPM' method
-#' data(vaas_1)
 #' summary(x <- plates(vaas_1)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 1L, sapply(x, inherits, what = "OPM"))
 #'
 #' # plates(), 'OPMS' method
-#' data(vaas_4)
 #' summary(x <- plates(vaas_4)) # => list of OPM objects
 #' stopifnot(is.list(x), length(x) == 4L, sapply(x, inherits, what = "OPM"))
 #'
@@ -305,7 +302,6 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' @examples
 #'
 #' ## 'OPMS' methods
-#' data(vaas_4)
 #'
 #' # Existing keys
 #' stopifnot(is.unsorted(metadata(vaas_4, "Strain")))
@@ -356,7 +352,6 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 #' stopifnot(is.null(rep(vaas_4, 0)))
 #'
 #' ## 'OPM' methods
-#' data(vaas_1)
 #' summary(x <- sort(vaas_1))
 #' stopifnot(identical(x, vaas_1))
 #' dim(x <- unique(vaas_1)) # trivial
@@ -622,7 +617,6 @@ setMethod("rep", OPMS, function(x, ...) {
 #' @examples
 #'
 #' ## 'OPMS' method
-#' data(vaas_4)
 #' opm_opt("curve.param") # default parameter
 #'
 #' # generate matrix (containing the parameter given above)
@@ -685,7 +679,6 @@ setMethod("rep", OPMS, function(x, ...) {
 #' ## extract_columns()
 #'
 #' # 'OPMS' method
-#' data(vaas_4)
 #'
 #' # Create data frame
 #' (x <- extract_columns(vaas_4, what = list("Species", "Strain")))
@@ -1053,35 +1046,27 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #' @keywords manip dplot
 #' @examples
 #'
-#' ## as.data.frame()
-#'
-#' ## OPMD method
-#' data(vaas_1)
+#' ## OPMD method of as.data.frame()
 #' summary(x <- as.data.frame(vaas_1))
 #' stopifnot(is.data.frame(x), nrow(x) == 96)
 #'
-#' ## OPMS method
-#' data(vaas_4)
-#' summary(x <- as.data.frame(vaas_4))
-#' stopifnot(is.data.frame(x), nrow(x) == 96 * 4)
+#' ## OPMS method of as.data.frame()
+#' summary(x <- as.data.frame(vaas_4[, , 1:10]))
+#' stopifnot(is.data.frame(x), nrow(x) == 10 * 4)
 #'
-#' ## flatten()
-#'
-#' # OPM method
-#' data(vaas_1)
+#' ## OPM method of flatten()
 #' # distinct numbers of columns due to distinct selection settings
 #' head(x <- flatten(vaas_1))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 3L)))
 #' head(x <- flatten(vaas_1, fixed = "TEST", include = "Strain"))
 #' stopifnot(is.data.frame(x), identical(dim(x), c(36864L, 5L)))
 #'
-#' # OPMS method
-#' data(vaas_4)
+#' ## OPMS method of flatten()
 #' # distinct numbers of columns due to distinct selection settings
-#' head(x <- flatten(vaas_4))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 4L)))
-#' head(x <- flatten(vaas_4, fixed = "TEST", include = ~ Strain))
-#' stopifnot(is.data.frame(x), identical(dim(x), c(147456L, 6L)))
+#' head(x <- flatten(vaas_4[, , 1:10]))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 4L)))
+#' head(x <- flatten(vaas_4[, , 1:10], fixed = "TEST", include = ~ Strain))
+#' stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 #'
 setGeneric("as.data.frame")
 

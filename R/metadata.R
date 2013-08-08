@@ -63,10 +63,7 @@
 #' @keywords manip
 #' @examples
 #'
-#' ############################################################
-#' #
-#' # WMD methods
-#' data(vaas_1)
+#' ## WMD methods
 #'
 #' # WMD/missing/list method
 #' copy <- vaas_1
@@ -125,10 +122,7 @@
 #' metadata(copy, as.factor("Strain")) <- metadata(vaas_1, "Strain")
 #' stopifnot(metadata(copy, "Strain") == metadata(vaas_1, "Strain"))
 #'
-#' ############################################################
-#' #
-#' # OPMS methods
-#' data(vaas_4)
+#' ## OPMS methods
 #'
 #' # OPMS/missing/list method
 #' copy <- vaas_4
@@ -534,7 +528,6 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' @examples
 #'
 #' ## include_metadata()
-#' data(vaas_1)
 #'
 #' (x <- collect_template(vaas_1, add.cols = "Location")) # generate data frame
 #' x[1, "Location"] <- "Braunschweig" # insert additional information
@@ -545,7 +538,6 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' ## map_metadata()
 #'
 #' # WMD methods
-#' data(vaas_1)
 #'
 #' # WMD+function method
 #' copy <- map_metadata(vaas_1, identity)
@@ -583,7 +575,6 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' stopifnot(identical(x, metadata(vaas_1))) # nothing to modify in that case
 #'
 #' # OPMS method
-#' data(vaas_4)
 #'
 #' # using a function
 #' copy <- map_metadata(vaas_4, identity)
@@ -813,7 +804,6 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #' @examples
 #'
 #' # 'OPM' methods
-#' data(vaas_1)
 #'
 #' (x <- metadata(vaas_1, "Strain"))
 #' stopifnot(x == "DSM30083T")
@@ -827,14 +817,12 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
 #' # See map_metadata() for a potential usage of the metadata_chars() result
 #'
 #' # 'OPMS' methods
-#' data(vaas_4)
 #'
 #' (x <- metadata(vaas_4, "Strain"))
 #' stopifnot(x == c("DSM18039", "DSM30083T", "DSM1707", "429SC1"))
 #' (y <- metadata(vaas_4, ~ Strain)) # using a formula => same result
 #' stopifnot(identical(x, y))
 #'
-#' data(vaas_4)
 #' (x <- metadata_chars(vaas_4, values = TRUE)) # the values
 #' (y <- metadata_chars(vaas_4, values = FALSE)) # the keys
 #' stopifnot(length(x) > length(y))

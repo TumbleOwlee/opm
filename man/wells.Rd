@@ -121,7 +121,6 @@
 }
 \examples{
 ## wells() 'OPM' method
-data(vaas_1)
 (x <- wells(vaas_1, full = FALSE))[1:10]
 (y <- wells(vaas_1, full = TRUE))[1:10]
 (z <- wells(vaas_1, full = TRUE, in.parens = FALSE))[1:10]
@@ -129,7 +128,6 @@ data(vaas_1)
 stopifnot(nchar(x) < nchar(y), nchar(z) < nchar(y))
 
 ## wells() 'OPM' method
-data(vaas_4)
 (xx <- wells(vaas_4, full = FALSE))[1:10]
 # wells are guaranteed to be uniform within OPMS objects
 stopifnot(identical(x, xx))
@@ -147,7 +145,6 @@ stopifnot(nrow(wells(~ C02:C06)) == 5) # well sequence
 stopifnot(nrow(wells(plate = "PM1")) == 96) # all wells by default
 
 ## listing() 'OPMD' method
-data(vaas_1)
 
 # this yields one sentence for each kind of reaction:
 (x <- listing(vaas_1, NULL))
@@ -165,7 +162,6 @@ stopifnot(inherits(y, "OPMD_Listing"), is.character(x), nchar(y) > nchar(x),
   !is.null(names(x)))
 
 ## listing() 'OPMS' method
-data(vaas_4)
 
 # no grouping, no names (numbering used instead for row names)
 (x <- listing(vaas_4[1:2], as.groups = NULL))
