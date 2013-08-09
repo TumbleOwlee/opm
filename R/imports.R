@@ -11,7 +11,7 @@
 #'
 NULL
 
-#' @importFrom pkgutils mypdf collect
+#' @importFrom pkgutils mypdf
 #'
 NULL
 
