@@ -86,9 +86,6 @@ annotation_vector <- function(object, subset = opm_opt("curve.param"),
 ################################################################################
 
 
-## TODO: must assess whether this can be integrated in substrate_info()
-
-
 #' Conduct a web query
 #'
 #' Search via a web service for substrate information, given the IDs.
@@ -96,10 +93,9 @@ annotation_vector <- function(object, subset = opm_opt("curve.param"),
 #' @param ids Vector of substrate IDs.
 #' @param what Character scalar indicating the web service to use.
 #' @return Dedicated kind of S3 object, depending on \code{what}.
-#' @export
-#' @keywords internal
-#' @seealso substrate_info
 #' @details \acronym{KEGG} queries need the \pkg{KEGGREST} package.
+#' @seealso substrate_info
+#' @keywords internal
 #'
 web_query <- function(ids, what = c("kegg", "drug")) {
   get_kegg <- function(x, prepend) {
