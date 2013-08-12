@@ -1160,6 +1160,111 @@ setMethod("substrate_info", OPM, function(object, ...) {
 
 
 ################################################################################
+
+
+#' Conduct a web query
+#'
+#' Search via a web service for substrate information, given the IDs.
+#'
+#' @param ids Vector of substrate IDs.
+#' @param what Character scalar indicating the web service to use.
+#' @return Dedicated kind of S3 object, depending on \code{what}.
+#' @details \acronym{KEGG} queries need the \pkg{KEGGREST} package.
+#' @seealso substrate_info
+#' @keywords internal
+#'
+web_query <- function(ids, what = c("kegg", "drug")) {
+  get_kegg <- function(x, prepend) {
+    compound_object <- function(x) {
+      pos <- match(c("EXACT_MASS", "MOL_WEIGHT"), names(x), 0L)
+      for (p in pos[pos > 0L])
+        x[[p]] <- as.numeric(x[[p]])
+      class(x) <- c("kegg_compound", "print_easy")
+      x
+    }
+    chunks <- function(x, n) split.default(x,
+      rep(seq.int(ceiling(length(x) / n)), each = n)[seq_along(x)])
+    run_keggrest <- function(x, prepend) {
+      result <- lapply(chunks(paste0(prepend, x), 10), KEGGREST::keggGet)
+      result <- lapply(unlist(result, FALSE), compound_object)
+      names(result) <- vapply(result, `[[`, "", "ENTRY")
+      found <- match(names(result), x, 0L)
+      if (!all(found > 0L))
+        stop("KEGG request yielded entries that do not match the query")
+      structure(result[found], names = x)
+    }
+    prepend <- paste0(match.arg(prepend, c("cpd", "drug")), ":")
+    got <- get_and_remember(x = x, prefix = "KEGG.", getfun = run_keggrest,
+      default = compound_object(list()), prepend = prepend)
+    structure(got, names = names(x), class = c("kegg_compounds", "print_easy"))
+  }
+  case(match.arg(what),
+    kegg = get_kegg(ids, "cpd"),
+    drug = get_kegg(ids, "drug")
+  )
+}
+
+
+################################################################################
+
+
+#' Collect information from KEGG objects
+#'
+#' @param x Object of class \sQuote{kegg_compounds}.
+#' @param what Character vector indicating which information to include.
+#'   Multiple values are possible; the default is to collect everything.
+#' @param min.cov Numeric scalar indicating the minimum coverage. See
+#'   \code{collect} from the \pkg{pkgutils} package.
+#' @param missing.na Logical scalar indicating whether missing compounds should
+#'   be coded as \code{NA} (instead of zero).
+#' @return Numeric matrix.
+#' @name collect
+#' @keywords internal
+#'
+collect <- function(x, what, ...) UseMethod("collect")
+
+#' @rdname collect
+#' @method collect kegg_compounds
+#'
+collect.kegg_compounds <- function(x,
+    what = c("pathway", "brite", "activity", "exact_mass"), min.cov = 2L,
+    missing.na = TRUE, ...) {
+  partial_matrix <- function(name, x, min.cov) {
+    convert <- list(
+      ACTIVITY = function(x) {
+        # notes in brackets make entries more specific; we use both variants
+        unique.default(c(x, sub("\\s+\\[.*", "", x, FALSE, TRUE)))
+      },
+      BRITE = function(x) {
+        if (!length(x))
+          return(character())
+        # remove the starting points of the classifications (which are just
+        # their names) and the end points (the substrates themselves)
+        m <- attr(regexpr("^\\s+", x, FALSE, TRUE), "match.length")
+        x <- x[!(m < 0L | c(m[-1L] < m[-length(m)], TRUE))]
+        gsub("\\s+", " ", sub("^\\s+", "", x, FALSE, TRUE), FALSE, TRUE)
+      },
+      PATHWAY = names,
+      EXACT_MASS = function(x) if (is.null(x))
+        NA_real_
+      else
+        x
+    )
+    result <- lapply(lapply(x, `[[`, name), convert[[name]])
+    if (name == "EXACT_MASS")
+      matrix(unlist(result), ncol = 1L, dimnames = list(NULL, tolower(name)))
+    else
+      pkgutils::collect(result, "occurrences", min.cov)
+  }
+  what <- toupper(match.arg(what, several.ok = TRUE))
+  result <- do.call(cbind, lapply(what, partial_matrix, x, min.cov))
+  if (L(missing.na))
+    result[!vapply(x, length, 0L), ] <- as(NA, typeof(result))
+  result
+}
+
+
+################################################################################
 #
 # Automatically generated factor methods
 #
@@ -1192,6 +1297,5 @@ lapply(c(
     func_(object@plates[[1L]], ...)
   }, sealed = SEALED)
 })
-
 
 

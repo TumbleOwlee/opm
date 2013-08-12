@@ -2170,6 +2170,8 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{strict.OPMD}{Logical scalar indicating whether \code{\link{OPMD}}
 #'       objects can only be created if the discretized data are consistent with
 #'       the parameter from which they have been estimated.}
+#'     \item{threshold}{Numeric scalar indicating the default threshold used by
+#'       \code{\link{annotated}}.}
 #'     \item{time.zone}{Character scalar indicating the time zone to be used
 #'       when parsing \code{\link{setup_time}} entries. This is relevant for
 #'       \code{\link{merge}}, which by default attempts to sort by parsed setup

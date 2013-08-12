@@ -18,7 +18,7 @@ EXPL.DF <- extract(EXPL.OPMS,
 
 
 ## opm_mcp
-test_that("opm_mcp runs without actually performing mcp", {
+test_that("opm_mcp outputs converted data frames", {
   # Without computation of multiple comparisons of means
   x <- opm_mcp(EXPL.DF, model = list("organism", "run"), output = "data")
   expect_is(x, "data.frame")
@@ -46,7 +46,6 @@ test_that("opm_mcp runs without actually performing mcp", {
   expect_equivalent(x, y[, setdiff(colnames(y), "organism.Well.run")])
   expect_equal(attr(y, "joined.columns"),
     list(organism.Well.run = c("organism", "Well", "run")))
-
 })
 
 
@@ -55,15 +54,22 @@ test_that("opm_mcp converts 'model' arguments", {
   got <- opm_mcp(EXPL.DF, model = list("organism", "run"),
     output = "model")
   expect_equal(got, Value ~ organism + run)
+  expect_equal(attr(got, "combine"), NULL)
   got <- opm_mcp(EXPL.DF, model = list("foo", c("bar", "baz")),
     output = "model")
   expect_equal(got, Value ~ foo + bar.baz)
+  expect_equal(attr(got, "combine"), NULL)
   got <- opm_mcp(EXPL.DF, model = ~ foo + bar$baz, output = "model")
   expect_equal(got, Value ~ foo + bar.baz)
+  expect_equal(attr(got, "combine"), NULL)
   got <- opm_mcp(EXPL.DF, model = ~ k & J(foo + bar$baz), output = "model")
   expect_equal(got, Value ~ k & foo.bar.baz)
-  got <- opm_mcp(EXPL.DF, model = ~ k | J(foo, bar$baz, Well), output = "model")
-  expect_equal(got, Value ~ k | foo.bar.baz.Well)
+  expect_equal(attr(got, "combine"), list(foo.bar.baz = c("foo", "bar.baz")))
+  got <- opm_mcp(EXPL.DF,
+    model = ~ k | J(`foo-foo`, bar$`?baz`, Well), output = "model")
+  expect_equal(got, Value ~ k | foo.foo.bar..baz.Well)
+  expect_equal(attr(got, "combine"),
+    list(`foo-foo.bar.?baz.Well` = c("foo-foo", "bar.?baz", "Well")))
 })
 
 
@@ -99,19 +105,94 @@ test_that("opm_mcp converts other 'linfct' arguments", {
 
 
 ## opm_mcp
-test_that("opm_mcp converts pair-like 'linfct' arguments", {
-  got <- opm_mcp(EXPL.DF, model = ~ J(Well, run) + organism,
+test_that("opm_mcp converts Pairs-like 'linfct' arguments", {
+  got <- opm_mcp(EXPL.DF, model = ~ J(Well, run),
     linfct = c(Pairs = 1L), output = "linfct")
   expect_is(got$Well.run, "character")
   expect_equal(length(got$Well.run), 96L) # one comparison per well
   expect_equal(do.call(multcomp::mcp, list(Well.run = got$Well.run)), got)
-  got.2 <- opm_mcp(EXPL.DF, model = ~ J(Well, run) + organism,
+  got.2 <- opm_mcp(EXPL.OPMS, model = ~ J(Well, run),
     linfct = c(Pairs.Well = 1L), output = "linfct")
   expect_equal(got, got.2)
   expect_error(opm_mcp(EXPL.DF, model = ~ J(Well, organism) + run,
     linfct = c(Pairs = 1L), output = "linfct")) # no pairs
-  expect_error(opm_mcp(EXPL.DF, model = ~ J(Well, organism) + run,
-    linfct = c(Pairs = 1L), output = "linfct")) # no pairs
+})
+
+
+## annotated
+test_that("Pairs-like tests are converted by annotated() to continuous data", {
+  # full substrate names, wells first
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+    linfct = c(Pairs = 1L), output = "mcp")
+  got <- annotated(x)
+  expect_is(got, "numeric")
+  expect_equal(length(got), 4L)
+  expect_is(names(got), "character")
+  expect_true(!any(is.na(names(got))))
+  # full substrate names, wells second
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+    linfct = c(Pairs.Well = 1L), output = "mcp")
+  got.2 <- annotated(x)
+  expect_equal(got, got.2)
+  # full substrate names, wells first, brackets
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+    linfct = c(Pairs = 1L), output = "mcp", brackets = TRUE)
+  got.2 <- annotated(x)
+  expect_equal(got, got.2)
+  # full substrate names, wells second, brackets
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+    linfct = c(Pairs.Well = 1L), output = "mcp", brackets = TRUE)
+  got.2 <- annotated(x)
+  expect_equal(got, got.2)
+  # abbreviated substrate names, wells first
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+    linfct = c(Pairs = 1L), output = "mcp", full = FALSE)
+  got.2 <- annotated(x)
+  expect_equal(got, got.2)
+  # abbreviated substrate names, wells second
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+    linfct = c(Pairs.Well = 1L), output = "mcp", full = FALSE)
+  got.2 <- annotated(x)
+  expect_equal(got, got.2)
+})
+
+
+## annotated
+test_that("Pairs-like tests are converted by annotated() to binary data", {
+  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+    linfct = c(Pairs = 1L), output = "mcp")
+
+  got <- annotated(x, output = "different")
+  expect_is(got, "integer")
+  expect_equal(length(got), 4L)
+  expect_is(names(got), "character")
+  expect_true(!any(is.na(names(got))))
+  expect_true(all(got == -1))
+
+  got.2 <- annotated(x, output = "!0")
+  expect_equal(got, got.2)
+  got.2 <- annotated(x, output = "different")
+  expect_equal(got, got.2)
+
+  got.2 <- annotated(x, output = "=0")
+  expect_equal(names(got), names(got.2))
+  expect_is(got.2, "integer")
+  expect_true(all(got.2 == 0))
+  got.3 <- annotated(x, output = "equal")
+  expect_equal(got.3, got.2)
+
+  got.2 <- annotated(x, output = ">0")
+  expect_is(got.2, "integer")
+  expect_true(all(got.2 == 0))
+  got.3 <- annotated(x, output = "larger")
+  expect_equal(got.3, got.2)
+
+  got.2 <- annotated(x, output = "<0")
+  expect_is(got.2, "integer")
+  expect_true(all(got.2 == 1))
+  got.3 <- annotated(x, output = "smaller")
+  expect_equal(got.3, got.2)
+
 })
 
 
@@ -126,31 +207,41 @@ test_that("opm_mcp generates contrast matrices", {
 
 
 ## opm_mcp
-test_that("error missing model", {
+test_that("opm_mcp yields an error with a missing model", {
   # Without computation of multiple comparisons of means
   # error model missing
   expect_error(opm_mcp(EXPL.DF, m.type = "lm",
     linfct = multcomp::mcp(run = "Dunnett")))
 })
 
+
 ## opm_mcp
-test_that("test on assert_all_factors_are_variable", {
+test_that("opm_mcp yields an error if factors are not variable", {
   # Without computation of multiple comparisons of means
   # error
   expect_error(x <- opm_mcp(EXPL.DF, m.type = "lm", model = list("run",
     "organism"), linfct = multcomp::mcp(organism = "Dunnett")))
 })
 
+
 ## opm_mcp
-test_that("mcp with specified m.type and with linfct", {
-  # when 'model' is missing -> defaul-model is used
+test_that("opm_mcp runs an mcp with specified m.type and with linfct", {
+  # when 'model' is missing, default model is used
   x <- opm_mcp(EXPL.DF, model = list("run"),
     m.type = "lm", linfct = multcomp::mcp(run = "Dunnett"))
   expect_is(x, "glht")
+  expect_equal(attr(x, opm_string()), NULL)
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))
   expect_equal(length(x), 9)
   expect_equal(length(coef(x)), 1)
+  y <- opm_mcp(EXPL.OPMS, model = list("run"),
+    m.type = "lm", linfct = multcomp::mcp(run = "Dunnett"))
+  annot <- attr(y, opm_string())
+  expect_is(y, "glht")
+  expect_equal(names(y), names(x))
+  expect_true(is.list(annot))
+  expect_equal(annot$plate.type, "PM01")
 })
 
 
@@ -319,5 +410,104 @@ test_that("'Pairs' contrast type can be combined with non-syntactic names", {
   expect_equal(length(y), 9)
   expect_equal(length(coef(y)), 7)
 })
+
+
+################################################################################
+
+
+if (FALSE) {
+# get example objects
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+# vorbereiten der datenobjekte
+EXPL.OPMS <- c(THIN.AGG, THIN.AGG)
+EXPL.DF <- extract(EXPL.OPMS, as.labels = list("organism", "run"),
+  subset = "A", dataframe = TRUE)
+
+# dataframe erzeugen um die dimensionen der contrast-matrix zu kennen
+EXPL. <- opm_mcp(EXPL.DF, model = ~ J(Well + run), linfct = c(Dunnett = 1),
+  output = "data")
+
+# funktion um contrastmatrix aufzuspannen:
+
+con.mat <- function(object, model) {
+
+  EXPL.1 <- opm_mcp(object, model = model, # hier muss markus was machen
+    linfct = c(Dunnett = 1), output = "data")
+
+
+
+  con <- matrix(c(1, -1), nrow = 1, ncol = 2, byrow = TRUE)
+  con.mat <- kronecker(diag(1, 96), con) # TODO: adapt number of wells
+
+  val.pos <- which(colnames(EXPL.1) == "Value")
+  ex.com <- colnames(EXPL.[, val.pos : c(dim(EXPL.)[2])])[2]
+
+  colnames(con.mat) <- levels(EXPL.[, ex.com])
+  # schleife um die rownames zusammenzusetzen
+  con.rn <- c()
+  for (i in seq(1, length(EXPL.[, ex.com]) / 2, by = 2)) {
+    con.rn[i] <- paste(levels(EXPL.[, ex.com])[i], " - ",
+      levels(EXPL.[, ex.com])[i + 1], sep = "")
+  }
+  # rownames anfügen
+  con.rn <- con.rn[seq(1, length(EXPL.[, ex.com]) / 2, by = 2)]
+  rownames(con.mat) <- con.rn
+  return(con.mat)
+}
+
+# erzeugen der kontrastmatrix
+test.con <- con.mat(EXPL.DF, model = ~ J(Well + run))
+
+# test rechnen
+EXPL.CON.MAT <- opm_mcp(EXPL.DF, model = ~ J(Well + run),
+  linfct = test.con)
+# output ist ganz normales glht-object (mit 96 vergleichen)
+
+################################################################################
+
+# check, if names-attributes is existing
+
+## annotated
+test_that("OPM-object", {
+  # check class and dimension when testing with first plate from THIN.AGG
+  x <- annotated(THIN.AGG[1], "A")
+  expect_is(x, "list")
+  expect_equal(length(x), 1)
+  expect_is(x[[1]], "numeric")
+  expect_equal(length(x[[1]]), 96)
+  # check, if names-attributes is existing
+})
+
+## annotated
+test_that("OPMS-object", {
+  # check class and dimension when testing with THIN.AGG
+  x <- annotated(THIN.AGG, "A")
+  expect_is(x, "list")
+  expect_equal(length(x), 2)
+  expect_is(x[[1]], "numeric")
+  expect_is(x[[2]], "numeric")
+  expect_equal(length(x[[1]]), 96)
+  expect_equal(length(x[[2]]), 96)
+})
+
+
+## annotated
+test_that("glht-object", {
+  # check class and dimension when testing with EXPL.CON.MAT
+  x <- annotated(EXPL.CON.MAT)
+  expect_equal(length(x), 96)
+  expect_is(x, "numeric")
+})
+
+
+#x <- annotated(THIN.AGG[1], "A", output = "numeric")
+
+
+#x <- annotated(THIN.AGG[1], "A", output = "logical")
+
+
+}
+
 
 

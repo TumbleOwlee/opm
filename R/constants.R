@@ -216,6 +216,7 @@ OPM_OPTIONS$min.mode <- 0.5
 OPM_OPTIONS$phylo.fmt <- "epf"
 OPM_OPTIONS$split <- "/.-_"
 OPM_OPTIONS$strict.OPMD <- FALSE
+OPM_OPTIONS$threshold <- 0
 OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
   "%d.%m.%Y %H:%M:%S")
 OPM_OPTIONS$time.zone <- ""

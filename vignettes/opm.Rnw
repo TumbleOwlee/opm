@@ -75,7 +75,7 @@ Tabular and textual summaries suitable for, e.g., taxonomic journals can also be
 Export and import in the \proglang{YAML} (or \proglang{JSON}) markup language (or as character-separated values) facilitates the data exchange among labs.
 All methods are exemplified using real-world data sets that are part of the \pkg{opm} \proglang{R} package or are included in the accompanying data package \pkg{opmdata}.
 
-This the tutorial of \pkg{opm} in the version of \today{}.
+This is the tutorial of \pkg{opm} in the version of \today{}.
 
 }
 
@@ -1462,19 +1462,12 @@ Examples are given based on the \pkg{BiodiversityR} package \citep{Kindt2005}.
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
 The \code{opm\_mcp()} function allows to test for differences in the means of multiple groups directly on \proglang{OPMS} objects, obtaining the factors for the grouping structure from stored metadata. 
-In the following, the general concept and the structure of the function will be explained using different examples for groups that can be defined within wells, across wells, or across metadata-defined groups: 
-\begin{itemize}
-  \item Tukey-type comparison within a single well across different plates
-  \item Dunnett-type comparison between wells from the same plate
-  \item Pairs-type comparison of groups defined by specific combinations of metadata entries
-  \item User-defined comparisons of interest
-\end{itemize}
-% redundant, please delete or link (make it independent of ordering)
+In the following, the general concept and the structure of the function will be explained using different examples for groups that can be defined within wells, across wells, or across metadata-defined groups. 
+The different examples will be addressed in the subsections shown below.
+Also, an explanation of how the graphical and numerical output of results is to be interpreted is given.
 
 
-\subsubsection[Tukey-type comparison within a single well]{Tukey-type comparison within a single well across different plates}\label{Tukey-type comparison}
-% Heading should be more general: Tukey-type comparison, with this just as an example.
-% Do not indicate only this kind of comparison was possible!
+\subsubsection[Tukey type of comparison: all-against-all]{Tukey type of comparison: all-against-all}\label{Tukey-type comparison}
 
 This paragraph addresses the comparison of a single well type across different plates organised into multiple groups.
 We compare four distinct strains, each of which being represented by ten replicates of GEN-III microplate measurements. 
@@ -1484,7 +1477,8 @@ This type of comparison is termed "Tukey"-type contrasts (all-against-all) becau
 The necessary data subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
 
 <<label=data-vaas-subset, results=hide>>=
-vaas.G06 <- subset(vaas_et_al[, , "G06"], list(Experiment = "First replicate"))
+vaas.G06 <- subset(vaas_et_al[, , "G06"],
+  list(Experiment = "First replicate"))
 @
 
 The resulting dataset of four strains, each represented by the ten replicates, is shown in Figure~\ref{fig:xy_plot_mcp}. 
@@ -1537,6 +1531,25 @@ vaas.G06.mcp <- opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
 The here used kind of \code{linfct} argument, a numeric vector, refers to the positions of the variables within \code{model} and here, by using $1$ the first and only term, ``Strain'', is selected.
 The names of such a \code{linfct} object indicate the type of contrast used, here ``Tukey''.
 Per default \code{opm_opt("contrast.type")} would be inserted, if names were missing.
+
+
+Note that the structure of the arguments set by \code{model} and by \code{linfct} may become more complex if several metadata entries are involved in the testing.
+The user might therefore wish to recheck the way how \code{model} and by \code{linfct} will actually perform during the execution of the statistical test.
+
+The correct usage of the argument \code{model} can be checked by outputting just the converted argument:
+
+<<label=opm-mcp-output-model>>=
+opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
+  linfct = c(Tukey = 1), output = "model")
+@
+
+Similarly, the correct usage of the argument \code{linfct} can be checked as follows:
+
+<<label=opm-mcp-output-linfct>>=
+opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
+  linfct = c(Tukey = 1), output = "linfct")
+@
+
 
 For the computation of the tests itself, \code{opm\_mcp()} uses \code{glht()} from the package \pkg{multcomp} and returns an object of class \code{glht}.
 As shown in Figure~\ref{fig:ci_plot_mcp}, the results of the performed statistical test can be plotted using the methods available for objects of that class (see \code{?multcomp::glht} for details).
@@ -1598,9 +1611,7 @@ The position of the 95\% CI indicates that the difference between strains DSM 18
 For a meaningful biological interpretation of the results it is therefore highly recommended to consider the effect size rather than taking only the p values into account.
 
 
-\subsubsection[Dunnett-type comparison of complete plates]{Dunnett-type comparison of complete plates}\label{comp-plates-dunnett}
-% Heading should be more general: Dunnett-type comparison, with this just as an example.
-% Do not indicate only this kind of comparison was possible!
+\subsubsection[Dunnett-type comparison of complete plates]{Dunnett-type of comparison: one-against-all}\label{comp-plates-dunnett}
 
 This paragraph describes another type of comparison of the means of multiple groups, which is the comparison of  a single, selected well against all other wells of the same plate.
 This type of comparison is termed ``Dunnett''-type contrasts (one-against-all). 
@@ -1627,51 +1638,33 @@ A summary of the resulting data frame, with well A03 chosen to be the reference 
 
 <<label=summary-opm-mcp-Dunnett>>=
 summary(opm_mcp(vaas.e.coli[, , 1:10], output = "data", model = ~ Well,
-  linfct = c(`Dunnett_A03` = 1), full = FALSE))
+  linfct = c(Dunnett_A03 = 1), full = FALSE))
 @
 
+The object resulting from the test is of class \code{glht} and can be plotted as usual using \code{plot()}.
+Its summary is shown below.
 
-<<label=vaas-e-coli-mcp-Dunnett-special, results=hide>>=
+
+<<label=vaas-e-coli-mcp-Dunnett-special>>=
 mcp.A03 <- opm_mcp(vaas.e.coli[, , 1:10], output = "mcp", model = ~ Well,
-             linfct = c(`Dunnett_A03` = 1), full = FALSE)
-@
-
-The resulting object is of class \code{glht} and can be plotted as usual using \code{plot()}.
-Below is the summary (the output of the code is suppressed, but see the example above):
-
-<<label=vaas-e-coli-mcp-Dunnett-special-summary, echo=FALSE>>=
-options(width=200)
+  linfct = c(Dunnett_A03 = 1), full = FALSE)
 mcp.summary <- summary(mcp.A03)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
 @
 
 
-%THE STUFF BELOW HAS BEEN TOLD BY LEA TO BE TRUE; BUT IS SIMPLY WRONG: RECHECK WITH LEA.
-%If, however, \code{linfct} was stated instead as \code{ linfct = c(Dunnett = 1)} the alphanumerically first level of the addressed factor in \code{model} would serve as the reference group in the contrast set. 
-%Accordingly, with { linfct = c(Dunnett = 2)} the alphanumerically second level of the addressed factor would serve as the reference group.
-
-
-\subsubsection[Pairs-type comparison of specific wells]{Pairs-type comparison of groups defined by specific combinations of metadata entries}\label{specific-well-Pairs}
-% Heading should be more general: Pairs-type comparison, with this just as an example.
-% Do not indicate only this kind of comparison was possible!
+\subsubsection[Pairs-type comparison of specific wells]{Pairs-type comparison of groups: pairwise comparisons as defined by specific combinations of metadata entries}\label{specific-well-Pairs}
 
 
 This paragraph describes a more specific and hence complex design of the group structure by making a more distinct use of the stored metadata and its potential combinations. 
-Assume data from two species, \emph{P. aeruginosa} and \emph{E. coli}, with each two plates (data set \code{vaas_4}). 
-The data from wells A01, A02, A03, and H02 have been chosen, see below. 
+Assume data from two species, \emph{P. aeruginosa} and \emph{E. coli} (data set \code{vaas_4}), each with two plates restricted to the wells A01, A02, A03, and H02. 
 
-<<label=opm-mcp-show-data-dummy, eval=FALSE>>=
-opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ Species, m.type = "aov",
-        linfct = c(Tukey = 1), output = "data", full = FALSE)
-@
-
-%\tiny
-%<<label=opm-mcp-show-data-display, echo=FALSE>>=
+%<<label=opm-mcp-show-data-dummy, eval=FALSE>>=
 %opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ Species, m.type = "aov",
-%        linfct = c(Tukey = 1), output = "data", full = FALSE)
+%  linfct = c(Tukey = 1), output = "data", full = FALSE)
 %@
-%\normalsize
+
 
 A combination of two species $\times$ four well types would yield eight different groups, which are each represented by two plates.
 A Tukey-type comparison (all-against-all) would then result in 28 pairwise comparisons, whereas a Dunnett-type comparison (one-against-all) would result in seven pairwise comparisons.
@@ -1686,18 +1679,16 @@ This is achieved by the \code{J()} function (\code{model = ~ J(Well + Species)})
 
 <<label=opm-mcp-linfct-Pairs-1a, eval=FALSE>>=
 opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ J(Well + Species), m.type = "aov",
-        linfct = c(Pairs = 1), output = "data")
+        linfct = c(Pairs = 1), output = "data", full = FALSE)
 @
 
 Note that the resulting \code{model} vector ``Well.Species'' contains eight levels, i.e. eight groups of each two plates.
 
-\tiny
 <<label=opm-mcp-linfct-Pairs-1b, echo=FALSE>>=
 options(width=200)
 opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ J(Well, Species), m.type = "aov",
-        linfct = c(Pairs = 1), output = "data")
+        linfct = c(Pairs = 1), output = "data", full = FALSE)
 @
-\normalsize
 
 Second, the argument \code{linfct = c(Pairs = 1)} ensures that for all levels present in the first argument of \code{model = ~ J(Well, Species)}, i.e, \code{Well}-wise, all pairwise comparisons are performed among the different groups present (here: the two species \emph{P. aeruginosa} and \emph{E. coli}).
 
@@ -1705,7 +1696,7 @@ The results of this analysis is shown below.
 
 <<label=opm-mcp-linfct-Pairs-1c, width=8>>=
 y <- opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ J(Well, Species), 
-             m.type = "aov", linfct = c(Pairs = 1), output = "mcp")
+             m.type = "aov", linfct = c(Pairs = 1))
 @
 
 \tiny
@@ -1725,7 +1716,7 @@ Thus the result of
 
 <<label=opm-mcp-linfct-Pairs-2, results=hide>>=
 y <- opm_mcp(vaas_4[, , c(1:3, 86)], model = ~ J(Well, Species), m.type = "aov",
-             linfct = c(Pairs.Species = 1), output = "mcp")
+             linfct = c(Pairs.Species = 1))
 @
 
 which is shown below
@@ -1745,14 +1736,6 @@ This yields 2 (for each species) x 6 (all-against-all among four wells = 6) = 12
 Note that \code{linfct = c(Pairs.Well = 1)} would yield the same result as \code{linfct = c(Pairs = 1)} shown in the example above.
 
 When dealing with more complex models also keep in mind that the numeric vector in \code{linfct} can refer to the position of any variable, or set of variables obtained by joining, within \code{model}.
-
-Any conversions applied to the \code{model} argument can be shown using \code{output = "model"}. 
-This allows the user to control the correct usage of the argument \code{model}.
-
-<<label=opm-mcp-linfct-model>>=
-opm_mcp(vaas.G06, model = ~ J(Well, Species), m.type = "aov",
-  linfct = c(Tukey = 1), output = "model")
-@
 
 
 \subsubsection[User-defined comparisons of interest]{User-defined comparisons of interest}\label{use-def-comp}
@@ -1934,19 +1917,6 @@ Compare also with Figure~\ref{fig:ci_plot_mcp}, where details on the axis annota
 }
 \end{figure}
 
-
-SPECIALIST STUFF:
-However, \code{linfct} can also be specified more explicitly, as detailed below.
-The way \code{opm\_mcp()} converts \code{linfct} arguments can be explored using \code{output = "linfct"}:
-
-<<label=opm-mcp-linfct>>=
-opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
-  linfct = c(Tukey = 1), output = "linfct")
-@
-
-WE STILL NEED TO DESCRIBE HOW THE VERSATILE USER CAN MAKE USE OF THIS INFORMATION. Otherwise there might be no sense in addressing this issue here.
-
-% TODO: makes not much sense, output = "linfct" is only for showing the generated intermediary object
 
 
 \subsection[Discretization]{Discretization}\label{application discrete}

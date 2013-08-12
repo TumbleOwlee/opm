@@ -318,6 +318,8 @@ if (do.plot)
 \seealso{
   multcomp::glht multcomp::contrMat stats::lm
   stats::formula
+
+  Other multcomp-functions: \code{\link{annotated}}
 }
 \keyword{htest}
 

@@ -95,17 +95,18 @@
   \item{strict.OPMD}{Logical scalar indicating whether
   \code{\link{OPMD}} objects can only be created if the
   discretized data are consistent with the parameter from
-  which they have been estimated.}
-  \item{time.zone}{Character scalar indicating the time
-  zone to be used when parsing \code{\link{setup_time}}
-  entries. This is relevant for \code{\link{merge}}, which
-  by default attempts to sort by parsed setup times}
-  \item{time.fmt}{Character vector indicating the time
-  formats used for parsing the \code{\link{setup_time}}
-  entries (in the given order). Also relevant for
-  \code{\link{merge}} by default.} } For parameter names
-  used by \pkg{opm} that cannot be modified by the user see
-  \code{\link{param_names}}.
+  which they have been estimated.} \item{threshold}{Numeric
+  scalar indicating the default threshold used by
+  \code{\link{annotated}}.} \item{time.zone}{Character
+  scalar indicating the time zone to be used when parsing
+  \code{\link{setup_time}} entries. This is relevant for
+  \code{\link{merge}}, which by default attempts to sort by
+  parsed setup times} \item{time.fmt}{Character vector
+  indicating the time formats used for parsing the
+  \code{\link{setup_time}} entries (in the given order).
+  Also relevant for \code{\link{merge}} by default.} } For
+  parameter names used by \pkg{opm} that cannot be modified
+  by the user see \code{\link{param_names}}.
 }
 \examples{
 # fetching a value

@@ -482,3 +482,143 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 
 ################################################################################
 
+
+#' Create vector or matrix with substrate annotation
+#'
+#' These methods create vectors or matrices that include numeric values
+#' (selected parameter estimates or \code{\link{opm_mcp}} results) as well as
+#' an annotation of the according substrates.
+#'
+#' @param object An object of the classes \code{glht} as created by
+#'   \code{\link{opm_mcp}} (other objects of that class are unlikely to work),
+#'   \code{\link{OPMA}} or \code{\link{OPMS}}.
+#' @param what Character scalar indicating the kind of annotation to use. Passed
+#'   as eponymous argument to \code{\link{substrate_info}}.
+#' @param how Character scalar. Indicating how the annotation is inserted.
+#'   Currently \sQuote{ids} and \sQuote{values} are supported. See below for
+#'   details.
+#' @param output For the \code{\link{OPMA}} and \code{\link{OPMS}} methods, the
+#'   estimated parameter of interest (see \code{\link{param_names}}). For the
+#'   \code{glht} method, either a numeric scalar or one of the following
+#'   character scalars:
+#'   \describe{
+#'     \item{numeric}{Return the coefficients.}
+#'     \item{different}{Return -1, 1 or 0 indicating whether the coefficients
+#'     are significantly smaller or larger than, or insignificantly different
+#'     from the cutoff given by \code{opm_opt("threshold")}. This is calculated
+#'     from the confidence intervals stored in \code{object}.}
+#'     \item{smaller}{Return 1 or 0 indicating whether or not the coefficients
+#'     are significantly smaller than the default cutoff.}
+#'     \item{larger}{Return 1 or 0 indicating whether or not the coefficients
+#'     are significantly larger than the default cutoff.}
+#'     \item{equal}{Return 1 or 0 indicating whether or not the coefficients
+#'     are insignificantly different from the default cutoff.}
+#'   }
+#'   Alternatively, character scalars such as \code{!75.0}, \code{<100},
+#'   \code{>150} or \code{=85.0} can be provided, with the first character
+#'   translated to the corresponding meaning in the list above and the remaining
+#'   string translated to the cutoff to be used. If a numeric scalar is
+#'   provided, it is used as cutoff in conjunction with the \sQuote{different}
+#'   mode described above.
+#' @return For \code{how = "ids"}, a numeric or logical vector whose names
+#'   are the IDs of the respective substrates in the database as chosen by
+#'   \code{what}.
+#'
+#'   For \code{how = "values"}, a numeric matrix containing the chosen computed
+#'   values together with data obtained via web service associated with the
+#'   chosen database, in analogy to the \code{download} argument of
+#'   \code{\link{substrate_info}}.
+#'
+#' @family multcomp-functions
+#' @keywords htest
+#' @export
+#' @examples
+#' ## TODO
+#'
+setGeneric("annotated", function(object, ...) standardGeneric("annotated"))
+
+setMethod("annotated", "OPMA", function(object, what = "kegg", how = "ids",
+    output = opm_opt("curve.param")) {
+  stop(NOT_YET)
+}, sealed = SEALED)
+
+setMethod("annotated", "OPMD", function(object, what = "kegg", how = "ids",
+    output = opm_opt("curve.param")) {
+  stop(NOT_YET)
+}, sealed = SEALED)
+
+setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
+    output = opm_opt("curve.param")) {
+  stop(NOT_YET)
+}, sealed = SEALED)
+
+setOldClass("glht")
+
+setMethod("annotated", "glht", function(object, what = "kegg", how = "ids",
+    output = "numeric") {
+  get_match <- function(i, matched, string) {
+    start <- attr(matched, "capture.start")[, i]
+    substring(string, start, start + attr(matched, "capture.length")[, i] - 1L)
+  }
+  all_matches <- function(matched, string) {
+    do.call(cbind, lapply(seq.int(ncol(attr(matched, "capture.start"))),
+      get_match, matched, string))
+  }
+  names_to_ids <- function(x, what, plate) {
+    p <- c(
+      "`[A-Z]\\d{2}\\s+(?:\\(([^)]+)\\)|\\[([^\\]]+)\\])(?:[^`]+)?`",
+      "`(?:[^`]+?)?[A-Z]\\d{2}\\s+(?:\\(([^)]+)\\)|\\[([^\\]]+)\\])`",
+      "`(?:([A-Z]\\d{2})(?:[^`]+)?|(?:[^`]+?)?([A-Z]\\d{2}))`"
+    )
+    p <- paste0("^", p, "\\s+-\\s+", p, "$")
+    s <- NULL
+    for (i in seq_along(p))
+      if (all(attr(m <- regexpr(p[i], x, FALSE, TRUE), "match.length") > 0L)) {
+        s <- all_matches(m, x)
+        s <- s[, !is_constant(s, 2L), drop = FALSE]
+        if (i %in% c(3L)) {
+          if (!length(plate))
+            stop("need special 'glht' object with PM plate annotation")
+          s[] <- wells(as.vector(s), TRUE, FALSE, plate = plate)
+        }
+        break
+      }
+    if (length(s))
+      s <- s[, 1L]
+    else
+      s <- rep.int(NA_character_, length(x))
+    substrate_info(s, what)
+  }
+  different <- function(x, cutoff, how) {
+    structure(case(how,
+      different = ifelse(x[, "lwr"] > cutoff, 1L,
+        ifelse(x[, "upr"] < cutoff, -1L, 0L)),
+      equal = as.integer(cutoff > x[, "lwr"] & cutoff < x[, "upr"]),
+      larger = as.integer(x[, "lwr"] > cutoff),
+      smaller = as.integer(x[, "upr"] < cutoff)
+    ), names = rownames(x), test = how, cutoff = cutoff)
+  }
+  coef_to_ids <- function(x, what, plate)
+    structure(x, names = coef_names_to_ids(names(x), what, plate))
+  if (is.numeric(L(output))) {
+    cutoff <- output
+    output <- "different"
+  } else if (grepl("^[!=<>]", output, FALSE, TRUE)) {
+    cutoff <- must(as.numeric(substr(output, 2L, nchar(output))))
+    output <- c(`!` = "different", `=` = "equal", `<` = "smaller",
+      `>` = "larger")[[substr(output, 1L, 1L)]]
+  } else {
+    output <- tolower(output)
+    cutoff <- get("threshold", OPM_OPTIONS)
+  }
+  result <- switch(output, numeric = coef(object),
+    different(confint(object)$confint, cutoff, output))
+  names(result) <- names_to_ids(names(result), what,
+    attr(object, opm_string())$plate.type)
+  case(how, ids = result, values = stop(NOT_YET))
+}, sealed = SEALED)
+
+
+################################################################################
+
+
