@@ -13,7 +13,8 @@
   name that is not already contained (\pkg{opm} would never
   query for it anyway). It is also illegal to attempt set
   novel values whose classes are not identical to, or
-  derived from, the classes of the old value.}
+  derived from, the classes of the old value. Further, it
+  is illegal to set a zero-length value.}
 
   \item{...}{Optional arguments. If \code{x} is missing,
   these arguments are concatenated into a list and used as
@@ -40,11 +41,14 @@
   combination of metadata entries converted to data-frame
   columns immediately after their selection. Sets the
   character string that is used when joining old names to
-  new name.} \item{comb.value.join}{Used by functions that
-  support combination of metadata entries converted to
-  data-frame columns immediately after their selection.
-  Sets the character string that is used when joining old
-  values to new values.} \item{contrast.type}{Character
+  new name. Should normally only be a single character.}
+  \item{comb.value.join}{Used by functions that support
+  combination of metadata entries converted to data-frame
+  columns immediately after their selection. Sets the
+  character string that is used when joining old values to
+  new values. Should normally only be a single character;
+  must be a single character when used by
+  \code{\link{opm_mcp}}.} \item{contrast.type}{Character
   scalar indicating the default type of contrast used by
   \code{\link{opm_mcp}}.} \item{css.file}{Character scalar.
   Default \acronym{CSS} file linked by

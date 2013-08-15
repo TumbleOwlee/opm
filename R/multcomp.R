@@ -1,5 +1,26 @@
 
 
+
+################################################################################
+
+
+## NOTE: not an S4 method because trivial
+
+#' Check column separator
+#'
+#' Check character vector used for joining columns by \code{\link{opm_mcp}}.
+#'
+#' @param sep Non-empty character vector.
+#' @return \code{x} unless the test fails.
+#' @keywords internal
+#'
+check_mcp_sep <- function(sep) {
+  if (!is.character(sep) || nchar(sep <- sep[[1L]]) != 1L)
+    stop("'sep' must be a single character")
+  sep
+}
+
+
 ################################################################################
 
 
@@ -92,6 +113,14 @@
 #'   to use in model fitting: \sQuote{glm}, \sQuote{aov} or \sQuote{lm}. See
 #'   the eponymous functions in the \pkg{stats} package for details.
 #'
+#' @param rhs Numeric vector passed to \code{glht} in the \pkg{multcomp}
+#'   package. Also considered when creating contrasts of the \sQuote{Pairs}
+#'   type.
+#'
+#' @param alternative Character scalar also passed to that function (but only
+#'   if \code{linfct} is or yields a matrix), and also relevant for
+#'   \sQuote{Pairs}-type contrasts.
+#'
 #' @param glht.args List of additional arguments for the multiple comparison
 #'   procedure passed to \code{glht}. See \code{glht} in the \pkg{multcomp}
 #'   package for details.
@@ -110,6 +139,9 @@
 #'
 #' @param split.at Character vector. See \code{\link{extract}}. Cannot be set in
 #'   the case of the \code{\link{OPMS}} method.
+#'
+#' @param sep Character scalar (comprising a single character) passed to
+#'   \code{\link{extract}}.
 #'
 #' @param ... Optional argument passed to \code{\link{extract}}.
 #'
@@ -293,21 +325,23 @@ setGeneric("opm_mcp",
   function(object, ...) standardGeneric("opm_mcp"))
 
 setMethod("opm_mcp", OPMS, function(object, model, linfct = 1L,
-    m.type = "glm", glht.args = list(), ops = "+", output = "mcp", ...) {
+    m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
+    ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) {
   annotation <- list(plate.type = plate_type(object))
-  object <- extract(object = object, dataframe = TRUE, ...,
+  object <- extract(object = object, dataframe = TRUE, sep = sep, ...,
     as.labels = metadata_key(model, FALSE, ops = ops, syntactic = FALSE,
       remove = RESERVED_NAMES[c("well", "value", "parameter")]))
   attr(object, opm_string()) <- annotation
   opm_mcp(object = object, model = model, linfct = linfct, ops = ops,
     m.type = m.type, split.at = param_names("split.at"), glht.args = glht.args,
-    output = output)
+    output = output, sep = sep, rhs = rhs, alternative = alternative)
 }, sealed = SEALED)
 
 setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
-    m.type = c("glm", "lm", "aov"), glht.args = list(), ops = "+",
+    m.type = c("glm", "lm", "aov"), rhs = 0, alternative = "two.sided",
+    glht.args = list(), ops = "+",
     output = c("mcp", "data", "model", "linfct", "contrast"),
-    split.at = param_names("split.at")) {
+    sep = opm_opt("comb.value.join"), split.at = param_names("split.at")) {
 
   ## helper functions
 
@@ -324,7 +358,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   # Generate all pairs of factor levels for a given data column, considering
   # column joining if applicable. Resulting character vector can be passed to
   # multcomp::mcp().
-  level_pairs <- function(spec, column, data) {
+  level_pairs <- function(spec, column, data, rhs, alternative) {
     spec_to_column_names <- function(spec, joined, column) {
       if (nchar(spec) < 7L)
         spec <- "1"
@@ -332,23 +366,26 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
         spec <- unlist(strsplit(spec, substr(spec, 6L, 6L), TRUE))[-1L]
       if (!all(grepl("^\\d+$", spec, FALSE, TRUE)))
         return(spec)
-      spec <- as.integer(spec)
       if (is.null(joined)) # TODO: this would never yield pairs at the moment
         joined <- as.list(structure(column, names = column))
-      joined[[column]][spec]
+      joined[[column]][as.integer(spec)]
     }
     pair_indices <- function(x) {
       last <- length(nums <- seq_along(x))
       do.call(rbind, lapply(nums[-last],
         FUN = function(j) cbind(I = seq.int(j + 1L, last), J = j)))
     }
-    all_pairs <- function(x) {
+    all_pairs <- function(x, rhs, sign) {
       idx <- pair_indices(x <- unique.default(x))
-      sprintf("`%s` - `%s` == 0L", x[idx[, 1L]], x[idx[, 2L]])
+      sprintf("`%s` - `%s` %s %s", x[idx[, 1L]], x[idx[, 2L]], sign, rhs)
     }
     spec <- spec_to_column_names(spec, attr(data, "joined.columns"), column)
+    # this should conserve the 'data[, spec]' factor levels as names
     groups <- split(as.character(data[, column]), data[, spec])
-    result <- unlist(lapply(groups, all_pairs))
+    ## TODO: make this more elegant
+    alternative <- match.arg(alternative, c("two.sided", "less", "greater"))
+    sign <- c(two.sided = "==", less = "<=", greater = ">=")[[alternative]]
+    result <- unlist(lapply(groups, all_pairs, rhs, sign))
     if (!length(result))
       stop("no pairs found -- are selected factors constant?")
     result
@@ -375,7 +412,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   # getting column names from it if given as positions within the model, 'data'
   # is necessary when computing on factor levels.
   #
-  convert_hypothesis_spec <- function(linfct, model, data) {
+  convert_hypothesis_spec <- function(linfct, model, data, rhs, alternative) {
     if (!length(linfct))
       stop("hypothesis definition 'linfct' must not be empty")
     # note that the glht() methods actually dispatch over 'linfct'...
@@ -404,8 +441,9 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     # Special treatments for special contrast types must be done here.
     if (any(convert <- grepl("^Pairs", result, FALSE, TRUE)))
       result[convert] <- mapply(FUN = level_pairs, spec = result[convert],
-        column = names(result)[convert], MoreArgs = list(data = data),
-        SIMPLIFY = FALSE, USE.NAMES = FALSE)
+        column = names(result)[convert], SIMPLIFY = FALSE,
+        MoreArgs = list(data = data, rhs = rhs, alternative = alternative),
+        USE.NAMES = FALSE)
     if (any(convert <- grepl("^Dunnett..+", result, FALSE, TRUE)))
       result[convert] <- mapply(FUN = dunnett_with_base,
         level = substr(result, 9L, nchar(result))[convert],
@@ -414,7 +452,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     do.call(multcomp::mcp, result)
   }
 
-  convert_data <- function(object, split.at, model) {
+  convert_data <- function(object, split.at, model, sep) {
     param.pos <- assert_splittable_matrix(object, split.at)
     # create reshaped data frame and set temporary helper column '_ID' to avoid
     # non-unique values when setting 'row.names'; note according shift of column
@@ -432,7 +470,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     object$`_ID` <- NULL
     # the next step would combine the columns that have not yet been combined
     if (is.list(attr(model, "combine")))
-      object <- extract_columns(object, attr(model, "combine"), direct = TRUE)
+      object <- extract_columns(object, attr(model, "combine"), direct = TRUE,
+        sep = sep)
     if (!is.null(joined <- attr(object, "joined.columns"))) {
       names(joined) <- make.names(names(joined))
       joined <- lapply(joined, make.names)
@@ -440,8 +479,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     colnames(object) <- make.names(colnames(object))
     object
   }
-  contrast_matrices <- function(data, linfct, model) {
-    linfct <- convert_hypothesis_spec(linfct, model, data)
+  contrast_matrices <- function(data, linfct, model, rhs, alternative) {
+    linfct <- convert_hypothesis_spec(linfct, model, data, rhs, alternative)
     if (!inherits(linfct, "mcp"))
       stop("in 'contrast' mode, 'linfct' must yield an object of class 'mcp'")
     n <- lapply(data[, names(linfct), drop = FALSE], table)
@@ -449,20 +488,21 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   }
 
   # conversions and early returns, if requested
+  sep <- check_mcp_sep(sep)
   model <- convert_model(model, ops)
   case(match.arg(output),
-    data = return(convert_data(object, split.at, model)),
+    data = return(convert_data(object, split.at, model, sep)),
     model = return(model),
     linfct = return(convert_hypothesis_spec(linfct, model,
-      convert_data(object, split.at, model))),
-    contrast = return(contrast_matrices(convert_data(object, split.at, model),
-      linfct, model)),
+      convert_data(object, split.at, model, sep), rhs, alternative)),
+    contrast = return(contrast_matrices(convert_data(object,
+      split.at, model, sep), linfct, model, rhs, alternative)),
     mcp = NULL
   )
 
   annotation <- attr(object, opm_string())
-  object <- convert_data(object, split.at, model)
-  linfct <- convert_hypothesis_spec(linfct, model, object)
+  object <- convert_data(object, split.at, model, sep)
+  linfct <- convert_hypothesis_spec(linfct, model, object, rhs, alternative)
 
   # necessary at this stage because otherwise glht() does not find its
   # dependencies
@@ -472,8 +512,12 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 
   # fit the linear model according to 'm.type', then run glht()
   model <- do.call(match.arg(m.type), list(formula = model, data = object))
-  glht.args <- c(list(model = model, linfct = linfct), as.list(glht.args))
+  glht.args <- c(list(model = model, linfct = linfct, rhs = rhs),
+    as.list(glht.args))
+  if (is.matrix(linfct))
+    glht.args$alternative <- alternative
   result <- do.call(glht, glht.args)
+  class(result) <- c("opm_glht", oldClass(result))
 
   attr(result, opm_string()) <- annotation
   result
@@ -489,9 +533,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #' (selected parameter estimates or \code{\link{opm_mcp}} results) as well as
 #' an annotation of the according substrates.
 #'
-#' @param object An object of the classes \code{glht} as created by
-#'   \code{\link{opm_mcp}} (other objects of that class are unlikely to work),
-#'   \code{\link{OPMA}} or \code{\link{OPMS}}.
+#' @param object An object of the classes \code{opm_glht} as created by
+#'   \code{\link{opm_mcp}}, \code{\link{OPMA}} or \code{\link{OPMS}}.
 #' @param what Character scalar indicating the kind of annotation to use. Passed
 #'   as eponymous argument to \code{\link{substrate_info}}.
 #' @param how Character scalar. Indicating how the annotation is inserted.
@@ -499,7 +542,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   details.
 #' @param output For the \code{\link{OPMA}} and \code{\link{OPMS}} methods, the
 #'   estimated parameter of interest (see \code{\link{param_names}}). For the
-#'   \code{glht} method, either a numeric scalar or one of the following
+#'   \code{opm_glht} method, either a numeric scalar or one of the following
 #'   character scalars:
 #'   \describe{
 #'     \item{numeric}{Return the coefficients.}
@@ -514,12 +557,15 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'     \item{equal}{Return 1 or 0 indicating whether or not the coefficients
 #'     are insignificantly different from the default cutoff.}
 #'   }
-#'   Alternatively, character scalars such as \code{!75.0}, \code{<100},
-#'   \code{>150} or \code{=85.0} can be provided, with the first character
+#'   Alternatively, character scalars such as \sQuote{!75.0}, \sQuote{<100},
+#'   \sQuote{>150} or \sQuote{=85.0} can be provided, with the first character
 #'   translated to the corresponding meaning in the list above and the remaining
 #'   string translated to the cutoff to be used. If a numeric scalar is
 #'   provided, it is used as cutoff in conjunction with the \sQuote{different}
 #'   mode described above.
+#' @param sep For the \code{opm_glht} method, the single character that has
+#'   been used as eponymous argument in the call to \code{\link{opm_mcp}}.
+#'   Necessary to unambiguously match substrate names within contrast names.
 #' @return For \code{how = "ids"}, a numeric or logical vector whose names
 #'   are the IDs of the respective substrates in the database as chosen by
 #'   \code{what}.
@@ -552,54 +598,82 @@ setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
   stop(NOT_YET)
 }, sealed = SEALED)
 
-setOldClass("glht")
+setOldClass("opm_glht")
 
-setMethod("annotated", "glht", function(object, what = "kegg", how = "ids",
-    output = "numeric") {
-  get_match <- function(i, matched, string) {
-    start <- attr(matched, "capture.start")[, i]
-    substring(string, start, start + attr(matched, "capture.length")[, i] - 1L)
+setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
+    output = "numeric", sep = opm_opt("comb.value.join")) {
+
+  names_to_substrates <- function(x, sep, plate) {
+
+    # Helper functions
+    get_submatch <- function(i, m, string) {
+      start <- attr(m, "capture.start")[, i]
+      substring(string, start, start + attr(m, "capture.length")[, i] - 1L)
+    }
+    all_matched <- function(m) all(attr(m, "match.length") > 0L)
+
+    # Extract substrate names (with or w/o well coordinates) from 'Pairs' type
+    # names of test results stored in 'opm_glht' objects.
+    match_Pairs_type <- function(x, sep) {
+      pats <- c(sprintf("^`([^`]+)%s[^`]+`\\s-\\s`\\1%s[^`]+`$", sep, sep),
+        sprintf("^`[^`]+?%s([^`]+)`\\s-\\s`[^`]+?%s\\1`$", sep, sep),
+        "^`([^`]+)`\\s-\\s`\\1`$")
+      for (p in pats)
+        if (all_matched(m <- regexpr(p, x, FALSE, TRUE)))
+          return(get_submatch(1L, m, x))
+      NULL
+    }
+
+    match_Dunnett_type <- function(x) {
+      if (!all_matched(m <- regexpr("^(.+)\\s-\\s(.+)$", x, FALSE, TRUE)))
+        return(NULL)
+      result <- lapply(seq.int(2L), get_submatch, m, x)
+      result <- result[!vapply(result, is_constant, NA)]
+      case(length(result), NULL, result[[1L]])
+    }
+
+    # Use full substrate name if available; otherwise translate well coordinate
+    # using the given plate name.
+    get_substrate <- function(x, plate) {
+      if (all(grepl("^[A-Z]\\d{2}\\s(?:\\(.+\\)|\\[.+\\])$", x, FALSE, TRUE)))
+        return(substring(x, 6L, nchar(x) - 1L))
+      if (all(grepl("^[A-Z]\\d{2}$", x, FALSE, TRUE)))
+        return(wells(x, TRUE, FALSE, plate = plate)[, 1L])
+      x
+    }
+
+    sep <- check_mcp_sep(sep)
+    if (sep %in% c("^", "\\"))
+      sep <- paste0("\\", sep)
+    sep <- sprintf("[%s]", sep)
+
+    if (length(result <- match_Pairs_type(x, sep)))
+      return(get_substrate(result, plate))
+    if (length(result <- match_Dunnett_type(x, sep)))
+      return(get_substrate(result, plate))
+    # other patterns to be added here
+
+    warning("pattern matching of substrates in contrast names did not result")
+    rep.int(NA_character_, length(x))
   }
-  all_matches <- function(matched, string) {
-    do.call(cbind, lapply(seq.int(ncol(attr(matched, "capture.start"))),
-      get_match, matched, string))
+
+  names_to_ids <- function(x, what, sep, plate) {
+    substrate_info(names_to_substrates(x, sep, plate), what)
   }
-  names_to_ids <- function(x, what, plate) {
-    p <- c(
-      "`[A-Z]\\d{2}\\s+(?:\\(([^)]+)\\)|\\[([^\\]]+)\\])(?:[^`]+)?`",
-      "`(?:[^`]+?)?[A-Z]\\d{2}\\s+(?:\\(([^)]+)\\)|\\[([^\\]]+)\\])`",
-      "`(?:([A-Z]\\d{2})(?:[^`]+)?|(?:[^`]+?)?([A-Z]\\d{2}))`"
-    )
-    p <- paste0("^", p, "\\s+-\\s+", p, "$")
-    s <- NULL
-    for (i in seq_along(p))
-      if (all(attr(m <- regexpr(p[i], x, FALSE, TRUE), "match.length") > 0L)) {
-        s <- all_matches(m, x)
-        s <- s[, !is_constant(s, 2L), drop = FALSE]
-        if (i %in% c(3L)) {
-          if (!length(plate))
-            stop("need special 'glht' object with PM plate annotation")
-          s[] <- wells(as.vector(s), TRUE, FALSE, plate = plate)
-        }
-        break
-      }
-    if (length(s))
-      s <- s[, 1L]
-    else
-      s <- rep.int(NA_character_, length(x))
-    substrate_info(s, what)
-  }
-  different <- function(x, cutoff, how) {
+
+  create_vector <- function(x, how, cutoff) {
+    if (!is.matrix(x))
+      stop("expected matrix, got ", class(x))
     structure(case(how,
+      numeric = x[, "Estimate"],
       different = ifelse(x[, "lwr"] > cutoff, 1L,
         ifelse(x[, "upr"] < cutoff, -1L, 0L)),
       equal = as.integer(cutoff > x[, "lwr"] & cutoff < x[, "upr"]),
       larger = as.integer(x[, "lwr"] > cutoff),
       smaller = as.integer(x[, "upr"] < cutoff)
-    ), names = rownames(x), test = how, cutoff = cutoff)
+    ), names = rownames(x), how = how, cutoff = cutoff)
   }
-  coef_to_ids <- function(x, what, plate)
-    structure(x, names = coef_names_to_ids(names(x), what, plate))
+
   if (is.numeric(L(output))) {
     cutoff <- output
     output <- "different"
@@ -611,11 +685,11 @@ setMethod("annotated", "glht", function(object, what = "kegg", how = "ids",
     output <- tolower(output)
     cutoff <- get("threshold", OPM_OPTIONS)
   }
-  result <- switch(output, numeric = coef(object),
-    different(confint(object)$confint, cutoff, output))
-  names(result) <- names_to_ids(names(result), what,
+  result <- create_vector(confint(object)$confint, output, cutoff)
+  names(result) <- names_to_ids(names(result), what, sep,
     attr(object, opm_string())$plate.type)
   case(how, ids = result, values = stop(NOT_YET))
+
 }, sealed = SEALED)
 
 

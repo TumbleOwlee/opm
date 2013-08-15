@@ -17,6 +17,10 @@ EXPL.DF <- extract(EXPL.OPMS,
 ################################################################################
 
 
+## check_mcp_sep
+## UNTESTED
+
+
 ## opm_mcp
 test_that("opm_mcp outputs converted data frames", {
   # Without computation of multiple comparisons of means
@@ -109,6 +113,7 @@ test_that("opm_mcp converts Pairs-like 'linfct' arguments", {
   got <- opm_mcp(EXPL.DF, model = ~ J(Well, run),
     linfct = c(Pairs = 1L), output = "linfct")
   expect_is(got$Well.run, "character")
+  expect_is(names(got$Well.run), "character")
   expect_equal(length(got$Well.run), 96L) # one comparison per well
   expect_equal(do.call(multcomp::mcp, list(Well.run = got$Well.run)), got)
   got.2 <- opm_mcp(EXPL.OPMS, model = ~ J(Well, run),
@@ -121,8 +126,9 @@ test_that("opm_mcp converts Pairs-like 'linfct' arguments", {
 
 ## annotated
 test_that("Pairs-like tests are converted by annotated() to continuous data", {
+  expl.opms <- EXPL.OPMS[, , 2:5]
   # full substrate names, wells first
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+  x <- opm_mcp(expl.opms, model = ~ J(Well, run),
     linfct = c(Pairs = 1L), output = "mcp")
   got <- annotated(x)
   expect_is(got, "numeric")
@@ -130,30 +136,44 @@ test_that("Pairs-like tests are converted by annotated() to continuous data", {
   expect_is(names(got), "character")
   expect_true(!any(is.na(names(got))))
   # full substrate names, wells second
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+  x <- opm_mcp(expl.opms, model = ~ J(run, Well),
     linfct = c(Pairs.Well = 1L), output = "mcp")
   got.2 <- annotated(x)
   expect_equal(got, got.2)
   # full substrate names, wells first, brackets
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+  x <- opm_mcp(expl.opms, model = ~ J(Well, run),
     linfct = c(Pairs = 1L), output = "mcp", brackets = TRUE)
   got.2 <- annotated(x)
   expect_equal(got, got.2)
   # full substrate names, wells second, brackets
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+  x <- opm_mcp(expl.opms, model = ~ J(run, Well),
     linfct = c(Pairs.Well = 1L), output = "mcp", brackets = TRUE)
   got.2 <- annotated(x)
   expect_equal(got, got.2)
   # abbreviated substrate names, wells first
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(Well, run),
+  x <- opm_mcp(expl.opms, model = ~ J(Well, run),
     linfct = c(Pairs = 1L), output = "mcp", full = FALSE)
   got.2 <- annotated(x)
   expect_equal(got, got.2)
   # abbreviated substrate names, wells second
-  x <- opm_mcp(EXPL.OPMS[, , 2:5], model = ~ J(run, Well),
+  x <- opm_mcp(expl.opms, model = ~ J(run, Well),
     linfct = c(Pairs.Well = 1L), output = "mcp", full = FALSE)
   got.2 <- annotated(x)
   expect_equal(got, got.2)
+  # substrate names w/o coordinates, wells first
+  x <- opm_mcp(expl.opms, model = ~ J(Well, run),
+    linfct = c(Pairs = 1L), output = "mcp", in.parens = FALSE)
+  got.2 <- annotated(x)
+  expect_is(got.2, "numeric")
+  expect_equal(length(got.2), 4L)
+  expect_true(setequal(names(got.2), names(got)))
+  # substrate names w/o coordinates, wells second
+  x <- opm_mcp(expl.opms, model = ~ J(run, Well),
+    linfct = c(Pairs.Well = 1L), output = "mcp", in.parens = FALSE)
+  got.2 <- annotated(x)
+  expect_is(got.2, "numeric")
+  expect_equal(length(got.2), 4L)
+  expect_true(setequal(names(got.2), names(got)))
 })
 
 
@@ -269,8 +289,8 @@ test_that("mcp with specified m.type and with linfct, version 3", {
 ## opm_mcp
 test_that("mcp with specified model", {
   # simple model statement, warning from glht()
-  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run"),
-    linfct = multcomp::mcp(run = "Dunnett")))
+  x <- opm_mcp(EXPL.DF, model = list("run"),
+    linfct = multcomp::mcp(run = "Dunnett"))
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))
@@ -282,8 +302,8 @@ test_that("mcp with specified model", {
 ## opm_mcp
 test_that("mcp with specified model as list #1", {
   # no op, warning from glht()
-  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run", "Well"),
-    linfct = multcomp::mcp(run = "Dunnett")))
+  x <- opm_mcp(EXPL.DF, model = list("run", "Well"),
+    linfct = multcomp::mcp(run = "Dunnett"))
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))
@@ -315,10 +335,10 @@ test_that("misspecified 'linfct' yields an error", {
 
 ## opm_mcp
 test_that("without model, linfct and glht.arg specified", {
-  # very simple, warning from glht()
-  suppressWarnings(x <- opm_mcp(EXPL.DF, model = list("run"),
+  # very simple
+  x <- opm_mcp(EXPL.DF, model = list("run"),
     linfct = multcomp::mcp(run = "Dunnett"),
-    glht.arg = list(alternative = "less")))
+    alternative = "less")
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))
@@ -328,12 +348,9 @@ test_that("without model, linfct and glht.arg specified", {
 
 ## opm_mcp
 test_that("with model, linfct and glht.arg specified", {
-  # number of performed comparisons exceeds 20
-  #expect_warning(
   x <- opm_mcp(EXPL.DF, model = ~ Well, m.type = "lm",
     linfct = multcomp::mcp(Well = "Dunnett"),
-    glht.arg = list(alternative = "less"))
-  #)
+    alternative = "less")
   expect_is(x, "glht")
   expect_equal(x$type, "Dunnett")
   expect_true(is.list(x))

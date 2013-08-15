@@ -101,6 +101,15 @@
   eponymous functions in the \pkg{stats} package for
   details.}
 
+  \item{rhs}{Numeric vector passed to \code{glht} in the
+  \pkg{multcomp} package. Also considered when creating
+  contrasts of the \sQuote{Pairs} type.}
+
+  \item{alternative}{Character scalar also passed to that
+  function (but only if \code{linfct} is or yields a
+  matrix), and also relevant for \sQuote{Pairs}-type
+  contrasts.}
+
   \item{glht.args}{List of additional arguments for the
   multiple comparison procedure passed to \code{glht}. See
   \code{glht} in the \pkg{multcomp} package for details.}
@@ -123,6 +132,9 @@
   \item{split.at}{Character vector. See
   \code{\link{extract}}. Cannot be set in the case of the
   \code{\link{OPMS}} method.}
+
+  \item{sep}{Character scalar (comprising a single
+  character) passed to \code{\link{extract}}.}
 
   \item{...}{Optional argument passed to
   \code{\link{extract}}.}
@@ -329,11 +341,13 @@ if (do.plot)
 \alias{opm_mcp,data.frame-method}
 \usage{
   \S4method{opm_mcp}{OPMS}(object, model, linfct = 1L,
-    m.type = "glm", glht.args = list(), ops = "+", output = "mcp", ...) 
+    m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
+    ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) 
 
   \S4method{opm_mcp}{data.frame}(object, model, linfct = 1L,
-    m.type = c("glm", "lm", "aov"), glht.args = list(), ops = "+",
+    m.type = c("glm", "lm", "aov"), rhs = 0, alternative = "two.sided",
+    glht.args = list(), ops = "+",
     output = c("mcp", "data", "model", "linfct", "contrast"),
-    split.at = param_names("split.at")) 
+    sep = opm_opt("comb.value.join"), split.at = param_names("split.at")) 
 
 }

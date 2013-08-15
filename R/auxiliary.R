@@ -2102,7 +2102,7 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'   error to use a name that is not already contained (\pkg{opm} would never
 #'   query for it anyway). It is also illegal to attempt set novel values whose
 #'   classes are not identical to, or derived from, the classes of the old
-#'   value.
+#'   value. Further, it is illegal to set a zero-length value.
 #'
 #' @param ... Optional arguments. If \code{x} is missing, these arguments are
 #'   concatenated into a list and used as if \code{x} was given as a list (see
@@ -2121,11 +2121,12 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{comb.key.join}{Used by functions that support combination of
 #'       metadata entries converted to data-frame columns immediately after
 #'       their selection. Sets the character string that is used when joining
-#'       old names to new name.}
+#'       old names to new name. Should normally only be a single character.}
 #'     \item{comb.value.join}{Used by functions that support combination of
 #'       metadata entries converted to data-frame columns immediately after
 #'       their selection. Sets the character string that is used when joining
-#'       old values to new values.}
+#'       old values to new values. Should normally only be a single character;
+#'       must be a single character when used by \code{\link{opm_mcp}}.}
 #'     \item{contrast.type}{Character scalar indicating the default type of
 #'       contrast used by \code{\link{opm_mcp}}.}
 #'     \item{css.file}{Character scalar. Default \acronym{CSS} file linked by
@@ -2210,12 +2211,15 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 setGeneric("opm_opt", function(x, ...) standardGeneric("opm_opt"))
 
 setMethod("opm_opt", "list", function(x) {
-  old <- mget(names(x), envir = OPM_OPTIONS)
-  for (i in seq_along(x))
-    if (!all(inherits(x[[i]], class(old[[i]]), TRUE)))
+  old <- mget(names(x), OPM_OPTIONS) # fails if names are missing
+  for (i in seq_along(x)) {
+    if (!length(value <- x[[i]]))
+      stop("empty value provided for key '%s'", names(x)[i])
+    if (!all(inherits(value, class(old[[i]]), TRUE)))
       stop(sprintf("new and old value have conflicting class(es) for key '%s'",
         names(x)[i]))
-  list2env(x, envir = OPM_OPTIONS)
+  }
+  list2env(x, OPM_OPTIONS)
   invisible(old)
 }, sealed = SEALED)
 

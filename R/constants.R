@@ -197,7 +197,7 @@ OPM_OPTIONS$color.borders <- c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E",
   "#993404")
 OPM_OPTIONS$colors <- "w3c"
 OPM_OPTIONS$comb.key.join <- "."
-OPM_OPTIONS$comb.value.join <- " "
+OPM_OPTIONS$comb.value.join <- "/"
 OPM_OPTIONS$contrast.type <- "Tukey"
 OPM_OPTIONS$css.file <- ""
 OPM_OPTIONS$csv.keys <- unname(CSV_NAMES[c("SETUP", "POS")])
