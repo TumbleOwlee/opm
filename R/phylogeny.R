@@ -664,7 +664,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 #' @param discrete.args Optional list of arguments passed from the \sQuote{OPMS}
 #'   method to \code{\link{discrete}}. If set to \code{NULL}, discretization is
 #'   turned off. Ignored if precomputed discretized values are chosen by setting
-#'   \code{subset} to \sQuote{disc}.
+#'   \code{subset} to \code{\link{param_names}("disc.name")}.
 #'
 #' @param ... Optional arguments passed between the methods (i.e., from the
 #'   other methods to the matrix method) or to \code{hwrite} from the
@@ -898,9 +898,9 @@ setMethod("phylo_data", "data.frame", function(object, as.labels = NULL,
   phylo_data(object, ...)
 }, sealed = SEALED)
 
-setMethod("phylo_data", OPMS, function(object, as.labels, subset = "disc",
-    sep = " ", extract.args = list(), join = TRUE,
-    discrete.args = list(range = TRUE, gap = TRUE), ...) {
+setMethod("phylo_data", OPMS, function(object, as.labels,
+    subset = param_names("disc.name"), sep = " ", extract.args = list(),
+    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,
     as.labels = as.labels, as.groups = NULL, subset = subset,
     dups = if (is.logical(join) && L(join))

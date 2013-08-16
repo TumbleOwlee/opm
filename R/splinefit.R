@@ -246,8 +246,8 @@ predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
 #' @method plot opm_model
 #' @S3method plot opm_model
 plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
-  confint = TRUE, level = 0.95, col = rgb(0, 0, 0, 0.3), pch = 20,
-  col.spline = "red", lty.spline = "solid", lwd.spline = 1,
+  add.parameters = FALSE, confint = TRUE, level = 0.95, col = rgb(0, 0, 0, 0.3),
+  pch = 20, col.spline = "red", lty.spline = "solid", lwd.spline = 1,
   lty.confint = "dashed", lwd.confint = 1, ...) {
 
   x <- as.gam(x)
@@ -256,9 +256,9 @@ plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
   data <- get_data(x)
   plot_helper(data, col = col, pch = pch, plot.data = plot.data, ...)
   if (plot.spline)
-    lines(x, confint = confint, level = level, col = col.spline,
-      lty = lty.spline, lwd = lwd.spline, lty.confint = lty.confint,
-      lwd.confint = lwd.confint, ...)
+    lines(x, add.parameters = add.parameters, confint = confint, level = level,
+      col = col.spline, lty = lty.spline, lwd = lwd.spline,
+      lty.confint = lty.confint, lwd.confint = lwd.confint, ...)
 }
 
 #' @rdname plot.opm_model
@@ -272,16 +272,20 @@ plot.opm_model <- function(x, plot.data = TRUE, plot.spline = TRUE,
 #' @method plot opm_models
 #' @S3method plot opm_models
 plot.opm_models <- function(x, which = NULL, plot.data = TRUE,
-  plot.spline = TRUE, confint = TRUE, level = 0.95,
+  plot.spline = TRUE, add.parameters = FALSE, confint = TRUE, level = 0.95,
   col = rgb(0, 0, 0, 0.3), pch = 20, col.spline = "red",
   lty.spline = "solid", lwd.spline = 1, lty.confint = "dashed", lwd.confint = 1,
   ...) {
 
-  invisible(lapply(x[which], plot, plot.data = plot.data,
-    plot.spline = plot.spline, confint = confint, level = level, col = col,
+  if (is.null(which))
+    which <- 1:length(x)
+  lapply(x[which], plot, plot.data = plot.data,
+    plot.spline = plot.spline, add.parameters = add.parameters,
+    confint = confint, level = level, col = col,
     pch = pch, col.spline = col.spline, lty.spline = lty.spline,
     lwd.spline = lwd.spline, lty.confint = lty.confint,
-    lwd.confint = lwd.confint, ...))
+    lwd.confint = lwd.confint, ...)
+  invisible(x)
 }
 
 ################################################################################
@@ -311,9 +315,16 @@ plot.opm_models <- function(x, which = NULL, plot.data = TRUE,
 #'
 #' @method lines opm_model
 #' @S3method lines opm_model
-lines.opm_model <- function(x, confint = TRUE, level = 0.95,
-  col = "red", lty = "solid", lwd = 1, lty.confint = "dashed", lwd.confint = 1,
-  ...) {
+lines.opm_model <- function(x, add.parameters = FALSE, confint = TRUE,
+  level = 0.95, col = "red", lty = "solid", lwd = 1, lty.confint = "dashed",
+  lwd.confint = 1, ...) {
+  mod <- x
+  if (inherits(x, "smooth.spline")) {
+    pred <- predict(x)
+    x <- get_data(x)[, 1]
+    ix <- order(x)
+    lines(x[ix], pred[ix], col = col, lty = lty, lwd = lwd, ...)
+  } else {
     x <- as.gam(x)
     pred <- predict(x, se = TRUE)
     x <- get_data(x)[, 1]
@@ -326,6 +337,9 @@ lines.opm_model <- function(x, confint = TRUE, level = 0.95,
       lines(x[ix], pred$fit[ix] - qnorm(quantile) * pred$se.fit[ix], col = col,
         lty = lty.confint, lwd = lwd.confint, ...)
     }
+  }
+  if (add.parameters)
+    add_parameters(mod, col = col, ...)
 }
 
 #' @rdname lines.opm_model
@@ -338,13 +352,16 @@ lines.opm_model <- function(x, confint = TRUE, level = 0.95,
 #'
 #' @method lines opm_models
 #' @S3method lines opm_models
-lines.opm_models <- function(x, which = NULL, confint = TRUE, level = 0.95,
-  col = "red", lty = "solid", lwd = 1, lty.confint = "dashed", lwd.confint = 1,
-  ...) {
+lines.opm_models <- function(x, which = NULL, add.parameters = FALSE,
+  confint = TRUE, level = 0.95, col = "red", lty = "solid", lwd = 1,
+  lty.confint = "dashed", lwd.confint = 1, ...) {
 
-  invisible(lapply(x[which], lines, confint = confint, level = level, col = col,
-    lty = lty, lwd = lwd, lty.confint = lty.confint, lwd.confint = lwd.confint,
-    ...))
+  if (is.null(which))
+    which <- 1:length(x)
+
+  invisible(lapply(x[which], lines, add.parameters = add.parameters,
+    confint = confint, level = level, col = col, lty = lty, lwd = lwd,
+    lty.confint = lty.confint, lwd.confint = lwd.confint, ...))
 }
 
 
@@ -581,10 +598,27 @@ get_data.smooth.spline_model <- function(x) {
     return(data)
 }
 
+################################################################################
+## (internal) function for coercion of opm_model objects to gam models
 
+#' @title Coerce opm_model objects to gam models
+#' @description Used internally only
+#'
+#' @param x An object of class \code{opm.model}.
+#' @param ... further arguments
+#'
+#' @return An object of class \code{gam}.
+#'
+#' @author Benjamin Hofner
+#' @keywords internal
+#'
 as.gam <- function(x, ...)
   UseMethod("as.gam")
 
+#' @rdname as.gam
+#' @method as.gam opm_model
+#' @S3method as.gam opm_model
+#'
 as.gam.opm_model <- function(x, ...) {
   ret <- x
   if (inherits(x, "gamm")) {

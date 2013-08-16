@@ -522,11 +522,10 @@ setClass(OPMD,
 #'
 #' @param object Matrix of original, aggregated, non-discretized data, or list
 #'   describing the discretization settings.
-#' @param disc Vector of discretized data.
+#' @param disc Vector of discretized data. At this stage, it must already have
+#'   the same wells than \code{object}, in the same order.
 #' @return Character vector with description of problems, empty if there are
 #'   none.
-#' @details At this stage, \code{disc} must already have the same wells than
-#'   \code{object}, in the same order.
 #' @keywords internal
 #'
 setGeneric("opmd_problems",

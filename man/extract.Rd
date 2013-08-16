@@ -22,8 +22,9 @@
   much like \code{as.groups}.}
 
   \item{subset}{Character vector. The parameter(s) to put
-  in the matrix. If it is \sQuote{disc}, discretized data
-  are returned, and \code{ci} is ignored.}
+  in the matrix. If it is
+  \code{\link{param_names}("disc.name")}, discretized data
+  are returned, and \code{ci} is ignored..}
 
   \item{ci}{Logical scalar. Also return the confidence
   intervals?}
@@ -224,7 +225,8 @@ x <- lapply(param_names(), function(name) extract(vaas_4, subset = name,
 x <- do.call(rbind, x)
 
 # get discretized data
-(x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))[, 1:3]
+(x <- extract(vaas_4, subset = param_names("disc.name"),
+  as.labels = list("Strain")))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
 
 ## data-frame method

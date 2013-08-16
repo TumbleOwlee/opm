@@ -177,8 +177,8 @@ stopifnot(!identical(vaas_4, copy)) # as above
     subtype = FALSE) 
 
   \S4method{plate_type}{character}(object, full = FALSE,
-    in.parens = TRUE, max = 100L, clean = TRUE, brackets = FALSE,
-    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
+    brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,
     normalize = TRUE, subtype = FALSE) 
 
   \S4method{plate_type}{factor}(object, ...) 

@@ -728,6 +728,10 @@ setMethod("has_disc", OPM, function(object) {
 #'   }
 #'   Currently the other parameters are not checked, and all \code{NA} values,
 #'   if any, also remain unchanged.
+#' @param full Logical scalar passed to \code{\link{wells}}. This and the
+#'   following arguments affect the column names of the resulting matrix.
+#' @param in.parens Logical scalar also passed to that function.
+#' @param max Numeric scalar also passed to that function.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @family getter-functions
@@ -743,13 +747,15 @@ setMethod("has_disc", OPM, function(object) {
 #' # 'OPMA' methods
 #' # Get full matrix
 #' (x <- aggregated(vaas_1))[, 1:3]
-#' stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
+#' stopifnot(is.matrix(x), dim(x) == c(12, 96))
+#' (y <- aggregated(vaas_1, full = TRUE))[, 1:3] # full names
+#' stopifnot(x == y, nchar(colnames(x)) < nchar(colnames(y)))
 #' # Subsetting
 #' (x <- aggregated(vaas_1, "lambda"))[, 1:3]
-#' stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), any(x < 0))
+#' stopifnot(is.matrix(x), dim(x) == c(3, 96), any(x < 0))
 #' # Now with lambda correction
 #' (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
-#' stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
+#' stopifnot(is.matrix(x), dim(x) == c(3, 96), !any(x < 0))
 #' # settings
 #' (x <- aggr_settings(vaas_1)) # yields named list
 #' stopifnot(is.list(x), !is.null(names(x)))
@@ -764,7 +770,8 @@ setMethod("has_disc", OPM, function(object) {
 setGeneric("aggregated", function(object, ...) standardGeneric("aggregated"))
 
 setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
-    trim = c("no", "full", "medium")) {
+    trim = c("no", "full", "medium"), full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), ...) {
 
   # lambda trimming functions
   trim_into_hours <- function(x, hour, trim) {
@@ -803,7 +810,12 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
   result <- object@aggregated[wanted, , drop = FALSE]
   if (CURVE_PARAMS[2L] %in% subset)
     result <- trim_lambda(result, hours(object), trim = trim)
-  return(result)
+
+  if (L(full))
+    colnames(result) <- map_well_names(wells = colnames(result),
+      plate = plate_type(object), in.parens = in.parens, max = max, ...)
+
+  result
 
 }, sealed = SEALED)
 
@@ -829,6 +841,10 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' \code{\link{do_disc}} for generating discretized data.)
 #'
 #' @param object \code{\link{OPMD}} or \code{\link{OPMS}} object.
+#' @param full Logical scalar passed to \code{\link{wells}}. This and the
+#'   following arguments affect the names of the resulting vector.
+#' @param in.parens Logical scalar also passed to that function.
+#' @param max Numeric scalar also passed to that function.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @family getter-functions
@@ -841,6 +857,8 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' (x <- discretized(vaas_1))[1:3] # => logical vector
 #' stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
+#' (x <- discretized(vaas_1, full = TRUE))[1:3] # => with full names
+#' stopifnot(names(x) == colnames(aggregated(vaas_1, full = TRUE)))
 #' (x <- disc_settings(vaas_1)) # => named list
 #' stopifnot(is.list(x), !is.null(names(x)))
 #'
@@ -854,8 +872,13 @@ setMethod("aggr_settings", OPMA, function(object) {
 #'
 setGeneric("discretized", function(object, ...) standardGeneric("discretized"))
 
-setMethod("discretized", OPMD, function(object) {
-  object@discretized
+setMethod("discretized", OPMD, function(object, full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), ...) {
+  result <- object@discretized
+  if (L(full)) # => currently not very efficient for the OPMS methods
+    names(result) <- map_well_names(wells = names(result),
+      plate = plate_type(object), in.parens = in.parens, max = max, ...)
+  result
 }, sealed = SEALED)
 
 #= disc_settings discretized

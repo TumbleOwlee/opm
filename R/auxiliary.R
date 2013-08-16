@@ -1320,8 +1320,8 @@ prepare_class_names.character <- function(x) {
 #' @param ... Optional further arguments to \code{mapping} (\strong{if} it is a
 #'   function).
 #' @export
-#' @return \code{map_values} returns a list, data frame, character vector or
-#'   \code{NULL}.
+#' @return \code{map_values} returns a list, data frame, a character or logical
+#'   vector or \code{NULL}.
 #'
 #'   \code{map_names} yields a character vector if \code{mapping} is missing,
 #'   otherwise an \R object of the same class than \code{object}.
@@ -1338,6 +1338,12 @@ prepare_class_names.character <- function(x) {
 #'   remaining ones are returned unchanged. It is also possible to map between
 #'   classes using coercion functions. For convenience in programming, methods
 #'   for the \sQuote{NULL} class are also available.
+#'
+#'   Mapping of logical vectors using another vector expects (at least) three
+#'   elements within the mapping vector, i.e. the values to be used for
+#'   \code{FALSE}, \code{NA} and \code{TRUE} elements in \code{object}. Nothing
+#'   is modified if the mapping is \code{NULL}. The default mapping vector
+#'   \code{c(1L, 2L, 3L)} is used if \code{mapping} is missing.
 #'
 #'   In the case of lists, the function passed to \code{map_names} is not
 #'   applied to list elements which are not themselves lists, even if they have
@@ -1736,6 +1742,33 @@ setMethod("map_values", c("factor", "character"), function(object, mapping) {
 
 setMethod("map_values", c("factor", "missing"), function(object) {
   map_values(levels(object))
+}, sealed = SEALED)
+
+#-------------------------------------------------------------------------------
+
+setMethod("map_values", c("logical", "function"), function(object, mapping,
+    ...) {
+  result <- mapping(object, ...)
+  mostattributes(result) <- attributes(object)
+  result
+}, sealed = SEALED)
+
+setMethod("map_values", c("logical", "vector"), function(object, mapping) {
+  result <- ifelse(object, mapping[[3L]], mapping[[1L]])
+  result[is.na(result)] <- mapping[[2L]]
+  attributes(result) <- attributes(object)
+  result
+}, sealed = SEALED)
+
+setMethod("map_values", c("logical", "NULL"), function(object, mapping) {
+  object
+}, sealed = SEALED)
+
+setMethod("map_values", c("logical", "missing"), function(object) {
+  result <- object * 2L + 1L
+  result[is.na(result)] <- 2L
+  attributes(result) <- attributes(object)
+  result
 }, sealed = SEALED)
 
 #-------------------------------------------------------------------------------
@@ -2160,6 +2193,8 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
 #'       that must be in sync with it for joining metadata keys used in nested
 #'       queries (because the resulting object is \sQuote{flat}).}
+#'     \item{max.chars}{Integer scalar used when abbreviating full substrate
+#'       names. See \code{\link{wells}} for an example.}
 #'     \item{min.mode}{Used when making discretization results uniform within a
 #'       group. The minimum proportion the most frequent value much reach to be
 #'       used for representing all values (if less, frequent, \code{NA} is

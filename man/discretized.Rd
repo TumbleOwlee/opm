@@ -6,6 +6,15 @@
   \item{object}{\code{\link{OPMD}} or \code{\link{OPMS}}
   object.}
 
+  \item{full}{Logical scalar passed to \code{\link{wells}}.
+  This and the following arguments affect the names of the
+  resulting vector.}
+
+  \item{in.parens}{Logical scalar also passed to that
+  function.}
+
+  \item{max}{Numeric scalar also passed to that function.}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
@@ -24,6 +33,8 @@
 (x <- discretized(vaas_1))[1:3] # => logical vector
 stopifnot(is.logical(x), !is.matrix(x), length(x) == dim(x)[2L])
 stopifnot(names(x) == colnames(aggregated(vaas_1)))
+(x <- discretized(vaas_1, full = TRUE))[1:3] # => with full names
+stopifnot(names(x) == colnames(aggregated(vaas_1, full = TRUE)))
 (x <- disc_settings(vaas_1)) # => named list
 stopifnot(is.list(x), !is.null(names(x)))
 
@@ -58,7 +69,8 @@ stopifnot(duplicated(x)[-1])
 \alias{disc_settings-methods}
 \alias{disc_settings,OPMS-method}
 \usage{
-  \S4method{discretized}{OPMD}(object) 
+  \S4method{discretized}{OPMD}(object, full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), ...) 
 
   \S4method{disc_settings}{OPMD}(object) 
 

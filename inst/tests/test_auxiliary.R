@@ -491,6 +491,21 @@ test_that("values in character vectors can be mapped", {
 
 
 ## map_values
+test_that("values in logical vectors can be mapped", {
+  x <- c(i = TRUE, j = FALSE, k = NA, l = TRUE)
+  got <- map_values(x, NULL)
+  expect_equal(x, got)
+  got <- map_values(x)
+  expect_is(got, "integer")
+  expect_equal(names(got), names(x))
+  got <- map_values(x, LETTERS)
+  expect_equal(names(got), names(x))
+  expect_equivalent(got, c("C", "A", "B", "C"))
+  expect_error(map_values(x, LETTERS[1:2]))
+})
+
+
+## map_values
 test_that("values in lists can be mapped using character vectors", {
 
   map <- c(a = '1', b = '2', c = '3')

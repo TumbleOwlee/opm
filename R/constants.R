@@ -85,6 +85,10 @@ THEOR_RANGE <- c(0, 400)
 #
 CURVE_PARAMS <- c("mu", "lambda", "A", "AUC")
 
+# An addtion: the name used to select the discretized values.
+#
+DISC_PARAM <- "disc"
+
 
 # Reserved metadata names (they CAN be used by in the metadata but might yield
 # problems).
@@ -212,6 +216,7 @@ OPM_OPTIONS$group.name <- "Group"
 OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$html.class <- "section-level-%i"
 OPM_OPTIONS$key.join <- "."
+OPM_OPTIONS$max.chars <- 100L
 OPM_OPTIONS$min.mode <- 0.5
 OPM_OPTIONS$phylo.fmt <- "epf"
 OPM_OPTIONS$split <- "/.-_"

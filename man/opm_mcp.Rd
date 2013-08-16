@@ -136,8 +136,12 @@
   \item{sep}{Character scalar (comprising a single
   character) passed to \code{\link{extract}}.}
 
-  \item{...}{Optional argument passed to
-  \code{\link{extract}}.}
+  \item{...}{Optional arguments passed to
+  \code{\link{extract}}. Most of them would be passed to
+  \code{\link{wells}} for creating substrate names. Some
+  restrictions are necessary here if the resuling object
+  shall latter on be analysed with \code{\link{annotated}};
+  see there for details.}
 }
 \value{
   The kind of object returned by this function are

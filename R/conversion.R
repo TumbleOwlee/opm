@@ -487,7 +487,8 @@ setMethod("rep", OPMS, function(x, ...) {
 #'   columns, much like \code{as.groups}.
 #'
 #' @param subset Character vector. The parameter(s) to put in the matrix. If it
-#'   is \sQuote{disc}, discretized data are returned, and \code{ci} is ignored.
+#'   is \code{\link{param_names}("disc.name")}, discretized data are returned,
+#'   and \code{ci} is ignored..
 #' @param ci Logical scalar. Also return the confidence intervals?
 #' @param trim Character scalar. See \code{\link{aggregated}} for details.
 #' @param dataframe Logical scalar. Return data frame or matrix?
@@ -645,7 +646,8 @@ setMethod("rep", OPMS, function(x, ...) {
 #' x <- do.call(rbind, x)
 #'
 #' # get discretized data
-#' (x <- extract(vaas_4, subset = "disc", as.labels = list("Strain")))[, 1:3]
+#' (x <- extract(vaas_4, subset = param_names("disc.name"),
+#'   as.labels = list("Strain")))[, 1:3]
 #' stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
 #'
 #' ## data-frame method
@@ -748,15 +750,15 @@ setMethod("extract", OPMS, function(object, as.labels,
   }
 
   # Collect parameters in a matrix
-  subset <- match.arg(subset, c(unlist(map_param_names(plain = TRUE)), "disc"))
-  if (subset == "disc") {
+  subset <- match.arg(subset,
+    unlist(map_param_names(plain = TRUE, disc = TRUE)))
+  if (subset == DISC_PARAM) {
     ci <- FALSE
-    result <- discretized(object)
+    result <- discretized(object, full = full, max = max, ...)
   } else {
     result <- do.call(rbind, lapply(object@plates, FUN = aggregated,
-      subset = subset, ci = ci, trim = trim))
+      subset = subset, ci = ci, trim = trim, full = full, max = max, ...))
   }
-  colnames(result) <- wells(object, full = full, max = max, ...)
 
   if (dataframe) {
 

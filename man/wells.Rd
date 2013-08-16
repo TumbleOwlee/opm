@@ -211,12 +211,13 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
   \S4method{wells}{OPMS}(object, ...) 
 
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = plate_type(object)) 
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    plate = plate_type(object)) 
 
   \S4method{wells}{ANY}(object, full = TRUE, in.parens = FALSE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = "PM01") 
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE, plate = "PM01") 
 
   \S4method{wells}{missing}(object, ...) 
 

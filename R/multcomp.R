@@ -143,7 +143,10 @@ check_mcp_sep <- function(sep) {
 #' @param sep Character scalar (comprising a single character) passed to
 #'   \code{\link{extract}}.
 #'
-#' @param ... Optional argument passed to \code{\link{extract}}.
+#' @param ... Optional arguments passed to \code{\link{extract}}. Most of them
+#'   would be passed to \code{\link{wells}} for creating substrate names. Some
+#'   restrictions are necessary here if the resuling object shall latter on be
+#'   analysed with \code{\link{annotated}}; see there for details.
 #'
 #' @return The kind of object returned by this function are determined by the
 #'   \code{output} argument: \describe{
@@ -560,12 +563,19 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   Alternatively, character scalars such as \sQuote{!75.0}, \sQuote{<100},
 #'   \sQuote{>150} or \sQuote{=85.0} can be provided, with the first character
 #'   translated to the corresponding meaning in the list above and the remaining
-#'   string translated to the cutoff to be used. If a numeric scalar is
-#'   provided, it is used as cutoff in conjunction with the \sQuote{different}
-#'   mode described above.
+#'   string coerced to the cutoff to be used. If a numeric scalar is provided,
+#'   it is used as cutoff in conjunction with the \sQuote{different} mode
+#'   described above.
+#' @param lmap Vector to be used for mapping the created logical values, if any.
+#'   See \code{\link{map_values}} and the examples below for details. If
+#'   \code{NULL}, ignored. Also ignored if numeric instead of logical values are
+#'   created.
 #' @param sep For the \code{opm_glht} method, the single character that has
 #'   been used as eponymous argument in the call to \code{\link{opm_mcp}}.
 #'   Necessary to unambiguously match substrate names within contrast names.
+#'   For the \code{\link{OPMS}} method, a numeric scalar working like the
+#'   \code{cutoff} argument of \code{\link{listing}}. Has only an effect if
+#'   discretized values are chosen (and are available).
 #' @return For \code{how = "ids"}, a numeric or logical vector whose names
 #'   are the IDs of the respective substrates in the database as chosen by
 #'   \code{what}.
@@ -573,35 +583,114 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   For \code{how = "values"}, a numeric matrix containing the chosen computed
 #'   values together with data obtained via web service associated with the
 #'   chosen database, in analogy to the \code{download} argument of
-#'   \code{\link{substrate_info}}.
+#'   \code{\link{substrate_info}}. This options is not available for all values
+#'   of \code{what} and requires additional libraries. See
+#'   \code{\link{substrate_info}} for details.
+#' @details
+#'   All methods use \code{\link{substrate_info}} for translating substrate
+#'   names to IDs. The methods differ only in the way numeric and logical values
+#'   are generated.
 #'
+#'   The \code{\link{OPMA}} methods simply choses a certain parameter. The
+#'   \code{\link{OPMD}} method can also return discretized values and optionally
+#'   translates them using \code{lmap}.
+#'
+#'   The \code{\link{OPMS}} method returns the averages of the selected
+#'   parameter estimates over all contained plates. It is an error to select
+#'   discretized values instead if they are not available for all plates.
+#'   If otherwise, the discretized values are aggregated as indicated by the
+#'   \code{sep} argument.
+#'
+#'   The \code{opm_glht} method makes only sense if each coefficient estimated
+#'   by \code{\link{opm_mcp}} can be linked to a single substrate. This is
+#'   usually \strong{only} possible for the \sQuote{Dunnett} and \sQuote{Pairs}
+#'   type of contrast if applied to the wells. Typical applications are the
+#'   comparison of a single control well to a series of other wells and the
+#'   comparison of all or a subset of the wells between two metadata-defined
+#'   groups. See \code{\link{opm_mcp}} for details.
+#'
+#'   Because the current implementation of the \code{opm_glht} method attempts
+#'   to identify the substrates within the names of the estimated coefficients
+#'   (differences of means), some care must be taken when translating well
+#'   coordinates to substrate names in the call to \code{\link{opm_mcp}}.
+#'   Substrate IDs cannot be identified if they are abbreviated, i.e. a low
+#'   value of the \code{max} argument passed to \code{\link{wells}} is used, and
+#'   not accompanied by the well coordinates, i.e. if the \code{in.parens}
+#'   argument is set to \code{FALSE}.
+#'
+#'   In the case of the \sQuote{Pairs} type of contrasts, some problems can be
+#'   avoided by setting the \sQuote{comb.value.join} entry of
+#'   \code{\link{opm_opt}} to another value. The same value must be used in the
+#'   calls to \code{\link{opm_mcp}} and \code{annotated}, however.
 #' @family multcomp-functions
 #' @keywords htest
 #' @export
 #' @examples
+#'
+#' ## OPMD and OPMS methods
+#'
+#' # default settings
+#' head(x <- annotated(vaas_1))
+#' stopifnot(is.numeric(x), x > 0, !is.null(names(x)))
+#' head(y <- annotated(vaas_4)) # this averages per well over all plates
+#' stopifnot(is.numeric(x), y > 0, identical(names(y), names(x)))
+#'
+#' # AUC instead of maximum height
+#' head(y <- annotated(vaas_1, output = param_names()[4]))
+#' stopifnot(y > x, identical(names(y), names(x)))
+#'
+#' # generation of logical vectors
+#' head(y <- annotated(vaas_4, output = param_names("disc.name")))
+#' stopifnot(is.logical(y), identical(names(y), names(x)))
+#'
+#' # mapping of logical vectors: FALSE => 1, NA => 2, TRUE => 3
+#' head(y <- annotated(vaas_4, output = param_names("disc.name"), lmap = 1:3))
+#' stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
+#'
+#' ## opm_glht method
 #' ## TODO
 #'
 setGeneric("annotated", function(object, ...) standardGeneric("annotated"))
 
 setMethod("annotated", "OPMA", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param")) {
-  stop(NOT_YET)
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) {
+  result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
+    in.parens = FALSE, max = 10000L)[1L, ]
+  convert_annotation_vector(result, how, what)
 }, sealed = SEALED)
 
 setMethod("annotated", "OPMD", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param")) {
-  stop(NOT_YET)
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) {
+  output <- match.arg(output,
+    unlist(map_param_names(plain = TRUE, disc = TRUE)))
+  result <- if (output == DISC_PARAM)
+    map_values(discretized(object, full = TRUE, in.parens = FALSE,
+      max = 10000L), lmap)
+  else
+    aggregated(object, subset = output, ci = FALSE, full = TRUE,
+      in.parens = FALSE, max = 10000L)[1L, ]
+  convert_annotation_vector(result, how, what)
 }, sealed = SEALED)
 
 setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param")) {
-  stop(NOT_YET)
+    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode")) {
+  output <- match.arg(output,
+    unlist(map_param_names(plain = TRUE, disc = TRUE)))
+  if (output == DISC_PARAM) { # will crash unless all are discretized
+    result <- discretized(object, full = TRUE, in.parens = FALSE, max = 10000L)
+    result <- map_values(reduce_to_mode.matrix(result, L(sep), TRUE), lmap)
+  } else {
+    result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
+      in.parens = FALSE, max = 10000L)
+    result <- colMeans(do.call(rbind, result))
+  }
+  convert_annotation_vector(result, how, what)
 }, sealed = SEALED)
 
 setOldClass("opm_glht")
 
 setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
-    output = "numeric", sep = opm_opt("comb.value.join")) {
+    output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join")) {
 
   names_to_substrates <- function(x, sep, plate) {
 
@@ -635,11 +724,24 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     # Use full substrate name if available; otherwise translate well coordinate
     # using the given plate name.
     get_substrate <- function(x, plate) {
-      if (all(grepl("^[A-Z]\\d{2}\\s(?:\\(.+\\)|\\[.+\\])$", x, FALSE, TRUE)))
-        return(substring(x, 6L, nchar(x) - 1L))
-      if (all(grepl("^[A-Z]\\d{2}$", x, FALSE, TRUE)))
-        return(wells(x, TRUE, FALSE, plate = plate)[, 1L])
-      x
+      if (length(plate)) {
+        # because 'paren.sep' may be anything, we cannot be too strict here
+        if (all(grepl("^[A-Z]\\d{2}(?:.*?(?:\\(.+\\)|\\[.+\\]))?$", x, FALSE,
+            TRUE)))
+          wells(substring(x, 1L, 3L), TRUE, FALSE, plate = plate)[, 1L]
+        else
+          x # assume plain substrate names without wells as prefix
+      } else {
+        pats <- c(
+          # we can have paired parentheses in substrate names
+          "^[A-Z]\\d{2}.*\\(((?:[^()]+|\\([^()]+\\))+)\\)$",
+          # but we have no brackets in substrate names
+          "^[A-Z]\\d{2}.*\\[([^\\[\\]]+)\\]$")
+        for (p in pats)
+          if (all_matched(m <- regexpr(p, x, FALSE, TRUE)))
+            return(get_submatch(1L, m, x))
+        x
+      }
     }
 
     sep <- check_mcp_sep(sep)
@@ -649,7 +751,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
 
     if (length(result <- match_Pairs_type(x, sep)))
       return(get_substrate(result, plate))
-    if (length(result <- match_Dunnett_type(x, sep)))
+    if (length(result <- match_Dunnett_type(x)))
       return(get_substrate(result, plate))
     # other patterns to be added here
 
@@ -657,21 +759,20 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     rep.int(NA_character_, length(x))
   }
 
-  names_to_ids <- function(x, what, sep, plate) {
-    substrate_info(names_to_substrates(x, sep, plate), what)
-  }
-
-  create_vector <- function(x, how, cutoff) {
+  create_vector <- function(x, how, cutoff, lmap) {
     if (!is.matrix(x))
       stop("expected matrix, got ", class(x))
     structure(case(how,
       numeric = x[, "Estimate"],
-      different = ifelse(x[, "lwr"] > cutoff, 1L,
-        ifelse(x[, "upr"] < cutoff, -1L, 0L)),
-      equal = as.integer(cutoff > x[, "lwr"] & cutoff < x[, "upr"]),
-      larger = as.integer(x[, "lwr"] > cutoff),
-      smaller = as.integer(x[, "upr"] < cutoff)
-    ), names = rownames(x), how = how, cutoff = cutoff)
+      different = if (length(lmap))
+        map_values(ifelse(x[, "lwr"] > cutoff, TRUE,
+          ifelse(x[, "upr"] < cutoff, FALSE, NA)), lmap)
+      else
+        x[, "lwr"] > cutoff | x[, "upr"] < cutoff,
+      equal = map_values(cutoff > x[, "lwr"] & cutoff < x[, "upr"], lmap),
+      larger = map_values(x[, "lwr"] > cutoff, lmap),
+      smaller = map_values(x[, "upr"] < cutoff, lmap)
+    ), names = rownames(x), how = how, cutoff = cutoff, lmap = lmap)
   }
 
   if (is.numeric(L(output))) {
@@ -685,14 +786,38 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     output <- tolower(output)
     cutoff <- get("threshold", OPM_OPTIONS)
   }
-  result <- create_vector(confint(object)$confint, output, cutoff)
-  names(result) <- names_to_ids(names(result), what, sep,
+  result <- create_vector(confint(object)$confint, output, cutoff, lmap)
+  names(result) <- names_to_substrates(names(result), sep,
     attr(object, opm_string())$plate.type)
-  case(how, ids = result, values = stop(NOT_YET))
-
+  convert_annotation_vector(result, how, what)
 }, sealed = SEALED)
 
 
 ################################################################################
 
+
+## NOTE: not an S4 method because checks are elsewhere
+
+#' Convert annotation vector
+#'
+#' Convert an annotation vector. Helper function for \code{\link{annotated}}.
+#'
+#' @param x Named numeric or logical vector. At this stage, substrate names
+#'   should be used as vector names.
+#' @param how The kind of conversion to conduct. See \code{\link{annotated}}.
+#' @param what The database to use if information shall be gathered.
+#' @return Numeric vector or matrix.
+#' @keywords internal
+#'
+convert_annotation_vector <- function(x, how, what) {
+  ids <- substrate_info(names(x), what)
+  case(match.arg(how, c("ids", "values")),
+    ids = structure(x, names = ids, comment = names(x)),
+    values = structure(cbind(Value = x, collect(web_query(ids, what))),
+      comment = ids)
+  )
+}
+
+
+################################################################################
 

@@ -117,7 +117,8 @@
   from the \sQuote{OPMS} method to \code{\link{discrete}}.
   If set to \code{NULL}, discretization is turned off.
   Ignored if precomputed discretized values are chosen by
-  setting \code{subset} to \sQuote{disc}.}
+  setting \code{subset} to
+  \code{\link{param_names}("disc.name")}.}
 
   \item{...}{Optional arguments passed between the methods
   (i.e., from the other methods to the matrix method) or to
@@ -373,9 +374,9 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
   \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
     what = "numeric", sep = " ", ...) 
 
-  \S4method{phylo_data}{OPMS}(object, as.labels, subset = "disc",
-    sep = " ", extract.args = list(), join = TRUE,
-    discrete.args = list(range = TRUE, gap = TRUE), ...) 
+  \S4method{phylo_data}{OPMS}(object, as.labels,
+    subset = param_names("disc.name"), sep = " ", extract.args = list(),
+    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) 
 
   \S4method{phylo_data}{OPMD_Listing}(object,
     html.args = html_args(), run.tidy = FALSE) 

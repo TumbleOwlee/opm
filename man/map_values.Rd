@@ -80,8 +80,8 @@
   (\strong{if} it is a function).}
 }
 \value{
-  \code{map_values} returns a list, data frame, character
-  vector or \code{NULL}.
+  \code{map_values} returns a list, data frame, a character
+  or logical vector or \code{NULL}.
 
   \code{map_names} yields a character vector if
   \code{mapping} is missing, otherwise an \R object of the
@@ -107,6 +107,14 @@
   between classes using coercion functions. For convenience
   in programming, methods for the \sQuote{NULL} class are
   also available.
+
+  Mapping of logical vectors using another vector expects
+  (at least) three elements within the mapping vector, i.e.
+  the values to be used for \code{FALSE}, \code{NA} and
+  \code{TRUE} elements in \code{object}. Nothing is
+  modified if the mapping is \code{NULL}. The default
+  mapping vector \code{c(1L, 2L, 3L)} is used if
+  \code{mapping} is missing.
 
   In the case of lists, the function passed to
   \code{map_names} is not applied to list elements which
@@ -340,6 +348,10 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \alias{map_values,factor,function-method}
 \alias{map_values,factor,character-method}
 \alias{map_values,factor,missing-method}
+\alias{map_values,logical,function-method}
+\alias{map_values,logical,vector-method}
+\alias{map_values,logical,NULL-method}
+\alias{map_values,logical,missing-method}
 \alias{map_values,NULL,function-method}
 \alias{map_values,NULL,character-method}
 \alias{map_values,NULL,missing-method}
@@ -407,6 +419,15 @@ stopifnot(y == c("a", "b"), names(y) == y)
   \S4method{map_values}{factor,character}(object, mapping) 
 
   \S4method{map_values}{factor,missing}(object) 
+
+  \S4method{map_values}{logical,function}(object, mapping,
+    ...) 
+
+  \S4method{map_values}{logical,vector}(object, mapping) 
+
+  \S4method{map_values}{logical,NULL}(object, mapping) 
+
+  \S4method{map_values}{logical,missing}(object) 
 
   \S4method{map_values}{NULL,function}(object, mapping, ...) 
 

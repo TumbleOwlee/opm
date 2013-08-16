@@ -33,6 +33,8 @@
 #'   \describe{
 #'     \item{param.names}{Names of the estimated curve parameters used
 #'     internally and in the output}
+#'     \item{disc.name}{Alternative name used to select discretized values
+#'       instead.}
 #'     \item{reserved.md.names}{Names that should not be used in metadata
 #'     entries because they are used as predefined column names by functions
 #'     such as \code{\link{flatten}}.}
@@ -104,9 +106,10 @@ opm_files <- function(
 #' @export
 #'
 param_names <- function(
-    what = c("param.names", "reserved.md.names", "split.at")) {
+    what = c("param.names", "disc.name", "reserved.md.names", "split.at")) {
   case(match.arg(what),
     param.names = CURVE_PARAMS,
+    disc.name = DISC_PARAM,
     reserved.md.names = unname(RESERVED_NAMES),
     split.at = RESERVED_NAMES[["parameter"]]
   )
@@ -281,8 +284,8 @@ setMethod("plate_type", OPM, function(object, ..., normalize = FALSE,
 }, sealed = SEALED)
 
 setMethod("plate_type", "character", function(object, full = FALSE,
-    in.parens = TRUE, max = 100L, clean = TRUE, brackets = FALSE,
-    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
+    brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,
     normalize = TRUE, subtype = FALSE) {
   do_normalize <- function(object, subtype) {
     normalize_pm <- function(x, subtype) {
@@ -381,16 +384,19 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 #'   \code{subset} and \code{ci}?
 #' @param opm.fast Logical scalar. Produce the mapping for the
 #'   \sQuote{opm-fast} method instead?
+#' @param disc Logical scalar. Add the name used to select discretized values?
 #' @return Named list with old names as keys, new ones as values.
 #' @keywords internal
 #'
 map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
-    opm.fast = FALSE) {
+    opm.fast = FALSE, disc = FALSE) {
   part.1 <- as.list(CURVE_PARAMS)
   names(part.1) <- if (opm.fast)
     c("mu", "lambda", "A", "AUC")
   else
     c("mu", "lambda", "A", "integral")
+  if (disc)
+    part.1$disc <- DISC_PARAM
   if (plain)
     return(part.1)
   if (length(subset) > 0L) {
@@ -692,8 +698,9 @@ to_sentence.logical <- function(x, html, ...) {
 setGeneric("wells", function(object, ...) standardGeneric("wells"))
 
 setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = plate_type(object)) {
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    plate = plate_type(object)) {
   result <- setdiff(colnames(measurements(object)), HOUR)
   if (L(full))
     map_well_names(result, L(plate), in.parens = in.parens,
@@ -704,8 +711,8 @@ setMethod("wells", OPM, function(object, full = FALSE, in.parens = TRUE,
 }, sealed = SEALED)
 
 setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
-    max = 100L, brackets = FALSE, clean = TRUE, word.wise = FALSE,
-    paren.sep = " ", downcase = FALSE, plate = "PM01") {
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE, plate = "PM01") {
   result <- well_index(object, rownames(WELL_MAP))
   if (!is.character(result))
     result <- rownames(WELL_MAP)[result]
@@ -740,10 +747,8 @@ setMethod("listing", OPMD, function(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) {
-  res <- discretized(x)
-  names(res) <- wells(object = x, full = full, in.parens = in.parens,
-    downcase = downcase, ...)
-  res <- to_sentence(res, html)
+  res <- to_sentence(discretized(object = x, full = full,
+    in.parens = in.parens, downcase = downcase, ...), html)
   if (length(as.groups)) {
     res <- matrix(res, 1L, length(res), FALSE, list(NULL, names(res)))
     rownames(res) <- paste0(metadata(x, as.groups, exact, strict),
@@ -773,7 +778,7 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
     rownames(res) <- seq_len(nrow(res))
     return(add_stuff(res, html, cutoff))
   }
-  res <- extract(object = x, subset = "disc", as.groups = as.groups,
+  res <- extract(object = x, subset = DISC_PARAM, as.groups = as.groups,
     sep = sep, exact = exact, strict = strict, downcase = downcase,
     full = full, in.parens = in.parens, dataframe = FALSE, as.labels = NULL,
     ...)

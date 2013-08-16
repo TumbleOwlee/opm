@@ -29,6 +29,15 @@
   Currently the other parameters are not checked, and all
   \code{NA} values, if any, also remain unchanged.}
 
+  \item{full}{Logical scalar passed to \code{\link{wells}}.
+  This and the following arguments affect the column names
+  of the resulting matrix.}
+
+  \item{in.parens}{Logical scalar also passed to that
+  function.}
+
+  \item{max}{Numeric scalar also passed to that function.}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
@@ -51,13 +60,15 @@
 # 'OPMA' methods
 # Get full matrix
 (x <- aggregated(vaas_1))[, 1:3]
-stopifnot(is.matrix(x), identical(dim(x), c(12L, 96L)))
+stopifnot(is.matrix(x), dim(x) == c(12, 96))
+(y <- aggregated(vaas_1, full = TRUE))[, 1:3] # full names
+stopifnot(x == y, nchar(colnames(x)) < nchar(colnames(y)))
 # Subsetting
 (x <- aggregated(vaas_1, "lambda"))[, 1:3]
-stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), any(x < 0))
+stopifnot(is.matrix(x), dim(x) == c(3, 96), any(x < 0))
 # Now with lambda correction
 (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
-stopifnot(is.matrix(x), identical(dim(x), c(3L, 96L)), !any(x < 0))
+stopifnot(is.matrix(x), dim(x) == c(3, 96), !any(x < 0))
 # settings
 (x <- aggr_settings(vaas_1)) # yields named list
 stopifnot(is.list(x), !is.null(names(x)))
@@ -93,7 +104,8 @@ stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 \alias{aggr_settings,OPMS-method}
 \usage{
   \S4method{aggregated}{OPMA}(object, subset = NULL, ci = TRUE,
-    trim = c("no", "full", "medium")) 
+    trim = c("no", "full", "medium"), full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), ...) 
 
   \S4method{aggr_settings}{OPMA}(object) 
 

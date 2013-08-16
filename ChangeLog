@@ -14,6 +14,8 @@
 
 - new generic function annotated() with a variety of methods and options
 - substrate_info() gets a 'download' argument
+- aggregated() and discretized() get a 'full' argument (and other ones that
+  that affect the names or column names)
 - new spline-fitting facilities (see set_spline_options())
 - new plate_type() method
 - new infix-operator methods for querying metadata
@@ -25,6 +27,7 @@
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
+- opm_opt() gets a 'max.chars' entry
 
 - streamlined the documentation (merged many entries) in the manual
 

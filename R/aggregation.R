@@ -87,7 +87,8 @@ extract_curve_params.grofit <- function(x, ...) {
 #' @method extract_curve_params opm_model
 #'
 extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
-  x <- as.gam(x)
+  if (!inherits(x, "smooth.spline"))
+    x <- as.gam(x)
   pred <- fitted(x)
   x <- get_data(x)[, 1]
   ## quick and dirty
@@ -147,10 +148,14 @@ summary.splines_bootstrap <- function (object, ...) {
     A.sd <- sd(res$A, na.rm = TRUE)
     AUC.sd <- sd(res$AUC, na.rm = TRUE)
     table <- c(mu, lambda, A, AUC,
-      mu - qnorm(0.975) * mu.sd, mu + qnorm(0.975) * mu.sd,
-      lambda - qnorm(0.975) * lambda.sd, lambda + qnorm(0.975) * lambda.sd,
-      A - qnorm(0.975) * A.sd, A + qnorm(0.975) * A.sd,
-      AUC - qnorm(0.975) * AUC.sd, AUC + qnorm(0.975) * AUC.sd)
+      mu - qnorm(0.975) * mu.sd,
+      lambda - qnorm(0.975) * lambda.sd,
+      A - qnorm(0.975) * A.sd,
+      AUC - qnorm(0.975) * AUC.sd,
+      mu + qnorm(0.975) * mu.sd,
+      lambda + qnorm(0.975) * lambda.sd,
+      A + qnorm(0.975) * A.sd,
+      AUC + qnorm(0.975) * AUC.sd)
     table <- data.frame(t(table))
     colnames(table) <- cnames
     return(table)
@@ -431,7 +436,7 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
       })
       class(res) <- "splines_bootstrap"
       params <- as.vector(summary(res))
-      return(list(params = params, model = mod))
+      return(list(params = params, model = mod, bootstrap = res))
     }
     list(params = extract_curve_params(mod), model = mod)
   }
@@ -494,12 +499,17 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
 
         if (options$save.models) {
             opm_models <- lapply(result, function(x) x$model)
+            if (boot > 0) {
+              opm_bootstrap <- lapply(result, function(x) x$bootstrap)
+            } else {
+              opm_bootstrap <- NA
+            }
             names(opm_models) <- wells
             class(opm_models) <- "opm_models"
             if (is.null(options$filename))
               options$filename <- paste0("opm_models_",
                 format(Sys.time(), "%Y-%m-%d_%H:%M:%S"), ".RData")
-            save("opm_models", file = options$filename)
+            save("opm_models", "opm_bootstrap", file = options$filename)
             cat("Models saved as 'opm_models' on disk in file\n  ",
               getwd(), "/", options$filename, "\n\n", sep = "")
         }

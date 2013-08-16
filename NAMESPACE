@@ -1,4 +1,5 @@
 S3method(Predict.matrix,psp.smooth)
+S3method(as.gam,opm_model)
 S3method(borders,Ckmeans.1d.dp)
 S3method(borders,kmeans)
 S3method(borders,kmeanss)

@@ -183,11 +183,11 @@ test_that("Pairs-like tests are converted by annotated() to binary data", {
     linfct = c(Pairs = 1L), output = "mcp")
 
   got <- annotated(x, output = "different")
-  expect_is(got, "integer")
+  expect_is(got, "logical")
   expect_equal(length(got), 4L)
   expect_is(names(got), "character")
   expect_true(!any(is.na(names(got))))
-  expect_true(all(got == -1))
+  expect_true(all(got))
 
   got.2 <- annotated(x, output = "!0")
   expect_equal(got, got.2)
@@ -196,20 +196,20 @@ test_that("Pairs-like tests are converted by annotated() to binary data", {
 
   got.2 <- annotated(x, output = "=0")
   expect_equal(names(got), names(got.2))
-  expect_is(got.2, "integer")
-  expect_true(all(got.2 == 0))
+  expect_is(got.2, "logical")
+  expect_true(all(!got.2))
   got.3 <- annotated(x, output = "equal")
   expect_equal(got.3, got.2)
 
   got.2 <- annotated(x, output = ">0")
-  expect_is(got.2, "integer")
-  expect_true(all(got.2 == 0))
+  expect_is(got.2, "logical")
+  expect_true(all(!got.2))
   got.3 <- annotated(x, output = "larger")
   expect_equal(got.3, got.2)
 
   got.2 <- annotated(x, output = "<0")
-  expect_is(got.2, "integer")
-  expect_true(all(got.2 == 1))
+  expect_is(got.2, "logical")
+  expect_true(all(got.2))
   got.3 <- annotated(x, output = "smaller")
   expect_equal(got.3, got.2)
 
@@ -427,6 +427,13 @@ test_that("'Pairs' contrast type can be combined with non-syntactic names", {
   expect_equal(length(y), 9)
   expect_equal(length(coef(y)), 7)
 })
+
+
+################################################################################
+
+
+## convert_annotation_vector
+## UNTESTED
 
 
 ################################################################################

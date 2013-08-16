@@ -100,6 +100,12 @@ test_that("the internally used parameter names are OK", {
 })
 
 
+## DISC_PARAM
+test_that("the parameter name for discretized values is OK", {
+  expect_false(DISC_PARAM %in% CURVE_PARAMS)
+})
+
+
 ## RESERVED_NAMES
 test_that("the internally used reserved metadata names are OK", {
   # this strange test is intended to ensure that one thinks twice before

@@ -4,6 +4,10 @@ library(testthat)
 context("Testing the opm naming functions")
 
 
+# get example objects
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
 
 ################################################################################
 
@@ -14,7 +18,8 @@ context("Testing the opm naming functions")
 
 ## param_names
 test_that("param_names() is consistent with other settings", {
-  expect_true(OPM_OPTIONS$curve.param %in% c(param_names(), "disc"))
+  expect_true(OPM_OPTIONS$curve.param %in%
+      c(param_names(), param_names("disc.name")))
 })
 
 
