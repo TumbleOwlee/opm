@@ -1078,7 +1078,7 @@ setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
 
 setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
-  old <- TRUE
+  old <- FALSE
   if (old)
     md_data_frame(list(object@metadata), stringsAsFactors, optional, ...)
   else
@@ -1089,7 +1089,7 @@ setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
 
 setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
-  old <- TRUE
+  old <- FALSE
   if (old)
     md_data_frame(metadata(object), stringsAsFactors, optional, ...)
   else

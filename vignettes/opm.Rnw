@@ -23,6 +23,7 @@
 
 %% Add Revision Control System (RCS) Markups
 \usepackage{ulem}      % use this for sout
+%\usepackage{fancyvrb}
 \normalem              % set \emph to \textit again
 % Additions (in blue)
 \def\rcsadd#1{{\color{blue}#1}}
@@ -33,6 +34,8 @@
 %Yellow box (paragraph)
 \def\rcscom#1{\noindent\newline\vspace*{0.5cm}\colorbox{yellow}{\parbox{\textwidth}{#1}}\vspace*{0.5cm}}
 
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {fontsize=\small}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small}
 
 %% needed for CRAN checking
 %\VignetteIndexEntry{Using opm}
@@ -103,7 +106,10 @@ This is the tutorial of \pkg{opm} in the version of \today{}.
 
 
 \begin{document}
-
+% here code-chunks are determined to fixed size
+<<echo=FALSE>>=
+options(width=80)
+@
 % NOTE: Rstudio might insert a line '\SweaveOpts{concordance=TRUE}' after '\begin{document}', which is removed again by the build script, as it causes warning messages during R CMD check.
 % So please don't try to rescue that line, and don't rely on it being there.
 
@@ -322,7 +328,7 @@ On such systems it can also be run in parallel, making use of multi-core machine
 
 The interface of the \textit{Data Collection} software of the OmniLog\textregistered \ reader is restricted in size and contains only comparatively few fields for entering accompanying information  to each plate such as on the organism under study or the culture conditions.
 Further, not all of these fields are exported together with the raw measurements.
-The few metadata that come along with the imported CSV file can be accessed via \code{csv_data()}.
+The few metadata that come along with the imported CSV file can be accessed \textit{via} \code{csv_data()}.
 But for most experimental designs it is clearly necessary to add much more meta-information to the kinetic data.
 It has to be emphasized that metadata can include all kind of describing characteristics of the observed organism(s) such as taxonomic affiliation, geographical and/or ecological origin, and of the performed experimental setting such as culture conditions, genetic modifications, physiological information of any kind and so on.
 
@@ -1461,10 +1467,9 @@ Examples are given based on the \pkg{BiodiversityR} package \citep{Kindt2005}.
 
 \subsection[Statistical comparisons of group means]{Statistical comparisons of group means}\label{application group-means}
 
-The \code{opm\_mcp()} function allows to test for differences in the means of multiple groups directly on \proglang{OPMS} objects, obtaining the factors for the grouping structure from stored metadata. 
-In the following, the general concept and the structure of the function will be explained using different examples for groups that can be defined within wells, across wells, or across metadata-defined groups. 
-The different examples will be addressed in the subsections shown below.
-Also, an explanation of how the graphical and numerical output of results is to be interpreted is given.
+The \code{opm\_mcp()} function allows the user to test for differences in the means of multiple groups directly on \proglang{OPMS} objects, obtaining the factors that determine the grouping structure from the stored metadata or the wells. 
+In the following, the general concept and the application of the function is explained using several examples for groups defined within wells, across wells, or across metadata-based groups.
+Detailed explanations on how the graphical and numerical output of the results has to be interpreted are provided.
 
 
 \subsubsection[Tukey type of comparison: all-against-all]{Tukey type of comparison: all-against-all}\label{Tukey-type comparison}
@@ -1474,7 +1479,7 @@ We compare four distinct strains, each of which being represented by ten replica
 The experimental question to be addressed relates to a single well: ``Do these four bacteria differ in the mean value of curve parameter A on well G06?'' (see Figure~\ref{fig:xy_plot_mcp}).
 This type of comparison is termed ``Tukey''-type contrasts (all-against-all) because each strain is compared to each other.
 
-The necessary data subset can be taken from the first biological replicate included in \code{vaas\_et\_al}:
+The example data is taken from the first biological replicate included in \code{vaas\_et\_al}:
 
 <<label=data-vaas-subset, results=hide>>=
 vaas.G06 <- subset(vaas_et_al[, , "G06"],
@@ -1483,7 +1488,7 @@ vaas.G06 <- subset(vaas_et_al[, , "G06"],
 
 The resulting dataset of four strains, each represented by the ten replicates, is shown in Figure~\ref{fig:xy_plot_mcp}. 
 
-<<label=plot-vaas-subset-dummy, eval=FALSE>>=
+<<label=plot-vaas-subset-dummy, eval=FALSE, echo=FALSE>>=
 xy_plot(vaas.G06, include = ~ Strain, neg.ctrl = FALSE, space = "right")
 @
 
@@ -1497,7 +1502,7 @@ xy_plot(vaas.G06, include = ~ Strain, neg.ctrl = FALSE, space = "right")
 \label{fig:xy_plot_mcp}
 PM curves from the ten technical replicates of the first biological repetition plotted using \code{xy\_plot()}.
 The respective curves from all four strains are superimposed; the affiliation to each strain is indicated by colour (see the legend).
-The x-axes show the measurement time in hours, the y-axes the measured colour intensities in OmniLog\textregistered \ units.
+The x-axis shows the measurement time in hours, the y-axis the measured colour intensities in OmniLog\textregistered \ units.
 }
 \end{figure}
 
@@ -1505,38 +1510,40 @@ The x-axes show the measurement time in hours, the y-axes the measured colour in
 To solve the statistical question, we now perform a multiple comparison of group means using \code{opm\_mcp()}.
 As explained in section \ref{methods group-means}, the \code{opm\_mcp()} methods internally reshape the data into a data frame containing one column for the chosen parameter, one column for the well (substrate) name, another column for the values itself and optionally additional columns for the selected metadata. 
 The argument \code{output = "data"} shows the data frame created by \code{opm\_mcp()}. 
-The code below summarizes the respective data frame, which contains the A values (maximum height) of the well G06 (a-Keto-Glutaric Acid) from four strains of each 10 plates:
+The code below summarizes the respective data frame, which contains the A values (maximum height) of the well G06 ($\alpha$-Keto-Glutaric Acid) from four strains and 10 plates, respectively:
 
 <<label=opm-mcp-data>>=
 summary(opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
   linfct = c(Tukey = 1), output = "data", full = FALSE))
 @
 
-For performing the testing procedure, a model has to be stated that specifies the factor levels that determine the grouping \citep{searle, hothorn}.
+For performing the testing procedure, a model composition has to be stated that specifies the factor levels that determine the grouping.
 The groups to be compared (and here to be selected from the metadata beforehand) are defined by the argument \code{model}.
 
-The argument \code{m.type} specifies the type of model to be used for fitting, e.g., a linear model (\code{lm}), a generalized linear model (\code{glm}), or an analysis-of-variance model (\code{aov}).
+The argument \code{m.type} specifies the type of model to be used for fitting, either a linear model (\code{lm}), a generalized linear model (\code{glm}), or an analysis-of-variance model (\code{aov}).
 
 \textit{Via} the argument \code{linfct} the user can define the type of contrast matrix to be used for the multiple comparison. 
-In principle, the contrast matrix defines from which groups the means should be compared and how.
-In our example a Tukey-type contrast matrix is used (a more detailed explanation of contrast matrices, their structure and features, is given in the help page of \code{multcomp::contrMat()}).
+The contrast matrix determines from which \code{model}-defined groups the means should be compared and how.
+In our example, a Tukey-type contrast matrix is used (a more detailed explanation of predefined contrast matrices is given in the help page of \code{multcomp::contrMat()}).
 The test results in a set of six two-sided pairwise comparisons between all four strain means (all possible pairs).
-The results of the comparison is written into an object termed, e.g., \code{vaas.G06.mcp}:
+The results of the comparison can be written into an object termed, e.g., \code{vaas.G06.mcp}:
 
 <<label=opm-mcp-principle, results=hide>>=
 vaas.G06.mcp <- opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
   linfct = c(Tukey = 1))
 @
 
-The here used kind of \code{linfct} argument, a numeric vector, refers to the positions of the variables within \code{model} and here, by using $1$ the first and only term, ``Strain'', is selected.
+%% TODO: LEA
+%% please explain the meaning of linfct = 1 better!
+
+The here used kind of \code{linfct} argument, a numeric vector, refers to the positions of the variables within \code{model}. Thus, by using $1$ the first and only term, ``Strain'', is selected.
 The names of such a \code{linfct} object indicate the type of contrast used, here ``Tukey''.
-Per default \code{opm_opt("contrast.type")} would be inserted, if names were missing.
+\code{opm_opt("contrast.type")} would be inserted, if names were missing.
 
 
 Note that the structure of the arguments set by \code{model} and by \code{linfct} may become more complex if several metadata entries are involved in the testing.
-The user might therefore wish to recheck the way how \code{model} and by \code{linfct} will actually perform during the execution of the statistical test.
-
-The correct usage of the argument \code{model} can be checked by outputting just the converted argument:
+The user might therefore wish to recheck the way how \code{model} and by \code{linfct} will actually be transformed during the execution of the statistical test.
+Usage of the argument \code{model} can be checked by outputting just the converted argument:
 
 <<label=opm-mcp-output-model, eval=FALSE>>=
 opm_mcp(vaas.G06, model = ~ Strain, m.type = "aov",
@@ -1596,19 +1603,21 @@ If the 95\% CI for differences of means includes zero (dashed vertical lines in 
 Conversely, if zero is not included, a statistically significant difference is indicated.
 Furthermore, the more distant the 95\% CI is from zero, the larger the biological effect size, i.e. the real difference between the group means. 
 
-In the here shown example all group means of the curve parameter A are statistically significant different from each other (p < 0.001), except for the comparison of strains DSM 30083\textsuperscript{T} and DSM 1707 (Figure~\ref{fig:ci_plot_mcp}).
+In the here shown example all group means of the curve parameter ``A'' are statistically significant different from each other (p < 0.001), except for the comparison of strains DSM 30083\textsuperscript{T} and DSM 1707 (Figure~\ref{fig:ci_plot_mcp}).
 
 For an explanation of the graphical representation of the CIs, consider the last comparison in Figure~\ref{fig:ci_plot_mcp}.
-The comparison of the mean A value from strain DSM 30083\textsuperscript{T} minus the mean A value of strain DSM 18039 results in 26.615 units as the point estimator of this difference which is plotted accordingly on the x-axis.
+The comparison of the mean A value from strain DSM 30083\textsuperscript{T} minus the mean ``A'' value of strain DSM 18039 results in 26.615 units as the point estimator of this difference which is plotted accordingly on the x-axis.
 That is, on average the A values from well G06 and strain DSM 30083\textsuperscript{T} are 26.615 units larger than the A values of strain DSM 18039.
 (The detailed numeric outcome would be obtained using \code{mcp.summary()} or \code{confint(vaas.G06.mcp)}).
 Additionally, each point estimator for the difference of means comes with a 95\% CI providing information about the statistical significance of the test, the effect size and the variability of the mean differences.
 They are plotted as usual.
 
-In our example, the results from the statistical calculations indicate that all significant differences are also \textit{highly} significant (p < 0.001).
+In our example, the results from the statistical calculations indicate that all significant differences are even \textit{highly} significant (p < 0.001).
+% TODO:LEA
+% please state a short paragraph about the relationship between p-value and effect-size
 But their numerical values are not correlated with effect sizes. % unclear
 The position of the 95\% CI indicates that the difference between strains DSM 18039 and 429SC1 (i.e, the effect size in the second comparison in Figure~\ref{fig:ci_plot_mcp}) is much larger than between strains DSM 30083\textsuperscript{T} and 429SC1 (smaller effect size in the third comparison).
-For a meaningful biological interpretation of the results it is therefore highly recommended to consider the effect size rather than taking only the p values into account.
+For a meaningful biological interpretation of the results it is therefore highly recommended to also consider the effect size rather than taking only the p values into account.
 
 
 \subsubsection[Dunnett-type comparison: one-against-all]{Dunnett-type comparison: one-against-all}\label{comp-plates-dunnett}
@@ -1616,34 +1625,30 @@ For a meaningful biological interpretation of the results it is therefore highly
 This paragraph describes another type of comparison of the means of multiple groups, which is the comparison of  a single, selected well against all other wells of the same plate.
 This type of comparison is termed ``Dunnett''-type contrasts (one-against-all). 
 In the example below, the groups are defined by different wells and not by different plates.
-The reference well can be a negative or positive control or, for example, one substrate serving as a standard in a specific chemical group. 
-The following data example is again taken from the first biological replicate included in \code{vaas\_et\_al}, but this time only the type-strain \textit{Escherichia coli}, measured in ten technical replicates, is selected.
+The reference well can be either the negative or a positive control but also one substrate, for example, serving as a standard in a specific chemical group.
+The following data example is again taken from the first biological replicate included in \code{vaas\_et\_al}, but this time only the type strain of \textit{Escherichia coli}, measured in ten technical replicates, is selected.
 
 <<label=vaas-e-coli, results=hide>>=
 vaas.e.coli <- subset(vaas_et_al, 
   list(Experiment = "First replicate", Strain = "DSM30083T"))
 @
 
-The comparison of all wells against the negative control in A01 can now be performed by calling (for matter of convenience, we perform the tests only for the first ten wells): 
+For convenience, we perform the tests only for the first ten wells. The comparison of all wells against the negative control in A01 can now be performed by calling: 
 
 <<label=vaas-e-coli-opm-mcp, results=hide>>=
 opm_mcp(vaas.e.coli[, , 1:10], output = "mcp", model = ~ Well, 
   linfct = c(`Dunnett_A01 (Negative Control)` = 1))
 @
 
-Please note a speciality of the code above.
+Please note a special feature substantially simplifying the choice of the reference group:
 The value for the \code{linfct} argument can be constructed by typing \code{Dunnett}, and, separated by any sign, e.g. underscore (``\_''), the level name which should serve as the reference group in the contrast set. 
-This substantially eases the choice of the reference group.
 
-A summary of the resulting data frame, with well A3 chosen to be the reference group, shows the ``A'' values from ten wells of all ten plates:
+A summary of the resulting data frame, with well A03 chosen as the reference group, shows the ``A'' (maximum height) values from ten wells of all ten plates:
 
 <<label=summary-opm-mcp-Dunnett>>=
 summary(opm_mcp(vaas.e.coli[, , 1:10], output = "data", model = ~ Well,
   linfct = c(Dunnett_A03 = 1), full = FALSE))
 @
-
-The object resulting from the test is of class \code{glht} and can be plotted as usual using \code{plot()}.
-Its summary is shown below.
 
 <<label=vaas-e-coli-mcp-Dunnett-special>>=
 mcp.A03 <- opm_mcp(vaas.e.coli[, , 1:10], output = "mcp", model = ~ Well,
@@ -1663,7 +1668,8 @@ A combination of two species $\times$ four well types would yield eight differen
 A Tukey-type comparison (all-against-all) would then result in 28 pairwise comparisons, whereas a Dunnett-type comparison (one-against-all) would result in seven pairwise comparisons.
 However, assume the user is only interested in a specific subset of pairwise comparisons defined by questions such as ``For each well, is there a difference between the two species?''
 This experimental question resulted in testing four statistical hypotheses, as there are only four pairwise combinations that fit this question, since for each of the four wells, the two species would be compared. 
-Hence, it needs to be ensured that the adjustment for multiplicity (see section~\ref{methods group-means}) is done only for these four statistical hypotheses, despite the presence of eight groups in the data set. 
+%Hence, it needs to be ensured that the adjustment for multiplicity (see section~\ref{methods group-means}) is done only for these four statistical hypotheses, despite the presence of eight groups in the data set. 
+% this explanation is not correct or rather confusing
 
 This can easily be performed by applying the specially designed \code{linfct} argument ``Pairs''. 
 First, the user needs to take care that ``Well'' is part of the model and is joined with at least one other factor extracted from the metadata, in this case with ``Species''. 
@@ -1691,21 +1697,19 @@ The result of this analysis is shown below.
 
 <<label=opm-mcp-linfct-Pairs-1c>>=
 y <- opm_mcp(vaas_4[, ,c( 1:3, 86)], model = ~ J(Well, Species), 
-  m.type = "aov", linfct = c(Pairs = 1))
+  m.type = "aov", linfct = c(Pairs = 1), full = FALSE)
 @
 
 % TODO Johannes: please avoid changing font sizes: it doesn't really look very nice.
 % Turn too broad output off using full = FALSE.
 
-\tiny
 % this label occurs twice
 <<label=summary-opm-mcp_2 ,echo=FALSE>>=
-options(width=200)
+
 mcp.summary <- summary(y)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
 @
-\normalsize
 
 
 If models are more complex, e.g., if more than two metadata entries would be joined by the  \code{J()} function, the names of the metadata entries for which the pairwise comparisons should be performed can be appended directly to the \code{Pairs} argument.
@@ -1714,7 +1718,7 @@ Thus the result of
 
 <<label=opm-mcp-linfct-Pairs-2, results=hide>>=
 y <- opm_mcp(vaas_4[, , c(1:3, 86)], model = ~ J(Well, Species), m.type = "aov",
-             linfct = c(Pairs.Species = 1))
+             linfct = c(Pairs.Species = 1), full = FALSE)
 @
 
 which is shown below
@@ -1722,14 +1726,12 @@ which is shown below
 % Please avoid changing font sizes, see above.
 % Please show the code that yields some result (if the result is shown...).
 
-\tiny
 <<label=summary-opm-mcp_2, echo=FALSE>>=
-options(width=200)
+
 mcp.summary <- summary(y)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
 @
-\normalsize
 
 
 is the pairwise all-against-all comparisons of the selected four wells \textit{\textbf{within each}} of the two species \textit{Escherichia coli} and \textit{Pseudomonas aeruginosa}.

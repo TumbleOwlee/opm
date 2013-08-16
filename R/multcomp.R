@@ -581,11 +581,13 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   \code{what}.
 #'
 #'   For \code{how = "values"}, a numeric matrix containing the chosen computed
-#'   values together with data obtained via web service associated with the
-#'   chosen database, in analogy to the \code{download} argument of
-#'   \code{\link{substrate_info}}. This options is not available for all values
-#'   of \code{what} and requires additional libraries. See
-#'   \code{\link{substrate_info}} for details.
+#'   values as first column together with data obtained via web service
+#'   associated with the chosen database, in analogy to the \code{download}
+#'   argument of \code{\link{substrate_info}} but after conversion to a numeric
+#'   matrix. This option is not available for all values of \code{what} and
+#'   requires additional libraries. See \code{\link{substrate_info}} for
+#'   details. The first column name is as returned by \code{\link{param_names}}
+#'   in \sQuote{reserved.md.names} mode (\sQuote{value} entry).
 #' @details
 #'   All methods use \code{\link{substrate_info}} for translating substrate
 #'   names to IDs. The methods differ only in the way numeric and logical values
@@ -813,8 +815,11 @@ convert_annotation_vector <- function(x, how, what) {
   ids <- substrate_info(names(x), what)
   case(match.arg(how, c("ids", "values")),
     ids = structure(x, names = ids, comment = names(x)),
-    values = structure(cbind(Value = x, collect(web_query(ids, what))),
-      comment = ids)
+    values = {
+      x <- as.matrix(x)
+      colnames(x) <- RESERVED_NAMES[["value"]]
+      structure(cbind(x, collect(web_query(ids, what))), comment = ids)
+    }
   )
 }
 
