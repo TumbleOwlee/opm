@@ -1246,6 +1246,9 @@ setMethod("ci_plot", OPMS, function(object, as.labels,
 #'   the margin (i) at the bottom and (ii) at the left.
 #'
 #' @param col Character vector containing the proper heatmap colours.
+#' @param asqr Logical scalar indicating whether the data should be treated
+#'   with the arcus sinus-square root transformation. This usally only makes
+#'   sense for proportion data. If \code{NA}, percentages are assumed.
 #' @param ... Optional arguments passed to \code{heatmap} or \code{heatmap.2}.
 #'   Note that some defaults of \code{heatmap.2} are overwritten even though
 #'   this is not transparent from the argument list of \code{heat_map}. If set
@@ -1299,7 +1302,7 @@ setMethod("heat_map", "matrix", function(object,
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"),
+    col = opm_opt("heatmap.colors"), asqr = FALSE,
     ...,
     use.fun = c("gplots", "stats")) {
 
@@ -1335,6 +1338,17 @@ setMethod("heat_map", "matrix", function(object,
     structure(colors[groups], names = as.character(groups))
   }
 
+  do_asqr <- function(x, percent) {
+    if (percent) {
+      if (any(x < 0, na.rm = TRUE) || any(x > 100, na.rm = TRUE))
+        warning("in 'percent' mode, 'x' should be between 0 and 100")
+      else if (all(x <= 1, na.rm = TRUE))
+        warning("percentages expected, but everything < 1")
+      return(100 * asin(sqrt(x / 100)))
+    }
+    asin(sqrt(x))
+  }
+
   clustfun <- get_fun(hclustfun, hclust)
   dfun <- get_fun(distfun, dist)
   arg.list <- list(scale = scale, cexRow = cexRow, cexCol = cexCol,
@@ -1363,6 +1377,9 @@ setMethod("heat_map", "matrix", function(object,
 
   if (typeof(object) == "logical")
     storage.mode(object) <- "integer"
+
+  if (is.na(L(asqr)) || asqr)
+    object[] <- do_asqr(object, is.na(asqr))
 
   result <- do.call(heatmap_fun, c(list(x = object), arg.list))
   result$colColMap <- col.side.colors

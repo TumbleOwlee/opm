@@ -95,6 +95,11 @@
   \item{col}{Character vector containing the proper heatmap
   colours.}
 
+  \item{asqr}{Logical scalar indicating whether the data
+  should be treated with the arcus sinus-square root
+  transformation. This usally only makes sense for
+  proportion data. If \code{NA}, percentages are assumed.}
+
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
@@ -169,7 +174,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"),
+    col = opm_opt("heatmap.colors"), asqr = FALSE,
     ...,
     use.fun = c("gplots", "stats")) 
 

@@ -20,6 +20,7 @@
 - new plate_type() method
 - new infix-operator methods for querying metadata
 - csv_data() gets a 'what' argument
+- heat_map() gets a 'asqr' argument
 - explicit length() method for OPM objects
 - well() gets a 'use.names' argument
 - opm_mcp() now handles non-syntactical names in metadata (converts them

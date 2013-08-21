@@ -7,7 +7,8 @@
   classes, or \code{\link{OPMS}}. If an \code{\link{OPMS}}
   object, its elements must either all be \code{\link{OPM}}
   or all be \code{\link{OPMA}} or all be \code{\link{OPMD}}
-  objects.}
+  objects. There are also methods for some of the objects
+  created by \code{\link{substrate_info}}.}
 
   \item{row.names}{Optional vector for use as row names of
   the resulting data frame. Here, it is not recommended to
@@ -77,11 +78,11 @@
   \pkg{lattice}).
 }
 \details{
-  These \code{as.data.frame} methods are mainly intended to
-  produce objects that can easily be written to
-  \acronym{CSV} files, for instance using
-  \code{write.table} from the \pkg{utils} package. There
-  are no \pkg{opm} methods other than
+  These \code{as.data.frame} methods for \code{\link{OPMX}}
+  objects are mainly intended to produce objects that can
+  easily be written to \acronym{CSV} files, for instance
+  using \code{write.table} from the \pkg{utils} package.
+  There are no \pkg{opm} methods other than
   \code{\link{batch_opm}} (which can write such files) that
   make use of the created kind of objects.
 
@@ -108,6 +109,9 @@
   already show up in this list, and in general we recommend
   to generate \acronym{YAML} or \acronym{JSON} output
   instead.
+
+  For the methods of the other classes, see
+  \code{\link{substrate_info}}.
 }
 \examples{
 ## OPMD method of as.data.frame()
@@ -150,6 +154,8 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 \alias{as.data.frame,OPMA-method}
 \alias{as.data.frame,OPMD-method}
 \alias{as.data.frame,OPMS-method}
+\alias{as.data.frame,kegg_compounds-method}
+\alias{as.data.frame,kegg_compound-method}
 \alias{flatten,OPM-method}
 \alias{flatten-methods}
 \alias{flatten,OPMS-method}
@@ -169,6 +175,12 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
   \S4method{as.data.frame}{OPMS}(x, row.names = NULL,
     optional = FALSE, sep = "_", ...,
     stringsAsFactors = default.stringsAsFactors()) 
+
+  \S4method{as.data.frame}{kegg_compounds}(x, row.names = NULL,
+    optional = TRUE, ..., stringsAsFactors = FALSE) 
+
+  \S4method{as.data.frame}{kegg_compound}(x, row.names = NULL,
+    optional = TRUE, ..., stringsAsFactors = FALSE) 
 
   \S4method{flatten}{OPM}(object, include = NULL, fixed = NULL,
     factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE, ...) 

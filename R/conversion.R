@@ -978,7 +978,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #' @param x Object of class \code{\link{OPM}}, its child classes, or
 #'   \code{\link{OPMS}}. If an \code{\link{OPMS}} object, its elements must
 #'   either all be \code{\link{OPM}} or all be \code{\link{OPMA}} or all be
-#'   \code{\link{OPMD}} objects.
+#'   \code{\link{OPMD}} objects. There are also methods for some of the objects
+#'   created by \code{\link{substrate_info}}.
 #' @param row.names Optional vector for use as row names of the resulting data
 #'   frame. Here, it is not recommended to try to set row names explicitly.
 #' @param optional Logical scalar passed to the list and matrix methods of
@@ -1016,11 +1017,12 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'   \code{\link{param_names}}. This column contains the position of each plate
 #'   within \code{object}.
 #'
-#' @details These \code{as.data.frame} methods are mainly intended to produce
-#'   objects that can easily be written to \acronym{CSV} files, for instance
-#'   using \code{write.table} from the \pkg{utils} package. There are no
-#'   \pkg{opm} methods other than \code{\link{batch_opm}} (which can write such
-#'   files) that make use of the created kind of objects.
+#' @details These \code{as.data.frame} methods for \code{\link{OPMX}} objects
+#'   are mainly intended to produce objects that can easily be written to
+#'   \acronym{CSV} files, for instance using \code{write.table} from the
+#'   \pkg{utils} package. There are no \pkg{opm} methods other than
+#'   \code{\link{batch_opm}} (which can write such files) that make use of the
+#'   created kind of objects.
 #'
 #'   The following entries are contained in the generated data frame:
 #'   \itemize{
@@ -1042,6 +1044,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #'   The limits of using \acronym{CSV} as output format already show up in this
 #'   list, and in general we recommend to generate \acronym{YAML} or
 #'   \acronym{JSON} output instead.
+#'
+#'   For the methods of the other classes, see \code{\link{substrate_info}}.
 #' @export
 #' @family conversion-functions
 #' @seealso utils::write.table stats::reshape pkgutils::flatten
@@ -1116,6 +1120,54 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
   do.call(rbind, mapply(as.data.frame, x@plates, row.names, SIMPLIFY = FALSE,
     MoreArgs = list(optional = optional, sep = sep, ...,
     stringsAsFactors = stringsAsFactors), USE.NAMES = FALSE))
+}, sealed = SEALED)
+
+setOldClass("kegg_compounds")
+
+setMethod("as.data.frame", "kegg_compounds", function(x, row.names = NULL,
+    optional = TRUE, ..., stringsAsFactors = FALSE) {
+  result <- lapply(x, as.data.frame, row.names, optional, ...,
+    stringsAsFactors = stringsAsFactors)
+  do.call(rbind, structure(result, names = names(x)))
+}, sealed = SEALED)
+
+setOldClass("kegg_compound")
+
+setMethod("as.data.frame", "kegg_compound", function(x, row.names = NULL,
+    optional = TRUE, ..., stringsAsFactors = FALSE) {
+  # store database links for later
+  links <- strsplit(as.character(x$DBLINKS), "\\s*:\\s*", FALSE, TRUE)
+  links <- do.call(rbind, links)
+  links <- structure(links[, 2L], names = links[, 1L])
+  # get non-link components
+  wanted <- c("ENTRY", "NAME", "FORMULA", "SEEALSO", "BRITE", "ACTIVITY",
+    "EXACT_MASS")
+  x <- structure(x[wanted], names = wanted)
+  x$EXACT_MASS <- must(as.numeric(x$EXACT_MASS))
+  # 'ACTIVITY' is actually only present in KEGG 'drug' descriptions
+  x$ACTIVITY <- paste0(x$ACTIVITY, collapse = " ")
+  x$NAME <- sub("\\s*;\\s*$", "", x$NAME, FALSE, TRUE)
+  x$SEEALSO <- grep(pat <- "^Same\\s+as:\\s*", x$SEEALSO, FALSE, TRUE, TRUE)
+  x$SEEALSO <- sub(pat, "", x$SEEALSO, FALSE, TRUE)
+  x$SEEALSO <- gsub("\\s+", "||", x$SEEALSO, FALSE, TRUE)
+  ## Note that several hierarchies may be present.
+  ## Maybe we can use YAML to better represent this, either directly or after
+  ## conversion to nested list.
+  x$BRITE <- paste0(x$BRITE, collapse = "\n")
+  x <- lapply(x, paste0, collapse = "||")
+  # add database-link components
+  x$CAS <- if (pos <- match("CAS", names(links), 0L))
+      sub("\\s+", "||", links[[pos]], FALSE, TRUE)
+    else
+      NA_character_
+  x$ChEBI <- if (pos <- match("ChEBI", names(links), 0L))
+      sub("\\s+", "||", links[[pos]], FALSE, TRUE)
+    else
+      NA_character_
+  # done
+  x[!nzchar(x)] <- NA_character_
+  as.data.frame(x, row.names, optional, ...,
+    stringsAsFactors = stringsAsFactors)
 }, sealed = SEALED)
 
 #= flatten as.data.frame

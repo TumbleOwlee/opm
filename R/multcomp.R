@@ -697,6 +697,12 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
   names_to_substrates <- function(x, sep, plate) {
 
     # Helper functions
+    prepare_sep <- function(x) {
+      x <- check_mcp_sep(x)
+      if (x %in% c("^", "\\"))
+        x <- paste0("\\", x)
+      sprintf("[%s]", x)
+    }
     get_submatch <- function(i, m, string) {
       start <- attr(m, "capture.start")[, i]
       substring(string, start, start + attr(m, "capture.length")[, i] - 1L)
@@ -746,12 +752,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
       }
     }
 
-    sep <- check_mcp_sep(sep)
-    if (sep %in% c("^", "\\"))
-      sep <- paste0("\\", sep)
-    sep <- sprintf("[%s]", sep)
-
-    if (length(result <- match_Pairs_type(x, sep)))
+    if (length(result <- match_Pairs_type(x, prepare_sep(sep))))
       return(get_substrate(result, plate))
     if (length(result <- match_Dunnett_type(x)))
       return(get_substrate(result, plate))
@@ -812,6 +813,11 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
 #' @keywords internal
 #'
 convert_annotation_vector <- function(x, how, what) {
+  ## TODO:
+  # * there is no way to include concentration information in the matrix
+  # * duplicated names would even cause crashes
+  # * maybe add the well coordinate
+  # * data frames would be of interest with syntactical names for randomForest
   ids <- substrate_info(names(x), what)
   case(match.arg(how, c("ids", "values")),
     ids = structure(x, names = ids, comment = names(x)),
