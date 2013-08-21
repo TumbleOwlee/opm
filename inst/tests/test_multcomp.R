@@ -393,7 +393,7 @@ test_that("linfct as predefined matrix-object", {
   x <- EXPL.DF[, -ncol(EXPL.DF):-(ncol(EXPL.DF) - 91L)]
   contr <- opm_mcp(x, model = ~ Well, output = "contrast")
   expect_is(contr, "list")
-  expect_true(all(vapply(contr, inherits, logical(1L), "contrMat")))
+  expect_true(all(vapply(contr, inherits, NA, "contrMat")))
   contr <- contr$Well[c(1:3, 6), ]
   x <- opm_mcp(x, model = ~ Well, m.type = "lm", linfct = contr)
   expect_is(x, "glht")

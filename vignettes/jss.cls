@@ -203,13 +203,15 @@
   \Seconddate{\textit{Accepted:} \@Acceptdate}
 \fi
 %% Sweave(-like)
-\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
-\DefineVerbatimEnvironment{Soutput}{Verbatim}{}
-\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl, fontsize=\small}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl, fontsize=\small}
 \newenvironment{Schunk}{}{}
-\DefineVerbatimEnvironment{Code}{Verbatim}{}
-\DefineVerbatimEnvironment{CodeInput}{Verbatim}{fontshape=sl}
-\DefineVerbatimEnvironment{CodeOutput}{Verbatim}{}
+\DefineVerbatimEnvironment{Code}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{CodeInput}{Verbatim}{fontshape=sl, fontsize=\small}
+\DefineVerbatimEnvironment{CodeOutput}{Verbatim}{fontsize=\small}
 \newenvironment{CodeChunk}{}{}
 \setkeys{Gin}{width=0.8\textwidth}
 %% footer
