@@ -7,15 +7,15 @@
 #
 
 
+#' @import methods grofit mgcv nlme
+#'
+NULL
+
 #' @importFrom pkgutils L LL must case sections listing pkg_files flatten
 #'
 NULL
 
 #' @importFrom pkgutils mypdf
-#'
-NULL
-
-#' @import grofit
 #'
 NULL
 
@@ -67,6 +67,3 @@ NULL
 #'
 NULL
 
-#' @import mgcv
-#'
-NULL

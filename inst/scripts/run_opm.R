@@ -13,7 +13,7 @@
 ################################################################################
 
 
-invisible(lapply(c("optparse", "pkgutils"), library, quietly = TRUE,
+invisible(lapply(c("methods", "optparse", "pkgutils"), library, quietly = TRUE,
   warn.conflicts = FALSE, character.only = TRUE))
 
 
