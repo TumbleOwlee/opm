@@ -872,7 +872,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
   output <- matrix(ncol = 3L * nrow(aggr.mean), nrow = ncol(aggr.mean))
   pos.1 <- ncol(aggr.CI)
   pos.2 <- seq.int(pos.1 / 2L + 1L, pos.1)
-  pos.1 <- seq.int(pos.1 / 2L)
+  pos.1 <- seq_len(pos.1 / 2L)
   for (i in seq_len(nrow(aggr.mean)))
     output[, seq.int(i * 3L - 2L, 3L * i)] <- c(aggr.mean[i, , drop = TRUE],
       aggr.CI[i, pos.1, drop = TRUE], aggr.CI[i, pos.2, drop = TRUE])

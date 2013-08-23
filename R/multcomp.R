@@ -374,9 +374,9 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
       joined[[column]][as.integer(spec)]
     }
     pair_indices <- function(x) {
-      last <- length(nums <- seq_along(x))
-      do.call(rbind, lapply(nums[-last],
-        FUN = function(j) cbind(I = seq.int(j + 1L, last), J = j)))
+      lastval <- length(nums <- seq_along(x))
+      do.call(rbind, lapply(nums[-lastval],
+        FUN = function(j) cbind(I = seq.int(j + 1L, lastval), J = j)))
     }
     all_pairs <- function(x, rhs, sign) {
       idx <- pair_indices(x <- unique.default(x))
@@ -724,7 +724,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     match_Dunnett_type <- function(x) {
       if (!all_matched(m <- regexpr("^(.+)\\s-\\s(.+)$", x, FALSE, TRUE)))
         return(NULL)
-      result <- lapply(seq.int(2L), get_submatch, m, x)
+      result <- lapply(seq_len(2L), get_submatch, m, x)
       result <- result[!vapply(result, is_constant, NA)]
       case(length(result), NULL, result[[1L]])
     }

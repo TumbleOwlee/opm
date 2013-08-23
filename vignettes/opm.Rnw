@@ -2116,7 +2116,7 @@ These features render the \pkg{opm} package the first comprehensive toolbox for 
 Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 
 An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
-At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
+At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, ChEBI, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
 More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
 
 Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
@@ -2129,6 +2129,7 @@ To summarize, we are convinced that the \pkg{opm} package already enables the us
 \section[Acknowledgements]{Acknowledgements}
 
 We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), Pia W\"{u}st (DSMZ) and Stefan Ehrentraut (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
+The integration of missing OmniLog\textregistered \ substrates into ChEBI by the ChEBI staff is gratefully acknowledged.
 We are also grateful to the maintainers of R-Forge and CRAN for providing the online resources used by this project.
 This work was supported by the German Research Foundation (DFG) SFB/TRR 51 and by the Microme project within the Framework 7 programme of the European Commission, which is gratefully acknowledged.
 JS gratefully acknowledges his support by DFG grant SI 1352/1-2.

@@ -1188,7 +1188,7 @@ web_query <- function(ids, what = c("kegg", "drug")) {
       x
     }
     chunks <- function(x, n) split.default(x,
-      rep(seq.int(ceiling(length(x) / n)), each = n)[seq_along(x)])
+      rep(seq_len(ceiling(length(x) / n)), each = n)[seq_along(x)])
     run_keggrest <- function(x, prepend) {
       result <- lapply(chunks(paste0(prepend, x), 10), KEGGREST::keggGet)
       result <- lapply(unlist(result, FALSE), compound_object)
