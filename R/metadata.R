@@ -611,6 +611,16 @@ setMethod("include_metadata", OPM, function(object, md,
     keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
     remove.keys = TRUE, ...) {
 
+  pick_from <- function(object, selection) {
+    matches <- lapply(names(selection), FUN = function(name) {
+      m <- lapply(selection[[name]], `==`, y = object[, name])
+      apply(do.call(cbind, m), 1L, any)
+    })
+    matches <- apply(do.call(cbind, matches), 1L, all)
+    matches[is.na(matches)] <- FALSE # we get NA from all-NA rows
+    object[matches, , drop = FALSE]
+  }
+
   LL(replace, skip.failure, remove.keys)
 
   selection <- as.list(csv_data(object, keys))

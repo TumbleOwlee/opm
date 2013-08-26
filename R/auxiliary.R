@@ -111,6 +111,34 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
 ################################################################################
 
 
+#' Pick rows
+#'
+#' Pick rows from a data frame if selected columns are identical to keys.
+#'
+#' @param object Dataframe. At least two rows are needed.
+#' @param selection Named list, keys should correspond to column names of
+#'   \code{object}, values to one to several alternative values that should
+#'   occur in the respective data-frame column.
+#' @return Dataframe.
+#' @keywords internal
+#'
+setGeneric("pick_from", function(object, ...) standardGeneric("pick_from"))
+
+setMethod("pick_from", "data.frame", function(object, selection) {
+  matches <- lapply(names(selection), FUN = function(name) {
+    m <- lapply(selection[[name]], `==`, y = object[, name])
+    apply(do.call(cbind, m), 1L, any)
+  })
+  matches <- apply(do.call(cbind, matches), 1L, all)
+  matches[is.na(matches)] <- FALSE # we get NA from all-NA rows
+  object[matches, , drop = FALSE]
+}, sealed = SEALED)
+
+
+
+################################################################################
+
+
 ## TODO: this should be replace by a call to collect() once ready.
 
 
@@ -325,33 +353,6 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
 ################################################################################
 
 
-#' Pick rows
-#'
-#' Pick rows from a data frame if selected columns are identical to keys.
-#'
-#' @param object Dataframe. At least two rows are needed.
-#' @param selection Named list, keys should correspond to column names of
-#'   \code{object}, values to one to several alternative values that should
-#'   occur in the respective data-frame column.
-#' @return Dataframe.
-#' @keywords internal
-#'
-setGeneric("pick_from", function(object, ...) standardGeneric("pick_from"))
-
-setMethod("pick_from", "data.frame", function(object, selection) {
-  matches <- lapply(names(selection), FUN = function(name) {
-    m <- lapply(selection[[name]], `==`, y = object[, name])
-    apply(do.call(cbind, m), 1L, any)
-  })
-  matches <- apply(do.call(cbind, matches), 1L, all)
-  matches[is.na(matches)] <- FALSE # we get NA from all-NA rows
-  object[matches, , drop = FALSE]
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 #' Check presence of split column
 #'
 #' Check whether a certain column is present and not at the end of a data frame
@@ -381,59 +382,6 @@ assert_splittable_matrix <- function(x, split.at) {
 #
 
 
-#' Create formula
-#'
-#' Construct a formula from a template.
-#'
-#' @param fmt Character scalar. The format of the formula; omitting \sQuote{~}
-#'   yields an error.
-#' @param ... Passed to \code{sprintf} after joining. It is an error to not
-#'   pass enough arguments.
-#' @param env Passed to \code{formula} as \sQuote{env} argument.
-#' @return Formula.
-#' @keywords internal
-#'
-create_formula <- function(fmt, ..., .env = parent.frame()) {
-  x <- c(list(fmt = fmt), lapply(list(...), as.list))
-  formula(do.call(sprintf, unlist(x, recursive = FALSE)), .env)
-}
-
-
-################################################################################
-
-
-#' Check CAS number
-#'
-#' Check whether a \acronym{CAS} number is internally valid.
-#'
-#' @param x Character vector.
-#' @return Named logical vector. Input \code{NA} values yield \code{NA}.
-#' @details The check tolerates a prepended \sQuote{CAS} indicator, separated
-#'   by whitespace, but neither appended or prepended whitespace.
-#' @references \url{http://www.cas.org/content/chemical-substances/checkdig}
-#' @keywords internal
-#'
-is_cas <- function(x) {
-  ms <- function(x, m, i) { # get the substring from the chosen capture
-    start <- attr(m, "capture.start")[, i]
-    substr(x, start, start + attr(m, "capture.length")[, i] - 1L)
-  }
-  cmp <- function(digits, check) { # compare check digits
-    sum_up <- function(x) sum(seq.int(length(x), 1L) * as.numeric(x)) / 10
-    s <- vapply(strsplit(digits, "", TRUE), sum_up, 0)
-    abs(s - floor(s) - as.numeric(check) / 10) < .Machine$double.eps ^ 0.5
-  }
-  m <- regexpr("^(?:CAS\\s+)?(\\d{2,7})-(\\d{2})-(\\d)$", x, TRUE, TRUE)
-  f <- attr(m, "match.length") > 0L
-  ok <- f & !is.na(x)
-  f[ok] <- cmp(paste0(ms(x, m, 1L)[ok], ms(x, m, 2L)[ok]), ms(x, m, 3L)[ok])
-  structure(f, names = x)
-}
-
-
-################################################################################
-
-
 #' Create metadata key
 #'
 #' A helper function for \code{\link{metadata}} and the methods that are
@@ -447,11 +395,15 @@ is_cas <- function(x) {
 #'   to syntactic names.
 #' @param ops Character vector containing the operators to use when converting
 #'   a list to a formula. Recycled if necessary.
-#' @inheritParams print
 #' @param full.eval Logical scalar indicating whether to evaluate the result.
 #'   Usually makes no sense for formulas here.
 #' @param envir Passed to \code{eval}.
-#' @return List or character vector.
+#' @param fmt Character scalar. The format of the formula; omitting \sQuote{~}
+#'   yields an error.
+#' @param ... Passed to \code{sprintf} after joining. It is an error to not
+#'   pass enough arguments.
+#' @param env Passed to \code{formula} as \sQuote{env} argument.
+#' @return List, formula or character vector.
 #' @keywords internal
 #'
 metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
@@ -625,6 +577,14 @@ metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL,
     attr(x, "combine") <- final_comb_list(combine, remove)
     x
   }
+}
+
+#' @rdname metadata_key
+#' @keywords internal
+#'
+create_formula <- function(fmt, ..., .env = parent.frame()) {
+  x <- c(list(fmt = fmt), lapply(list(...), as.list))
+  formula(do.call(sprintf, unlist(x, recursive = FALSE)), .env)
 }
 
 
@@ -919,12 +879,11 @@ setMethod("separate", "data.frame", function(object, split = opm_opt("split"),
 ################################################################################
 
 
-## NOTE: not an S4 method because conversion is done
-
-#' Trim string
+#' Trim string or add note in parentheses
 #'
 #' Trim a string to a given length, but by default append an indicator of
-#' whether something has been trimmed.
+#' whether something has been trimmed. Alternatively, append an annotation in
+#' parentheses to a string; trim it if necessary.
 #'
 #' @param str Character vector or convertible to such.
 #' @param max Numeric scalar. Maximum allowed length.
@@ -933,7 +892,14 @@ setMethod("separate", "data.frame", function(object, split = opm_opt("split"),
 #' @param clean Logical scalar. If \code{TRUE}, clean trimmed end from non-word
 #'   characters, and return empty string if only \code{append} remains.
 #' @param word.wise Logical scalar. If \code{TRUE}, abbreviate words separately,
-#'   deleting vowels first.
+#'   deleting vowels first. Alternatively, do abbreviation per word?
+#' @param str.1 Character vector or convertible to such.
+#' @param str.2 Character vector or convertible to such, to be added in
+#'   parentheses. Trimming only affects \code{str.2}, and not the parentheses.
+#' @param brackets Logical scalar. Should brackets instead of parentheses be
+#'   used?
+#' @param paren.sep Character scalar. What to insert before the opening
+#'   parenthesis (or bracket).
 #' @return Character vector.
 #' @keywords internal
 #'
@@ -960,26 +926,7 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
   str
 }
 
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Add note in parentheses
-#'
-#' Append an annotation in parentheses to a string; trim it if necessary.
-#'
-#' @inheritParams trim_string
-#' @param str.1 Character vector or convertible to such.
-#' @param str.2 Character vector or convertible to such, to be added in
-#'   parentheses. Trimming only affects \code{str.2}, and not the parentheses.
-#' @param brackets Logical scalar. Should brackets instead of parentheses be
-#'   used?
-#' @param word.wise Logical scalar. Do abbreviation per word?
-#' @param paren.sep Character scalar. What to insert before the opening
-#'   parenthesis (or bracket).
-#' @return Character vector.
+#' @rdname trim_string
 #' @keywords internal
 #'
 add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
@@ -1003,10 +950,11 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
 ################################################################################
 
 
-#' Convert recursively to HTML
+#' Convert recursively to HTML or create HTML head
 #'
-#' This is the helper function used by \code{\link{format}} for converting
-#' user-defined additions to \acronym{HTML}.
+#' This are the helper functions used by \code{\link{format}} for converting
+#' user-defined additions to \acronym{HTML} or for creating the \sQuote{head}
+#' entry of an \acronym{HTML} strings.
 #'
 #' @param x List or other vector.
 #' @param level Integer scalar defining the starting level for indentation and
@@ -1015,7 +963,13 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
 #'   \sQuote{class} and \sQuote{title} attributes.
 #' @param fac Integer scalar for inferring the number of spaces used for
 #'   indentation from the current \code{level} (recursively incremented).
-#' @return Character scalar.
+#' @param title Character scalar defining the title of the \acronym{HTML}
+#'   document. Must contain an attribute called as returned by
+#'   \code{\link{opm_string}}.
+#' @param css Character vector containing the names of \acronym{CSS} files to
+#'   link.
+#' @param meta Character vector defining additional meta tags.
+#' @return Character scalar or vector.
 #' @details  If applied to lists, this functions works recursively, generating
 #'   \sQuote{div} elements from each list. Names are used as \sQuote{class} and
 #'   \sQuote{title} attributes. Where names are missing, \code{level} is used in
@@ -1046,22 +1000,7 @@ list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
   }
 }
 
-
-################################################################################
-
-
-#' Create HTML head
-#'
-#' This is the helper function used by \code{\link{format}} and other functions
-#' to create the \sQuote{head} antry of an \acronym{HTML} strings.
-#'
-#' @param title Character scalar defining the title of the \acronym{HTML}
-#'   document. Must contain an attribute called as returned by
-#'   \code{\link{opm_string}}.
-#' @param css Character vector containing the names of \acronym{CSS} files to
-#'   link.
-#' @param meta Character vector defining additional meta tags.
-#' @return Character vector.
+#' @rdname list2html
 #' @keywords internal
 #'
 html_head <- function(title, css, meta) {

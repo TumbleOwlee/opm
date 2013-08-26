@@ -372,7 +372,37 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 #
 
 
-## NOTE: Not an S4 method because check is done with match.arg()
+#' Check CAS number
+#'
+#' Check whether a \acronym{CAS} number is internally valid.
+#'
+#' @param x Character vector.
+#' @return Named logical vector. Input \code{NA} values yield \code{NA}.
+#' @details The check tolerates a prepended \sQuote{CAS} indicator, separated
+#'   by whitespace, but neither appended or prepended whitespace.
+#' @references \url{http://www.cas.org/content/chemical-substances/checkdig}
+#' @keywords internal
+#'
+is_cas <- function(x) {
+  ms <- function(x, m, i) { # get the substring from the chosen capture
+    start <- attr(m, "capture.start")[, i]
+    substr(x, start, start + attr(m, "capture.length")[, i] - 1L)
+  }
+  cmp <- function(digits, check) { # compare check digits
+    sum_up <- function(x) sum(seq.int(length(x), 1L) * as.numeric(x)) / 10
+    s <- vapply(strsplit(digits, "", TRUE), sum_up, 0)
+    abs(s - floor(s) - as.numeric(check) / 10) < .Machine$double.eps ^ 0.5
+  }
+  m <- regexpr("^(?:CAS\\s+)?(\\d{2,7})-(\\d{2})-(\\d)$", x, TRUE, TRUE)
+  f <- attr(m, "match.length") > 0L
+  ok <- f & !is.na(x)
+  f[ok] <- cmp(paste0(ms(x, m, 1L)[ok], ms(x, m, 2L)[ok]), ms(x, m, 3L)[ok])
+  structure(f, names = x)
+}
+
+
+################################################################################
+
 
 #' Grofit mapping
 #'
