@@ -64,7 +64,7 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
   ## compute number of knots adaptive to the number of unique observations
   ## (equal to behavior of smooth.spline(..., nknots = NULL) )
   if (is.null(knots))
-    knots <- stats:::n.knots(length(unique(data[, x])))
+    knots <- n_knots(length(unique(data[, x])))
   ## PERHAPS USE OTHER METHOD TO GET NUMBER OF KNOTS. E.G. BASED ON ROUGHNESS
   ## OF THE DATA
 
@@ -203,7 +203,8 @@ predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
     newdata <- get_data(object)
   }
   newX <- newdata[, object$names[1]]
-  stats:::predict.smooth.spline(object, x = newX, deriv = 0)$y
+  # stats:::predict.smooth.spline(object, x = newX, deriv = 0)$y
+  NextMethod("predict", object, x = newX, deriv = 0)$y
 }
 
 ################################################################################
@@ -629,3 +630,27 @@ as.gam.opm_model <- function(x, ...) {
   }
   return(ret)
 }
+
+
+### This function is copied from stats:::n.knots in order to avoid warnings
+### regarding the usage of :::
+### Copyright (C) 1995-2012 The R Core Team
+n_knots <- function (n) {
+  if (n < 50L)
+    n
+  else trunc({
+    a1 <- log2(50)
+    a2 <- log2(100)
+    a3 <- log2(140)
+    a4 <- log2(200)
+    if (n < 200L)
+      2 ^ (a1 + (a2 - a1) * (n - 50) / 150)
+    else if (n < 800L)
+      2 ^ (a2 + (a3 - a2) * (n - 200) / 600)
+    else if (n < 3200L)
+      2 ^ (a3 + (a4 - a3) * (n - 800) / 2400)
+    else
+      200 + (n - 3200) ^ 0.2
+  })
+}
+

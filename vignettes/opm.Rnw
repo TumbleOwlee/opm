@@ -38,19 +38,16 @@
 %\VignetteIndexEntry{Using opm}
 
 % authors, first page
-\author{Johannes Sikorski\\Leibniz Institute DSMZ  \AND
-        Lea A.I. Vaas\\Leibniz Institute DSMZ \And
+\author{Johannes Sikorski\\Leibniz Institute DSMZ  \And
+        Lea A.I. Vaas\\Leibniz Institute DSMZ \AND
         Benjamin Hofner\\Universit\"{a}t \\Erlangen-N\"{u}rnberg \And
-        Nora Buddruhs\\Leibniz Institute DSMZ \And
-        Anne Fiebig\\Leibniz Institute DSMZ \AND
-        Hans-Peter Klenk\\Leibniz Institute DSMZ \And
         Markus G\"{o}ker\\Leibniz Institute DSMZ}
 
 % title, first page
 \title{\pkg{opm}: An R Package for Analysing OmniLog\textregistered \ Phenotype MicroArray Data}
 
 % authors, header on every 2nd page
-\Plainauthor{L.A.I. Vaas, J. Sikorski, B. Hofner, N. Buddruhs, A. Fiebig, H.-P. Klenk, M. G\"{o}ker}
+\Plainauthor{J. Sikorski, L.A.I. Vaas, B. Hofner, M. G\"{o}ker}
 
 % main title, first page
 \Plaintitle{opm: An R package for analysing OmniLog Phenotype MicroArray Data}
@@ -2128,7 +2125,9 @@ To summarize, we are convinced that the \pkg{opm} package already enables the us
 
 \section[Acknowledgements]{Acknowledgements}
 
-We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), Pia W\"{u}st (DSMZ) and Stefan Ehrentraut (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
+The help of Nora Buddruhs (DSMZ) and Anne Fiebig (DSMZ), who contributed a lot to the stored substrate information and to examples in earlier versions of this tutorial, is gratefully acknowledged.
+We owe very much to Hans-Peter Klenk (DSMZ), who brought the OmniLog\textregistered \ instrument to the DSMZ and supported this project in numerous ways.
+We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), Pia W\"{u}st (DSMZ), Stefan Ehrentraut (DSMZ) and J\"{o}rn Petersen (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
 The integration of missing OmniLog\textregistered \ substrates into ChEBI by the ChEBI staff is gratefully acknowledged.
 We are also grateful to the maintainers of R-Forge and CRAN for providing the online resources used by this project.
 This work was supported by the German Research Foundation (DFG) SFB/TRR 51 and by the Microme project within the Framework 7 programme of the European Commission, which is gratefully acknowledged.
