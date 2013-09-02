@@ -24,18 +24,17 @@
 #'
 opm_string <- function(version = FALSE) {
   x <- "opm"
-  if (version) {
-    if (exists("opm.version", MEMOIZED))
-      y <- MEMOIZED$opm.version
-    else
-      MEMOIZED$opm.version <- y <- tryCatch(
-        as.character(packageVersion(x)), error = function(e) {
-          warning(sprintf("cannot find %s version", x))
-          UNKNOWN_VERSION
-        })
-    c(x, y)
-  } else
-    x
+  if (!version)
+    return(x)
+  if (exists("opm.version", MEMOIZED))
+    y <- MEMOIZED$opm.version
+  else
+    MEMOIZED$opm.version <- y <- tryCatch(
+      as.character(packageVersion(x)), error = function(e) {
+        warning(sprintf("cannot find %s version", x))
+        UNKNOWN_VERSION
+      })
+  c(x, y)
 }
 
 
