@@ -7,42 +7,6 @@
 #
 
 
-#' Update settings entries
-#'
-#' This converts old-style to new-style aggregation or discretization settings.
-#'
-#' @param x List.
-#' @return List.
-#' @keywords internal
-#'
-setGeneric("update_settings_list",
-  function(x, ...) standardGeneric("update_settings_list"))
-
-setMethod("update_settings_list", "list", function(x) {
-  if (is.null(names(x)))
-    stop("expected named list 'x'")
-  if (!length(software <- x[[SOFTWARE]])) {
-    x[[SOFTWARE]] <- software <- opm_string()
-    warning(sprintf("inserting '%s' as '%s' entry", software, SOFTWARE))
-  }
-  if (!length(version <- x[[VERSION]])) {
-    x[[VERSION]] <- version <- if (software == opm_string())
-      opm_string(version = TRUE)[2L]
-    else
-      UNKNOWN_VERSION
-    warning(sprintf("inserting '%s' as '%s' entry", version, VERSION))
-  }
-  if (m <- match(PROGRAM, names(x), nomatch = 0L)) {
-    names(x)[m] <- METHOD
-    warning(sprintf("renaming '%s' to '%s'", PROGRAM, METHOD))
-  }
-  x
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 #' Virtual classes of the opm package
 #'
 #' Classes that are virtual and thus are not directly dealt with by an
@@ -107,6 +71,26 @@ setClass(WMD,
   contains = "VIRTUAL",
   sealed = SEALED
 )
+
+#' @rdname WMD
+#' @name MOA
+#' @aliases MOA-class
+#' @docType class
+#' @export
+#'
+NULL
+
+setClassUnion(MOA, c("matrix", "array"))
+
+#' @rdname WMD
+#' @name FOE
+#' @aliases FOE-class
+#' @docType class
+#' @export
+#'
+NULL
+
+setClassUnion(FOE, c("formula", "expression"))
 
 
 ################################################################################
@@ -239,18 +223,185 @@ setClass(OPM,
   sealed = SEALED
 )
 
+#' @rdname OPM
+#' @name OPMA
+#' @aliases OPMA-class
+#' @docType class
+#' @export
+#'
+setClass(OPMA,
+  representation = representation(aggregated = "matrix",
+    aggr_settings = "list"),
+  contains = OPM,
+  validity = function(object) {
+    settings <- object@aggr_settings
+    if (length(errs <- opma_problems(settings)))
+      settings <- NULL # => no settings-based checks of the matrix
+    errs <- c(errs, opma_problems(object@aggregated, object@measurements,
+      settings))
+    if (length(errs))
+      errs
+    else
+      TRUE
+  },
+  sealed = SEALED
+)
+
+#' @rdname OPM
+#' @name OPMD
+#' @aliases OPMD-class
+#' @docType class
+#' @export
+#'
+setClass(OPMD,
+  representation = representation(discretized = "logical",
+    disc_settings = "list"),
+  contains = OPMA,
+  validity = function(object) {
+    errs <- opmd_problems(object@disc_settings)
+    errs <- c(errs, opmd_problems(object@aggregated, object@discretized,
+      object@disc_settings$options$parameter))
+    if (length(errs))
+      errs
+    else
+      TRUE
+  },
+  sealed = SEALED
+)
+
+#' @docType class
+#' @rdname OPM
+#' @name OPMS
+#' @export
+#' @aliases OPMS-class
+#'
+setClass(OPMS,
+  representation = representation(plates = "list"),
+  validity = function(object) {
+    if (length(errs <- opms_problems(object@plates)))
+      errs
+    else
+      TRUE
+  },
+  sealed = SEALED
+)
+
+#' @rdname WMD
+#' @name OPMX
+#' @aliases OPMX-class
+#' @docType class
+#' @export
+#'
+NULL
+
+# Currently the child classes must provide plate_type() and minmax() for the
+# methods to work
+#
+setClassUnion(OPMX, c(OPM, OPMS))
+
+#' @rdname WMD
+#' @name YAML_VIA_LIST
+#' @aliases YAML_VIA_LIST-class
+#' @docType class
+#' @export
+#'
+NULL
+
+setClassUnion(YAML_VIA_LIST, c(OPM, OPMS, "list"))
+
 
 ################################################################################
 
 
-#' Check OPM
+# CMAT class: undocumented, as for internal use only.
+#
+setClass(CMAT,
+  contains = "matrix",
+  validity = function(object) {
+    errs <- character()
+    if (is.null(rownames(object)) || any(is.na(rownames(object))))
+      errs <- c(errs, "missing row names")
+    mode <- typeof(object)
+    if (mode == "list") {
+      mode <- unique.default(vapply(object, typeof, ""))
+      if (length(mode) > 1L)
+        errs <- c(errs, "non-uniform list elements contained")
+      if (any(vapply(object, length, 0L) < 1L))
+        errs <- c(errs, "empty list elements contained")
+    }
+    if (!all(mode %in% c("character", "integer", "double", "logical")))
+      errs <- c(errs, sprintf("unsupported storage mode: '%s'", mode))
+    if (length(errs))
+      errs
+    else
+      TRUE
+  },
+  sealed = SEALED
+)
+
+
+################################################################################
+#
+# The definitions of initialize() must be located after the class definitions
+# to avoid a warning during the Roxygen2 runs.
+#
+
+
+#' Initialize
 #'
-#' Check whether a matrix fulfils the requirements for \code{\link{OPM}}
-#' measurements, or check whether a character vector fulfils the requirements
-#' for \code{\link{OPM}} \acronym{CSV} data. Called when constructing an object
-#' of the class.
+#' Initialize methods for some classes.
 #'
-#' @param object Matrix or character vector.
+#' @param .Object \code{\link{OPM}} or \code{\link{OPMS}} object.
+#' @param ... Additional arguments.
+#' @return \code{\link{OPM}} or \code{\link{OPMS}} object.
+#' @keywords internal
+#'
+setMethod("initialize", OPM, function(.Object, ...) {
+  .Object <- callNextMethod()
+  plate.type <- CSV_NAMES[["PLATE_TYPE"]]
+  .Object@csv_data[plate.type] <- plate_type(.Object@csv_data[plate.type])
+  .Object
+}, sealed = SEALED)
+
+setMethod("initialize", OPMS, function(.Object, ...) {
+  .Object <- callNextMethod()
+  names(.Object@plates) <- NULL
+  .Object
+}, sealed = SEALED)
+
+setMethod("initialize", CMAT, function(.Object, ...) {
+  map2int <- function(x) match(toupper(x), CHARACTER_STATES)
+  .Object <- callNextMethod()
+  switch(typeof(.Object),
+    character = {
+      .Object[] <- map2int(.Object)
+      storage.mode(.Object) <- "integer"
+    },
+    list = {
+      if (length(.Object) && typeof(.Object[[1L]]) == "character")
+        .Object[] <- lapply(.Object, map2int)
+      .Object[] <- lapply(.Object, sort.int, na.last = TRUE)
+    },
+    logical = .Object[] <- .Object + 1L
+  )
+  .Object
+}, sealed = SEALED)
+
+
+################################################################################
+
+
+#' Check OPMX object
+#'
+#' Called when constructing an object of the \code{\link{OPMX}} classes.
+#'
+#' @param object Object potentially suitable for one of the slots of
+#'   \code{\link{OPMX}} classes
+#' @param orig.data Matrix of original, non-aggregated data.
+#' @param settings List or \code{NULL}. If a list, settings used for aggregating
+#'   the data (currently only the \pkg{opm}-native programs are checked).
+#' @param disc Vector of discretized data. At this stage, it must already have
+#'   the same wells than \code{object}, in the same order.
 #' @return Character vector with description of problems, empty if there are
 #'   none.
 #' @details The matrix must contain the hours as first column, the other column
@@ -293,107 +444,9 @@ setMethod("opm_problems", "character", function(object) {
   errs
 }, sealed = SEALED)
 
+#= opma_problems opm_problems
 
-################################################################################
-
-
-#' Attach slots
-#'
-#' Attach the contents of all slots, except for the measurements, to another
-#' object. Useful in conversions (coercions). This method is deliberately
-#' \strong{not} defined for \code{\link{OPMS}} objects.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param other Arbitrary other object.
-#' @return \code{other} with additional attributes.
-#' @keywords internal
-#'
-setGeneric("attach_attr", function(object, ...) standardGeneric("attach_attr"))
-
-setMethod("attach_attr", OPM, function(object, other) {
-  for (name in setdiff(slotNames(object), "measurements"))
-    attr(other, name) <- slot(object, name)
-  other
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-setAs(from = OPM, to = "matrix", function(from) {
-  attach_attr(from, from@measurements)
-})
-
-setAs(from = OPM, to = "data.frame", function(from) {
-  attach_attr(from, as.data.frame(from@measurements))
-})
-
-setAs(from = OPM, to = "list", function(from) {
-  list(metadata = metadata(from), csv_data = as.list(csv_data(from)),
-    measurements = as.list(as.data.frame(measurements(from))))
-})
-
-setAs(from = "list", to = OPM, function(from) {
-  convert_measurements <- function(mat) {
-    mat <- must(do.call(cbind, lapply(mat, as.numeric)))
-    if (length(hour.pos <- which(colnames(mat) == HOUR)) != 1L)
-      stop("uninterpretable column names in list element 'measurements'")
-    sorted.names <- c(colnames(mat)[hour.pos],
-      sort.int(colnames(mat)[-hour.pos]))
-    mat[, sorted.names, drop = FALSE]
-  }
-  new(OPM, csv_data = unlist(from$csv_data),
-    metadata = repair_na_strings.list(as.list(from$metadata), "character"),
-    measurements = convert_measurements(from$measurements))
-})
-
-
-################################################################################
-
-
-#' @rdname OPM
-#' @name OPMA
-#' @aliases OPMA-class
-#' @docType class
-#' @export
-#'
-setClass(OPMA,
-  representation = representation(aggregated = "matrix",
-    aggr_settings = "list"),
-  contains = OPM,
-  validity = function(object) {
-    settings <- object@aggr_settings
-    if (length(errs <- opma_problems(settings)))
-      settings <- NULL # => no settings-based checks of the matrix
-    errs <- c(errs, opma_problems(object@aggregated, object@measurements,
-      settings))
-    if (length(errs))
-      errs
-    else
-      TRUE
-  },
-  sealed = SEALED
-)
-
-
-################################################################################
-
-
-#' Check OPMA
-#'
-#' Check whether a matrix fulfils the requirements for  \code{\link{OPMA}}
-#' aggregated data, or check whether a list fulfils the requirements for
-#' \code{\link{OPMA}} aggregation settings. Called when constructing an object
-#' of the class.
-#'
-#' @param object Matrix of aggregated data or list describing the aggregation
-#'   settings.
-#' @param orig.data Matrix of original, non-aggregated data.
-#' @param settings List or \code{NULL}. If a list, settings used for aggregating
-#'   the data (currently only the \pkg{opm}-native programs are checked).
-#' @return Character vector with description of problems, empty if there are
-#'   none.
-#' @keywords internal
+#' @rdname opm_problems
 #'
 setGeneric("opma_problems",
   function(object, ...) standardGeneric("opma_problems"))
@@ -447,86 +500,9 @@ setMethod("opma_problems", "list", function(object) {
 }, sealed = SEALED)
 
 
-################################################################################
-#
-# Conversion functions: OPMA <=> other objects. For principle, see description
-# of OPM class. Conversion of OPMA to matrix/data frame is just repeated here
-# from OPM because otherwise some elements would be missing.
-#
+#= opmd_problems opm_problems
 
-setAs(from = OPMA, to = "matrix", function(from) {
-  attach_attr(from, from@measurements)
-})
-
-setAs(from = OPMA, to = "data.frame", function(from) {
-  attach_attr(from, as.data.frame(from@measurements))
-})
-
-setAs(from = OPMA, to = "list", function(from) {
-  result <- as(as(from, OPM), "list")
-  result$aggregated <- apply(aggregated(from), MARGIN = 2L, FUN = as.list)
-  result$aggr_settings <- aggr_settings(from)
-  result
-})
-
-setAs(from = "list", to = OPMA, function(from) {
-  select_aggr <- function(x, wanted) {
-    x <- repair_na_strings(lapply(x, `[`, unlist(map_param_names())))
-    x <- do.call(cbind, x[wanted])
-    must(mode(x) <- "numeric")
-    x # should now be matrix, reduced to the known wells, parameters and CIs
-  }
-  x <- as(from, OPM)
-  new(OPMA, measurements = measurements(x),
-    csv_data = csv_data(x), metadata = metadata(x),
-    aggregated = select_aggr(from$aggregated, colnames(x@measurements)[-1L]),
-    aggr_settings = update_settings_list(as.list(from$aggr_settings)))
-})
-
-
-################################################################################
-
-
-#' @rdname OPM
-#' @name OPMD
-#' @aliases OPMD-class
-#' @docType class
-#' @export
-#'
-setClass(OPMD,
-  representation = representation(discretized = "logical",
-    disc_settings = "list"),
-  contains = OPMA,
-  validity = function(object) {
-    errs <- opmd_problems(object@disc_settings)
-    errs <- c(errs, opmd_problems(object@aggregated, object@discretized,
-      object@disc_settings$options$parameter))
-    if (length(errs))
-      errs
-    else
-      TRUE
-  },
-  sealed = SEALED
-)
-
-
-################################################################################
-
-
-#' Check OPMD
-#'
-#' Check whether a matrix fulfils the requirements for  \code{\link{OPMD}}
-#' discretized data, or check whether a list fulfils the requirements for
-#' \code{\link{OPMD}} discretization settings. Called when constructing an
-#' object of the class.
-#'
-#' @param object Matrix of original, aggregated, non-discretized data, or list
-#'   describing the discretization settings.
-#' @param disc Vector of discretized data. At this stage, it must already have
-#'   the same wells than \code{object}, in the same order.
-#' @return Character vector with description of problems, empty if there are
-#'   none.
-#' @keywords internal
+#' @rdname opm_problems
 #'
 setGeneric("opmd_problems",
   function(object, ...) standardGeneric("opmd_problems"))
@@ -558,13 +534,153 @@ setMethod("opmd_problems", "matrix", function(object, disc, param) {
   errs
 }, sealed = SEALED)
 
+#= opms_problems opm_problems
+
+#' @rdname opm_problems
+#'
+setGeneric("opms_problems",
+  function(object, ...) standardGeneric("opms_problems"))
+
+setMethod("opms_problems", "list", function(object) {
+  errs <- character()
+  if (length(object) < 2L) {
+    errs <- c(errs, "less than two plates submitted")
+    return(errs) # further checks are useless in that case
+  }
+  if (length(no.opm <- which(!vapply(object, is, NA, OPM))) > 0L) {
+    bad.classes <- unlist(lapply(object[no.opm], class))
+    errs <- c(errs, paste("wrong class:", bad.classes))
+    return(errs) # further checks are impossible in that case
+  }
+  if (!isTRUE(isuni <- is_uniform(vapply(object, plate_type, ""))))
+    errs <- c(errs, paste("plate types are not uniform:",
+      paste0(isuni, collapse = " <=> ")))
+  if (!isTRUE(is_uniform(lapply(object, wells))))
+    errs <- c(errs, "wells are not uniform")
+  if (!length(errs) &&
+      !isTRUE(is_uniform(lapply(object, FUN = hours, what = "all"))))
+    warning("running times are not uniform")
+  errs
+}, sealed = SEALED)
+
+
+
+################################################################################
+
+
+#' Attach slots or update settings entries
+#'
+#' Attach the contents of all slots, except for the measurements, to another
+#' object. Useful in conversions (coercions). This method is deliberately
+#' \strong{not} defined for \code{\link{OPMS}} objects. Alternatively,
+#' convert old-style to new-style aggregation or discretization settings.
+#'
+#' @param object \code{\link{OPM}} object.
+#' @param other Arbitrary other object.
+#' @param x List.
+#' @return \code{other} with additional attributes, or list.
+#' @keywords internal
+#'
+setGeneric("attach_attr", function(object, ...) standardGeneric("attach_attr"))
+
+setMethod("attach_attr", OPM, function(object, other) {
+  for (name in setdiff(slotNames(object), "measurements"))
+    attr(other, name) <- slot(object, name)
+  other
+}, sealed = SEALED)
+
+#= update_settings_list attach_attr
+
+#' @rdname attach_attr
+#'
+setGeneric("update_settings_list",
+  function(x, ...) standardGeneric("update_settings_list"))
+
+setMethod("update_settings_list", "list", function(x) {
+  if (is.null(names(x)))
+    stop("expected named list 'x'")
+  if (!length(software <- x[[SOFTWARE]])) {
+    x[[SOFTWARE]] <- software <- opm_string()
+    warning(sprintf("inserting '%s' as '%s' entry", software, SOFTWARE))
+  }
+  if (!length(version <- x[[VERSION]])) {
+    x[[VERSION]] <- version <- if (software == opm_string())
+      opm_string(version = TRUE)[2L]
+    else
+      UNKNOWN_VERSION
+    warning(sprintf("inserting '%s' as '%s' entry", version, VERSION))
+  }
+  if (m <- match(PROGRAM, names(x), nomatch = 0L)) {
+    names(x)[m] <- METHOD
+    warning(sprintf("renaming '%s' to '%s'", PROGRAM, METHOD))
+  }
+  x
+}, sealed = SEALED)
+
 
 ################################################################################
 #
-# Conversion functions: OPMD <=> other objects. For principle, see description
-# of OPM class. Conversion of OPMD to matrix/data frame is just repeated here
+# Conversion functions: OPMX <=> other objects. For principle, see description
+# of OPM class. Conversion of OPMA or OMDS to matrix/data frame is just repeated
 # from OPM because otherwise some elements would be missing.
 #
+
+
+setAs(from = OPM, to = "matrix", function(from) {
+  attach_attr(from, from@measurements)
+})
+
+setAs(from = OPM, to = "data.frame", function(from) {
+  attach_attr(from, as.data.frame(from@measurements))
+})
+
+setAs(from = OPM, to = "list", function(from) {
+  list(metadata = metadata(from), csv_data = as.list(csv_data(from)),
+    measurements = as.list(as.data.frame(measurements(from))))
+})
+
+setAs(from = "list", to = OPM, function(from) {
+  convert_measurements <- function(mat) {
+    mat <- must(do.call(cbind, lapply(mat, as.numeric)))
+    if (length(hour.pos <- which(colnames(mat) == HOUR)) != 1L)
+      stop("uninterpretable column names in list element 'measurements'")
+    sorted.names <- c(colnames(mat)[hour.pos],
+      sort.int(colnames(mat)[-hour.pos]))
+    mat[, sorted.names, drop = FALSE]
+  }
+  new(OPM, csv_data = unlist(from$csv_data),
+    metadata = repair_na_strings.list(as.list(from$metadata), "character"),
+    measurements = convert_measurements(from$measurements))
+})
+
+setAs(from = OPMA, to = "matrix", function(from) {
+  attach_attr(from, from@measurements)
+})
+
+setAs(from = OPMA, to = "data.frame", function(from) {
+  attach_attr(from, as.data.frame(from@measurements))
+})
+
+setAs(from = OPMA, to = "list", function(from) {
+  result <- as(as(from, OPM), "list")
+  result$aggregated <- apply(aggregated(from), MARGIN = 2L, FUN = as.list)
+  result$aggr_settings <- aggr_settings(from)
+  result
+})
+
+setAs(from = "list", to = OPMA, function(from) {
+  select_aggr <- function(x, wanted) {
+    x <- repair_na_strings(lapply(x, `[`, unlist(map_param_names())))
+    x <- do.call(cbind, x[wanted])
+    must(mode(x) <- "numeric")
+    x # should now be matrix, reduced to the known wells, parameters and CIs
+  }
+  x <- as(from, OPM)
+  new(OPMA, measurements = measurements(x),
+    csv_data = csv_data(x), metadata = metadata(x),
+    aggregated = select_aggr(from$aggregated, colnames(x@measurements)[-1L]),
+    aggr_settings = update_settings_list(as.list(from$aggr_settings)))
+})
 
 setAs(from = OPMD, to = "matrix", function(from) {
   attach_attr(from, from@measurements)
@@ -592,70 +708,6 @@ setAs(from = "list", to = OPMD, function(from) {
     disc_settings = settings)
 })
 
-
-################################################################################
-
-
-#' @docType class
-#' @rdname OPM
-#' @name OPMS
-#' @export
-#' @aliases OPMS-class
-#'
-setClass(OPMS,
-  representation = representation(plates = "list"),
-  validity = function(object) {
-    if (length(errs <- opms_problems(object@plates)))
-      errs
-    else
-      TRUE
-  },
-  sealed = SEALED
-)
-
-
-################################################################################
-
-
-#' Check OPMS list
-#'
-#' Check whether a list fulfils the requirements for \code{\link{OPMS}}
-#' \code{\link{plates}}. Called when constructing an object of that class.
-#'
-#' @param object List to be checked.
-#' @return Character vector with description of problems, empty if there are
-#'   none.
-#' @keywords internal
-#'
-setGeneric("opms_problems",
-  function(object, ...) standardGeneric("opms_problems"))
-
-setMethod("opms_problems", "list", function(object) {
-  errs <- character()
-  if (length(object) < 2L) {
-    errs <- c(errs, "less than two plates submitted")
-    return(errs) # further checks are useless in that case
-  }
-  if (length(no.opm <- which(!vapply(object, is, NA, OPM))) > 0L) {
-    bad.classes <- unlist(lapply(object[no.opm], class))
-    errs <- c(errs, paste("wrong class:", bad.classes))
-    return(errs) # further checks are impossible in that case
-  }
-  if (!isTRUE(isuni <- is_uniform(vapply(object, plate_type, ""))))
-    errs <- c(errs, paste("plate types are not uniform:",
-      paste(isuni, collapse = " <=> ")))
-  if (!isTRUE(is_uniform(lapply(object, wells))))
-    errs <- c(errs, "wells are not uniform")
-  if (!length(errs) &&
-      !isTRUE(is_uniform(lapply(object, FUN = hours, what = "all"))))
-    warning("running times are not uniform")
-  errs
-}, sealed = SEALED)
-
-
-################################################################################
-
-
 setAs(from = OPMS, to = "list", function(from) {
   lapply(from@plates, as, Class = "list")
 })
@@ -674,37 +726,6 @@ setAs(from = "list", to = OPMS, function(from) {
   }))
 })
 
-
-################################################################################
-
-
-# CMAT class: undocumented, as for internal use only.
-#
-setClass(CMAT,
-  contains = "matrix",
-  validity = function(object) {
-    errs <- character()
-    if (is.null(rownames(object)) || any(is.na(rownames(object))))
-      errs <- c(errs, "missing row names")
-    mode <- typeof(object)
-    if (mode == "list") {
-      mode <- unique.default(vapply(object, typeof, ""))
-      if (length(mode) > 1L)
-        errs <- c(errs, "non-uniform list elements contained")
-      if (any(vapply(object, length, 0L) < 1L))
-        errs <- c(errs, "empty list elements contained")
-    }
-    if (!all(mode %in% c("character", "integer", "double", "logical")))
-      errs <- c(errs, sprintf("unsupported storage mode: '%s'", mode))
-    if (length(errs))
-      errs
-    else
-      TRUE
-  },
-  sealed = SEALED
-)
-
-
 setAs(from = "matrix", to = CMAT, function(from) {
   new(CMAT, from) # overwritten to enforce consistency checks
 })
@@ -713,97 +734,4 @@ setAs(from = "matrix", to = CMAT, function(from) {
 ################################################################################
 
 
-#' @rdname WMD
-#' @name MOA
-#' @aliases MOA-class
-#' @docType class
-#' @export
-#'
-NULL
-
-setClassUnion(MOA, c("matrix", "array"))
-
-#' @rdname WMD
-#' @name FOE
-#' @aliases FOE-class
-#' @docType class
-#' @export
-#'
-NULL
-
-setClassUnion(FOE, c("formula", "expression"))
-
-#' @rdname WMD
-#' @name OPMX
-#' @aliases OPMX-class
-#' @docType class
-#' @export
-#'
-NULL
-
-# Currently the child classes must provide plate_type() and minmax() for the
-# methods to work
-#
-setClassUnion(OPMX, c(OPM, OPMS))
-
-#' @rdname WMD
-#' @name YAML_VIA_LIST
-#' @aliases YAML_VIA_LIST-class
-#' @docType class
-#' @export
-#'
-NULL
-
-setClassUnion(YAML_VIA_LIST, c(OPM, OPMS, "list"))
-
-
-################################################################################
-#
-# The definitions of initialize() must be located after the class definitions
-# to avoid a warning during the Roxygen2 runs.
-#
-
-
-#' Initialize
-#'
-#' Initialize methods for some classes.
-#'
-#' @param .Object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Additional arguments.
-#' @return \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @keywords internal
-#'
-setMethod("initialize", OPM, function(.Object, ...) {
-  .Object <- callNextMethod()
-  plate.type <- CSV_NAMES[["PLATE_TYPE"]]
-  .Object@csv_data[plate.type] <- plate_type(.Object@csv_data[plate.type])
-  .Object
-}, sealed = SEALED)
-
-setMethod("initialize", OPMS, function(.Object, ...) {
-  .Object <- callNextMethod()
-  names(.Object@plates) <- NULL
-  .Object
-}, sealed = SEALED)
-
-setMethod("initialize", CMAT, function(.Object, ...) {
-  map2int <- function(x) match(toupper(x), CHARACTER_STATES)
-  .Object <- callNextMethod()
-  switch(typeof(.Object),
-    character = {
-      .Object[] <- map2int(.Object)
-      storage.mode(.Object) <- "integer"
-    },
-    list = {
-      if (length(.Object) && typeof(.Object[[1L]]) == "character")
-        .Object[] <- lapply(.Object, map2int)
-      .Object[] <- lapply(.Object, sort.int, na.last = TRUE)
-    },
-    logical = .Object[] <- .Object + 1L
-  )
-  .Object
-}, sealed = SEALED)
-
-
-################################################################################
 

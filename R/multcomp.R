@@ -4,26 +4,6 @@
 ################################################################################
 
 
-## NOTE: not an S4 method because trivial
-
-#' Check column separator
-#'
-#' Check character vector used for joining columns by \code{\link{opm_mcp}}.
-#'
-#' @param sep Non-empty character vector.
-#' @return \code{x} unless the test fails.
-#' @keywords internal
-#'
-check_mcp_sep <- function(sep) {
-  if (!is.character(sep) || nchar(sep <- sep[[1L]]) != 1L)
-    stop("'sep' must be a single character")
-  sep
-}
-
-
-################################################################################
-
-
 #' Multiple comparison of group means
 #'
 #' This function provides linear-hypothesis testing and multiple comparisons for
@@ -799,17 +779,22 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
 ################################################################################
 
 
-## NOTE: not an S4 method because checks are elsewhere
+## NOTE: not an S4 method because trivial, or checks are elsewhere
 
-#' Convert annotation vector
+
+#' Convert annotation vector or check column separator
 #'
-#' Convert an annotation vector. Helper function for \code{\link{annotated}}.
+#' Convert an annotation vector or check character vector used for joining
+#' columns. Helper functions for \code{\link{annotated}} and
+#' \code{\link{opm_mcp}}.
 #'
 #' @param x Named numeric or logical vector. At this stage, substrate names
 #'   should be used as vector names.
 #' @param how The kind of conversion to conduct. See \code{\link{annotated}}.
 #' @param what The database to use if information shall be gathered.
-#' @return Numeric vector or matrix.
+#' @param sep Non-empty character vector.
+#' @return Numeric vector or matrix; alternatively,\code{x} unless the test
+#'   fails.
 #' @keywords internal
 #'
 convert_annotation_vector <- function(x, how, what) {
@@ -829,6 +814,17 @@ convert_annotation_vector <- function(x, how, what) {
   )
 }
 
+#' @rdname convert_annotation_vector
+#' @keywords internal
+#'
+check_mcp_sep <- function(sep) {
+  if (!is.character(sep) || nchar(sep <- sep[[1L]]) != 1L)
+    stop("'sep' must be a single character")
+  sep
+}
+
 
 ################################################################################
+
+
 

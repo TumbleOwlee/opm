@@ -167,19 +167,25 @@ print.print_easy <- function(x, ...) {
 
 
 ################################################################################
-################################################################################
-#
-# Helper functions acting on numeric data
-#
 
 
-#' Conduct ranging
+#' Plotting helper functions acting on numeric data
 #'
 #' Range numbers, i.e. divide them by their maximum. In \sQuote{extended} mode,
 #' the minimum is subtracted beforehand. It is possible to replace ranging by
-#' standardization (z-scores).
+#' standardization (z-scores). Alternatively, guess a suitable \code{cex}
+#' parameter for \code{\link{level_plot}} (0.5 is fine for the original number
+#' of wells, 96), or determine number of rows/columns in plot for given number
+#' of fields, or determine an optimal range for plotting, or draw a confidence
+#' interval, or returnthe maximal value of an object plus a certain offset.
 #'
-#' @param object Numeric vector or array.
+#' @param object Numeric vector or array, or numeric scalar, or or \sQuote{OPMX}
+#'   object. For \code{draw_ci}, a four-element numeric vector containing (i)
+#'   the left margin of the CI; (ii) the point estimate; (iii) the right margin;
+#'   (iv) the position on the y axis. The point estimate can be \code{NA} at any
+#'   time; whether the margins can also be \code{NA} depends on
+#'   \code{na.action}.
+#' @param by Numeric scalar (width/height relation).
 #' @param extended Logical scalar. Subtract the minimum in both numerator and
 #'   denominator of the ranging formula? If \code{zscores} is \code{TRUE}, the
 #'   meaning is different.
@@ -191,8 +197,24 @@ print.print_easy <- function(x, ...) {
 #'   median and/or MAD)?
 #' @param fac Numeric scalar. After conducting the proper ranging process,
 #'   \code{object} is multiplied by \code{fac}.
+#' @param target Numeric scalar. Target difference between min and max. If
+#'   \code{NULL}, this is simply derived from the range of \code{object}.
+#' @param align Character scalar. Where to put the real values relative to min
+#'   and max of \code{target}.
+#' @param offset Numeric scalar. A minimal distance to the margins.
+#' @param prop.offset Numeric scalar. As an alternative to \code{offset}, it can
+#'   be specified as a proportion of \code{target}.
+#' @param col Character scalar. Name of the colour to be used.
+#' @param cex Numeric scalar. Magnification for CI margin symbols and point
+#'   estimate. Also affects line width, and proportionally so.
+#' @param na.action Character scalar. What to do if a margin value is \code{NA}.
+#' @param theor.max Logical scalar. Use the theoretical or the real improved
+#'   maximum? If \code{TRUE}, \code{by} is ignored.
 #' @param ... Optional arguments passed between the methods.
-#' @return Numeric vector or matrix.
+#' @return Numeric vector or matrix. \code{draw_ci} invisibly returns
+#'   \code{object}. For \code{improved_max}, let \code{n} be the smallest
+#'   integer value for which \code{n * by >= object} holds. The result is then
+#'   equal to \code{(n + 1) * by}.
 #' @keywords internal
 #'
 setGeneric("ranging", function(object, ...) standardGeneric("ranging"))
@@ -224,18 +246,9 @@ setMethod("ranging", "list", function(object, ...) {
   relist(ranging(unlist(as.relistable(object)), ...))
 }, sealed = SEALED)
 
+#= guess_cex ranging
 
-################################################################################
-
-
-#' Estimate cex
-#'
-#' Guess a suitable \code{cex} parameter for \code{\link{level_plot}}. 0.5 is
-#' fine for the original number of wells (96).
-#'
-#' @param object Numeric vector.
-#' @return Numeric vector.
-#' @keywords internal
+#' @rdname ranging
 #'
 setGeneric("guess_cex", function(object, ...) standardGeneric("guess_cex"))
 
@@ -243,18 +256,9 @@ setMethod("guess_cex", "numeric", function(object) {
   0.5 * sqrt(96 / object)
 }, sealed = SEALED)
 
+#= best_layout ranging
 
-################################################################################
-
-
-#' Best two-dimensional layout
-#'
-#' Determine number of rows/columns in plot for given number of fields.
-#'
-#' @param object Numeric scalar.
-#' @param by Numeric scalar (width/height relation).
-#' @return Numeric vector of length 2.
-#' @keywords internal
+#' @rdname ranging
 #'
 setGeneric("best_layout",
   function(object, ...) standardGeneric("best_layout"))
@@ -270,24 +274,9 @@ setMethod("best_layout", "numeric", function(object, by = 0.75) {
   c(large, small)
 }, sealed = SEALED)
 
+#= best_range ranging
 
-################################################################################
-
-
-#' Best range
-#'
-#' Determine an optimal range for plotting.
-#'
-#' @param object Numeric vector.
-#' @param target Numeric scalar. Target difference between min and max. If
-#'   \code{NULL}, this is simply derived from the range of \code{object}.
-#' @param align Character scalar. Where to put the real values relative to min
-#'   and max of \code{target}.
-#' @param offset Numeric scalar. A minimal distance to the margins.
-#' @param prop.offset Numeric scalar. As an alternative to \code{offset}, it can
-#'   be specified as a proportion of \code{target}.
-#' @return Optimal range (numeric vector of length two).
-#' @keywords internal
+#' @rdname ranging
 #'
 setGeneric("best_range",
   function(object, ...) standardGeneric("best_range"))
@@ -316,22 +305,9 @@ setMethod("best_range", "numeric", function(object, target,
   )
 }, sealed = SEALED)
 
+#= improved_max ranging
 
-################################################################################
-
-
-#' Maximum plus offset
-#'
-#' Return the maximal value of an object plus a certain offset.
-#'
-#' @param object Numeric vector or \sQuote{OPMX} object.
-#' @param theor.max Logical scalar. Use the theoretical or the real improved
-#'   maximum? If \code{TRUE}, \code{by} is ignored.
-#' @param by Numeric scalar.
-#' @return Numeric scalar. Let \code{n} be the smallest integer value for which
-#'   \code{n * by >= object} holds. The result is then equal to \code{(n + 1) *
-#'   by}.
-#' @keywords internal
+#' @rdname ranging
 #'
 setGeneric("improved_max",
   function(object, ...) standardGeneric("improved_max"))
@@ -348,23 +324,9 @@ setMethod("improved_max", OPMX, function(object, theor.max = TRUE, by = 10) {
 }, sealed = SEALED)
 
 
-################################################################################
+#= draw_ci ranging
 
-
-#' Draw CI
-#'
-#' Draw a confidence interval.
-#'
-#' @param object Four-element numeric vector containing (i) the left margin of
-#'   the CI; (ii) the point estimate; (iii) the right margin; (iv) the position
-#'   on the y axis. The point estimate can be \code{NA} at any time; whether the
-#'   margins can also be \code{NA} depends on \code{na.action}.
-#' @param col Character scalar. Name of the colour to be used.
-#' @param cex Numeric scalar. Magnification for CI margin symbols and point
-#'   estimate. Also affects line width, and proportionally so.
-#' @param na.action Character scalar. What to do if a margin value is \code{NA}.
-#' @return \code{object}, returned invisibly.
-#' @keywords internal
+#' @rdname ranging
 #'
 setGeneric("draw_ci", function(object, ...) standardGeneric("draw_ci"))
 
@@ -391,51 +353,13 @@ setMethod("draw_ci", "numeric", function(object, col = "blue", cex = 1,
 
 
 ################################################################################
-################################################################################
-#
-# Plotting helper functions acting on character data
-#
 
 
-#' Create main title
+#' Plotting helper functions acting on character data
 #'
-#' Create a title used as value of the \sQuote{main} argument of the plotting
-#' functions.
-#'
-#' @param object \code{\link{OPMX}} object.
-#' @param settings See the \code{main} argument of \code{\link{xy_plot}}.
-#' @return Character scalar or \code{NULL}.
-#' @keywords internal
-#'
-setGeneric("main_title", function(object, ...) standardGeneric("main_title"))
-
-setMethod("main_title", OPMX, function(object, settings) {
-  if (is.character(settings) || is.expression(settings))
-    settings <- list(predef = settings)
-  else if (is.logical(settings))
-    settings <- list(use = settings)
-  else if (is.numeric(settings))
-    settings <- list(max = settings)
-  else
-    settings <- as.list(settings)
-  if (!is.null(settings$predef) && nzchar(settings$predef))
-    return(settings$predef) # nzchar() works for expressions, too
-  settings <- insert(settings, use = TRUE, full = TRUE, .force = FALSE)
-  if (settings$use) {
-    settings$use <- NULL
-    do.call(plate_type, c(list(object = object), settings))
-  } else
-    NULL
-}, sealed = SEALED)
-
-
-################################################################################
-
-
-#' Negative control
-#'
-#' Helper function to determine the value of a measurement interpretable as
-#' negative control.
+#' Helper functions to determine the value of a measurement interpretable as
+#' negative control or to create a title used as value of the \sQuote{main}
+#' argument of the plotting functions.
 #'
 #' @param object \code{\link{OPMX}} object.
 #' @param neg.ctrl If \code{NULL} or \code{FALSE}, ignore \code{data} and return
@@ -443,7 +367,8 @@ setMethod("main_title", OPMX, function(object, settings) {
 #'   argument. If a character scalar, call \code{max} with \code{data} as first
 #'   and \code{neg.ctrl} as second argument. If \code{neg.ctrl} is a numeric
 #'   value, it is returned.
-#' @return Numeric scalar or \code{NULL}.
+#' @param settings See the \code{main} argument of \code{\link{xy_plot}}.
+#' @return Numeric or character scalar or \code{NULL}.
 #' @keywords internal
 #'
 setGeneric("negative_control",
@@ -470,39 +395,42 @@ setMethod("negative_control", OPMX, function(object, neg.ctrl) {
       "or 'numeric' vector")
 }, sealed = SEALED)
 
+#= main_title negative_control
+
+#' @rdname negative_control
+#'
+setGeneric("main_title", function(object, ...) standardGeneric("main_title"))
+
+setMethod("main_title", OPMX, function(object, settings) {
+  if (is.character(settings) || is.expression(settings))
+    settings <- list(predef = settings)
+  else if (is.logical(settings))
+    settings <- list(use = settings)
+  else if (is.numeric(settings))
+    settings <- list(max = settings)
+  else
+    settings <- as.list(settings)
+  if (!is.null(settings$predef) && nzchar(settings$predef))
+    return(settings$predef) # nzchar() works for expressions, too
+  settings <- insert(settings, use = TRUE, full = TRUE, .force = FALSE)
+  if (settings$use) {
+    settings$use <- NULL
+    do.call(plate_type, c(list(object = object), settings))
+  } else
+    NULL
+}, sealed = SEALED)
+
 
 ################################################################################
-################################################################################
-#
-# Plotting helper functions acting on colours
-#
 
 
-## NOTE: not an S4 method because check is done using match.arg()
-
-#' Safely select colors.
+#' Safely select colors or create colour regions.
 #'
 #' Call \code{\link{select_colors}} and if this does not work return the input
-#' argument as-is.
+#' argument as-is. Alternatively, create default colour regions for use with
+#' \code{\link{level_plot}}.
 #'
 #' @param set Character vector passed to \code{\link{select_colors}}.
-#' @return Character vector of colour codes.
-#' @keywords internal
-#'
-try_select_colors <- function(set) {
-  tryCatch(select_colors(set), error = function(e) set)
-}
-
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Colour regions
-#'
-#' Create default colour regions for use with \code{\link{level_plot}}.
-#'
 #' @param colors Character or integer vector with at least two distinct colours.
 #'   If \code{NULL} or empty, default colours are chosen.
 #' @param space Passed to \code{colorRampPalette}.
@@ -510,6 +438,12 @@ try_select_colors <- function(set) {
 #' @param n Passed to the function returned by \code{colorRampPalette}.
 #' @return Character vector of colour codes.
 #' @keywords internal
+#'
+try_select_colors <- function(set) {
+  tryCatch(select_colors(set), error = function(e) set)
+}
+
+#' @rdname try_select_colors
 #'
 default_color_regions <- function(colors, space, bias, n) {
   colorRampPalette(colors = unique(colors), space = space, bias = bias)(n)

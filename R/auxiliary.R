@@ -312,7 +312,7 @@ setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
       y <- list_remove_na(y)
     for (i in seq_along(y)[-1L]) {
       v1 <- y[[i]]
-      for (j in seq.int(1L, i - 1L))
+      for (j in seq_len(i - 1L))
         if (!length(intersect(v1, y[[j]])))
           return(FALSE)
     }
@@ -416,7 +416,7 @@ metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {
   if (length(x) == 1L && x %in% remove)
     return(NULL)
   if (to.formula) ## TODO check whether this makes sense
-    create_formula("~ c(%s)", paste(x, collapse = ", "))
+    create_formula("~ c(%s)", paste0(x, collapse = ", "))
   else
     x
 }
@@ -439,7 +439,7 @@ metadata_key.character <- function(x, to.formula = FALSE, remove = NULL,
     if (syntactic)
       x <- make.names(x)
     return(create_formula("~ `%s`",
-      paste(x, collapse = get("key.join", OPM_OPTIONS))))
+      paste0(x, collapse = get("key.join", OPM_OPTIONS))))
   }
   if (is.null(names(x)))
     names(x) <- x
@@ -465,7 +465,7 @@ metadata_key.list <- function(x, to.formula = FALSE, remove = NULL,
   if (!to.formula)
     return(x)
   fmt <- case(length(x), stop("'x' must not be empty"), "",
-    paste(rep(ops, length.out = length(x) - 1L), "`%s`", collapse = " "))
+    paste(rep_len(ops, length(x) - 1L), "`%s`", collapse = " "))
   create_formula(paste("~ `%s`", fmt), names(x))
 }
 
@@ -583,7 +583,7 @@ metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL,
 #'
 create_formula <- function(fmt, ..., .env = parent.frame()) {
   x <- c(list(fmt = fmt), lapply(list(...), as.list))
-  formula(do.call(sprintf, unlist(x, recursive = FALSE)), .env)
+  formula(do.call(sprintf, unlist(x, FALSE, FALSE)), .env)
 }
 
 
@@ -731,7 +731,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
   strip_white <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE),
     FALSE, TRUE)
 
-  p0 <- function(x) paste(x, collapse = "")
+  p0 <- function(x) paste0(x, collapse = "")
 
   simple_if <- function(x, keep.const, simplify) {
     if (is.matrix(x)) {
@@ -977,7 +977,7 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
 #' @keywords internal
 #'
 list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
-  indent <- paste(rep.int(" ", fac * (level - 1L)), collapse = "")
+  indent <- paste0(rep.int(" ", fac * (level - 1L)), collapse = "")
   if (is.list(x)) {
     if (is.null(n <- names(x)))
       n <- sprintf(fmt, level)
@@ -1027,7 +1027,7 @@ html_head <- function(title, css, meta) {
   } else
     css <- NULL
   generator <- single_tag("meta", name = "generator",
-    content = paste(opm_string(version = TRUE), collapse = " version "))
+    content = paste0(opm_string(version = TRUE), collapse = " version "))
   # see http://www.w3.org/TR/NOTE-datetime
   # but %s appears to be affected by a bug in R 2.15.2
   time <- format(Sys.time(), "%Y-%M-%dT%H:%M:%S%z")
@@ -1137,9 +1137,9 @@ kubrick <- function(movie = character()) {
     `Eyes Wide Shut` = "If you men only knew..."
   )
   idx <- if (length(movie))
-    as.character(movie)
-  else
-    as.integer(runif(1L, max = length(data))) + 1L
+      as.character(movie)
+    else
+      as.integer(runif(1L, max = length(data))) + 1L
   message(msg <- data[[idx, exact = FALSE]])
   invisible(msg)
 }
@@ -1910,7 +1910,7 @@ insert.list <- function(object, other, ..., .force = FALSE, .strict = FALSE) {
       novel <- y[[name]]
       if (!identical(class(novel), wanted <- class(x[[name]])))
         stop(sprintf("value of key '%s' must have class '%s'", name,
-          paste(wanted, collapse = " -> ")))
+          paste0(wanted, collapse = " -> ")))
       x[[name]] <- novel
     }
     x

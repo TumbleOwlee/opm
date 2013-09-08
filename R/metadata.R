@@ -230,7 +230,7 @@ setMethod("metadata<-", c(WMD, "character", "data.frame"), function(object, key,
     stop("need data frame with one row")
   if (any(found <- key %in% colnames(value))) {
     j <- key[found <- which(found)[1L]]
-    key <- key[seq.int(1L, found)]
+    key <- key[seq_len(found)]
   } else
     j <- TRUE
   object@metadata[[key]] <- value[1L, j, drop = TRUE]
@@ -410,7 +410,7 @@ setMethod("metadata<-", c(OPMS, "character", "data.frame"), function(object,
   LL(object, .wanted = nrow(value))
   if (any(found <- key %in% colnames(value))) {
     j <- key[found <- which(found)[1L]]
-    key <- key[seq.int(1L, found)]
+    key <- key[seq_len(found)]
   } else
     j <- TRUE
   for (i in seq_along(object@plates))
@@ -849,7 +849,7 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
     function(key) {
       if (is.null(result <- object@metadata[[key, exact = exact]]))
         stop(sprintf("got NULL value when using key '%s'",
-          paste(key, collapse = " -> ")))
+          paste0(key, collapse = " -> ")))
       result
     }
   else

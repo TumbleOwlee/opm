@@ -62,7 +62,7 @@ names(SPECIAL_PLATES) <- c("gen.iii", "eco", "sf.n2", "sf.p2")
 SP_PATTERN <- sub("^SF", "G", SPECIAL_PLATES, TRUE, TRUE)
 SP_PATTERN <- unique(c(SP_PATTERN, SPECIAL_PLATES))
 SP_PATTERN <- toupper(gsub("\\W", "", SP_PATTERN, FALSE, TRUE))
-SP_PATTERN <- sprintf("^(%s)([A-Z]*)$", paste(SP_PATTERN, collapse = "|"))
+SP_PATTERN <- sprintf("^(%s)([A-Z]*)$", paste0(SP_PATTERN, collapse = "|"))
 
 
 # Theoretically expected range of the OmniLog measurements (Bochner, pers.

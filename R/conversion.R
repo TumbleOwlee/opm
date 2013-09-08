@@ -224,7 +224,7 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
   LL(plate.pos <- which(colnames(object) == RESERVED_NAMES[["plate"]]), sep)
   if (plate.pos == 1L)
     return(unique(object[, plate.pos]))
-  result <- aggregate(object[, seq.int(1L, plate.pos)],
+  result <- aggregate(object[, seq_len(plate.pos)],
     by = list(object[, plate.pos]), FUN = `[[`, i = 1L)
   result <- as.list(result[, seq.int(2L, ncol(result) - 1L), drop = FALSE])
   as.factor(do.call(paste, c(result, sep = sep)))
@@ -912,7 +912,7 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
     result <- must(do.call(rbind, result))
     result <- as.data.frame(result, optional = TRUE, stringsAsFactors = factors)
     if (ncol(result) > length(colnames(result)))
-      colnames(result) <- paste(what, collapse = get("key.join", OPM_OPTIONS))
+      colnames(result) <- paste0(what, collapse = get("key.join", OPM_OPTIONS))
     if (is.list(attr(what, "combine")))
       result <- extract_columns(result, attr(what, "combine"),
         factors = factors, direct = TRUE)
@@ -928,7 +928,7 @@ setMethod("extract_columns", "data.frame", function(object, what,
   find_stuff <- function(x, what) {
     x <- x[, vapply(x, inherits, NA, what), drop = FALSE]
     if (!ncol(x))
-      stop("no data of class(es) ", paste(what, collapse = "/"), " found")
+      stop("no data of class(es) ", paste0(what, collapse = "/"), " found")
     as.matrix(x)
   }
   LL(direct, factors)

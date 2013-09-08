@@ -404,7 +404,7 @@ is_cas <- function(x) {
 ################################################################################
 
 
-#' Grofit mapping
+#' Curve-parameter mapping
 #'
 #' Create a mapping for names of curve parameters.
 #'
@@ -461,13 +461,26 @@ map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 #' Translate well coordinates
 #'
 #' Translate well coordinates to numeric indexes, or clean well indexes given
-#' as character vector.
+#' as character vector, or Translate well names (which are basically their
+#' coordinates on the plate) to substrate names, given the name of the plate.
+#' (The user-level function for this is \code{\link{wells}}.)
 #'
 #' @param x Vector, formula or missing. Basically any \R object.
 #' @param names Character vector. Ignored unless \code{x} is a formula.
+#' @param wells Character vector of original well names (coordinates on the
+#'   plate).
+#' @param plate Character scalar. The type of the plate. See
+#'   \code{\link{plate_type}}.
+#' @param in.parens Logical scalar. See \code{\link{wells}}.
+#' @param brackets Logical scalar. See \code{\link{wells}}.
+#' @param paren.sep Character scalar. See \code{\link{wells}}.
+#' @param downcase Logical scalar. See \code{\link{wells}}.
+#' @param ... Arguments that can be passed to both \code{\link{add_in_parens}}
+#'   and \code{\link{trim_string}}.
 #' @return Either \code{x}, \code{TRUE} or (if a formula) the result of
 #'   evaluating \code{x} in the context of \code{names}, converted to a mapping
-#'   from elements to indexes.
+#'   from elements to indexes. A character vector in the case of
+#'   \code{map_well_names}.
 #' @keywords internal
 #'
 well_index <- function(x, names) {
@@ -494,30 +507,7 @@ clean_coords <- function(x) {
   x
 }
 
-
-################################################################################
-
-
-## NOTE: not an S4 method because conversion is done
-
-#' Map well names to substrates
-#'
-#' Translate well names (which are basically their coordinates on the plate) to
-#' substrate names, given the name of the plate. (The user-level function is
-#' \code{\link{wells}}.)
-#'
-#' @param wells Character vector of original well names (coordinates on the
-#'   plate).
-#' @param plate Character scalar. The type of the plate. See
-#'   \code{\link{plate_type}}.
-#' @param in.parens Logical scalar. See \code{\link{wells}}.
-#' @param brackets Logical scalar. See \code{\link{wells}}.
-#' @param paren.sep Character scalar. See \code{\link{wells}}.
-#' @param downcase Logical scalar. See \code{\link{wells}}.
-#' @param ... Arguments that can be passed to both \code{\link{add_in_parens}}
-#'   and \code{\link{trim_string}}.
-#' @return Character vector.
-#' @keywords internal
+#' @rdname well_index
 #'
 map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     paren.sep = " ", downcase = FALSE, ...) {

@@ -495,7 +495,7 @@ explode_dir <- function(names,
     is.dir <- file.info(names)$isdir
     if (any(no.info <- is.na(is.dir))) {
       msg <- sprintf("File or directory not found: '%s'",
-        paste(names[no.info], collapse = " "))
+        paste0(names[no.info], collapse = " "))
       if (missing.error)
         stop(msg)
       else
@@ -529,7 +529,7 @@ batch_collect <- function(names, fun, fun.args = list(), proc = 1L, ...,
     use.names = TRUE, simplify = FALSE, demo = FALSE) {
   names <- explode_dir(names, ...)
   if (demo) {
-    message(paste(names, collapse = "\n"))
+    message(paste0(names, collapse = "\n"))
     return(invisible(names))
   }
   fun.args <- as.list(fun.args)
@@ -593,7 +593,7 @@ file_pattern <- function(
     if (any(bad <- !grepl(bad, type <- unique.default(type), FALSE, TRUE)))
       stop("'type' must contain word characters (only): ", type[bad][1L])
     case(length(type), stop("'type' must be non-empty"), type,
-      sprintf("(%s)", paste(type, collapse = "|")))
+      sprintf("(%s)", paste0(type, collapse = "|")))
   } else
     case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
       yaml = "ya?ml", json = "json", any = "[^.]+", empty = "")
@@ -778,7 +778,7 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
   LL(gen.iii, demo)
   names <- explode_dir(names = names, include = include, ...)
   if (demo) {
-    message(paste(names, collapse = "\n"))
+    message(paste0(names, collapse = "\n"))
     return(invisible(names))
   }
   # The c() call is necessary to flatten lists from YAML/JSON input.

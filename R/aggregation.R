@@ -8,13 +8,16 @@
 #
 
 
-#' Times for grofit
+#' Times or data for grofit
 #'
-#' Construct time-points data frame as required by \code{grofit}.
+#' Construct time-points data frame as required by \code{grofit} or data frame
+#' with measurements as required by \code{grofit}.
 #'
 #' @param object \code{\link{OPM}} object.
 #' @return Data frame with time points in each row, repeated for each well
-#'   (number of rows is number of wells).
+#'   (number of rows is number of wells). Alternatively, data frame with
+#'   columns: (i) well ID, (ii) plate ID, (iii) dummy concentration,
+#'   (iv - end) measurements, one row for each well.
 #' @keywords internal
 #'
 setGeneric("to_grofit_time",
@@ -26,18 +29,9 @@ setMethod("to_grofit_time", OPM, function(object) {
     byrow = TRUE))
 }, sealed = SEALED)
 
+#= to_grofit_data to_grofit_time
 
-################################################################################
-
-
-#' Data for grofit
-#'
-#' Construct data frame with measurements as required by \code{grofit}.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @return Data frame with columns: (i) well ID, (ii) plate ID, (iii) dummy
-#'   concentration, (iv - end) measurements, one row for each well.
-#' @keywords internal
+#' @rdname to_grofit_time
 #'
 setGeneric("to_grofit_data",
   function(object, ...) standardGeneric("to_grofit_data"))

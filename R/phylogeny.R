@@ -232,14 +232,14 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
       comments <- safe_labels(comments, "hennig", comment = TRUE)
       if (dims[1L] < 4L)
         warning("TNT will not accept less than 4 organisms")
-      dims <- paste(rev(dims), collapse = " ")
+      dims <- paste0(rev(dims), collapse = " ")
       c(nstates, "xread", comments, dims, datatype)
     }
     nexus_header <- function(dims, datatype, comments, labels, enclose,
         indent) {
       case(datatype,
         standard = {
-          symbols <- paste(CHARACTER_STATES, collapse = "")
+          symbols <- paste0(CHARACTER_STATES, collapse = "")
           symbols <- sprintf('%sformat symbols = "%s";', indent, symbols)
         },
         continuous = {
@@ -249,7 +249,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
       )
       if (length(labels)) {
         labels <- safe_labels(labels, format = "nexus", enclose = enclose)
-        labels <- paste(labels, collapse = " ")
+        labels <- paste0(labels, collapse = " ")
         labels <- sprintf("%scharlabels %s;", indent, labels)
       } else
         warning("character labels not found")
@@ -262,7 +262,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
         sprintf("%smatrix", indent))
     }
     case(how,
-      phylip =, epf = paste(dims, collapse = " "),
+      phylip =, epf = paste0(dims, collapse = " "),
       hennig = hennig86_header(dims, datatype, comments),
       nexus = nexus_header(dims, datatype, comments, charlabels, enclose,
         indent)
@@ -346,11 +346,11 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
                 else
                   x,
                 nexus = function(x) if (length(x) > 1L)
-                  sprintf("(%s)", paste(x, collapse = ""))
+                  sprintf("(%s)", paste0(x, collapse = ""))
                 else
                   x,
                 hennig = function(x) if (length(x) > 1L)
-                  sprintf("[%s]", paste(x, collapse = ""))
+                  sprintf("[%s]", paste0(x, collapse = ""))
                 else
                   x
               )
@@ -541,13 +541,13 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 
   LL(enclose, digits, indent, paup.block)
   how <- match.arg(how, PHYLO_FORMATS)
-  indent <- paste(rep.int(" ", indent), collapse = "")
+  indent <- paste0(rep_len(" ", indent), collapse = "")
 
   x <- to_strings(x, how, sprintf("%%%i.%if", digits + 3L, digits), html.args)
 
   if (!length(comments <- comments[nzchar(comments)])) {
     comments <- sprintf("Characters exported by %s",
-      paste(opm_string(version = TRUE), collapse = " version "))
+      paste0(opm_string(version = TRUE), collapse = " version "))
     attr(comments, opm_string()) <- TRUE
   } else
     attr(comments, opm_string()) <- FALSE
@@ -923,7 +923,7 @@ setMethod("phylo_data", "OPMD_Listing", function(object,
   if (!attr(object, "html"))
     return(paste(object, collapse = " "))
   head <- sprintf("Character listing exported by %s",
-    paste(opm_string(version = TRUE), collapse = " version "))
+    paste0(opm_string(version = TRUE), collapse = " version "))
   attr(head, opm_string()) <- TRUE
   head <- html_head(head, html.args$css.file,
     html.args[names(html.args) == "meta"])
@@ -947,7 +947,7 @@ setMethod("phylo_data", "OPMS_Listing", function(object,
   if (!attr(object, "html"))
     return(apply(object, 1L, paste, collapse = " "))
   head <- sprintf("Character listings exported by %s",
-    paste(opm_string(version = TRUE), collapse = " version "))
+    paste0(opm_string(version = TRUE), collapse = " version "))
   attr(head, opm_string()) <- TRUE
   head <- html_head(head, html.args$css.file,
     html.args[names(html.args) == "meta"])
