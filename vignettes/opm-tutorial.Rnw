@@ -286,7 +286,7 @@ Example code, including the export of discretization results as  publication-rea
 Textual reports with or without formatting markup can also be produced, as exemplified in Section~\ref{application discrete-text}.
 The discretization settings can be modified in detail; see Section~\ref{application discrete-finetuning}.
 
-Furthermore, substrate informations can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available. Code examples are included in Section~\ref{application substrates}.
+Furthermore, substrate informations can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available. Detailed explanations and code examples are included in the vignette ``Working with substrate information in \pkg{opm}''.
 
 Finally, it is possible to modify settings that have an effect on multiple functions and/or on frequently used arguments. 
 See Section~\ref{methods settings} for details and Section~\ref{application discrete-table} for a code example.
@@ -464,10 +464,8 @@ Additionally, methods for metadata management, plotting the data in a customized
 The function \code{xy\_plot()} displays the raw measurements on the y-axis in dependency on the time on the x-axis.
 For each well one sub-panel is drawn, and the user is free to colourize the plotted curves by either their affiliation to a specific plate or by a combination of metadata entries of choice.
 By default the panels are arranged according to the factual microtiter plate dimensions (eight rows labelled A to H $\times$ twelve columns labelled 01-12), but other user-defined arrangements are easily feasible because the plates can be subset by selecting specific wells.
-Every panel is annotated with the microtiter plate numbering (A01 to H12) and additionally or alternatively with the substrate name (given the plate type, the \pkg{opm} package can translate all well coordinates to substrate names).
+Every panel is annotated with the microtiter plate numbering (A01 to H12) and additionally or alternatively with the substrate name (given the plate type, the \pkg{opm} package can translate all well coordinates to substrate names, see also vignette ``Working with substrate information in \pkg{opm}'').
 Thus, the function enables the user to compare the curve data in a customized and useful arrangement \citep{vaas, Vaas2013}.
-
-
 
 The function \code{level\_plot()} provides false-colour level plots from the raw respiration measurements over time.
 Each respiration curve can be displayed as a thin horizontal line, in which the measured respiration value (in OmniLog\textregistered \ units) is represented by colour, while the x-axes indicates the measurement times.
@@ -2045,67 +2043,6 @@ The three resulting states, coded as ``0'', ``1'' and ``2'' (in contrast to ``0'
 Exporting the data in one of the supported phylogeny formats would work as described above.
 If the \code{do\_disc()} function described above calls \code{discrete()}, then only in gap mode and with \code{middle.na} set to \code{TRUE}, yielding a vector or logical matrix.
 
-
-\subsection[Accessing substrate information]{Accessing substrate information}\label{application substrates}
-
-The \pkg{opm} package contains a number of functions suitable for accessing precomputed information on the substrates of wells and plates.
-In the manual and help pages these functions are contained in the family ``naming-functions'' with according cross-references.
-One usually would start a search by determining the exact spelling of an internally used name with \code{find\_substrate()}:
-
-<<label=find-substrate-exact-substring, results=hide>>=
-substrates <- find_substrate(c("Glutamine", "Glutamic acid"))
-substrates
-@
-
-The results is a list (of the \proglang{S3} class ``substrate\_match'') containing character vectors with the results for each query name as values.
-Surprisingly, nothing was found for ``Glutamic acid'' but several values for ``Glutamine''.
-The default \code{search} argument is ``exact'', which is exact (case-sensitive) matching  of \textit{substrings} of the names.
-One might want to use ``glob'' searching mode:
-
-<<label=find-substrate-globbing-wrong, results=hide>>=
-substrates <- find_substrate(c("L-Glutamine", "L-Glutamic acid"), "glob")
-substrates
-@
-
-But with so-called wildcards, i.e. ``*'' for zero to many and ``?'' for a single arbitrary character the search is more flexible:
-
-<<label=find-substrate-globbing-useful, results=hide>>=
-substrates <- find_substrate(c("*L-Glutamine", "*L-Glutamic acid"), "glob")
-substrates
-@
-
-This fetches all terms that end in either query character string, and does so case-insensitively.
-Advanced users can apply the much more powerful ``regex'' and ``approx'' search modes; see the manual for details, entry \code{?find\_substrate}.
-
-Once the internally used names (which are not guaranteed to be stable between distinct \pkg{opm} releases) have been found, information on the substrates can be queried such as their occurrences and positions on plates:
-
-<<label=find-positions, results=hide>>=
-positions <- find_positions(substrates)
-positions
-@
-
-This yields a nested list containing two-column matrices with plate names in the first and well coordinates in the second column.
-References to external data resources for each substrate name can be obtained using \code{substrate\_info()}:
-
-<<label=substrate-info, results=hide>>=
-subst.info <- substrate_info(substrates)
-subst.info
-@
-
-By default this yields CAS numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but MeSH names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}) \citep{Coletti01072001}, ChEBI IDs \citep{Hastings01012013}, KEGG compound IDs, KEGG drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} IDs have also been collected for the majority of the substrates.
-Using the ``browse'' argument, full URLs can be created and optionally also directly opened in the default web browser.
-Using the ``download'' argument, if KEGG drug or compound IDs have been selected, these can be downloaded from the KEGG server if the \pkg{KEGGREST} is available and converted into customized objects.
-It is possible to nicely display all available information at once:
-
-<<label=substrate-all-info, results=hide>>=
-subst.info <- substrate_info(substrates, "all")
-subst.info
-@
-
-Another use of \code{substrate\_info()} is to convert substrate names to lower case but protecting name components such as abbreviations or chemical symbols.
-See the manual for further details, help page \code{?substrate\_info}.
-
-
 \section[Discussion and conclusion]{Discussion and conclusion}
 
 The high-dimensional sets of longitudinal data collected by the OmniLog\textregistered \ PM system call for fast and easily applicable (and extendable) data organisation and analysis facilities.
@@ -2132,9 +2069,7 @@ The package can also generate \proglang{CSV} output files, but due to the limita
 These features render the \pkg{opm} package the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
 Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 
-An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
-At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, ChEBI, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
-More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
+Power and limitations regarding usage of substrate information and their implementation for data arrangement and hypothesis testing are discussed in detail in the vignette ``Working with substrate information in \pkg{opm}''.
 
 Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
 The current version is entirely file-based, and whereas powerful selection mechanisms for both input files and container objects for previously imported PM plates have already been implemented, future version could directly include database access.
@@ -2148,7 +2083,6 @@ To summarize, we are convinced that the \pkg{opm} package already enables the us
 The help of Nora Buddruhs (DSMZ) and Anne Fiebig (DSMZ), who contributed a lot to the stored substrate information and to examples in earlier versions of this tutorial, is gratefully acknowledged.
 We owe very much to Hans-Peter Klenk (DSMZ), who brought the OmniLog\textregistered \ instrument to the DSMZ and supported this project in numerous ways.
 We thank Barry Bochner (BIOLOG Inc.), John Kirkish (BIOLOG Inc.), Andre Chouankam (BIOLOG Inc.), Jan Meier-Kolthoff (DSMZ), Pia W\"{u}st (DSMZ), Stefan Ehrentraut (DSMZ) and J\"{o}rn Petersen (DSMZ) for helpful advice, as well as Victoria Michael (DSMZ) for technical support.
-The integration of missing OmniLog\textregistered \ substrates into ChEBI by the ChEBI staff is gratefully acknowledged.
 We are also grateful to the maintainers of R-Forge and CRAN for providing the online resources used by this project.
 This work was supported by the German Research Foundation (DFG) SFB/TRR 51 and by the Microme project within the Framework 7 programme of the European Commission, which is gratefully acknowledged.
 JS gratefully acknowledges his support by DFG grant SI 1352/1-2.

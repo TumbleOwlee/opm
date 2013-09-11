@@ -517,7 +517,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #' an annotation of the according substrates.
 #'
 #' @param object An object of the classes \code{opm_glht} as created by
-#'   \code{\link{opm_mcp}}, \code{\link{OPMA}} or \code{\link{OPMS}}.
+#'   \code{\link{opm_mcp}}, \code{\link{OPMA}}, \code{\link{OPMD}} or
+#'   \code{\link{OPMS}}.
 #' @param what Character scalar indicating the kind of annotation to use. Passed
 #'   as eponymous argument to \code{\link{substrate_info}}.
 #' @param how Character scalar. Indicating how the annotation is inserted.

@@ -3,8 +3,8 @@
 \title{Create vector or matrix with substrate annotation}
 \arguments{
   \item{object}{An object of the classes \code{opm_glht} as
-  created by \code{\link{opm_mcp}}, \code{\link{OPMA}} or
-  \code{\link{OPMS}}.}
+  created by \code{\link{opm_mcp}}, \code{\link{OPMA}},
+  \code{\link{OPMD}} or \code{\link{OPMS}}.}
 
   \item{what}{Character scalar indicating the kind of
   annotation to use. Passed as eponymous argument to
