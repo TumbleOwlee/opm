@@ -31,10 +31,6 @@ test_that("we can memoize queries", {
 })
 
 
-## md_data_frame
-## UNTESTED
-
-
 ## reduce_to_mode
 ## UNTESTED
 

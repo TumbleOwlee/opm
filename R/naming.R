@@ -1246,7 +1246,7 @@ web_query <- function(ids, what = c("kegg", "drug")) {
 #' @name collect
 #' @keywords internal
 #'
-collect <- function(x, what, ...) UseMethod("collect")
+NULL
 
 #' @rdname collect
 #' @method collect kegg_compounds

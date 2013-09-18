@@ -1078,24 +1078,16 @@ setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
 
 setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
-  old <- TRUE
-  if (old)
-    md_data_frame(list(object@metadata), stringsAsFactors, optional, ...)
-  else
-    pkgutils::collect(x = list(object@metadata), what = "values",
-      optional = optional, stringsAsFactors = stringsAsFactors,
-      dataframe = TRUE, keep.unnamed = NA, ...)
+  collect(x = list(object@metadata), what = "values",
+    optional = optional, stringsAsFactors = stringsAsFactors,
+    dataframe = TRUE, keep.unnamed = NA, ...)
 }, sealed = SEALED)
 
 setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
     optional = TRUE, ...) {
-  old <- TRUE
-  if (old)
-    md_data_frame(metadata(object), stringsAsFactors, optional, ...)
-  else
-    pkgutils::collect(x = metadata(object), what = "values",
-      optional = optional, stringsAsFactors = stringsAsFactors,
-      dataframe = TRUE, keep.unnamed = NA, ...)
+  collect(x = metadata(object), what = "values",
+    optional = optional, stringsAsFactors = stringsAsFactors,
+    dataframe = TRUE, keep.unnamed = NA, ...)
 }, sealed = SEALED)
 
 
