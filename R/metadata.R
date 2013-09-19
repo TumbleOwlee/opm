@@ -459,17 +459,18 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 ################################################################################
 
 
-#' Add or map metadata
+#' Add or map metadata or edit them by hand
 #'
-#' Include metadata by mapping \acronym{CSV} data and column names in a data
-#' frame (optionally read from file) or modify meta-information stored together
-#' with the measurements by using a function or other kinds of mappings and
-#' return the objects otherwise unchanged. The \code{\link{OPMS}} method applies
-#' this to all plates in turn and returns an \code{\link{OPMS}} object with
-#' accordingly modified metadata.
+#' Either include metadata by mapping \acronym{CSV} data and column names in a
+#' data frame (optionally read from file), or modify meta-information stored
+#' together with the measurements by using a function or other kinds of mappings
+#' and return the objects otherwise unchanged, or invoke \code{edit} from the
+#' \pkg{utils} package for editing the metadata by hand.
 #'
 #' @param object \code{\link{OPM}} (\code{\link{WMD}}) object or
 #'   \code{\link{OPMS}} object.
+#'
+#' @param name Like \code{object}, but for the \code{edit} method.
 #'
 #' @param md Dataframe containing keys as column names, or name of file from
 #'   which to read the data frame. Handled by \code{\link{to_metadata}}.
@@ -523,7 +524,21 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' @export
 #' @return Novel \code{\link{WMD}} or \code{\link{OPMS}} object with modified
 #'   metadata.
+#' @details
+#' The \code{\link{OPMS}} method applies the inclusion and mapping routines to
+#' all plates in turn and returns an \code{\link{OPMS}} object with accordingly
+#' modified metadata.
+#'
+#' Calling \code{edit} will only work if \code{\link{to_metadata}} yields a data
+#' frame suitable for the \code{edit} method from the \pkg{utils} package. This
+#' usually means that the \code{\link{metadata}} must be rectangular, even
+#' though this is not enforced by the implementation of the \code{\link{OPMX}}
+#' classes. Entries missing in some elements of \code{name} should not present a
+#' problem, however. Values that remained \code{NA} would  be removed before
+#' returning the result.
+#'
 #' @family metadata-functions
+#' @seealso utils::edit
 #' @keywords manip
 #' @examples
 #'
@@ -726,6 +741,18 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
   object@plates <- lapply(X = object@plates, FUN = map_metadata,
     mapping = mapping, ...)
   object
+}, sealed = SEALED)
+
+#= edit include_metadata
+
+#' @rdname include_metadata
+#' @export
+#'
+setGeneric("edit")
+
+setMethod("edit", OPMX, function(name, ...) {
+  metadata(name) <- edit(to_metadata(name), ...)
+  map_metadata(name)
 }, sealed = SEALED)
 
 

@@ -1,10 +1,14 @@
 \name{include_metadata}
+\alias{edit}
 \alias{include_metadata}
 \alias{map_metadata}
-\title{Add or map metadata}
+\title{Add or map metadata or edit them by hand}
 \arguments{
   \item{object}{\code{\link{OPM}} (\code{\link{WMD}})
   object or \code{\link{OPMS}} object.}
+
+  \item{name}{Like \code{object}, but for the \code{edit}
+  method.}
 
   \item{md}{Dataframe containing keys as column names, or
   name of file from which to read the data frame. Handled
@@ -73,14 +77,29 @@
   modified metadata.
 }
 \description{
-  Include metadata by mapping \acronym{CSV} data and column
-  names in a data frame (optionally read from file) or
-  modify meta-information stored together with the
+  Either include metadata by mapping \acronym{CSV} data and
+  column names in a data frame (optionally read from file),
+  or modify meta-information stored together with the
   measurements by using a function or other kinds of
-  mappings and return the objects otherwise unchanged. The
-  \code{\link{OPMS}} method applies this to all plates in
-  turn and returns an \code{\link{OPMS}} object with
-  accordingly modified metadata.
+  mappings and return the objects otherwise unchanged, or
+  invoke \code{edit} from the \pkg{utils} package for
+  editing the metadata by hand.
+}
+\details{
+  The \code{\link{OPMS}} method applies the inclusion and
+  mapping routines to all plates in turn and returns an
+  \code{\link{OPMS}} object with accordingly modified
+  metadata.
+
+  Calling \code{edit} will only work if
+  \code{\link{to_metadata}} yields a data frame suitable
+  for the \code{edit} method from the \pkg{utils} package.
+  This usually means that the \code{\link{metadata}} must
+  be rectangular, even though this is not enforced by the
+  implementation of the \code{\link{OPMX}} classes. Entries
+  missing in some elements of \code{name} should not
+  present a problem, however. Values that remained
+  \code{NA} would be removed before returning the result.
 }
 \examples{
 ## include_metadata()
@@ -161,6 +180,8 @@ stopifnot(length(x) == 4) # one entry per plate
 stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
 }
 \seealso{
+  utils::edit
+
   Other metadata-functions: \code{\link{metadata}},
                                 \code{\link{metadata_chars}}
 }
@@ -177,6 +198,7 @@ stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
 \alias{map_metadata,WMD,missing-method}
 \alias{map_metadata,OPMS,missing-method}
 \alias{map_metadata,OPMS,ANY-method}
+\alias{edit,OPMX-method}
 \usage{
   \S4method{include_metadata}{OPM}(object, md,
     keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
@@ -200,5 +222,7 @@ stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
     values = TRUE, classes = "factor") 
 
   \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 
+
+  \S4method{edit}{OPMX}(name, ...) 
 
 }

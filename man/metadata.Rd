@@ -92,7 +92,8 @@ stopifnot(identical(x, y))
 stopifnot(length(x) > length(y))
 }
 \seealso{
-  Other metadata-functions: \code{\link{include_metadata}},
+  Other metadata-functions: \code{\link{edit}},
+  \code{\link{include_metadata}},
   \code{\link{map_metadata}}, \code{\link{metadata.set}},
                               }
 \keyword{attribute}

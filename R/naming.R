@@ -343,7 +343,7 @@ setMethod("plate_type", "factor", function(object, ...) {
 }, sealed = SEALED)
 
 setMethod("plate_type", "missing", function(object, ...) {
-  names(PLATE_MAP)
+  plate_type(names(PLATE_MAP), ...)
 }, sealed = SEALED)
 
 #= gen_iii plate_type

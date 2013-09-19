@@ -12,15 +12,16 @@
   instead
 - glob_to_regex() is now an S3 generic function
 
+- new edit() function for editing metadata by hand (with some restrictions)
 - new generic function annotated() with a variety of methods and options
 - substrate_info() gets a 'download' argument
 - aggregated() and discretized() get a 'full' argument (and other ones that
   that affect the names or column names)
 - new spline-fitting facilities (see set_spline_options())
-- new plate_type() method
+- new plate_type() method (for displaying the known plate types)
 - new infix-operator methods for querying metadata
 - csv_data() gets a 'what' argument
-- heat_map() gets a 'asqr' argument
+- heat_map() gets an 'asqr' argument
 - explicit length() method for OPM objects
 - well() gets a 'use.names' argument
 - opm_mcp() now handles non-syntactical names in metadata (converts them
@@ -31,6 +32,7 @@
 - opm_opt() gets a 'max.chars' entry
 
 - streamlined the documentation (merged many entries) in the manual
+- substrate-information processing is now explained in a 2nd vignette
 
 
 ################################################################################
