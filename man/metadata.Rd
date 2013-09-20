@@ -61,10 +61,10 @@
   Optionally coerce data of other types.
 }
 \details{
-  The result can be used to create a mapping for
-  \code{\link{map_metadata}}. The \code{\link{OPMS}} method
-  just applies the \code{\link{WMD}} method to all
-  contained plates in turn.
+  The result of \code{metadata_chars} can be used to create
+  a mapping for \code{\link{map_metadata}}. The
+  \code{\link{OPMS}} method just applies the
+  \code{\link{WMD}} method to all contained plates in turn.
 }
 \examples{
 # 'OPM' methods

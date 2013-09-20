@@ -70,7 +70,9 @@
   \item{...}{Optional arguments passed to \code{mapping} if
   it is a function, and from the \code{\link{OPMS}} method
   to the \code{\link{WMD}} method, or from
-  \code{include_metadata} to \code{\link{to_metadata}}.}
+  \code{include_metadata} to \code{\link{to_metadata}}, or
+  as additional arguments to \code{edit} from the
+  \pkg{utils} package.}
 }
 \value{
   Novel \code{\link{WMD}} or \code{\link{OPMS}} object with
@@ -178,6 +180,12 @@ stopifnot(length(x) == 4) # one entry per plate
 # 'mapping' missing
 (x <- metadata(map_metadata(vaas_4)))
 stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
+
+\dontrun{ ## edit metadata by hand
+  x <- edit(vaas_4) # this would create a new object
+  x <- edit(x) # overwrite x in 2nd editing step
+  ## This will not necessarily work if the metadata are nested!
+}
 }
 \seealso{
   utils::edit

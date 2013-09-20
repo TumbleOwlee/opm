@@ -57,6 +57,15 @@
   once (but can address the plates individually if
   \code{value} is a formula or a data frame, see below).
 }
+\details{
+  This method can easily be used to copy (selected parts
+  of) the \code{\link{csv_data}} to the metadata; see there
+  for details.
+
+  \code{\link{map_metadata}} can also be used to modify
+  metadata but it will return a novel object. See
+  \code{\link{edit}} for manually modifying metadata.
+}
 \examples{
 ## WMD methods
 

@@ -549,8 +549,11 @@ setMethod("seq", OPMS, function(...) {
 #' @param strict Logical scalar indicating whether or not it is an error if
 #'   \code{keys} are not found. Ignored unless \code{what} is \sQuote{select}.
 #' @param what Character scalar specifying a subset of the data. If
-#'   \sQuote{select}, use \code{keys} and \code{strict}. Otherwise a shortcut
-#'   for one of the more important \acronym{CSV} entries.
+#'   \sQuote{select}, use \code{keys} and \code{strict}. If \sQuote{other},
+#'   select all \acronym{CSV} entries that have no special meaning (it makes
+#'   sense to include only these in the metadata, see the examples).
+#'   Otherwise a shortcut for one of the more important \acronym{CSV} entries.
+#'
 #' @param ... Optional arguments passed between the methods.
 #' @return Named character vector (unnamed character scalar in the case of
 #'   \code{filename}, \code{setup_time} and \code{filename} and if \code{what}
@@ -558,6 +561,12 @@ setMethod("seq", OPMS, function(...) {
 #' @details \code{filename}, \code{setup_time} and \code{position} are
 #'   \strong{deprecated} convenience functions for some of the more important
 #'   entries of \code{csv_data}.
+#'
+#'   It is easy to copy the \acronym{CSV} data to the \code{\link{metadata}};
+#'   see the examples section. Editing of the \acronym{CSV} data has
+#'   deliberately not been implemented into \pkg{opm}, but the
+#'   \code{\link{metadata}} can be modified using a plethora of methods, even
+#'   manually with \code{\link{edit}}.
 #' @export
 #' @seealso base::strptime
 #' @family getter-functions
@@ -595,15 +604,24 @@ setMethod("seq", OPMS, function(...) {
 #' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
 #' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 #'
+#' # copying selected CSV data to the metadata
+#' x <- vaas_4
+#' # this appends the CSV data after conversion to a suitable data frame
+#' metadata(x, -1) <- to_metadata(csv_data(x, what = "other"))
+#' to_metadata(x)
+#' stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
+#'
 setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
 
 setMethod("csv_data", OPM, function(object, keys = character(),
-    strict = TRUE, what = c("select", "filename", "setup_time", "position")) {
+    strict = TRUE,
+    what = c("select", "filename", "setup_time", "position", "other")) {
   case(match.arg(what),
     select = NULL,
     filename = return(object@csv_data[[CSV_NAMES[["FILE"]]]]),
     setup_time = return(object@csv_data[[CSV_NAMES[["SETUP"]]]]),
-    position = return(object@csv_data[[CSV_NAMES[["POS"]]]])
+    position = return(object@csv_data[[CSV_NAMES[["POS"]]]]),
+    other = return(object@csv_data[!names(object@csv_data) %in% CSV_NAMES])
   )
   if (!length(keys) || all(is.na(keys) | !nzchar(keys)))
     return(object@csv_data)

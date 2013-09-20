@@ -57,6 +57,12 @@
 #'   class \sQuote{OPMS}.
 #'   }
 #' @return \code{value}.
+#' @details This method can easily be used to copy (selected parts of) the
+#'   \code{\link{csv_data}} to the metadata; see there for details.
+#'
+#'   \code{\link{map_metadata}} can also be used to modify metadata but it will
+#'   return a novel object. See \code{\link{edit}} for manually modifying
+#'   metadata.
 #' @export
 #' @exportMethod "metadata<-"
 #' @family metadata-functions
@@ -520,7 +526,8 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #'
 #' @param ... Optional arguments passed to \code{mapping} if it is a function,
 #'   and from the \code{\link{OPMS}} method to the \code{\link{WMD}} method, or
-#'   from \code{include_metadata} to \code{\link{to_metadata}}.
+#'   from \code{include_metadata} to \code{\link{to_metadata}}, or as additional
+#'   arguments to \code{edit} from the \pkg{utils} package.
 #' @export
 #' @return Novel \code{\link{WMD}} or \code{\link{OPMS}} object with modified
 #'   metadata.
@@ -618,6 +625,12 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
 #' # 'mapping' missing
 #' (x <- metadata(map_metadata(vaas_4)))
 #' stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
+#'
+#' \dontrun{ ## edit metadata by hand
+#'   x <- edit(vaas_4) # this would create a new object
+#'   x <- edit(x) # overwrite x in 2nd editing step
+#'   ## This will not necessarily work if the metadata are nested!
+#' }
 #'
 setGeneric("include_metadata",
   function(object, ...) standardGeneric("include_metadata"))
@@ -804,9 +817,9 @@ setMethod("edit", OPMX, function(name, ...) {
 #'   Original \code{names} attributes, if any, are dropped and replaced by the
 #'   character vector itself. (This might be convenient regarding its use with
 #'   \code{\link{map_metadata}}.)
-#' @details The result can be used to create a mapping for
-#'   \code{\link{map_metadata}}. The \code{\link{OPMS}} method just applies the
-#'   \code{\link{WMD}} method to all contained plates in turn.
+#' @details The result of \code{metadata_chars} can be used to create a mapping
+#'   for \code{\link{map_metadata}}. The \code{\link{OPMS}} method just applies
+#'   the \code{\link{WMD}} method to all contained plates in turn.
 #'
 #' @export
 #' @family metadata-functions

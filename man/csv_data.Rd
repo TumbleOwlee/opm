@@ -20,7 +20,10 @@
 
   \item{what}{Character scalar specifying a subset of the
   data. If \sQuote{select}, use \code{keys} and
-  \code{strict}. Otherwise a shortcut for one of the more
+  \code{strict}. If \sQuote{other}, select all
+  \acronym{CSV} entries that have no special meaning (it
+  makes sense to include only these in the metadata, see
+  the examples).  Otherwise a shortcut for one of the more
   important \acronym{CSV} entries.}
 
   \item{...}{Optional arguments passed between the
@@ -41,6 +44,13 @@
   \code{filename}, \code{setup_time} and \code{position}
   are \strong{deprecated} convenience functions for some of
   the more important entries of \code{csv_data}.
+
+  It is easy to copy the \acronym{CSV} data to the
+  \code{\link{metadata}}; see the examples section. Editing
+  of the \acronym{CSV} data has deliberately not been
+  implemented into \pkg{opm}, but the
+  \code{\link{metadata}} can be modified using a plethora
+  of methods, even manually with \code{\link{edit}}.
 }
 \examples{
 # 'OPM' method
@@ -73,6 +83,13 @@ stopifnot(is.character(x), length(x) == length(vaas_4))
 (x <- csv_data(vaas_4, what = "setup_time")) # one setup time per plate
 (parsed <- strptime(x, format = "\%m/\%d/\%Y \%I:\%M:\%S \%p"))
 stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
+
+# copying selected CSV data to the metadata
+x <- vaas_4
+# this appends the CSV data after conversion to a suitable data frame
+metadata(x, -1) <- to_metadata(csv_data(x, what = "other"))
+to_metadata(x)
+stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
 }
 \seealso{
   base::strptime
@@ -107,7 +124,8 @@ stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
 \alias{setup_time,OPMS-method}
 \usage{
   \S4method{csv_data}{OPM}(object, keys = character(),
-    strict = TRUE, what = c("select", "filename", "setup_time", "position")) 
+    strict = TRUE,
+    what = c("select", "filename", "setup_time", "position", "other")) 
 
   \S4method{filename}{OPM}(object) 
 
