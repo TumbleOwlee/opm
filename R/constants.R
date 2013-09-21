@@ -240,16 +240,26 @@ MISSING_CHAR <- "?"
 
 PHYLO_FORMATS <- c("epf", "nexus", "phylip", "hennig", "html")
 
-# only those Greek letters that are likely to occur in substrate names, and
-# deliberately not the uppercase versions
+# We consider only those Greek letters that are likely to occur in substrate
+# names, and deliberately not their uppercase versions.
 GREEK_LETTERS <- c("alpha", "beta", "gamma", "delta", "epsilon")
 names(GREEK_LETTERS) <- substring(GREEK_LETTERS, 1L, 1L)
-GREEK_LETTERS <- cbind(plain = GREEK_LETTERS,
-  html = sprintf("&%s;", GREEK_LETTERS))
-GREEK_LETTERS <- rbind(GREEK_LETTERS, GREEK_LETTERS)
-rownames(GREEK_LETTERS)[seq_len(nrow(GREEK_LETTERS) / 2L)] <- GREEK_LETTERS[
-  seq_len(nrow(GREEK_LETTERS) / 2L), "plain"]
 
+COMPOUND_NAME_HTML_MAP <- c(
+  # stereochemistry and configuration
+  cis = "i", o = "i", m = "i", p = "i", meso = "i", tert = "i", exo = "i",
+  threo = "i", iso = "i", cyclo = "i", R = "i", S = "i", E = "i", Z = "i",
+  # chemical elements (for "S" see above)
+  N = "i", O = "i", P = "i",
+  # configuration of sugars or amino acids
+  D = "small", L = "small"
+)
 
+COMPOUND_NAME_HTML_MAP <- (function(x)
+    structure(sprintf("<%s>%s</%s>", x, names(x), x), names = names(x))
+  )(COMPOUND_NAME_HTML_MAP)
 
-
+COMPOUND_NAME_HTML_MAP <- c(
+  COMPOUND_NAME_HTML_MAP,
+  structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS))
+)

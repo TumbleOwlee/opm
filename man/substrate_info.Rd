@@ -20,9 +20,11 @@
   \item{drug}{\acronym{KEGG} drug database ID, optionally
   expanded to an \acronym{URL}.} \item{greek}{Substrate
   name after translation of relevant characters to Greek
-  letters.} \item{html}{Like \sQuote{greek}, but use
-  \acronym{HTML} tags.} \item{kegg}{\acronym{KEGG} compound
-  database ID, optionally expanded to an \acronym{URL}.}
+  letters.} \item{html}{Like \sQuote{greek}, but using
+  \acronym{HTML} tags, and also converting other parts of
+  compound names that require special formatting.}
+  \item{kegg}{\acronym{KEGG} compound database ID,
+  optionally expanded to an \acronym{URL}.}
   \item{mesh}{\acronym{MeSH} database name (useful for
   conducting \acronym{PubMed} searches), optionally
   expanded to an \acronym{URL}.}

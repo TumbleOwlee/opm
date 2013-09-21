@@ -274,14 +274,21 @@ test_that("CAS numbers are recognized", {
 
 
 ## substrate_info
-test_that("greek letters can be expanded", {
-  x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose")
-  wanted <- c("A01 (alpha-D-Fructose)", "Penicillin G", "beta-L-Glucose")
+test_that("Greek letters can be expanded and HTML returned", {
+  x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose <1>",
+    "N-Acetyl-Glucosamine")
+  wanted <- c("A01 (alpha-D-Fructose)", "Penicillin G", "beta-L-Glucose <1>",
+    "N-Acetyl-Glucosamine")
   got <- substrate_info(x, "greek")
   expect_equivalent(got, wanted)
-  wanted <- c("A01 (&alpha;-D-Fructose)", "Penicillin G", "&beta;-L-Glucose")
+  wanted <- c("A01 (&alpha;-<small>D</small>-Fructose)", "Penicillin G",
+    "&beta;-<small>L</small>-Glucose &lt;1&gt;", "<i>N</i>-Acetyl-Glucosamine")
   got <- substrate_info(x, "html")
   expect_equivalent(got, wanted)
+  # an R expression equivalent to the first HTML entry would be:
+  # expression(
+  #  paste("A01", " (", alpha, "-", scriptstyle("D"), "-", "Fructose, ")")
+  # )
 })
 
 

@@ -29,6 +29,8 @@
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
+- conversion of substrate names to HTML now also formats stereochemistry and
+  configuration indicators
 - opm_opt() gets a 'max.chars' entry
 
 - streamlined the documentation (merged many entries) in the manual

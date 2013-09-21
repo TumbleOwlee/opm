@@ -209,5 +209,9 @@ test_that("phylogeny formats are defined", {
 ## UNTESTED
 
 
+## COMPOUND_NAME_HTML_MAP
+## UNTESTED
+
+
 ################################################################################
 

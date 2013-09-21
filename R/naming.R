@@ -997,7 +997,9 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'     \acronym{URL}.}
 #'     \item{greek}{Substrate name after translation of relevant characters to
 #'     Greek letters.}
-#'     \item{html}{Like \sQuote{greek}, but use \acronym{HTML} tags.}
+#'     \item{html}{Like \sQuote{greek}, but using \acronym{HTML} tags, and also
+#'     converting other parts of compound names that require special
+#'     formatting.}
 #'     \item{kegg}{\acronym{KEGG} compound database ID, optionally expanded to
 #'     an \acronym{URL}.}
 #'     \item{mesh}{\acronym{MeSH} database name (useful for conducting
@@ -1110,11 +1112,13 @@ setGeneric("substrate_info",
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
       "greek", "html", "all"), browse = 0L, download = FALSE, ...) {
+
   create_url <- function(x, how) {
     base <- URL_BASE[match.arg(how, names(URL_BASE))]
     x <- sub("^CAS\\s+", "", x, TRUE, TRUE)
     ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
   }
+
   map_words <- function(x, fun, ...) {
     y <- strsplit(x, "\\w+", FALSE, TRUE)
     x <- strsplit(x, "\\W+", FALSE, TRUE)
@@ -1125,9 +1129,16 @@ setMethod("substrate_info", "character", function(object,
     x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
     mapply(paste0, y, x, MoreArgs = list(collapse = ""))
   }
-  convert_greek <- function(x, how) {
-    map_words(x, fun = map_values, mapping = GREEK_LETTERS[, how])
+
+  compound_name_to_html <- function(x) {
+    map_words(x, fun = map_values, mapping = GREEK_LETTERS)
   }
+
+  greek_letter_to_html <- function(x) {
+    x <- gsub("'", "&prime;", safe_labels(x, "html"), FALSE, FALSE, TRUE)
+    map_words(x, fun = map_values, mapping = COMPOUND_NAME_HTML_MAP)
+  }
+
   safe_downcase <- function(x) {
     good_case <- function(x) {
       bad <- nchar(x) > 1L # avoid changing acronyms and chemical elements
@@ -1136,8 +1147,9 @@ setMethod("substrate_info", "character", function(object,
       x[bad] <- tolower(x[bad])
       x
     }
-    map_words(x, function(y) map_values(good_case(y), GREEK_LETTERS[, "plain"]))
+    map_words(x, function(y) map_values(good_case(y), GREEK_LETTERS))
   }
+
   all_information <- function(x) {
     result <- SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), ,
       drop = FALSE]
@@ -1149,11 +1161,12 @@ setMethod("substrate_info", "character", function(object,
     class(result) <- c("substrate_data", "print_easy")
     result
   }
+
   result <- case(what <- match.arg(what),
     all = all_information(object),
     downcase = safe_downcase(object),
-    greek = convert_greek(object, "plain"),
-    html = convert_greek(object, "html"),
+    greek = compound_name_to_html(object),
+    html = greek_letter_to_html(object),
     chebi =, drug =, kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
   )

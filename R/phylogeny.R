@@ -131,11 +131,14 @@ safe_labels <- function(x, format, enclose = TRUE, pad = FALSE,
     else
       x
   }
-  nexus_quote <- function(x) sprintf("'%s'", gsub("'", "''", x, fixed = TRUE))
+  nexus_quote <- function(x) {
+    sprintf("'%s'", gsub("'", "''", x, FALSE, FALSE, TRUE))
+  }
   clean_html <- function(x) {
     x <- gsub("&(?!([A-Za-z]+|#\\d+);)", "&amp;", x, FALSE, TRUE)
-    x <- gsub(">", "&gt;", gsub("<", "&lt;", x, fixed = TRUE), fixed = TRUE)
-    gsub("\"", "&quot;", x, fixed = TRUE)
+    x <- gsub("<", "&lt;", x, FALSE, FALSE, TRUE)
+    x <- gsub(">", "&gt;", x, FALSE, FALSE, TRUE)
+    gsub("\"", "&quot;", x, FALSE, FALSE, TRUE)
   }
   clean_from <- function(x, pat) {
     pat <- sprintf("[%s]+", pat)
