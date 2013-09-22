@@ -11,26 +11,29 @@
 - position(), setup_time() and filename() are deprecated; use csv_data()
   instead
 - glob_to_regex() is now an S3 generic function
+- substrate naming is slightly different in some cases (e.g., numbering is used
+  for multiple substrates per plate)
 
+- well() gets a 'use.names' argument
+- explicit length() method for OPM objects
+- csv_data() gets a 'what' argument
 - new edit() function for editing metadata by hand (with some restrictions)
-- new generic function annotated() with a variety of methods and options
-- substrate_info() gets a 'download' argument
+- new infix-operator methods for querying metadata
 - aggregated() and discretized() get a 'full' argument (and other ones that
   that affect the names or column names)
 - new spline-fitting facilities (see set_spline_options())
-- new plate_type() method (for displaying the known plate types)
-- new infix-operator methods for querying metadata
-- csv_data() gets a 'what' argument
 - heat_map() gets an 'asqr' argument
-- explicit length() method for OPM objects
-- well() gets a 'use.names' argument
+- new plate_type() method (for displaying the known plate types)
+- substrate_info() gets a 'download' argument
+- new generic function annotated() with a variety of methods and options
+- conversion of substrate names to HTML now also formats stereochemistry and
+  configuration indicators
+- many additions to the stored substrate information, and some corrections
 - opm_mcp() now handles non-syntactical names in metadata (converts them
   for multcomp::glht()) and computes specific 'Pairs...' contrast-types;
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
-- conversion of substrate names to HTML now also formats stereochemistry and
-  configuration indicators
 - opm_opt() gets a 'max.chars' entry
 
 - streamlined the documentation (merged many entries) in the manual

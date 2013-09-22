@@ -86,21 +86,20 @@
 \examples{
 # Character method; compare correct and misspelled substrate name
 (x <- substrate_info(c("D-Glucose", "D-Gloucose")))
-
-# Factor method
-(y <- substrate_info(as.factor(c("D-Glucose", "D-Gloucose"))))
-stopifnot(identical(x, y))
+stopifnot(any(is.na(x)), !all(is.na(x)))
+stopifnot(identical(x, # Factor method yields same result
+  substrate_info(as.factor(c("D-Glucose", "D-Gloucose")))))
 
 # Now with generation of URLs
 (y <- substrate_info(c("D-Glucose", "D-Gloucose"), browse = -1))
 stopifnot(is.na(y) | nchar(y) > nchar(x))
-# NA remains NA (and would not be opened in the web browser)
+# NA remains NA (and the function would not try to open it in the browser)
 
 # Character method, safe conversion to lower case
 (x <- substrate_info(c("a-D-Glucose", "a-D-Gloucose"), "downcase"))
 stopifnot(nchar(x) > nchar(c("a-D-Glucose", "a-D-Gloucose")))
 # note the protection of 'D' and the conversion of 'a'
-# whether ot not substrate names are known does not matter here
+# whether or not substrate names are known does not matter here
 
 # List method
 (x <- substrate_info(find_substrate(c("D-Glucose", "D-Gloucose"))))
@@ -109,11 +108,10 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 # OPM and OPMS methods
 (x <- substrate_info(vaas_1[, 1:3], "all"))
 stopifnot(inherits(x, "substrate_data"))
-(y <- substrate_info(vaas_4[, , 1:3], "all"))
-stopifnot(identical(x, y))
+stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 \dontrun{
 
-  # this would open 96 tabs in your browser...
+  # this would open up to 96 tabs in your browser...
   substrate_info(vaas_4, "kegg", browse = 100)
 }
 }

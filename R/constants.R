@@ -125,7 +125,7 @@ HTML_DOCTYPE <- paste('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"',
 URL_BASE <- c(
   kegg = "http://www.genome.jp/dbget-bin/www_bget?cpd:",
   drug = "http://www.genome.jp/dbget-bin/www_bget?dr:",
-  chebi = "http://www.ebi.ac.uk/chebi/searchId.do?chebiId=",
+  chebi = "http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",
   metacyc = "http://biocyc.org/META/NEW-IMAGE?type=COMPOUND&object=",
   cas = "http://chem.sis.nlm.nih.gov/chemidplus/direct.jsp?regno=",
   mesh = "http://www.ncbi.nlm.nih.gov/mesh/"

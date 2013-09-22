@@ -226,8 +226,8 @@ test_that("substrate names can be searched with patterns", {
   expect_is(found, "substrate_match")
   expect_equal(3L, length(found))
   expect_equivalent(glob.pat, names(found))
-  expect_equal("Ampicillin", found[[1L]])
-  expect_equal("Penicillin G", found[[2L]])
+  expect_equal(sprintf("Ampicillin #%i", 1:4), found[[1L]])
+  expect_equal(sprintf("Penicillin G #%i", 1:4), found[[2L]])
   expect_equal(character(), found[[3L]])
 
   reg.pat <- c(A = "^ampic.*", B = "^penic.*", C = "^random.*")

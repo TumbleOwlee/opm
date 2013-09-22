@@ -516,7 +516,7 @@ map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     warning("cannot find plate type ", plate)
     return(trim_string(wells, ...))
   }
-  res <- WELL_MAP[wells, pos]
+  res <- WELL_MAP[wells, pos, "name"]
   if (downcase)
     res <- substrate_info(res, "downcase")
   if (in.parens)
@@ -912,16 +912,16 @@ setMethod("find_substrate", "character", function(object,
     search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) {
   su <- function(x) lapply(lapply(x, unique.default), sort.int)
   find_name <- function(patterns, ...) {
-    su(lapply(X = patterns, FUN = grep, x = WELL_MAP, value = TRUE,
+    su(lapply(X = patterns, FUN = grep, x = WELL_MAP[, , "name"], value = TRUE,
       useBytes = TRUE, ...))
   }
   find_approx <- function(pattern, ...) {
-    su(lapply(X = pattern, FUN = agrep, x = WELL_MAP, ignore.case = TRUE,
-      value = TRUE, useBytes = TRUE, ...))
+    su(lapply(X = pattern, FUN = agrep, x = WELL_MAP[, , "name"], value = TRUE,
+      ignore.case = TRUE, useBytes = TRUE, ...))
   }
   find_partial <- function(pattern) {
     # next step necessary because multiple <partial> matches are never allowed
-    table <- unique.default(WELL_MAP)
+    table <- unique.default(WELL_MAP[, , "name"])
     found <- table[pmatch(pattern, table, NA_integer_, TRUE)]
     names(found) <- pattern
     lapply(lapply(as.list(found), na.exclude), sort.int)
@@ -952,7 +952,7 @@ setGeneric("find_positions",
 setMethod("find_positions", "character", function(object, ...) {
   plates <- colnames(WELL_MAP)
   sapply(object, FUN = function(name) {
-    result <- which(WELL_MAP == name, arr.ind = TRUE)
+    result <- which(WELL_MAP[, , "name"] == name, arr.ind = TRUE)
     matrix(c(plates[result[, 2L]], rownames(result)), ncol = 2L,
       dimnames = list(NULL, RESERVED_NAMES[c("plate", "well")]))
   }, simplify = FALSE)
@@ -1066,30 +1066,37 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'   Acids Research} \strong{41}: D456--D463.
 #' @details The query names must be written exactly as used in the stored plate
 #'   annotations. To determine their spelling, use \code{\link{find_substrate}}.
+#'   Each spelling might include a concentration indicator, but the same
+#'   underlying substrate name yielded the same \acronym{ID} irrespective of the
+#'   concentration.
 #'
-#'   Currently the information is incomplete, particularly for the PM-M plates.
-#'   While it should eventually be possible to link all substrates to
-#'   \acronym{CAS} numbers, they are not necessarily contained in the other
+#'   Note that the information is only partially complete, depending on the well
+#'   and the database. While it is possible to link almost all substrates to,
+#'   say, \acronym{CAS} numbers, they are not necessarily contained in the other
 #'   databases.
+#'
+#'   For some wells, even a main substrate cannot be identified, causing its
+#'   \acronym{ID} to be missing. This holds for all control wells, for all
+#'   wells that contain a mixture of (usually two) substrates, and for all wells
+#'   that are only specified by a certain pH.
 #' @examples
 #'
 #' # Character method; compare correct and misspelled substrate name
 #' (x <- substrate_info(c("D-Glucose", "D-Gloucose")))
-#'
-#' # Factor method
-#' (y <- substrate_info(as.factor(c("D-Glucose", "D-Gloucose"))))
-#' stopifnot(identical(x, y))
+#' stopifnot(any(is.na(x)), !all(is.na(x)))
+#' stopifnot(identical(x, # Factor method yields same result
+#'   substrate_info(as.factor(c("D-Glucose", "D-Gloucose")))))
 #'
 #' # Now with generation of URLs
 #' (y <- substrate_info(c("D-Glucose", "D-Gloucose"), browse = -1))
 #' stopifnot(is.na(y) | nchar(y) > nchar(x))
-#' # NA remains NA (and would not be opened in the web browser)
+#' # NA remains NA (and the function would not try to open it in the browser)
 #'
 #' # Character method, safe conversion to lower case
 #' (x <- substrate_info(c("a-D-Glucose", "a-D-Gloucose"), "downcase"))
 #' stopifnot(nchar(x) > nchar(c("a-D-Glucose", "a-D-Gloucose")))
 #' # note the protection of 'D' and the conversion of 'a'
-#' # whether ot not substrate names are known does not matter here
+#' # whether or not substrate names are known does not matter here
 #'
 #' # List method
 #' (x <- substrate_info(find_substrate(c("D-Glucose", "D-Gloucose"))))
@@ -1098,11 +1105,10 @@ setMethod("find_positions", OPM, function(object, ...) {
 #' # OPM and OPMS methods
 #' (x <- substrate_info(vaas_1[, 1:3], "all"))
 #' stopifnot(inherits(x, "substrate_data"))
-#' (y <- substrate_info(vaas_4[, , 1:3], "all"))
-#' stopifnot(identical(x, y))
+#' stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 #' \dontrun{
 #'
-#'   # this would open 96 tabs in your browser...
+#'   # this would open up to 96 tabs in your browser...
 #'   substrate_info(vaas_4, "kegg", browse = 100)
 #' }
 #'
@@ -1113,9 +1119,14 @@ setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
       "greek", "html", "all"), browse = 0L, download = FALSE, ...) {
 
+  find_substrate_id <- function(x) {
+    result <- WELL_MAP[, , "substrate_id"][match(x, WELL_MAP[, , "name"])]
+    structure(as.integer(result), names = x)
+  }
+
   create_url <- function(x, how) {
     base <- URL_BASE[match.arg(how, names(URL_BASE))]
-    x <- sub("^CAS\\s+", "", x, TRUE, TRUE)
+    x <- sub("^(CAS\\s+|CHEBI:)", "", x, TRUE, TRUE)
     ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
   }
 
@@ -1151,8 +1162,7 @@ setMethod("substrate_info", "character", function(object,
   }
 
   all_information <- function(x) {
-    result <- SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), ,
-      drop = FALSE]
+    result <- SUBSTRATE_INFO[find_substrate_id(x), , drop = FALSE]
     colnames(result) <- map_values(colnames(result), c(METACYC = "MetaCyc",
       MESH = "MeSH", CHEBI = "ChEBI", KEGG = "KEGG compound",
       DRUG = "KEGG drug"))
@@ -1168,7 +1178,7 @@ setMethod("substrate_info", "character", function(object,
     greek = expand_greek_letters(object),
     html = compound_name_to_html(object),
     chebi =, drug =, kegg =, metacyc =, mesh =,
-    cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
+    cas = SUBSTRATE_INFO[find_substrate_id(object), toupper(what)]
   )
   browse <- must(as.integer(L(browse)))
   if (browse != 0L) {
