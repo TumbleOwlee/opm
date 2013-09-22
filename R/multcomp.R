@@ -800,9 +800,6 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
 #'
 convert_annotation_vector <- function(x, how, what) {
   ## TODO:
-  # * there is no way to include concentration information in the matrix
-  # * duplicated names would even cause crashes
-  # * maybe add the well coordinate
   # * data frames would be of interest with syntactical names for randomForest
   ids <- substrate_info(names(x), what)
   case(match.arg(how, c("ids", "values")),
@@ -810,6 +807,8 @@ convert_annotation_vector <- function(x, how, what) {
     values = {
       x <- as.matrix(x)
       colnames(x) <- RESERVED_NAMES[["value"]]
+      if (!all(is.na(conc <- substrate_info(rownames(x), "concentration"))))
+        x <- cbind(x, Concentration = conc)
       structure(cbind(x, collect(web_query(ids, what))), comment = ids)
     }
   )

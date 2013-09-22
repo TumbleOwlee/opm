@@ -6,8 +6,8 @@
   \item{object}{List, \code{\link{OPM}} or
   \code{\link{OPMS}} object.}
 
-  \item{fun}{A function. Should copy with an
-  \code{\link{OPM}} object as first argument.}
+  \item{fun}{A function. Should accept an \code{\link{OPM}}
+  object as first argument.}
 
   \item{...}{Optional other arguments passed to
   \code{fun}.}

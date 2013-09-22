@@ -990,6 +990,9 @@ setMethod("find_positions", OPM, function(object, ...) {
 #'     \acronym{URL}.}
 #'     \item{chebi}{\acronym{ChEBI} database ID, optionally expanded to an
 #'     \acronym{URL}.}
+#'     \item{concentration}{Attempt to extract concentration information (as
+#'     used in \pkg{opm} substrate names) from \code{object}. Return \code{NA}
+#'     wherever this fails.}
 #'     \item{downcase}{Substrate name converted to lower case, protecting
 #'     one-letter specifiers, acronyms and chemical symbols, and translating
 #'     relevant characters from the Greek alphabet.}
@@ -1117,7 +1120,8 @@ setGeneric("substrate_info",
 
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "html", "all"), browse = 0L, download = FALSE, ...) {
+      "greek", "concentration", "html", "all"), browse = 0L, download = FALSE,
+    ...) {
 
   find_substrate_id <- function(x) {
     result <- WELL_MAP[, , "substrate_id"][match(x, WELL_MAP[, , "name"])]
@@ -1161,6 +1165,16 @@ setMethod("substrate_info", "character", function(object,
     map_words(x, function(y) map_values(good_case(y), GREEK_LETTERS))
   }
 
+  extract_concentration <- function(x) {
+    x <- ifelse(grepl("^[A-Z]\\d{2}", x, FALSE, TRUE),
+      sub("[)\\]]$", "", x, FALSE, TRUE), x)
+    m <- regexpr("#(\\d+)$", x, FALSE, TRUE)
+    start <- attr(m, "capture.start")[, 1L]
+    as.integer(ifelse(attr(m, "match.length") > 0L,
+      substring(x, start, start + attr(m, "capture.length")[, 1L] - 1L),
+      NA_character_))
+  }
+
   all_information <- function(x) {
     result <- SUBSTRATE_INFO[find_substrate_id(x), , drop = FALSE]
     colnames(result) <- map_values(colnames(result), c(METACYC = "MetaCyc",
@@ -1176,6 +1190,7 @@ setMethod("substrate_info", "character", function(object,
     all = all_information(object),
     downcase = safe_downcase(object),
     greek = expand_greek_letters(object),
+    concentration = extract_concentration(object),
     html = compound_name_to_html(object),
     chebi =, drug =, kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[find_substrate_id(object), toupper(what)]

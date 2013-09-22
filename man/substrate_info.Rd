@@ -13,18 +13,21 @@
   \item{cas}{\acronym{CAS} registry number, optionally
   expanded to an \acronym{URL}.}
   \item{chebi}{\acronym{ChEBI} database ID, optionally
-  expanded to an \acronym{URL}.} \item{downcase}{Substrate
-  name converted to lower case, protecting one-letter
-  specifiers, acronyms and chemical symbols, and
-  translating relevant characters from the Greek alphabet.}
-  \item{drug}{\acronym{KEGG} drug database ID, optionally
-  expanded to an \acronym{URL}.} \item{greek}{Substrate
-  name after translation of relevant characters to Greek
-  letters.} \item{html}{Like \sQuote{greek}, but using
-  \acronym{HTML} tags, and also converting other parts of
-  compound names that require special formatting.}
-  \item{kegg}{\acronym{KEGG} compound database ID,
-  optionally expanded to an \acronym{URL}.}
+  expanded to an \acronym{URL}.}
+  \item{concentration}{Attempt to extract concentration
+  information (as used in \pkg{opm} substrate names) from
+  \code{object}. Return \code{NA} wherever this fails.}
+  \item{downcase}{Substrate name converted to lower case,
+  protecting one-letter specifiers, acronyms and chemical
+  symbols, and translating relevant characters from the
+  Greek alphabet.} \item{drug}{\acronym{KEGG} drug database
+  ID, optionally expanded to an \acronym{URL}.}
+  \item{greek}{Substrate name after translation of relevant
+  characters to Greek letters.} \item{html}{Like
+  \sQuote{greek}, but using \acronym{HTML} tags, and also
+  converting other parts of compound names that require
+  special formatting.} \item{kegg}{\acronym{KEGG} compound
+  database ID, optionally expanded to an \acronym{URL}.}
   \item{mesh}{\acronym{MeSH} database name (useful for
   conducting \acronym{PubMed} searches), optionally
   expanded to an \acronym{URL}.}
@@ -176,7 +179,8 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 \usage{
   \S4method{substrate_info}{character}(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "html", "all"), browse = 0L, download = FALSE, ...) 
+      "greek", "concentration", "html", "all"), browse = 0L, download = FALSE,
+    ...) 
 
   \S4method{substrate_info}{substrate_match}(object, ...) 
 

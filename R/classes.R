@@ -260,7 +260,7 @@ setClass(OPMD,
   validity = function(object) {
     errs <- opmd_problems(object@disc_settings)
     errs <- c(errs, opmd_problems(object@aggregated, object@discretized,
-      object@disc_settings$options$parameter))
+      object@disc_settings[[c(OPTIONS, "parameter")]]))
     if (length(errs))
       errs
     else
@@ -698,8 +698,20 @@ setAs(from = OPMD, to = "list", function(from) {
 })
 
 setAs(from = "list", to = OPMD, function(from) {
+  # up to official release opm 0.10.0, the discretized curve parameter had
+  # not been included in the discretization settings
+  repair_missing_parameter <- function(x) {
+    if (x[[SOFTWARE]] != opm_string())
+      return(x)
+    if (is.null(x[[c(OPTIONS, "parameter")]])) {
+      warning("assuming discretized parameter is opm_opt('curve.param')")
+      x[[c(OPTIONS, "parameter")]] <- opm_opt("curve.param")
+    }
+    x
+  }
   x <- as(from, OPMA)
   settings <- update_settings_list(as.list(from$disc_settings))
+  settings <- repair_missing_parameter(settings)
   discretized <- from$discretized[colnames(x@aggregated)]
   discretized <- unlist(repair_na_strings(discretized, "logical"))
   new(OPMD, csv_data = csv_data(x), measurements = measurements(x),

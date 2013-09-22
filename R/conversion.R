@@ -120,7 +120,7 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 #' apply a function to a collection of \code{\link{OPM}} objects.
 #'
 #' @param object List, \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param fun A function. Should copy with an \code{\link{OPM}} object as first
+#' @param fun A function. Should accept an \code{\link{OPM}} object as first
 #'   argument.
 #' @param ... Optional other arguments passed to \code{fun}.
 #' @param simplify Logical scalar. If \code{FALSE}, the result is a list. If
@@ -180,6 +180,13 @@ setMethod("plates", OPM, function(object) {
 setMethod("plates", "list", function(object) {
   to_opm_list.list(object, TRUE, TRUE, FALSE)
 }, sealed = SEALED)
+
+## maybe the following method could make sense, too
+## but maybe it would be too expensive
+# setMethod("plates", "character", function(object) {
+#   x <- mget(object, globalenv(), "any", list(NULL), TRUE)
+#   to_opm_list.list(x, TRUE, TRUE, FALSE)
+# }, sealed = FALSE)
 
 #= oapply plates
 

@@ -297,6 +297,17 @@ test_that("Greek letters can be expanded and HTML returned", {
 })
 
 
+## substrate_info
+test_that("concentrations can be extracted", {
+  x <- c("D09 (D-Serine #1)", "A03", "C12 [D-Serine #2]",
+    "Negative Control #3", "L-Arginine", "E10 (Lincomycin)", "[Strange #1]")
+  got <- substrate_info(x, "concentration")
+  wanted <- c(1L, NA, 2L, 3L, NA, NA, NA)
+  names(wanted) <- x
+  expect_equal(got, wanted)
+})
+
+
 ################################################################################
 
 

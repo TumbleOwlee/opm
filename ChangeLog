@@ -13,6 +13,9 @@
 - glob_to_regex() is now an S3 generic function
 - substrate naming is slightly different in some cases (e.g., numbering is used
   for multiple substrates per plate)
+- stored discretization settings additionally indicate the discretized curve
+  parameter; older YAML files will be converted using opm_opt("curve.param"),
+  with a warning
 
 - well() gets a 'use.names' argument
 - explicit length() method for OPM objects
@@ -24,13 +27,13 @@
 - new spline-fitting facilities (see set_spline_options())
 - heat_map() gets an 'asqr' argument
 - new plate_type() method (for displaying the known plate types)
-- substrate_info() gets a 'download' argument
+- substrate_info() gets a 'download' argument and more options for 'what'
 - new generic function annotated() with a variety of methods and options
 - conversion of substrate names to HTML now also formats stereochemistry and
   configuration indicators
 - many additions to the stored substrate information, and some corrections
 - opm_mcp() now handles non-syntactical names in metadata (converts them
-  for multcomp::glht()) and computes specific 'Pairs...' contrast-types;
+  for multcomp::glht()); it computes specific 'Pairs...' contrast-types;
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
@@ -871,5 +874,4 @@
 
 
 ################################################################################
-
 
