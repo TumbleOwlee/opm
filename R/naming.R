@@ -1130,11 +1130,11 @@ setMethod("substrate_info", "character", function(object,
     mapply(paste0, y, x, MoreArgs = list(collapse = ""))
   }
 
-  compound_name_to_html <- function(x) {
+  expand_greek_letters <- function(x) {
     map_words(x, fun = map_values, mapping = GREEK_LETTERS)
   }
 
-  greek_letter_to_html <- function(x) {
+  compound_name_to_html <- function(x) {
     x <- gsub("'", "&prime;", safe_labels(x, "html"), FALSE, FALSE, TRUE)
     map_words(x, fun = map_values, mapping = COMPOUND_NAME_HTML_MAP)
   }
@@ -1165,8 +1165,8 @@ setMethod("substrate_info", "character", function(object,
   result <- case(what <- match.arg(what),
     all = all_information(object),
     downcase = safe_downcase(object),
-    greek = compound_name_to_html(object),
-    html = greek_letter_to_html(object),
+    greek = expand_greek_letters(object),
+    html = compound_name_to_html(object),
     chebi =, drug =, kegg =, metacyc =, mesh =,
     cas = SUBSTRATE_INFO[match(object, rownames(SUBSTRATE_INFO)), toupper(what)]
   )
@@ -1329,6 +1329,21 @@ lapply(c(
     #+
     find_positions,
     substrate_info
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, OPMS, function(object, ...) {
+    func_(object@plates[[1L]], ...)
+  }, sealed = SEALED)
+})
+
+
+# Applying OPM methods with function(object, ...) signature to the 1st plate
+# only.
+#
+lapply(c(
+    #+
+    wells,
+    plate_type
     #-
   ), FUN = function(func_) {
   setMethod(func_, OPMS, function(object, ...) {

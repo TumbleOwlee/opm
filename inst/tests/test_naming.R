@@ -57,6 +57,11 @@ test_that("plate names can be normalized", {
   exp <- c("<strange>", "ECO", "SF-N2", "SF-P2", "SF-N2", "SF-N2")
   got <- plate_type(x, subtype = TRUE)
   expect_equal(got, exp)
+  # Lately added identification plates
+  x <- c("<strange>", " an2", "fF", "yT ")
+  exp <- c("<strange>", "AN2", "FF", "YT")
+  got <- plate_type(x, subtype = TRUE)
+  expect_equal(got, exp)
   # The internally used names must already be normalized
   standard.names <- names(PLATE_MAP)
   expect_equal(plate_type(standard.names), standard.names)
@@ -275,14 +280,14 @@ test_that("CAS numbers are recognized", {
 
 ## substrate_info
 test_that("Greek letters can be expanded and HTML returned", {
-  x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose <1>",
+  x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose #1",
     "N-Acetyl-Glucosamine")
-  wanted <- c("A01 (alpha-D-Fructose)", "Penicillin G", "beta-L-Glucose <1>",
+  wanted <- c("A01 (alpha-D-Fructose)", "Penicillin G", "beta-L-Glucose #1",
     "N-Acetyl-Glucosamine")
   got <- substrate_info(x, "greek")
   expect_equivalent(got, wanted)
   wanted <- c("A01 (&alpha;-<small>D</small>-Fructose)", "Penicillin G",
-    "&beta;-<small>L</small>-Glucose &lt;1&gt;", "<i>N</i>-Acetyl-Glucosamine")
+    "&beta;-<small>L</small>-Glucose #1", "<i>N</i>-Acetyl-Glucosamine")
   got <- substrate_info(x, "html")
   expect_equivalent(got, wanted)
   # an R expression equivalent to the first HTML entry would be:

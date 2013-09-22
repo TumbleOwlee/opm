@@ -162,7 +162,6 @@ stopifnot(!identical(vaas_4, copy)) # as above
 
 \docType{methods}
 \alias{plate_type-methods}
-\alias{plate_type,OPMS-method}
 \alias{plate_type,OPM-method}
 \alias{plate_type,character-method}
 \alias{plate_type,factor-method}
@@ -170,9 +169,8 @@ stopifnot(!identical(vaas_4, copy)) # as above
 \alias{gen_iii,OPM-method}
 \alias{gen_iii-methods}
 \alias{gen_iii,OPMS-method}
+\alias{plate_type,OPMS-method}
 \usage{
-  \S4method{plate_type}{OPMS}(object, ...) 
-
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
     subtype = FALSE) 
 
@@ -188,5 +186,7 @@ stopifnot(!identical(vaas_4, copy)) # as above
   \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
 
   \S4method{gen_iii}{OPMS}(object, ...) 
+
+  \S4method{plate_type}{OPMS}(object, ...) 
 
 }

@@ -1256,21 +1256,6 @@ setMethod("anyDuplicated", c(OPMS, "ANY"), function(x, incomparables, ...) {
 ################################################################################
 
 
-# Applying OPM methods with function(object, ...) signature to the 1st plate
-# only.
-#
-lapply(c(
-    #+
-    wells,
-    plate_type
-    #-
-  ), FUN = function(func_) {
-  setMethod(func_, OPMS, function(object, ...) {
-    func_(object@plates[[1L]], ...)
-  }, sealed = SEALED)
-})
-
-
 # OPM methods with function(object, ...) signature that can conditionally be
 # simplified.
 #

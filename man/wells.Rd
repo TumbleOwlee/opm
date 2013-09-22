@@ -200,16 +200,14 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 
 \docType{methods}
 \alias{wells-methods}
-\alias{wells,OPMS-method}
 \alias{wells,OPM-method}
 \alias{wells,ANY-method}
 \alias{wells,missing-method}
 \alias{listing,OPMD-method}
 \alias{listing-methods}
 \alias{listing,OPMS-method}
+\alias{wells,OPMS-method}
 \usage{
-  \S4method{wells}{OPMS}(object, ...) 
-
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE,
@@ -229,5 +227,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
   \S4method{listing}{OPMS}(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) 
+
+  \S4method{wells}{OPMS}(object, ...) 
 
 }
