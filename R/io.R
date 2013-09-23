@@ -1407,6 +1407,9 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     out.names
   }
 
+  graphics_format_map <- function() c(bitmap = "bmp", mypdf = "pdf",
+    postscript = "ps", cairo_pdf = "pdf", cairo_ps = "ps")
+
   LL(force.aggr, force.disc, gen.iii, device, overwrite)
 
   # If a metadata filename is given, read it into data frame right now to
@@ -1449,7 +1452,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
       create_single_file <- create_plot
       json <- disc.args <- aggr.args <- NULL
       in.ext <- "both"
-      out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
+      out.ext <- map_values(device, graphics_format_map())
       plot.type <- level_plot
     },
     xyplot = {
@@ -1458,7 +1461,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
       create_single_file <- create_plot
       json <- disc.args <- aggr.args <- NULL
       in.ext <- "both"
-      out.ext <- map_values(device, GRAPHICS_FORMAT_MAP)
+      out.ext <- map_values(device, graphics_format_map())
       plot.type <- xy_plot
     },
     split = {
@@ -1639,7 +1642,7 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
   create_outnames <- function(files, compressed, outdir) {
     file.pat <- file_pattern("any", compressed = compressed, literally = FALSE)
     out.base <- sub(file.pat, "", files, TRUE, TRUE)
-    out.ext <- substring(files, nchar(out.base) + 2L)
+    out.ext <- substr(files, nchar(out.base) + 2L, nchar(files))
     if (compressed)
       out.ext <- sub("\\.[^.]+$", "", out.ext, FALSE, TRUE)
     if (length(outdir) && all(nzchar(outdir)))

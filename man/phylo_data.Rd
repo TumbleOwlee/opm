@@ -174,7 +174,7 @@
 }
 \examples{
 # simple helper functions
-echo <- function(x) write(substring(x, 1, 250), file = "")
+echo <- function(x) write(substr(x, 1, 250), file = "")
 is_html <- function(x) is.character(x) &&
   c("<html>", "<head>", "<body>", "</html>", "</head>", "</body>") \%in\% x
 longer <- function(x, y) any(nchar(x) > nchar(y)) &&

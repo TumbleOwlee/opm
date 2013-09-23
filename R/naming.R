@@ -121,32 +121,39 @@ param_names <- function(
 select_colors <- function(
     set = c("w3c", "w3c.i", "nora", "nora.i", "brewer", "brewer.i",
       "roseo", "roseo.i")) {
+  # Basic colour keywords from http://www.w3.org/TR/css3-color/ (accessed on
+  # 29-8-2011), sorted darkest-first.
+  w3c_colors <- function() c(black = "#000000", navy = "#000080",
+    green = "#008000", maroon = "#800000", blue = "#0000FF", lime = "#00FF00",
+    red = "#FF0000", teal = "#008080", purple = "#800080", olive = "#808000",
+    gray = "#808080", aqua = "#00FFFF", fuchsia = "#FF00FF",
+    yellow = "#FFFF00", silver = "#C0C0C0", white = "#FFFFFF")
   # Names of W3c colours (except white) sorted so as to maximize contrast
   # between adjacent colours. See pkgutils::max_rgb_contrast().
-  w3c.colors <- W3C_COLORS[c("teal", "purple", "olive", "black", "silver",
-    "blue", "lime", "red", "aqua", "fuchsia", "yellow", "navy", "green",
-    "maroon", "gray")]
+  sorted_w3c_colors <- function() w3c_colors()[c("teal", "purple", "olive",
+    "black", "silver", "blue", "lime", "red", "aqua", "fuchsia", "yellow",
+    "navy", "green", "maroon", "gray")]
   # Colours manually selected and sorted by Nora Buddruhs for maximum contrast.
-  noras.colors <- c("midnightblue", "darkred", "darkgreen", "orange",
+  noras_colors <- function() c("midnightblue", "darkred", "darkgreen", "orange",
     "lightslateblue", "seashell4", "saddlebrown", "firebrick2",
     "palevioletred3", "purple4")
   # Shades of pink...
-  roseo.colors <- c("maroon1", "palevioletred3", "hotpink1",
+  roseo_colors <- function() c("maroon1", "palevioletred3", "hotpink1",
     "mediumvioletred", "violetred3", "deeppink3", "lightcoral", "pink1",
     "indianred3", "magenta1")
   # Colours from two ColorBrewer palettes, sorted so as to maximize contrast
   # between adjacent colours.
-  brewer.colors <- c(
+  brewer_colors <- function() c(
     "#CAB2D6", "#A6CEE3", "#80B1D3", "#CCEBC5", "#FDB462", "#8DD3C7",
     "#33A02C", "#B3DE69", "#B15928", "#FF7F00", "#1F78B4", "#B2DF8A",
     "#6A3D9A", "#E31A1C", "#FFED6F", "#FFFF99", "#FB8072", "#FFFFB3",
     "#FDBF6F", "#D9D9D9", "#FB9A99", "#FCCDE5", "#BC80BD", "#BEBADA"
   )
   case(match.arg(set),
-    w3c = w3c.colors, w3c.i = rev(w3c.colors),
-    nora = noras.colors, nora.i = rev(noras.colors),
-    brewer = brewer.colors, brewer.i = rev(brewer.colors),
-    roseo = roseo.colors, roseo.i = rev(roseo.colors)
+    w3c = sorted_w3c_colors(), w3c.i = rev.default(sorted_w3c_colors()),
+    nora = noras_colors(), nora.i = rev.default(noras_colors()),
+    brewer = brewer_colors(), brewer.i = rev.default(brewer_colors()),
+    roseo = roseo_colors(), roseo.i = rev.default(roseo_colors())
   )
 }
 
@@ -499,7 +506,7 @@ well_index <- function(x, names) {
 clean_coords <- function(x) {
   do_clean <- function(x) {
     x <- sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE), FALSE, TRUE)
-    sprintf("%s%02i", toupper(substring(x, 1L, 1L)),
+    sprintf("%s%02i", toupper(substr(x, 1L, 1L)),
       as.integer(sub("^[A-Za-z]+", "", x, FALSE, TRUE)))
   }
   if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, FALSE, TRUE)))
@@ -1129,7 +1136,15 @@ setMethod("substrate_info", "character", function(object,
   }
 
   create_url <- function(x, how) {
-    base <- URL_BASE[match.arg(how, names(URL_BASE))]
+    url_base <- c(
+      kegg = "http://www.genome.jp/dbget-bin/www_bget?cpd:",
+      drug = "http://www.genome.jp/dbget-bin/www_bget?dr:",
+      chebi = "http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",
+      metacyc = "http://biocyc.org/META/NEW-IMAGE?type=COMPOUND&object=",
+      cas = "http://chem.sis.nlm.nih.gov/chemidplus/direct.jsp?regno=",
+      mesh = "http://www.ncbi.nlm.nih.gov/mesh/"
+    )
+    base <- url_base[match.arg(how, names(url_base))]
     x <- sub("^(CAS\\s+|CHEBI:)", "", x, TRUE, TRUE)
     ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
   }
@@ -1166,20 +1181,17 @@ setMethod("substrate_info", "character", function(object,
   }
 
   extract_concentration <- function(x) {
-    x <- ifelse(grepl("^[A-Z]\\d{2}", x, FALSE, TRUE),
-      sub("[)\\]]$", "", x, FALSE, TRUE), x)
-    m <- regexpr("#(\\d+)$", x, FALSE, TRUE)
-    start <- attr(m, "capture.start")[, 1L]
-    as.integer(ifelse(attr(m, "match.length") > 0L,
-      substring(x, start, start + attr(m, "capture.length")[, 1L] - 1L),
-      NA_character_))
+    x <- ifelse(grepl(SUBSTRATE_PATTERN[["either"]], x, FALSE, TRUE),
+      substr(x, 1L, nchar(x) - 1L), x)
+    m <- regexpr("(?<=\\s#)\\d$", x, FALSE, TRUE)
+    as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
   }
 
   all_information <- function(x) {
     result <- SUBSTRATE_INFO[find_substrate_id(x), , drop = FALSE]
-    colnames(result) <- map_values(colnames(result), c(METACYC = "MetaCyc",
-      MESH = "MeSH", CHEBI = "ChEBI", KEGG = "KEGG compound",
-      DRUG = "KEGG drug"))
+    colnames(result) <- map_values(colnames(result),
+      c(METACYC = "MetaCyc", MESH = "MeSH", CHEBI = "ChEBI",
+        KEGG = "KEGG compound", DRUG = "KEGG drug"))
     result <- split.data.frame(result, seq_len(nrow(result)))
     result <- lapply(result, function(y) y[, !is.na(y), drop = TRUE])
     class(result) <- c("substrate_data", "print_easy")

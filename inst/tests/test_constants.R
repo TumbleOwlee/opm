@@ -148,26 +148,11 @@ test_that("the known method names are OK", {
 })
 
 
-## GRAPHICS_FORMAT_MAP
-## UNTESTED
-
-
 ## HTML_DOCTYPE
 ## UNTESTED
 
 
-## URL_BASE
-test_that("bases of URLs contain no special characters", {
-  got <- vapply(URL_BASE, URLencode, "")
-  expect_equivalent(got, URL_BASE)
-})
-
-
 ################################################################################
-
-
-## W3C_COLORS
-## UNTESTED
 
 
 ## MEMOIZED
@@ -211,6 +196,24 @@ test_that("phylogeny formats are defined", {
 
 ## COMPOUND_NAME_HTML_MAP
 ## UNTESTED
+
+
+## SUBSTRATE_PATTERN
+test_that("SUBSTRATE_PATTERN matches what it should match", {
+  m <- function(s, p) grepl(p, s, FALSE, TRUE)
+  e <- function(x) as.logical(unlist(strsplit(x, "", TRUE), FALSE, FALSE))
+  x <- c("B07 (Substrate(s))", "A02@[My [other] substrate]", "F11", "foo")
+  got <- m(x, SUBSTRATE_PATTERN["paren"])
+  expect_equal(got, e("TFFF"))
+  got <- m(x, SUBSTRATE_PATTERN["bracket"])
+  expect_equal(got, e("FTFF"))
+  got <- m(x, SUBSTRATE_PATTERN["either"])
+  expect_equal(got, e("TTFF"))
+  got <- m(x, SUBSTRATE_PATTERN["any"])
+  expect_equal(got, e("TTTF"))
+  got <- m(x, SUBSTRATE_PATTERN["plain"])
+  expect_equal(got, e("FFTF"))
+})
 
 
 ################################################################################

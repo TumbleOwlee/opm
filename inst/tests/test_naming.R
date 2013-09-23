@@ -278,6 +278,14 @@ test_that("CAS numbers are recognized", {
 })
 
 
+# TODO: add check for URLs
+# ## URL_BASE
+# test_that("", {
+#   got <- vapply(URL_BASE, URLencode, "")
+#   expect_equivalent(got, URL_BASE)
+# })
+#
+
 ## substrate_info
 test_that("Greek letters can be expanded and HTML returned", {
   x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose #1",

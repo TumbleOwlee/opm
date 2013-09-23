@@ -686,7 +686,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     }
     get_submatch <- function(i, m, string) {
       start <- attr(m, "capture.start")[, i]
-      substring(string, start, start + attr(m, "capture.length")[, i] - 1L)
+      substr(string, start, start + attr(m, "capture.length")[, i] - 1L)
     }
     all_matched <- function(m) all(attr(m, "match.length") > 0L)
 
@@ -714,19 +714,12 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
     # using the given plate name.
     get_substrate <- function(x, plate) {
       if (length(plate)) {
-        # because 'paren.sep' may be anything, we cannot be too strict here
-        if (all(grepl("^[A-Z]\\d{2}(?:.*?(?:\\(.+\\)|\\[.+\\]))?$", x, FALSE,
-            TRUE)))
-          wells(substring(x, 1L, 3L), TRUE, FALSE, plate = plate)[, 1L]
+        if (all(grepl(SUBSTRATE_PATTERN[["any"]], x, FALSE, TRUE)))
+          wells(substr(x, 1L, 3L), TRUE, FALSE, plate = plate)[, 1L]
         else
           x # assume plain substrate names without wells as prefix
       } else {
-        pats <- c(
-          # we can have paired parentheses in substrate names
-          "^[A-Z]\\d{2}.*\\(((?:[^()]+|\\([^()]+\\))+)\\)$",
-          # but we have no brackets in substrate names
-          "^[A-Z]\\d{2}.*\\[([^\\[\\]]+)\\]$")
-        for (p in pats)
+        for (p in SUBSTRATE_PATTERN[c("paren", "bracket")])
           if (all_matched(m <- regexpr(p, x, FALSE, TRUE)))
             return(get_submatch(1L, m, x))
         x

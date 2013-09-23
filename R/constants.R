@@ -97,7 +97,7 @@ RESERVED_NAMES <- c("Plate", "Well", "Time", "Value", "Parameter")
 names(RESERVED_NAMES) <- tolower(RESERVED_NAMES)
 
 
-# Names used in aggregation/discretization settings
+# Names used in aggregation/discretization settings.
 #
 SOFTWARE <- "software"
 VERSION <- "version"
@@ -110,75 +110,10 @@ KNOWN_METHODS <- list(
   discretization = c("direct", "kmeans", "best-cutoff")
 )
 
-# Used by batch_opm()
-#
-GRAPHICS_FORMAT_MAP <- c(bitmap = "bmp", mypdf = "pdf", postscript = "ps",
-  cairo_pdf = "pdf", cairo_ps = "ps")
-
-# Used in the headers of HTML output
+# Used by several functions in the headers of HTML output.
 #
 HTML_DOCTYPE <- paste('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"',
   '"http://www.w3.org/TR/html4/strict.dtd">', collapse = " ")
-
-# Used for generatign web queries.
-#
-URL_BASE <- c(
-  kegg = "http://www.genome.jp/dbget-bin/www_bget?cpd:",
-  drug = "http://www.genome.jp/dbget-bin/www_bget?dr:",
-  chebi = "http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",
-  metacyc = "http://biocyc.org/META/NEW-IMAGE?type=COMPOUND&object=",
-  cas = "http://chem.sis.nlm.nih.gov/chemidplus/direct.jsp?regno=",
-  mesh = "http://www.ncbi.nlm.nih.gov/mesh/"
-)
-
-
-################################################################################
-################################################################################
-#
-# Colours
-#
-
-
-# Basic colour keywords from http://www.w3.org/TR/css3-color/ (accessed on
-# 29-8-2011), sorted darkest-first.
-#
-W3C_COLORS <- structure(
-  c(
-    "#000000",
-    "#000080",
-    "#008000",
-    "#800000",
-    "#0000FF",
-    "#00FF00",
-    "#FF0000",
-    "#008080",
-    "#800080",
-    "#808000",
-    "#808080",
-    "#00FFFF",
-    "#FF00FF",
-    "#FFFF00",
-    "#C0C0C0",
-    "#FFFFFF"
-  ), names = c(
-    "black",
-    "navy",
-    "green",
-    "maroon",
-    "blue",
-    "lime",
-    "red",
-    "teal",
-    "purple",
-    "olive",
-    "gray",
-    "aqua",
-    "fuchsia",
-    "yellow",
-    "silver",
-    "white"
-  )
-)
 
 
 ################################################################################
@@ -193,7 +128,7 @@ MEMOIZED <- new.env(parent = emptyenv())
 ################################################################################
 ################################################################################
 #
-# Default opm options
+# Default opm options.
 #
 
 OPM_OPTIONS <- new.env(parent = emptyenv())
@@ -234,16 +169,28 @@ OPM_OPTIONS$time.zone <- ""
 #
 
 
+# These must be kepot in sync between phylogeny and discretization functions.
+#
 CHARACTER_STATES <- c(0L:9L, LETTERS)[1L:32L]
-
 MISSING_CHAR <- "?"
 
+# Used by several functions via match.arg().
+#
 PHYLO_FORMATS <- c("epf", "nexus", "phylip", "hennig", "html")
+
+
+################################################################################
+################################################################################
+#
+# Constants related to the processing of substrate names
+#
+
 
 # We consider only those Greek letters that are likely to occur in substrate
 # names, and deliberately not their uppercase versions.
 GREEK_LETTERS <- c("alpha", "beta", "gamma", "delta", "epsilon")
-names(GREEK_LETTERS) <- substring(GREEK_LETTERS, 1L, 1L)
+names(GREEK_LETTERS) <- substr(GREEK_LETTERS, 1L, 1L)
+
 
 COMPOUND_NAME_HTML_MAP <- c(
   # stereochemistry and configuration
@@ -263,3 +210,18 @@ COMPOUND_NAME_HTML_MAP <- c(
   COMPOUND_NAME_HTML_MAP,
   structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS))
 )
+
+
+SUBSTRATE_PATTERN <- (function() {
+  # we prepare for paired parentheses or paired brackets in substrate names
+  x <- c(paren = "\\(((?:[^()]+|\\([^()]+\\))+)\\)",
+    bracket = "\\[((?:[^\\[\\]]+|\\[[^\\[\\]]+\\])+)\\]")
+  # because 'paren.sep' may be anything, we cannot be too strict here
+  x <- c(x, either = paste0(".*(", x[1L], "|", x[2L], ")", collapse = ""))
+  x <- c(x, any = paste0("(?:.*(?:", x[1L], "|", x[2L], "))?", collapse = ""))
+  x[1L:2L] <- sprintf(".*%s", x[1L:2L])
+  x <- c(x, plain = "")
+  structure(sprintf("^[A-Z]\\d{2}%s$", x), names = names(x))
+})()
+
+
