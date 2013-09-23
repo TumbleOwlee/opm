@@ -182,7 +182,9 @@ repair_oth <- function(x) {
 
 
 ## NOTE: not an S4 method because conversion is done by calling functions, and
-## error message would be meaningful.
+##   error message would be meaningful.
+## TODO: run_opm.R can delete files (at least when called with YAML input in
+##   YAML output mode)
 
 #' Conversion between two files
 #'

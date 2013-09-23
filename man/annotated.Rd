@@ -54,6 +54,13 @@
   scalar working like the \code{cutoff} argument of
   \code{\link{listing}}. Has only an effect if discretized
   values are chosen (and are available).}
+
+  \item{conc}{Logical scalar indicating whether
+  concentration information should be added to the output,
+  either as a further matrix column or as attribute,
+  depending on \code{how}. Note that concentration
+  information might be partially or entirely \code{NA},
+  depending on the wells in use.}
 }
 \value{
   For \code{how = "ids"}, a numeric or logical vector whose
@@ -67,10 +74,18 @@
   \code{\link{substrate_info}} but after conversion to a
   numeric matrix. This option is not available for all
   values of \code{what} and requires additional libraries.
-  See \code{\link{substrate_info}} for details. The first
-  column name is as returned by \code{\link{param_names}}
-  in \sQuote{reserved.md.names} mode (\sQuote{value}
-  entry).
+  See \code{\link{substrate_info}} for details.
+
+  The first column name of the matrix is like the
+  \sQuote{value} entry returned by
+  \code{\link{param_names}} in \sQuote{reserved.md.names}
+  mode.  The second one is \sQuote{Concentration} if
+  \code{conc} is \code{TRUE}.  Depending on the subsequent
+  analysis, it might be necessary to convert the matrix to
+  a data frame, to convert the column names to syntactical
+  names (see \code{make.names} from the \pkg{base}
+  package), or to remove all rows and columns with missing
+  values.
 }
 \description{
   These methods create vectors or matrices that include
@@ -146,7 +161,7 @@ head(y <- annotated(vaas_4, output = param_names("disc.name"), lmap = 1:3))
 stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 
 ## opm_glht method
-## TODO
+## TODO examples needed
 }
 \seealso{
   Other multcomp-functions: \code{\link{opm_mcp}}
@@ -161,15 +176,17 @@ stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 \alias{annotated,opm_glht-method}
 \usage{
   \S4method{annotated}{OPMA}(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) 
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) 
 
   \S4method{annotated}{OPMD}(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) 
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) 
 
   \S4method{annotated}{OPMS}(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode")) 
+    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
+    conc = FALSE) 
 
   \S4method{annotated}{opm_glht}(object, what = "kegg", how = "ids",
-    output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join")) 
+    output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join"),
+    conc = FALSE) 
 
 }

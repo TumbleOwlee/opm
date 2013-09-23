@@ -349,7 +349,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
         spec <- unlist(strsplit(spec, substr(spec, 6L, 6L), TRUE))[-1L]
       if (!all(grepl("^\\d+$", spec, FALSE, TRUE)))
         return(spec)
-      if (is.null(joined)) # TODO: this would never yield pairs at the moment
+      if (is.null(joined)) # this would never yield pairs at the moment
         joined <- as.list(structure(column, names = column))
       joined[[column]][as.integer(spec)]
     }
@@ -365,9 +365,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     spec <- spec_to_column_names(spec, attr(data, "joined.columns"), column)
     # this should conserve the 'data[, spec]' factor levels as names
     groups <- split(as.character(data[, column]), data[, spec])
-    ## TODO: make this more elegant
-    alternative <- match.arg(alternative, c("two.sided", "less", "greater"))
-    sign <- c(two.sided = "==", less = "<=", greater = ">=")[[alternative]]
+    sign <- case(match.arg(alternative, c("two.sided", "less", "greater")),
+      two.sided = "==", less = "<=", greater = ">=")
     result <- unlist(lapply(groups, all_pairs, rhs, sign))
     if (!length(result))
       stop("no pairs found -- are selected factors constant?")
@@ -557,6 +556,10 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   For the \code{\link{OPMS}} method, a numeric scalar working like the
 #'   \code{cutoff} argument of \code{\link{listing}}. Has only an effect if
 #'   discretized values are chosen (and are available).
+#' @param conc Logical scalar indicating whether concentration information
+#'   should be added to the output, either as a further matrix column or as
+#'   attribute, depending on \code{how}. Note that concentration information
+#'   might be partially or entirely \code{NA}, depending on the wells in use.
 #' @return For \code{how = "ids"}, a numeric or logical vector whose names
 #'   are the IDs of the respective substrates in the database as chosen by
 #'   \code{what}.
@@ -567,8 +570,16 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #'   argument of \code{\link{substrate_info}} but after conversion to a numeric
 #'   matrix. This option is not available for all values of \code{what} and
 #'   requires additional libraries. See \code{\link{substrate_info}} for
-#'   details. The first column name is as returned by \code{\link{param_names}}
-#'   in \sQuote{reserved.md.names} mode (\sQuote{value} entry).
+#'   details.
+#'
+#'   The first column name of the matrix is like the \sQuote{value} entry
+#'   returned by \code{\link{param_names}} in \sQuote{reserved.md.names} mode.
+#'   The second one is \sQuote{Concentration} if \code{conc} is \code{TRUE}.
+#'   Depending on the subsequent analysis, it might be necessary to convert the
+#'   matrix to a data frame, to convert the column names to syntactical names
+#'   (see \code{make.names} from the \pkg{base} package), or to remove all rows
+#'   and columns with missing values.
+#'
 #' @details
 #'   All methods use \code{\link{substrate_info}} for translating substrate
 #'   names to IDs. The methods differ only in the way numeric and logical values
@@ -631,19 +642,19 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 #' stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 #'
 #' ## opm_glht method
-#' ## TODO
+#' ## TODO examples needed
 #'
 setGeneric("annotated", function(object, ...) standardGeneric("annotated"))
 
 setMethod("annotated", "OPMA", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) {
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) {
   result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
     in.parens = FALSE, max = 10000L)[1L, ]
-  convert_annotation_vector(result, how, what)
+  convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
 setMethod("annotated", "OPMD", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = NULL) {
+    output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) {
   output <- match.arg(output,
     unlist(map_param_names(plain = TRUE, disc = TRUE)))
   result <- if (output == DISC_PARAM)
@@ -652,11 +663,12 @@ setMethod("annotated", "OPMD", function(object, what = "kegg", how = "ids",
   else
     aggregated(object, subset = output, ci = FALSE, full = TRUE,
       in.parens = FALSE, max = 10000L)[1L, ]
-  convert_annotation_vector(result, how, what)
+  convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
 setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
-    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode")) {
+    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
+    conc = FALSE) {
   output <- match.arg(output,
     unlist(map_param_names(plain = TRUE, disc = TRUE)))
   if (output == DISC_PARAM) { # will crash unless all are discretized
@@ -667,13 +679,14 @@ setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
       in.parens = FALSE, max = 10000L)
     result <- colMeans(do.call(rbind, result))
   }
-  convert_annotation_vector(result, how, what)
+  convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
 setOldClass("opm_glht")
 
 setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
-    output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join")) {
+    output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join"),
+    conc = FALSE) {
 
   names_to_substrates <- function(x, sep, plate) {
 
@@ -766,7 +779,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
   result <- create_vector(confint(object)$confint, output, cutoff, lmap)
   names(result) <- names_to_substrates(names(result), sep,
     attr(object, opm_string())$plate.type)
-  convert_annotation_vector(result, how, what)
+  convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
 
@@ -787,21 +800,24 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
 #' @param how The kind of conversion to conduct. See \code{\link{annotated}}.
 #' @param what The database to use if information shall be gathered.
 #' @param sep Non-empty character vector.
+#' @param conc Logical scalar.
 #' @return Numeric vector or matrix; alternatively,\code{x} unless the test
 #'   fails.
 #' @keywords internal
 #'
-convert_annotation_vector <- function(x, how, what) {
-  ## TODO:
-  # * data frames would be of interest with syntactical names for randomForest
+convert_annotation_vector <- function(x, how, what, conc) {
   ids <- substrate_info(names(x), what)
   case(match.arg(how, c("ids", "values")),
-    ids = structure(x, names = ids, comment = names(x)),
+    ids = structure(x, names = ids, concentration = if (L(conc))
+        unname(substrate_info(names(x), "concentration"))
+      else
+        NULL, comment = names(x)),
     values = {
       x <- as.matrix(x)
       colnames(x) <- RESERVED_NAMES[["value"]]
-      if (!all(is.na(conc <- substrate_info(rownames(x), "concentration"))))
-        x <- cbind(x, Concentration = conc)
+      if (L(conc))
+        x <- cbind(x,
+          Concentration = substrate_info(rownames(x), "concentration"))
       structure(cbind(x, collect(web_query(ids, what))), comment = ids)
     }
   )

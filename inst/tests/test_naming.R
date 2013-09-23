@@ -245,7 +245,7 @@ test_that("substrate names can be searched with patterns", {
 ## find_positions
 test_that("positions within PM plates can be found", {
 
-  query <- c("D-Fructose", "Penicillin G", "This is not present")
+  query <- c("D-Fructose", "Penicillin G #1", "This is not present")
   got <- find_positions(query)
   expect_is(got, "list")
   expect_equal(query, names(got))
@@ -278,14 +278,6 @@ test_that("CAS numbers are recognized", {
 })
 
 
-# TODO: add check for URLs
-# ## URL_BASE
-# test_that("", {
-#   got <- vapply(URL_BASE, URLencode, "")
-#   expect_equivalent(got, URL_BASE)
-# })
-#
-
 ## substrate_info
 test_that("Greek letters can be expanded and HTML returned", {
   x <- c("A01 (a-D-Fructose)", "Penicillin G", "b-L-Glucose #1",
@@ -313,6 +305,21 @@ test_that("concentrations can be extracted", {
   wanted <- c(1L, NA, 2L, 3L, NA, NA, NA)
   names(wanted) <- x
   expect_equal(got, wanted)
+})
+
+
+## substrate_info
+test_that("URLs can be returned", {
+  x <- c("D-Fructose", "D-Serine #2", "L-Arginine")
+  for (target in c("kegg", "drug", "metacyc", "mesh", "chebi", "cas")) {
+    urls <- substrate_info(x, target, browse = -1L)
+    expect_equal(length(urls), length(x))
+    expect_is(urls, "character")
+    # the next test checks that everything has already been escaped
+    got <- vapply(urls, URLencode, "")
+    got[got == "NA"] <- NA_character_
+    expect_equal(urls, got)
+  }
 })
 
 

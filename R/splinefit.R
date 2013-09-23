@@ -1,5 +1,5 @@
 ###################################################################
-## TODO
+## TODO (1):
 ## - think about save.spline.fit option; perhaps this can be done
 ##   by having all the fittig in an extra function which doesn't
 ##   return the spline within do_aggr but does return it elsewise
@@ -10,7 +10,7 @@
 ##     x <- x[, -time.pos, drop = FALSE]  ## outcome (y-axis)
 ##
 ########################################################
-## TODO2:
+## TODO (2):
 ##
 ## 2) Implement functions to
 ## - extract e.g. the (beta) coefficients of the fitted curve,
