@@ -148,6 +148,12 @@ test_that("the known method names are OK", {
 })
 
 
+## INSTRUMENT
+test_that("instrument key fits to CSV names", {
+  expect_false(INSTRUMENT %in% CSV_NAMES)
+})
+
+
 ## HTML_DOCTYPE
 ## UNTESTED
 

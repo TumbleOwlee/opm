@@ -110,6 +110,9 @@ KNOWN_METHODS <- list(
   discretization = c("direct", "kmeans", "best-cutoff")
 )
 
+# Optionally used in collect_template() output
+INSTRUMENT <- "Instrument"
+
 # Used by several functions in the headers of HTML output.
 #
 HTML_DOCTYPE <- paste('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"',
@@ -151,6 +154,7 @@ OPM_OPTIONS$group.name <- "Group"
 OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$html.class <- "section-level-%i"
 OPM_OPTIONS$key.join <- "."
+OPM_OPTIONS$machine.id <- 1L
 OPM_OPTIONS$max.chars <- 100L
 OPM_OPTIONS$min.mode <- 0.5
 OPM_OPTIONS$phylo.fmt <- "epf"
@@ -158,7 +162,7 @@ OPM_OPTIONS$split <- "/.-_"
 OPM_OPTIONS$strict.OPMD <- FALSE
 OPM_OPTIONS$threshold <- 0
 OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
-  "%d.%m.%Y %H:%M:%S")
+  "%d.%m.%Y %H:%M:%S", "%b %d %Y %H:%M")
 OPM_OPTIONS$time.zone <- ""
 
 

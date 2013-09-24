@@ -72,7 +72,8 @@ run_template_mode <- function(input, opt) {
   } else
     previous <- mdfile
   collect_template(object = input, outfile = mdfile, previous = previous,
-    include = opt$include, exclude = opt$exclude, sep = opt$sep)
+    include = opt$include, exclude = opt$exclude, sep = opt$sep,
+    instrument = opt$ynstrument, normalize = opt$`value-normal`)
 }
 
 
@@ -161,6 +162,7 @@ option.parser <- OptionParser(option_list = list(
   ## See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
   # g
 
+  ## Reserved for help message
   # h
 
   make_option(c("-i", "--include"), type = "character", default = NULL,
@@ -214,7 +216,8 @@ option.parser <- OptionParser(option_list = list(
     help = "Field separator for metadata files [default: <tab>]",
     metavar = "CHAR"),
 
-  #  v
+  make_option(c("-v", "--value-normal"), action = "store_true", default = FALSE,
+    help = paste("Normalize setup time and position [default: %default]")),
 
   make_option(c("-w", "--weak"), action = "store_true", default = FALSE,
     help = paste("When discretizing, estimate intermediary (weak) reaction",
@@ -224,7 +227,9 @@ option.parser <- OptionParser(option_list = list(
     help = paste("Exchange old by new metadata instead of appending",
       "[default: %default]")),
 
-  # y
+  make_option(c("-y", "--ynstrument"), type = "integer", default = -1,
+    help = "Use this as instrument ID (ignored if < 0) [default: %default]",
+    metavar = "NUM"),
 
   make_option(c("-z", "--discretize"), action = "store_true", default = FALSE,
     help = "Discretize after estimating curve parameters [default: %default]")
@@ -240,6 +245,8 @@ if (is.null(opt$include))
 if (!nzchar(opt$dir))
   opt$dir <- NULL
 opt$keys <- parse_key_list(opt$keys)
+if (opt$ynstrument < 0L)
+  opt$ynstrument <- NULL
 
 
 ################################################################################

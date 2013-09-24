@@ -375,8 +375,41 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 ################################################################################
 ################################################################################
 #
-# Helper functions for plate, substrate, well, and curve parameter names
+# Helper functions for package, plate, substrate, well, and curve parameter
+# names
 #
+
+
+#' Name of this package
+#'
+#' Generate character string describing this package, optionally with its
+#' version.
+#'
+#' @param version Logical scalar indicating whether or not to append version
+#'   information.
+#' @details The version might be wrong if this function is called after loading
+#'   the files with \code{source} instead of \code{library}. If it is
+#'   unavailable, it is silently ignored.
+#' @return One- or two-element character scalar.
+#' @keywords internal
+#'
+opm_string <- function(version = FALSE) {
+  x <- "opm"
+  if (!version)
+    return(x)
+  if (exists("opm.version", MEMOIZED))
+    y <- MEMOIZED$opm.version
+  else
+    MEMOIZED$opm.version <- y <- tryCatch(
+      as.character(packageVersion(x)), error = function(e) {
+        warning(sprintf("cannot find %s version", x))
+        UNKNOWN_VERSION
+      })
+  c(x, y)
+}
+
+
+################################################################################
 
 
 #' Check CAS number
@@ -465,14 +498,15 @@ map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 ################################################################################
 
 
-#' Translate well coordinates
+#' Translate well coordinates (or plate positions).
 #'
 #' Translate well coordinates to numeric indexes, or clean well indexes given
-#' as character vector, or Translate well names (which are basically their
+#' as character vector, or translate well names (which are basically their
 #' coordinates on the plate) to substrate names, given the name of the plate.
 #' (The user-level function for this is \code{\link{wells}}.)
 #'
-#' @param x Vector, formula or missing. Basically any \R object.
+#' @param x Vector, formula or missing. Basically any \R object. The cleaning
+#'   functions expect a character vector.
 #' @param names Character vector. Ignored unless \code{x} is a formula.
 #' @param wells Character vector of original well names (coordinates on the
 #'   plate).
@@ -512,6 +546,16 @@ clean_coords <- function(x) {
   if (any(bad <- !grepl("^[A-Z]\\d{2,2}$", x, FALSE, TRUE)))
     x[bad] <- do_clean(x[bad])
   x
+}
+
+#' @rdname well_index
+#'
+clean_plate_positions <- function(x) {
+  x <- lapply(strsplit(x, "\\W+", FALSE, TRUE), function(s) s[nzchar(s)])
+  n <- as.integer(vapply(x, `[[`, "", 1L))
+  x <- toupper(substr(vapply(x, `[`, "", 2L), 1L, 1L))
+  x[is.na(x)] <- "?" # Microstation positions are only integers
+  sprintf("%02i-%s", n, x)
 }
 
 #' @rdname well_index

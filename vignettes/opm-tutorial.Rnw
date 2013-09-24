@@ -809,6 +809,9 @@ This will result in a file ``example\_metadata.csv'' in the current working dire
 If other metadata have previously been collected, by default a pre-existing file with the same name will be reused.
 The pre-defined columns will be respected, novel rows be added, old metadata will be kept and identifiers for novel files will be included and their so far empty metadata columns are set to missing data (NA).
 You can also provide the location of another previously created metadata file with the \code{collect\_template()} argument \code{previous}.
+An ID for the OmniLog\textregistered \ instrument in use can also be added.
+This makes sense if plates from several such machines are analysed.
+A further option is to normalize the plate-position and setup-time entries; see the manual for details.
 
 The generated CSV file could then be edited using external software; for the purpose of this tutorial, we load it directly and manipulate it in \proglang{R}.
 To avoid the usual changes in data format and header of the table during the import a customized import function was implemented as a wrapper for \code{read.delim()}:

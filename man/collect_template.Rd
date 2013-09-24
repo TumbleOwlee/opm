@@ -53,6 +53,15 @@
   \acronym{CSV} comments contained in each file. Character
   vector passed to \code{\link{csv_data}}.}
 
+  \item{normalize}{Logical scalar also passed to
+  \code{\link{csv_data}}.}
+
+  \item{instrument}{Logical scalar or scalar convertible to
+  integer, or empty.  Ignored if empty. If logical and
+  \code{TRUE}, \code{\link{opm_opt}("machine.id")} is
+  inserted as additional column.  Otherwise,
+  \code{instrument} is used directly.}
+
   \item{include}{File inclusion pattern (or generator for a
   pattern). Passed to \code{\link{batch_collect}}.}
 
@@ -151,9 +160,11 @@ if (length(test.files) > 0) { # if the files are found
 
 # OPM method
 (x <- collect_template(vaas_1)) # => data frame, one row per plate
-stopifnot(identical(dim(x), c(1L, 3L)))
+stopifnot(dim(x) == c(1, 3))
+(x <- collect_template(vaas_1, instrument = TRUE))
+stopifnot(dim(x) == c(1, 4))
 (x <- collect_template(vaas_1, add.cols = c("A", "B")))
-stopifnot(identical(dim(x), c(1L, 5L))) # => data frame with more columns
+stopifnot(dim(x) == c(1, 5)) # => data frame with more columns
 # see include_metadata() for how to use this to add metadata information
 
 # OPMS method
@@ -225,11 +236,12 @@ stopifnot(identical(copy, vaas_4))
 \usage{
   \S4method{collect_template}{character}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL,
-    include = list(), ..., demo = FALSE) 
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, include = list(), ..., demo = FALSE) 
 
   \S4method{collect_template}{OPM}(object,
-    selection = opm_opt("csv.selection"), add.cols = NULL) 
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL) 
 
   \S4method{collect_template}{OPMS}(object, ...) 
 

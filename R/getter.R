@@ -553,7 +553,11 @@ setMethod("seq", OPMS, function(...) {
 #'   select all \acronym{CSV} entries that have no special meaning (it makes
 #'   sense to include only these in the metadata, see the examples).
 #'   Otherwise a shortcut for one of the more important \acronym{CSV} entries.
-#'
+#' @param normalize Logical scalar indicating whether plate position and setup
+#'   time entries (if selected) should be normalized. This should always work
+#'   for the plate positions, but for the setup times it depends on the values
+#'   for the \code{\link{opm_opt}} keys \sQuote{time.fmt} and
+#'   \sQuote{time.zone} (see also \code{\link{merge}}).
 #' @param ... Optional arguments passed between the methods.
 #' @return Named character vector (unnamed character scalar in the case of
 #'   \code{filename}, \code{setup_time} and \code{filename} and if \code{what}
@@ -573,23 +577,28 @@ setMethod("seq", OPMS, function(...) {
 #' @keywords attribute
 #' @examples
 #'
-#' # 'OPM' method
+#' ## 'OPM' method
 #'
-#' (x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
+#' (x <- csv_data(vaas_1, "Setup Time"))
 #' stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
+#' # compare this to 'what = "setup_time"'; here, names are kept
+#' (y <- csv_data(vaas_1, "Setup Time", normalize = TRUE))
+#' stopifnot(!is.na(y), y != x, names(y) == names(x))
 #'
 #' (x <- csv_data(vaas_1, what = "filename")) # one file name (of course)
 #' stopifnot(is.character(x), length(x) == 1L)
 #'
 #' (x <- csv_data(vaas_1, what = "position")) # single position (of course)
-#' stopifnot(identical(x, " 7-B"))
+#' (y <- csv_data(vaas_1, what = "position", normalize = TRUE))
+#' stopifnot(x == " 7-B", y == "07-B") # four characters when normalized
 #'
 #' (x <- csv_data(vaas_1, what = "setup_time")) # single setup time (of course)
-#' # WARNING: It is unlikely that all OmniLog output has this setup time format
-#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
-#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
+#' (y <- csv_data(vaas_1, what = "setup_time", normalize = TRUE))
+#' stopifnot(length(x) == 1, x != y) # converted to canonical data/time format
+#' # WARNING: It is unlikely that all OmniLog output has the setup-time format
+#' # defined by default in opm_opt("time.fmt")
 #'
-#' # 'OPMS' method
+#' ## 'OPMS' method
 #'
 #' (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 #' stopifnot(is.character(x), length(x) == 4)
@@ -601,10 +610,12 @@ setMethod("seq", OPMS, function(...) {
 #' stopifnot(is.character(x), length(x) == length(vaas_4))
 #'
 #' (x <- csv_data(vaas_4, what = "setup_time")) # one setup time per plate
-#' (parsed <- strptime(x, format = "%m/%d/%Y %I:%M:%S %p"))
-#' stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
+#' (y <- csv_data(vaas_4, what = "setup_time", normalize = TRUE))
+#' stopifnot(length(x) == 4, x != y) # converted to canonical data/time format
+#' # see the warning above
 #'
-#' # copying selected CSV data to the metadata
+#' ## Useful application: copying selected CSV data to the metadata
+#'
 #' x <- vaas_4
 #' # this appends the CSV data after conversion to a suitable data frame
 #' metadata(x, -1) <- to_metadata(csv_data(x, what = "other"))
@@ -613,24 +624,43 @@ setMethod("seq", OPMS, function(...) {
 #'
 setGeneric("csv_data", function(object, ...) standardGeneric("csv_data"))
 
-setMethod("csv_data", OPM, function(object, keys = character(),
-    strict = TRUE,
-    what = c("select", "filename", "setup_time", "position", "other")) {
-  case(match.arg(what),
-    select = NULL,
-    filename = return(object@csv_data[[CSV_NAMES[["FILE"]]]]),
-    setup_time = return(object@csv_data[[CSV_NAMES[["SETUP"]]]]),
-    position = return(object@csv_data[[CSV_NAMES[["POS"]]]]),
-    other = return(object@csv_data[!names(object@csv_data) %in% CSV_NAMES])
-  )
-  if (!length(keys) || all(is.na(keys) | !nzchar(keys)))
-    return(object@csv_data)
-  result <- object@csv_data[keys]
-  if (any(isna <- is.na(result)))
-    if (L(strict))
-      stop("could not find key ", keys[isna][1L])
-    else
-      names(result)[isna] <- keys[isna]
+setMethod("csv_data", OPM, function(object,
+    keys = character(), strict = TRUE,
+    what = c("select", "filename", "setup_time", "position", "other"),
+    normalize = FALSE) {
+  LL(strict, normalize)
+  result <- case(match.arg(what),
+      select = NULL,
+      filename = object@csv_data[[CSV_NAMES[["FILE"]]]],
+      setup_time = if (normalize)
+          as.character(parse_time(object@csv_data[[CSV_NAMES[["SETUP"]]]]))
+        else
+          object@csv_data[[CSV_NAMES[["SETUP"]]]],
+      position = if (normalize)
+          clean_plate_positions(object@csv_data[[CSV_NAMES[["POS"]]]])
+        else
+          object@csv_data[[CSV_NAMES[["POS"]]]],
+      other = object@csv_data[!names(object@csv_data) %in% CSV_NAMES]
+    )
+  if (length(result))
+    return(result)
+  if (!length(keys) || all(is.na(keys) | !nzchar(keys))) {
+    result <- object@csv_data
+  } else {
+    result <- object@csv_data[keys]
+    if (any(isna <- is.na(result)))
+      if (strict)
+        stop("could not find key ", keys[isna][1L])
+      else
+        names(result)[isna] <- keys[isna]
+  }
+  if (normalize) {
+    pos <- match(CSV_NAMES[c("SETUP", "POS")], names(result), 0L)
+    if (pos[1L])
+      result[pos[1L]] <- as.character(parse_time(result[pos[1L]]))
+    if (pos[2L])
+      result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
+  }
   result
 }, sealed = SEALED)
 

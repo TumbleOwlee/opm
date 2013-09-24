@@ -880,6 +880,11 @@ read_single_opm <- function(filename) {
 #'   added, initially containing \code{NA}.
 #' @param selection Elements to be extracted from the \acronym{CSV} comments
 #'   contained in each file. Character vector passed to \code{\link{csv_data}}.
+#' @param normalize Logical scalar also passed to \code{\link{csv_data}}.
+#' @param instrument Logical scalar or scalar convertible to integer, or empty.
+#'   Ignored if empty. If logical and \code{TRUE},
+#'   \code{\link{opm_opt}("machine.id")} is inserted as additional column.
+#'   Otherwise, \code{instrument} is used directly.
 #' @param include File inclusion pattern (or generator for a pattern). Passed to
 #'   \code{\link{batch_collect}}.
 #' @param ... Other arguments passed to \code{\link{batch_collect}}, or
@@ -959,9 +964,11 @@ read_single_opm <- function(filename) {
 #'
 #' # OPM method
 #' (x <- collect_template(vaas_1)) # => data frame, one row per plate
-#' stopifnot(identical(dim(x), c(1L, 3L)))
+#' stopifnot(dim(x) == c(1, 3))
+#' (x <- collect_template(vaas_1, instrument = TRUE))
+#' stopifnot(dim(x) == c(1, 4))
 #' (x <- collect_template(vaas_1, add.cols = c("A", "B")))
-#' stopifnot(identical(dim(x), c(1L, 5L))) # => data frame with more columns
+#' stopifnot(dim(x) == c(1, 5)) # => data frame with more columns
 #' # see include_metadata() for how to use this to add metadata information
 #'
 #' # OPMS method
@@ -1006,15 +1013,17 @@ setGeneric("collect_template",
 
 setMethod("collect_template", "character", function(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL,
-    include = list(), ..., demo = FALSE) {
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, include = list(), ..., demo = FALSE) {
   result <- batch_collect(object, fun = function(infile) {
     opm.data <- read_single_opm(infile)
     if (is.list(opm.data)) # possible in case of YAML input
       do.call(rbind, lapply(opm.data, FUN = collect_template,
-        selection = selection, add.cols = add.cols))
+        selection = selection, normalize = normalize, add.cols = add.cols,
+        instrument = instrument))
     else
-      collect_template(opm.data, selection = selection, add.cols = add.cols)
+      collect_template(opm.data, selection = selection, normalize = normalize,
+        add.cols = add.cols, instrument = instrument)
   }, include = include, ..., simplify = FALSE, demo = demo)
   if (demo)
     return(invisible(result))
@@ -1042,12 +1051,19 @@ setMethod("collect_template", "character", function(object, outfile = NULL,
 }, sealed = SEALED)
 
 setMethod("collect_template", OPM, function(object,
-    selection = opm_opt("csv.selection"), add.cols = NULL) {
-  result <- as.list(csv_data(object, selection))
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL) {
+  result <- as.list(csv_data(object, selection, normalize = normalize))
+  if (length(instrument)) {
+    if (!is.logical(L(instrument)))
+      result[[INSTRUMENT]] <- must(as.integer(instrument))
+    else if (instrument)
+      result[[INSTRUMENT]] <- L(get("machine.id", OPM_OPTIONS))
+  }
   result <- as.data.frame(result, stringsAsFactors = FALSE, optional = TRUE)
-  if (length(add.cols) > 0L) {
-    to.add <- matrix(nrow = nrow(result), ncol = length(add.cols),
-      dimnames = list(NULL, add.cols), data = NA_character_)
+  if (length(add.cols)) {
+    to.add <- matrix(NA_character_, nrow(result), length(add.cols), FALSE,
+      list(NULL, add.cols))
     result <- cbind(result, to.add, stringsAsFactors = FALSE)
   }
   result

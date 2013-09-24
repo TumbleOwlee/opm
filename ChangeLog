@@ -19,7 +19,8 @@
 
 - well() gets a 'use.names' argument
 - explicit length() method for OPM objects
-- csv_data() gets a 'what' argument
+- csv_data() gets 'what' and 'normalize' arguments
+- collect_template() gets 'normalize' and 'instrument' arguments
 - new edit() function for editing metadata by hand (with some restrictions)
 - new infix-operator methods for querying metadata
 - aggregated() and discretized() get a 'full' argument (and other ones that
@@ -39,7 +40,8 @@
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
-- opm_opt() gets a 'max.chars' entry
+- opm_opt() gets 'max.chars' and 'machine.id' entries
+- 'run_opm.R' gets additional command-line options '-y' and '-v'
 
 - streamlined the documentation (merged many entries) in the manual
 - substrate-information processing is now explained in a 2nd vignette

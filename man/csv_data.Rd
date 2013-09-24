@@ -26,6 +26,14 @@
   the examples).  Otherwise a shortcut for one of the more
   important \acronym{CSV} entries.}
 
+  \item{normalize}{Logical scalar indicating whether plate
+  position and setup time entries (if selected) should be
+  normalized. This should always work for the plate
+  positions, but for the setup times it depends on the
+  values for the \code{\link{opm_opt}} keys
+  \sQuote{time.fmt} and \sQuote{time.zone} (see also
+  \code{\link{merge}}).}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
@@ -53,23 +61,28 @@
   of methods, even manually with \code{\link{edit}}.
 }
 \examples{
-# 'OPM' method
+## 'OPM' method
 
-(x <- csv_data(vaas_1, "Setup Time")) # compare this to 'what = "setup_time"'
+(x <- csv_data(vaas_1, "Setup Time"))
 stopifnot(identical(x, c(`Setup Time` = "8/30/2010 1:53:08 PM")))
+# compare this to 'what = "setup_time"'; here, names are kept
+(y <- csv_data(vaas_1, "Setup Time", normalize = TRUE))
+stopifnot(!is.na(y), y != x, names(y) == names(x))
 
 (x <- csv_data(vaas_1, what = "filename")) # one file name (of course)
 stopifnot(is.character(x), length(x) == 1L)
 
 (x <- csv_data(vaas_1, what = "position")) # single position (of course)
-stopifnot(identical(x, " 7-B"))
+(y <- csv_data(vaas_1, what = "position", normalize = TRUE))
+stopifnot(x == " 7-B", y == "07-B") # four characters when normalized
 
 (x <- csv_data(vaas_1, what = "setup_time")) # single setup time (of course)
-# WARNING: It is unlikely that all OmniLog output has this setup time format
-(parsed <- strptime(x, format = "\%m/\%d/\%Y \%I:\%M:\%S \%p"))
-stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 1)
+(y <- csv_data(vaas_1, what = "setup_time", normalize = TRUE))
+stopifnot(length(x) == 1, x != y) # converted to canonical data/time format
+# WARNING: It is unlikely that all OmniLog output has the setup-time format
+# defined by default in opm_opt("time.fmt")
 
-# 'OPMS' method
+## 'OPMS' method
 
 (x <- csv_data(vaas_4, "Setup Time")) # one setup time per plate
 stopifnot(is.character(x), length(x) == 4)
@@ -81,10 +94,12 @@ stopifnot(is.character(x), length(x) == 4L)
 stopifnot(is.character(x), length(x) == length(vaas_4))
 
 (x <- csv_data(vaas_4, what = "setup_time")) # one setup time per plate
-(parsed <- strptime(x, format = "\%m/\%d/\%Y \%I:\%M:\%S \%p"))
-stopifnot(inherits(parsed, "POSIXlt"), length(parsed) == 4)
+(y <- csv_data(vaas_4, what = "setup_time", normalize = TRUE))
+stopifnot(length(x) == 4, x != y) # converted to canonical data/time format
+# see the warning above
 
-# copying selected CSV data to the metadata
+## Useful application: copying selected CSV data to the metadata
+
 x <- vaas_4
 # this appends the CSV data after conversion to a suitable data frame
 metadata(x, -1) <- to_metadata(csv_data(x, what = "other"))
@@ -123,9 +138,10 @@ stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
 \alias{setup_time-methods}
 \alias{setup_time,OPMS-method}
 \usage{
-  \S4method{csv_data}{OPM}(object, keys = character(),
-    strict = TRUE,
-    what = c("select", "filename", "setup_time", "position", "other")) 
+  \S4method{csv_data}{OPM}(object,
+    keys = character(), strict = TRUE,
+    what = c("select", "filename", "setup_time", "position", "other"),
+    normalize = FALSE) 
 
   \S4method{filename}{OPM}(object) 
 

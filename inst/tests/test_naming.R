@@ -12,6 +12,13 @@ if (!exists("TEST.DIR"))
 ################################################################################
 
 
+## opm_string
+## UNTESTED
+
+
+################################################################################
+
+
 ## opm_files
 ## UNTESTED
 
@@ -126,6 +133,16 @@ test_that("well names can be cleaned", {
   x <- c("  Z07\t", "D\n11\r", " A06  ", " B7")
   got <- clean_coords(x)
   expect_equal(got, c("Z07", "D11", "A06", "B07"))
+})
+
+
+## clean_plate_positions
+test_that("plate positions can be cleaned", {
+  x <- c("21-B", " 9-A", "1", "15", "8-B", NA)
+  got <- clean_plate_positions(x)
+  expect_true(all(grepl("^\\d{2}-[A-Z?]$", got[!is.na(x)], FALSE, TRUE)))
+  expect_warning(got.2 <- clean_plate_positions(got))
+  expect_equal(got, got.2)
 })
 
 

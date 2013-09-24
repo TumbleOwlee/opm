@@ -7,40 +7,6 @@
 #
 
 
-## NOTE: not an S4 method because trivial
-
-#' Name of this package
-#'
-#' Generate character string describing this package, optionally with its
-#' version.
-#'
-#' @param version Logical scalar indicating whether or not to append version
-#'   information.
-#' @details The version might be wrong if this function is called after loading
-#'   the files with \code{source} instead of \code{library}. If it is
-#'   unavailable, it is silently ignored.
-#' @return One- or two-element character scalar.
-#' @keywords internal
-#'
-opm_string <- function(version = FALSE) {
-  x <- "opm"
-  if (!version)
-    return(x)
-  if (exists("opm.version", MEMOIZED))
-    y <- MEMOIZED$opm.version
-  else
-    MEMOIZED$opm.version <- y <- tryCatch(
-      as.character(packageVersion(x)), error = function(e) {
-        warning(sprintf("cannot find %s version", x))
-        UNKNOWN_VERSION
-      })
-  c(x, y)
-}
-
-
-################################################################################
-
-
 #' Get data and memoize them
 #'
 #' Using queries and a function, search for information that is not already
@@ -561,16 +527,16 @@ setGeneric("parse_time",
 
 setMethod("parse_time", c("character", "missing"), function(object, format,
     tz = opm_opt("time.zone")) {
-  parse_time(object, format = opm_opt("time.fmt"), tz = tz)
+  parse_time(object, opm_opt("time.fmt"), tz)
 }, sealed = SEALED)
 
 setMethod("parse_time", c("character", "character"), function(object, format,
-    tz = "") {
+    tz = opm_opt("time.zone")) {
   if (!length(format))
     stop("need non-empty object 'format'")
-  result <- strptime(object, format[1L], tz = tz)
+  result <- strptime(object, format[1L], tz)
   for (fmt in format[-1L])
-    result[isna] <- strptime(object[isna <- is.na(result)], fmt, tz = tz)
+    result[isna] <- strptime(object[isna <- is.na(result)], fmt, tz)
   if (any(is.na(result)))
     warning("parsing time strings resulted in NA values")
   result
@@ -2085,6 +2051,10 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'     \item{key.join}{Used by \code{\link{metadata}} and some other functions
 #'       that must be in sync with it for joining metadata keys used in nested
 #'       queries (because the resulting object is \sQuote{flat}).}
+#'     \item{machine.id}{Integer scalar that can be used for identifying an
+#'       OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} instrument. Useful
+#'       for \code{\link{collect_template}} if several such machines are in
+#'       use.}
 #'     \item{max.chars}{Integer scalar used when abbreviating full substrate
 #'       names. See \code{\link{wells}} for an example.}
 #'     \item{min.mode}{Used when making discretization results uniform within a
@@ -2106,7 +2076,11 @@ setMethod("contains", c(OPM, OPM), function(object, other, ...) {
 #'       times}
 #'     \item{time.fmt}{Character vector indicating the time formats used for
 #'       parsing the \code{\link{setup_time}} entries (in the given order). Also
-#'       relevant for \code{\link{merge}} by default.}
+#'       relevant for \code{\link{merge}} by default. It is advisable to put
+#'       the more specific formats to the front because otherwise information
+#'       such as an \sQuote{AM} or \sQuote{PM} indication might be lost. A wrong
+#'       format might well match a given entry, causing \pkg{opm} to
+#'       misinterpret the time or even the date.}
 #'   }
 #'   For parameter names used by \pkg{opm} that cannot be modified by the user
 #'   see \code{\link{param_names}}.

@@ -11,10 +11,6 @@ context("Testing the helper functions of the OPM package")
 #
 
 
-## opm_string
-## UNTESTED
-
-
 ## get_and_remember
 test_that("we can memoize queries", {
   query <- letters[1L:5L]
