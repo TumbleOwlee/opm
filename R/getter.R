@@ -780,15 +780,37 @@ setMethod("has_disc", OPM, function(object) {
 #'   following arguments affect the column names of the resulting matrix.
 #' @param in.parens Logical scalar also passed to that function.
 #' @param max Numeric scalar also passed to that function.
+#' @param join Empty or character scalar. If empty, a list is returned; a nested
+#'   list in the case of \code{\link{OPMS}} objects with one sublist per plate.
+#'   Otherwise this nested list is converted to a matrix or data frame,
+#'   depending on the value of \code{join}. The following values yield a a
+#'   matrix in character mode and differ in how they would convert non-scalar
+#'   values in a matrix in list mode, if encountered: \describe{
+#'     \item{json}{Converts to a \acronym{JSON} string.}
+#'     \item{yaml}{Converts to a \acronym{YAML} string.}
+#'     \item{rcode}{Converts by deparsing, yielding an \R code string.}
+#'   }
+#'   All other values of \code{join} are passed as \code{what} argument to the
+#'   \code{collect} method form the \pkg{pkgutils} package, with
+#'   \code{dataframe} and \code{keep.unnamed} set to \code{TRUE} but
+#'   \code{stringsAsFactors} to \code{FALSE}.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @family getter-functions
+#' @details Note that the conversion of the settings list to a matrix or data
+#'   frame might not work for all combinations of \code{object} and \code{join},
+#'   mainly because the options entry can hold arbitrary content. For similar
+#'   conversions of the metadata, see the \code{\link{OPMX}} methods of
+#'   \code{\link{to_metadata}}.
+#'
 #' @return \code{aggregated} yields a numeric matrix of aggregated values
 #'   (a.k.a. the curve parameters). If bootstrapping was used, their CIs are
 #'   included. The columns represent the wells, the rows the estimated
 #'   parameters and their CIs.
 #'
-#'   \code{aggr_settings} returns a named list. See the examples for details.
+#'   \code{aggr_settings} returns a named list id \code{join} is empty. Other
+#'   values yield a matrix or data frame (or an error). See the description of
+#'   the argument above and the examples below for further details.
 #' @keywords attribute
 #' @examples
 #'
@@ -804,16 +826,22 @@ setMethod("has_disc", OPM, function(object) {
 #' # Now with lambda correction
 #' (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
 #' stopifnot(is.matrix(x), dim(x) == c(3, 96), !any(x < 0))
+#'
 #' # settings
 #' (x <- aggr_settings(vaas_1)) # yields named list
 #' stopifnot(is.list(x), !is.null(names(x)))
+#' (x <- aggr_settings(vaas_1, join = "json")) # yields a matrix
+#' stopifnot(is.matrix(x), is.character(x), nrow(x) == 1)
 #'
 #' # 'OPMS' methods
 #' summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
+#'
 #' # settings
 #' summary(x <- aggr_settings(vaas_4)) # list of named lists, one per plate
 #' stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
+#' (x <- aggr_settings(vaas_4, join = "yaml")) # matrix, one row per plate
+#' stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 #'
 setGeneric("aggregated", function(object, ...) standardGeneric("aggregated"))
 
@@ -875,8 +903,19 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
 setGeneric("aggr_settings",
   function(object, ...) standardGeneric("aggr_settings"))
 
-setMethod("aggr_settings", OPMA, function(object) {
-  object@aggr_settings
+setMethod("aggr_settings", OPMA, function(object, join = NULL) {
+  if (length(join))
+    list2matrix(list(object@aggr_settings), join)
+  else
+    object@aggr_settings
+}, sealed = SEALED)
+
+setMethod("aggr_settings", OPMS, function(object, join = NULL) {
+  result <- lapply(object@plates, slot, "aggr_settings")
+  if (length(join))
+    list2matrix(result, join)
+  else
+    result
 }, sealed = SEALED)
 
 
@@ -893,6 +932,8 @@ setMethod("aggr_settings", OPMA, function(object) {
 #'   following arguments affect the names of the resulting vector.
 #' @param in.parens Logical scalar also passed to that function.
 #' @param max Numeric scalar also passed to that function.
+#' @param join Empty or character scalar. Works like the eponymous argument of
+#'   \code{\link{aggr_settings}}; see there for details.
 #' @param ... Optional arguments passed between the methods.
 #' @export
 #' @family getter-functions
@@ -907,16 +948,24 @@ setMethod("aggr_settings", OPMA, function(object) {
 #' stopifnot(names(x) == colnames(aggregated(vaas_1)))
 #' (x <- discretized(vaas_1, full = TRUE))[1:3] # => with full names
 #' stopifnot(names(x) == colnames(aggregated(vaas_1, full = TRUE)))
+#'
+#' # settings
 #' (x <- disc_settings(vaas_1)) # => named list
 #' stopifnot(is.list(x), !is.null(names(x)))
+#' (x <- disc_settings(vaas_1, join = "yaml")) # matrix, one row per plate
+#' stopifnot(is.matrix(x), is.character(x), nrow(x) == 1)
 #'
 #' # 'OPMS' methods
 #' (x <- discretized(vaas_4))[, 1:3] # => logical matrix
 #' stopifnot(is.logical(x), is.matrix(x), ncol(x) == dim(x)[2L])
 #' stopifnot(colnames(x) == colnames(aggregated(vaas_1)))
+#'
+#' # settings
 #' summary(x <- disc_settings(vaas_4)) # => list of named lists, one per plate
 #' stopifnot(is.list(x), is.null(names(x)), length(x) == length(vaas_4))
 #' stopifnot(duplicated(x)[-1])
+#' (x <- disc_settings(vaas_4, join = "json")) # matrix, one row per plate
+#' stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 #'
 setGeneric("discretized", function(object, ...) standardGeneric("discretized"))
 
@@ -937,8 +986,19 @@ setMethod("discretized", OPMD, function(object, full = FALSE, in.parens = TRUE,
 setGeneric("disc_settings",
   function(object, ...) standardGeneric("disc_settings"))
 
-setMethod("disc_settings", OPMD, function(object) {
-  object@disc_settings
+setMethod("disc_settings", OPMD, function(object, join = NULL) {
+  if (length(join))
+    list2matrix(list(object@disc_settings), join)
+  else
+    object@disc_settings
+}, sealed = SEALED)
+
+setMethod("disc_settings", OPMS, function(object, join = NULL) {
+  result <- lapply(object@plates, slot, "disc_settings")
+  if (length(join))
+    list2matrix(result, join)
+  else
+    result
 }, sealed = SEALED)
 
 
@@ -1292,10 +1352,8 @@ setMethod("anyDuplicated", c(OPMS, "ANY"), function(x, incomparables, ...) {
 lapply(c(
     #+
     aggregated,
-    aggr_settings,
     csv_data,
     discretized,
-    disc_settings,
     has_aggr,
     has_disc,
     hours,

@@ -107,7 +107,8 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 
 #' Reduce an object
 #'
-#' Reduce a countable object to the most frequent element(s).
+#' Reduce a countable object to the most frequent element(s). Alternatively,
+#' join list to a matrix or data frame.
 #'
 #' @param x An \R object to which \code{table} can be applied. The matrix method
 #'   reduces the columns.
@@ -115,6 +116,8 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 #'   discarded.
 #' @param use.na Logical scalar indicating whether ambiguous results should be
 #'   converted to \code{NA}.
+#' @param how Character scalar indicating how to join the list. See
+#'   \code{\link{aggr_settings}} for the values.
 #' @return Vector of the same storage mode than \code{x}.
 #' @keywords internal
 #'
@@ -139,6 +142,33 @@ reduce_to_mode.default <- function(x, cutoff, use.na = TRUE) {
 #'
 reduce_to_mode.matrix <- function(x, cutoff, use.na = TRUE) {
   apply(x, 2L, reduce_to_mode.default, cutoff, use.na)
+}
+
+#' @rdname reduce_to_mode
+#' @keywords internal
+#'
+list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
+  unlist_matrix <- function(x, fun, ...) {
+    x <- do.call(rbind, x)
+    if (typeof(x) != "list")
+      return(x)
+    if (!missing(fun)) {
+      max.len <- apply(x, 2L, vapply, length, 0L)
+      if (is.matrix(max.len))
+        max.len <- apply(max.len, 2L, max)
+      for (i in which(max.len > 1L))
+        x[, i] <- vapply(X = x[, i], FUN = fun, FUN.VALUE = "", ...)
+    }
+    storage.mode(x) <- "character"
+    x
+  }
+  switch(how,
+    yaml = unlist_matrix(x, to_yaml, json = FALSE, listify = TRUE),
+    json = unlist_matrix(x, to_yaml, json = TRUE, listify = TRUE),
+    rcode = unlist_matrix(x),
+    collect(x = x, what = how, dataframe = TRUE, stringsAsFactors = FALSE,
+      optional = TRUE, keep.unnamed = TRUE, min.cov = 1L)
+  )
 }
 
 

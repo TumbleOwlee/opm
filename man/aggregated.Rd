@@ -38,6 +38,23 @@
 
   \item{max}{Numeric scalar also passed to that function.}
 
+  \item{join}{Empty or character scalar. If empty, a list
+  is returned; a nested list in the case of
+  \code{\link{OPMS}} objects with one sublist per plate.
+  Otherwise this nested list is converted to a matrix or
+  data frame, depending on the value of \code{join}. The
+  following values yield a a matrix in character mode and
+  differ in how they would convert non-scalar values in a
+  matrix in list mode, if encountered: \describe{
+  \item{json}{Converts to a \acronym{JSON} string.}
+  \item{yaml}{Converts to a \acronym{YAML} string.}
+  \item{rcode}{Converts by deparsing, yielding an \R code
+  string.} } All other values of \code{join} are passed as
+  \code{what} argument to the \code{collect} method form
+  the \pkg{pkgutils} package, with \code{dataframe} and
+  \code{keep.unnamed} set to \code{TRUE} but
+  \code{stringsAsFactors} to \code{FALSE}.}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
@@ -48,13 +65,23 @@
   the wells, the rows the estimated parameters and their
   CIs.
 
-  \code{aggr_settings} returns a named list. See the
-  examples for details.
+  \code{aggr_settings} returns a named list id \code{join}
+  is empty. Other values yield a matrix or data frame (or
+  an error). See the description of the argument above and
+  the examples below for further details.
 }
 \description{
   Get the aggregated kinetic data or the aggregation
   settings used. (See \code{\link{do_aggr}} for generating
   aggregated data.)
+}
+\details{
+  Note that the conversion of the settings list to a matrix
+  or data frame might not work for all combinations of
+  \code{object} and \code{join}, mainly because the options
+  entry can hold arbitrary content. For similar conversions
+  of the metadata, see the \code{\link{OPMX}} methods of
+  \code{\link{to_metadata}}.
 }
 \examples{
 # 'OPMA' methods
@@ -69,16 +96,22 @@ stopifnot(is.matrix(x), dim(x) == c(3, 96), any(x < 0))
 # Now with lambda correction
 (x <- aggregated(vaas_1, "lambda", trim = "full"))[, 1:3]
 stopifnot(is.matrix(x), dim(x) == c(3, 96), !any(x < 0))
+
 # settings
 (x <- aggr_settings(vaas_1)) # yields named list
 stopifnot(is.list(x), !is.null(names(x)))
+(x <- aggr_settings(vaas_1, join = "json")) # yields a matrix
+stopifnot(is.matrix(x), is.character(x), nrow(x) == 1)
 
 # 'OPMS' methods
 summary(x <- aggregated(vaas_4)) # => one matrix per OPM object
 stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.matrix))
+
 # settings
 summary(x <- aggr_settings(vaas_4)) # list of named lists, one per plate
 stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
+(x <- aggr_settings(vaas_4, join = "yaml")) # matrix, one row per plate
+stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 }
 \seealso{
   Other getter-functions: \code{\link{anyDuplicated}},
@@ -98,19 +131,18 @@ stopifnot(is.list(x), length(x) == length(vaas_4), sapply(x, is.list))
 \alias{aggregated-methods}
 \alias{aggregated,OPMA-method}
 \alias{aggr_settings,OPMA-method}
-\alias{aggregated-methods}
-\alias{aggregated,OPMS-method}
 \alias{aggr_settings-methods}
 \alias{aggr_settings,OPMS-method}
+\alias{aggregated,OPMS-method}
 \usage{
   \S4method{aggregated}{OPMA}(object, subset = NULL, ci = TRUE,
     trim = c("no", "full", "medium"), full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), ...) 
 
-  \S4method{aggr_settings}{OPMA}(object) 
+  \S4method{aggr_settings}{OPMA}(object, join = NULL) 
+
+  \S4method{aggr_settings}{OPMS}(object, join = NULL) 
 
   \S4method{aggregated}{OPMS}(object, ...) 
-
-  \S4method{aggr_settings}{OPMS}(object, ...) 
 
 }

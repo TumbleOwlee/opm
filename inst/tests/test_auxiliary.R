@@ -31,6 +31,10 @@ test_that("we can memoize queries", {
 ## UNTESTED
 
 
+## list2matrix
+## UNTESTED
+
+
 ## is_uniform
 test_that("uniformity can be checked", {
   x <- list(a = 1:2, b = 1:2, a = 1:2)
