@@ -195,12 +195,12 @@ setMethod("plates", "list", function(object) {
 #'
 setGeneric("oapply", function(object, fun, ...) standardGeneric("oapply"))
 
-setMethod("oapply", c(OPM, "function"), function(object, fun, ...,
+setMethod("oapply", OPM, function(object, fun, ...,
     simplify = TRUE) {
   fun(object, ...)
 }, sealed = SEALED)
 
-setMethod("oapply", c(OPMS, "function"), function(object, fun, ...,
+setMethod("oapply", OPMS, function(object, fun, ...,
     simplify = TRUE) {
   result <- sapply(X = object@plates, FUN = fun, ..., simplify = simplify,
     USE.NAMES = FALSE)
@@ -208,7 +208,6 @@ setMethod("oapply", c(OPMS, "function"), function(object, fun, ...,
     result <- try_opms.list(result)
   result
 }, sealed = SEALED)
-
 
 
 ################################################################################
@@ -1009,6 +1008,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
 #' @param exact Logical scalar. Passed to \code{\link{metadata}}.
 #' @param strict Logical scalar. Passed to \code{\link{metadata}}.
 #' @param full Logical scalar. Replace well coordinates by full names?
+#' @param numbers Logical scalar. Use numbers instead of well names? This is
+#'   \emph{not} recommended for must usages.
 #' @param ... Optional other arguments passed to \code{\link{wells}}, or from
 #'   the \code{\link{OPMS}} to the \code{\link{OPM}} method, or to the list and
 #'   matrix methods of \code{as.data.frame}.
@@ -1187,10 +1188,14 @@ setMethod("as.data.frame", "kegg_compound", function(x, row.names = NULL,
 setGeneric("flatten")
 
 setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
-    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE, ...) {
+    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
+    numbers = FALSE, ...) {
 
   # Convert to flat data frame
-  well.names <- wells(object, full = full, ...)
+  well.names <- if (L(numbers))
+      seq_len(ncol(object@measurements) - 1L)
+    else
+      well.names <- wells(object, full = full, ...)
   ## the home-brewn solution was much faster than reshape():
   # if (factors)
   #   well.names <- as.factor(well.names)

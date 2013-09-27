@@ -25,6 +25,26 @@
 \def\rcscom#1{\noindent\newline\vspace*{0.5cm}\colorbox{yellow}{\parbox{\textwidth}{#1}}\vspace*{0.5cm}}
 
 
+%% overwrite JSS definition of subsubsections
+%% e.g., use numbering
+\renewcommand{\jsssubsubsec}[2][default]{\vskip \preSskip%
+  \pdfbookmark[3]{#1}{Subsubsection.\thesubsubsection.#1}%
+  \refstepcounter{subsubsection}%
+  {\large \thesubsubsection. #2} \nopagebreak
+  \vskip \postSskip \nopagebreak}
+
+%% overwrite JSS definitions of code sections
+%% (make font smaller)
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl, fontsize=\small}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl, fontsize=\small}
+
+\DefineVerbatimEnvironment{Code}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{CodeInput}{Verbatim}{fontshape=sl, fontsize=\small}
+\DefineVerbatimEnvironment{CodeOutput}{Verbatim}{fontsize=\small}
+
+
+
 %% needed for CRAN checking
 %\VignetteIndexEntry{Substrate information in opm}
 

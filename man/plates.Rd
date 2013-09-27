@@ -82,9 +82,9 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 \alias{plates,OPMS-method}
 \alias{plates,OPM-method}
 \alias{plates,list-method}
-\alias{oapply,OPM,function-method}
+\alias{oapply,OPM-method}
 \alias{oapply-methods}
-\alias{oapply,OPMS,function-method}
+\alias{oapply,OPMS-method}
 \usage{
   \S4method{plates}{OPMS}(object) 
 
@@ -92,10 +92,10 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 
   \S4method{plates}{list}(object) 
 
-  \S4method{oapply}{OPM,function}(object, fun, ...,
+  \S4method{oapply}{OPM}(object, fun, ...,
     simplify = TRUE) 
 
-  \S4method{oapply}{OPMS,function}(object, fun, ...,
+  \S4method{oapply}{OPMS}(object, fun, ...,
     simplify = TRUE) 
 
 }

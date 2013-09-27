@@ -49,6 +49,10 @@
   \item{full}{Logical scalar. Replace well coordinates by
   full names?}
 
+  \item{numbers}{Logical scalar. Use numbers instead of
+  well names? This is \emph{not} recommended for must
+  usages.}
+
   \item{...}{Optional other arguments passed to
   \code{\link{wells}}, or from the \code{\link{OPMS}} to
   the \code{\link{OPM}} method, or to the list and matrix
@@ -183,7 +187,8 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
     optional = TRUE, ..., stringsAsFactors = FALSE) 
 
   \S4method{flatten}{OPM}(object, include = NULL, fixed = NULL,
-    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE, ...) 
+    factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
+    numbers = FALSE, ...) 
 
   \S4method{flatten}{OPMS}(object, include = NULL, fixed = list(),
     ...) 

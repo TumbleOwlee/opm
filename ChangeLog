@@ -27,6 +27,7 @@
 - new infix-operator methods for querying metadata
 - aggregated() and discretized() get a 'full' argument (and other ones that
   that affect the names or column names)
+- flatten() gets a 'numbers' argument
 - new spline-fitting facilities (see set_spline_options())
 - heat_map() gets an 'asqr' argument
 - new plate_type() method (for displaying the known plate types)
