@@ -14,9 +14,10 @@
 - substrate naming is slightly different in some cases (e.g., numbering is used
   for multiple substrates per plate)
 - stored discretization settings additionally indicate the discretized curve
-  parameter; older YAML files will be converted using opm_opt("curve.param"),
-  with a warning
+  parameter; older YAML files will be converted (with a warning) by inserting
+  opm_opt("curve.param")
 
+- read_single_opm() and the methods that depend on it are faster now
 - well() gets a 'use.names' argument
 - explicit length() method for OPM objects
 - csv_data() gets 'what' and 'normalize' arguments
@@ -41,8 +42,8 @@
   specifying the 'base' for the 'Dunnett' contrast type is also easier now;
   the returned objects in 'mcp' mode are of class 'opm_ghlt', which inherits
   from 'glht'; novel explicit 'alternative' and 'rhs' arguments
-- opm_opt() gets 'max.chars' and 'machine.id' entries
-- 'run_opm.R' gets additional command-line options '-y' and '-v'
+- opm_opt() gets 'max.chars', 'machine.id' and 'input.try.order' entries
+- 'run_opm.R' gets additional command-line options '-l', '-y' and '-v'
 
 - streamlined the documentation (merged many entries) in the manual
 - substrate-information processing is now explained in a 2nd vignette

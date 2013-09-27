@@ -83,7 +83,10 @@
   \code{\link{heat_map}}.} \item{html.attr}{Used by
   \code{\link{phylo_data}} for automatically creating
   \acronym{HTML} \sQuote{title} and \sQuote{class}
-  attributes.} \item{key.join}{Used by
+  attributes.} \item{input.try.order}{Integer vector
+  indicating the preferred order when trying to read
+  \acronym{CSV} files with \code{\link{read_single_opm}}.
+  See there for details.} \item{key.join}{Used by
   \code{\link{metadata}} and some other functions that must
   be in sync with it for joining metadata keys used in
   nested queries (because the resulting object is

@@ -177,7 +177,9 @@ option.parser <- OptionParser(option_list = list(
     help = "Keys for CSV => metadata, comma-separated list [default: <none>]",
     metavar = "KEYS"),
 
-  # l
+  make_option(c("-l", "--list"), type = "character", default = "1,2,3",
+    help = "List of numbers giving the 'input.try.order' [default: %default]",
+    metavar = "INDEXES"),
 
   make_option(c("-m", "--mdfile"), type = "character",
     default = NULL, metavar = "NAME",
@@ -247,6 +249,7 @@ if (!nzchar(opt$dir))
 opt$keys <- parse_key_list(opt$keys)
 if (opt$ynstrument < 0L)
   opt$ynstrument <- NULL
+opt$list <- must(as.integer(parse_key_list(opt$list)))
 
 
 ################################################################################
@@ -268,7 +271,7 @@ if (!length(input)) {
 library(opm, quietly = TRUE, warn.conflicts = FALSE)
 
 
-invisible(opm_opt(file.encoding = opt$encoding))
+invisible(opm_opt(file.encoding = opt$encoding, input.try.order = opt$list))
 
 
 case(match.arg(opt$result, names(RESULT)),

@@ -71,6 +71,8 @@ test_that("file patterns can be constructed", {
   default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
   expect_equal(default.pat, file_pattern())
   expect_equal("\\.csv$", file_pattern(type = "csv", compressed = FALSE))
+  expect_equal("\\.(ya?ml|json)$", file_pattern(type = "yorj",
+    compressed = FALSE))
 })
 
 
@@ -93,6 +95,9 @@ test_that("file patterns can be constructed", {
 ## UNTESTED
 
 ## read_opm_yaml
+## UNTESTED
+
+## FILE_NOT_CSV
 ## UNTESTED
 
 ## read_single_opm

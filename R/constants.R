@@ -153,6 +153,7 @@ OPM_OPTIONS$gen.iii <- ""
 OPM_OPTIONS$group.name <- "Group"
 OPM_OPTIONS$heatmap.colors <- topo.colors(120L)
 OPM_OPTIONS$html.class <- "section-level-%i"
+OPM_OPTIONS$input.try.order <- c(1L, 2L, 3L)
 OPM_OPTIONS$key.join <- "."
 OPM_OPTIONS$machine.id <- 1L
 OPM_OPTIONS$max.chars <- 100L

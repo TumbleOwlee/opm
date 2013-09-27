@@ -70,7 +70,8 @@ read_new_opm <- function(filename) {
   pos <- seq_len(pos - 1L)
   comments <- structure(c(filename, data[1L, pos]),
     names = c(CSV_NAMES[["FILE"]], colnames(data)[pos]))
-  data <- apply(data[, -pos], MARGIN = 2L, FUN = as.numeric)
+  data <- data[, -pos, drop = FALSE]
+  storage.mode(data) <- "double"
   if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
     comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
     data <- repair_oth(data)
@@ -82,37 +83,35 @@ read_new_opm <- function(filename) {
 #'
 read_old_opm <- function(filename) {
 
-  strip <- function(x) sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE),
-    FALSE, TRUE)
-
   prepare_comments <- function(x, filename) {
-    ok <- nzchar(n <- strip(vapply(x, `[[`, "", 1L)))
+    n <- sub("\\s+$", "", vapply(x, `[[`, "", 1L), FALSE, TRUE)
+    n <- n[ok <- nzchar(n)]
     n[n == "Set up Time"] <- CSV_NAMES[["SETUP"]]
-    x <- strip(vapply(lapply(x, `[`, -1L), paste0, "", collapse = ","))
-    structure(c(filename, x[ok]), names = c(CSV_NAMES[["FILE"]], n[ok]))
+    x <- vapply(lapply(x[ok], `[`, -1L), paste0, "", collapse = ",")
+    x <- sub("^\\s+", "", x, FALSE, TRUE)
+    structure(c(filename, x), names = c(CSV_NAMES[["FILE"]], n))
   }
 
   con <- file(description = filename, encoding = opm_opt("file.encoding"))
   data <- readLines(con = con, warn = FALSE)
   close(con)
-  data <- strsplit(data, ",", fixed = TRUE)
+  data <- strsplit(data, ",", TRUE) # fixed-string splitting most efficient
   data <- data[vapply(data, length, 0L) > 0L]
 
   # determine position of first field of data header, then split lines into
   # comments and data fields accordingly
-  pos <- which(strip(vapply(data, `[[`, "", 1L)) == HOUR)
-  if (length(pos) != 1L)
+  pos <- sub("^\\s+", "", vapply(data, `[[`, "", 1L), FALSE, TRUE)
+  if (length(pos <- which(pos == HOUR)) != 1L)
     stop("uninterpretable header (maybe because there is not 1 plate per file)")
   pos <- seq_len(pos - 1L)
   comments <- prepare_comments(data[pos], filename)
 
-  data <- strip(unlist(data[-pos]))
-  data <- data[nzchar(data)]
+  data <- grep("\\S", unlist(data[-pos]), FALSE, TRUE, TRUE)
   ncol <- 97L
   if (length(data) %% ncol != 0L)
     stop("wrong number of fields")
   data <- matrix(as.numeric(data[-seq(ncol)]), ncol = ncol, byrow = TRUE,
-    dimnames = list(NULL, data[seq(ncol)]))
+    dimnames = list(NULL, sub("^\\s+", "", data[seq(ncol)], FALSE, TRUE)))
 
   # Repair OTH (this affects both data and comments)
   if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
@@ -138,10 +137,10 @@ read_opm_yaml <- function(filename) {
 read_microstation_opm <- function(filename) {
   x <- read.table(filename, sep = ",", comment.char = "", header = TRUE,
     check.names = FALSE, stringsAsFactors = FALSE, quote = "",
-    fileEncoding = opm_opt("file.encoding"))
+    fileEncoding = opm_opt("file.encoding"), strip.white = TRUE)
   names(x)[!nzchar(names(x))] <- "N.N."
   pat <- ": Dual Wavelength O\\.D\\.$"
-  wells <- grep(pat, names(x), FALSE, TRUE, value = TRUE)
+  wells <- grep(pat, names(x), FALSE, TRUE, TRUE)
   if (length(wells) != 96L)
     stop("expected 96 column names ending in ': Dual Wavelength O.D.'")
   wanted <- c("Plate Type", "Created", "Plate Number", "Incubation Time", wells)
@@ -151,11 +150,10 @@ read_microstation_opm <- function(filename) {
   names(x) <- c(CSV_NAMES[c("FILE", "PLATE_TYPE", "SETUP", "POS")], HOUR,
     clean_coords(sub(pat, "", wells, FALSE, TRUE)))
   pos <- seq_len(4L)
-  x <- to_opm_list.list(lapply(seq_len(nrow(x)), function(i) {
-    list(csv_data = as.list(x[i, pos, drop = FALSE]),
-      metadata = y[i, , drop = TRUE],
-      measurements = as.list(x[i, -pos, drop = FALSE]))
-  }), FALSE, FALSE, FALSE)
+  x <- to_opm_list.list(lapply(seq_len(nrow(x)), function(i) list(
+    csv_data = as.list(x[i, pos, drop = FALSE]),
+    measurements = as.list(x[i, -pos, drop = FALSE]),
+    metadata = y[i, , drop = TRUE])), FALSE, FALSE, FALSE)
   if (!length(x))
     stop("MicroStation CSV file contained no interpretable data")
   x
@@ -345,8 +343,10 @@ process_io <- function(files, io.fun, fun.args = list(),
 #'   then used for the replacement of old file extensions with new ones.
 #'
 #' @param type Character scalar indicating the file types to be matched by
-#'   extension. Alternaticely, directly the extension or extensions, or a list
-#'   of file names (not \code{NA}).
+#'   extension. For historical reasons, \sQuote{both} means either \acronym{CSV}
+#'   or \acronym{YAML} \emph{or} \acronym{JSON}. \sQuote{yorj} means either
+#'   \acronym{YAML} or \acronym{JSON}. Alternaticely, directly the extension or
+#'   extensions, or a list of file names (not \code{NA}).
 #' @param compressed Logical scalar. Shall compressed files also be matched?
 #'   This affects the returned pattern as well as the pattern used for
 #'   extracting file extensions from complete file names (if \code{literally}
@@ -574,7 +574,7 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 #' @export
 #'
 file_pattern <- function(
-    type = c("both", "csv", "yaml", "json", "any", "empty"),
+    type = c("both", "csv", "yaml", "json", "yorj", "any", "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs")) {
   make_pat <- function(x, compressed, enclose = "\\.%s$") {
     if (compressed)
@@ -598,7 +598,8 @@ file_pattern <- function(
       sprintf("(%s)", paste0(type, collapse = "|")))
   } else
     case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
-      yaml = "ya?ml", json = "json", any = "[^.]+", empty = "")
+      yaml = "ya?ml", json = "json", yorj = "(ya?ml|json)", any = "[^.]+",
+      empty = "")
   make_pat(result, compressed)
 }
 
@@ -646,8 +647,8 @@ glob_to_regex.factor <- function(object) {
 #' \pkg{opm} \acronym{YAML} (including \acronym{JSON}) format.
 #' MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)} \acronym{CSV} are
 #' also understood, as well as files compressed  using \command{gzip},
-#' \command{bzip2}, \command{lzma} or \command{xz} are also understood (but may
-#' be excluded using \code{include} and/or \code{exclude}).
+#' \command{bzip2}, \command{lzma} or \command{xz}. (Files can be specifically
+#' excluded using \code{include} and/or \code{exclude}).
 #'
 #' @param names Character vector with names of files in one of the formats
 #'   accepted by \code{\link{read_single_opm}}, or names of directories
@@ -726,6 +727,25 @@ glob_to_regex.factor <- function(object) {
 #'   type, see \code{\link{plate_type}}, and consider the plate-type selection
 #'   options of \code{\link{opms}}.
 #'
+#'   The order in which it is tried to read distinct formats of \acronym{CSV}
+#'   files can be modified using the \sQuote{input.try.order} key of
+#'   \code{\link{opm_opt}}. The value is an integer vector whose elements have
+#'   the following meaning:
+#'   \enumerate{
+#'     \item New-style OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+#'       \acronym{CSV}.
+#'     \item Old-style OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+#'       \acronym{CSV}.
+#'     \item MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+#'       \acronym{CSV}.
+#'   }
+#'   For instance, \code{opm_opt(input.try.order = 2:1} would change the order
+#'   in which OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} formats are
+#'   tried and deselect MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+#'   files entirely. Negative indixes can be used, but non-negative values not
+#'   within the range listed above will result in an error. If it known in
+#'   advance which formats are (not) to be expected, subsetting or just
+#'   changing the order can be used to accelerate data input.
 #' @export
 #' @family io-functions
 #' @references \url{http://www.yaml.org/}
@@ -809,24 +829,31 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
   )
 }
 
+
+FILE_NOT_CSV <- file_pattern(type = "yorj", compressed = TRUE)
+
+
 #' @rdname read_opm
 #' @export
 #'
 read_single_opm <- function(filename) {
   if (!file.exists(filename <- as.character(L(filename))))
     stop(sprintf("file '%s' does not exist", filename))
-  errs <- list()
   routines <- list(`New CSV` = read_new_opm, `Old CSV` = read_old_opm,
-    YAML = read_opm_yaml, `MicroStation CSV` = read_microstation_opm)
-  for (name in names(routines)) {
-    result <- tryCatch(routines[[name]](filename), error = conditionMessage)
+    `MicroStation CSV` = read_microstation_opm)
+  routines <- if (grepl(FILE_NOT_CSV, filename, TRUE, TRUE))
+      c(YAML = read_opm_yaml, routines)
+    else
+      c(routines[get("input.try.order", OPM_OPTIONS)], YAML = read_opm_yaml)
+  errs <- character(length(routines))
+  for (i in seq_along(routines)) {
+    result <- tryCatch(routines[[i]](filename), error = conditionMessage)
     if (!is.character(result))
       return(result)
-    errs[[name]] <- result
+    errs[i] <- result
   }
-  names(errs) <- paste(names(errs), "error")
-  errs$Filename <- filename
-  stop(listing(errs, header = "Unknown file format:"))
+  names(errs) <- paste(names(routines), "error")
+  stop(listing(c(errs, Filename = filename), header = "Unknown file format:"))
 }
 
 

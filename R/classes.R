@@ -169,10 +169,11 @@ setClassUnion(FOE, c("formula", "expression"))
 #' replicates, but \strong{must} correspond to the same plate type and
 #' \strong{must} contain the same wells.
 #'
-#' As a rule, OPMS has the same methods as the \acronym{OPM} class, but adapted
-#' to a collection of more than one \acronym{OPM} object. Also, \acronym{OPMS}
-#' can hold \acronym{OPMD} and \acronym{OPMA} as well as \acronym{OPM} objects,
-#' even though this is not indicated for all its methods in this manual.
+#' As a rule, \acronym{OPMS} has the same methods as the \acronym{OPM} class,
+#' but adapted to a collection of more than one \acronym{OPM} object. Also,
+#' \acronym{OPMS} can hold \acronym{OPMD} and \acronym{OPMA} as well as
+#' \acronym{OPM} objects, even though this is not indicated for all its methods
+#' in this manual.
 #'
 #' @examples
 #' # conversion of a list to an OPM object is tolerant against re-orderings

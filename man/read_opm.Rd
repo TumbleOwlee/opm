@@ -81,8 +81,8 @@
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
   \acronym{CSV} are also understood, as well as files
   compressed using \command{gzip}, \command{bzip2},
-  \command{lzma} or \command{xz} are also understood (but
-  may be excluded using \code{include} and/or
+  \command{lzma} or \command{xz}. (Files can be
+  specifically excluded using \code{include} and/or
   \code{exclude}).
 }
 \details{
@@ -117,6 +117,28 @@
   according to the plate type, see
   \code{\link{plate_type}}, and consider the plate-type
   selection options of \code{\link{opms}}.
+
+  The order in which it is tried to read distinct formats
+  of \acronym{CSV} files can be modified using the
+  \sQuote{input.try.order} key of \code{\link{opm_opt}}.
+  The value is an integer vector whose elements have the
+  following meaning: \enumerate{ \item New-style
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{CSV}.  \item Old-style
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{CSV}.  \item
+  MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+  \acronym{CSV}.  } For instance,
+  \code{opm_opt(input.try.order = 2:1} would change the
+  order in which
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  formats are tried and deselect
+  MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
+  files entirely. Negative indixes can be used, but
+  non-negative values not within the range listed above
+  will result in an error. If it known in advance which
+  formats are (not) to be expected, subsetting or just
+  changing the order can be used to accelerate data input.
 }
 \examples{
 test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,

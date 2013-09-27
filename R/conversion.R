@@ -193,13 +193,15 @@ setMethod("plates", "list", function(object) {
 #' @rdname plates
 #' @export
 #'
-setGeneric("oapply", function(object, ...) standardGeneric("oapply"))
+setGeneric("oapply", function(object, fun, ...) standardGeneric("oapply"))
 
-setMethod("oapply", OPM, function(object, fun, ..., simplify = TRUE) {
+setMethod("oapply", c(OPM, "function"), function(object, fun, ...,
+    simplify = TRUE) {
   fun(object, ...)
 }, sealed = SEALED)
 
-setMethod("oapply", OPMS, function(object, fun, ..., simplify = TRUE) {
+setMethod("oapply", c(OPMS, "function"), function(object, fun, ...,
+    simplify = TRUE) {
   result <- sapply(X = object@plates, FUN = fun, ..., simplify = simplify,
     USE.NAMES = FALSE)
   if (simplify && is.list(result))
