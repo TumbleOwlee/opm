@@ -28,8 +28,7 @@ Suggests:
     opmdata (>= 0.4-0),
     testthat,
     multcomp,
-    KEGGREST,
-    pathview
+    KEGGREST
 Description: Tools for analysing OmniLog(R) and Microstation Phenotype
     Microarray (PM) data as produced by the devices distributed by
     BIOLOG Inc., including plotting, aggregating (estimating curve
