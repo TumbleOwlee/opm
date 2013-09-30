@@ -67,7 +67,7 @@
 #' @keywords methods classes
 #'
 setClass(WMD,
-  representation = representation(metadata = "list"),
+  slots = c(metadata = "list"),
   contains = "VIRTUAL",
   sealed = SEALED
 )
@@ -211,8 +211,7 @@ setClassUnion(FOE, c("formula", "expression"))
 #' @keywords methods classes
 #'
 setClass(OPM,
-  representation = representation(measurements = "matrix",
-    csv_data = "character"),
+  slots = c(measurements = "matrix", csv_data = "character"),
   contains = WMD,
   validity = function(object) {
     errs <- c(opm_problems(object@measurements), opm_problems(object@csv_data))
@@ -231,8 +230,7 @@ setClass(OPM,
 #' @export
 #'
 setClass(OPMA,
-  representation = representation(aggregated = "matrix",
-    aggr_settings = "list"),
+  slots = c(aggregated = "matrix", aggr_settings = "list"),
   contains = OPM,
   validity = function(object) {
     settings <- object@aggr_settings
@@ -255,8 +253,7 @@ setClass(OPMA,
 #' @export
 #'
 setClass(OPMD,
-  representation = representation(discretized = "logical",
-    disc_settings = "list"),
+  slots = c(discretized = "logical", disc_settings = "list"),
   contains = OPMA,
   validity = function(object) {
     errs <- opmd_problems(object@disc_settings)
@@ -277,7 +274,7 @@ setClass(OPMD,
 #' @aliases OPMS-class
 #'
 setClass(OPMS,
-  representation = representation(plates = "list"),
+  slots = c(plates = "list"),
   validity = function(object) {
     if (length(errs <- opms_problems(object@plates)))
       errs
