@@ -77,18 +77,18 @@
 % Write suitable abstract, avoid ALL redundancies.
 % This one is just a copy from the main tutorial -- why?
 
-The OmniLog\textregistered \ Phenotype Microarray system is able to monitor simultaneously, on a longitudinal time scale, the phenotypic reaction of single-celled organisms such as bacteria, fungi, and animal cell cultures to up to 2,000 environmental challenges spotted on sets of 96-well microtiter plates.
-The phenotypic reactions are recorded as respiration kinetics with a shape comparable to growth curves.
-Tools for storing the curve kinetics, aggregating the curve parameters, recording associated metadata of organisms and experimental settings as well as methods for analysing graphically and statistically these highly complex data sets are increasingly in demand.
+%The OmniLog\textregistered \ Phenotype Microarray system is able to monitor simultaneously, on a longitudinal time scale, the phenotypic reaction of single-celled organisms such as bacteria, fungi, and animal cell cultures to up to 2,000 environmental challenges spotted on sets of 96-well microtiter plates.
+%The phenotypic reactions are recorded as respiration kinetics with a shape comparable to growth curves.
+%Tools for storing the curve kinetics, aggregating the curve parameters, recording associated metadata of organisms and experimental settings as well as methods for analysing graphically and statistically these highly complex data sets are increasingly in demand.
+%
+%The \pkg{opm} \proglang{R} package facilitates management, visualization and statistical analysis of Phenotype Microarray data.
+%Raw measurements can be easily input into \proglang{R}, combined with relevant meta-information and accordingly analysed.
+%The kinetics can be aggregated by estimating curve parameters using several methods.
+%Containers of \pkg{opm} data can easily be queried for and subset by using the integrated metadata and other information.
+%Using \href{http://www.genome.jp/kegg/}{KEGG}, a database resource for understanding high-level functions and utilities of the biological system, \pkg{opm} offers functionality to map and render PM data on relevant pathway graphs in customized manner.
+%All methods are exemplified using real-world data sets that are part of the \pkg{opm} \proglang{R} package or are included in the accompanying data package \pkg{opmdata}.
 
-The \pkg{opm} \proglang{R} package facilitates management, visualization and statistical analysis of Phenotype Microarray data.
-Raw measurements can be easily input into \proglang{R}, combined with relevant meta-information and accordingly analysed.
-The kinetics can be aggregated by estimating curve parameters using several methods.
-Containers of \pkg{opm} data can easily be queried for and subset by using the integrated metadata and other information.
-Using \href{http://www.genome.jp/kegg/}{KEGG}, a database resource for understanding high-level functions and utilities of the biological system, \pkg{opm} offers functionality to map and render PM data on relevant pathway graphs in customized manner.
-All methods are exemplified using real-world data sets that are part of the \pkg{opm} \proglang{R} package or are included in the accompanying data package \pkg{opmdata}.
-
-This is the tutorial of \pkg{opm-substrates} in the version of \today{}.
+This is the substrate-information tutorial of \pkg{opm} in the version of \today{}.
 
 }
 
@@ -125,18 +125,19 @@ This is the tutorial of \pkg{opm-substrates} in the version of \today{}.
 %\newpage
 
 
+\section[Introduction]{Introduction}\label{introduction}
 
+A detailed description of the OmniLog\textregistered \ Phenotype MicroArray (PM) system, its measuring procedure and data characteristics are found in the vignette ``\pkg{opm}: An R Package for Analysing OmniLog\textregistered \ Phenotype MicroArray Data'' (called ``main tutorial'' in the following).
+The description of the methods below presupposes that the user is familiar with the usage of \pkg{opm} and has studied the main tutorial as well as the entries of the \pkg{opm} manual relevant to her or his research.
 
-\section[Scientific Introduction]{Scientific Introduction}\label{introduction}
-A detailed description of the Penotype MicroArray (PM) system, its measuring procedure and data characteristics can be found in the vignette ``\pkg{opm}: An R Package for Analysing OmniLog\textregistered \ Phenotype MicroArray Data'' (main tutorial). The analysis described here implies that the user is familiar with the functionality of \pkg{opm} and has read and understood the main tutorial. 
+In addition to visual inspection or statistical comparative analyses of Phenotype Microarray data as described in the main manual, users might be interested in specific information on the substrates used in PM assays.
+The \pkg{opm} package offers a variety of additional data on PM substrates.
+In conjunction with other packages, it is possible to visualize PM results directly in pathway maps as delivered by the KEGG database.
+This can be done directly for the estimated curve parameters from one to several plates.
+But visualization of the results of an \proglang{opm\_mcp} analysis is also possible, which offers more (statistically interesting) opportunities for making sense of the PM data in the context of pathways.
+The \code{annotated} methods described in detail below also generates datasets that can be used for analyses of interdependencies of substrate features and PM results.
+This can be used to determine which pathways are actually of interest before proceeding with the visualization of the PM results within these pathways.
 
-Beside visual inspection of data or statistical comparative analyses of Phenotype Microarray data, users might be interested in mapping the data on pathway maps for biological interpretation of higher-level systemic functions.
-
-This vignette focusses on this mapping and integrative data analysis methods.
-
-% welche funktionalitaeten ueberhaupt da sind -> grafik fuer workflow?
-
-In order to apply the functionality for integrative data analysis the user has to provide an OPMA or OPMS object containing the aggregated data or results from a multiple comparison using \proglang{opm\_mcp}. The corresponding workflow to assemble those objects is described in detail in the main tutorial. 
 
 \section[Preparation]{Preparation}\label{preparation}
 
@@ -149,7 +150,6 @@ options(useFancyQuotes = FALSE)
 library("methods")
 @
 
-% preparation to make the annotated vector of PM-data available
 Before starting, both the \pkg{opm} package and \pkg{opmdata}, containing example data introduced and explained in detail in the main tutorial, should be loaded into an \proglang{R} session as follows:
 
 <<label=load-library>>=
@@ -157,94 +157,25 @@ library("opm")
 data(vaas_et_al, package = "opmdata")
 @
 
-here: prepare an OPMS-object containing also results from multiple comparisons using \proglang{opm\_mcp}.
+% maybe special section for it, but no redundancies relative to the main tutorial!!!
+
 
 \section[Available plate information]{Available plate information}\label{plateInfo}
 
-%TODO
-% remove table, replace by brief explanation of call to plate_type()
-% insert the loading of opm beforehand
-% maybe special section for it, but no redundancies relative to the main tutorial!!!
+Currently substrate layouts of various plates are available within \pkg{opm}.
+An overview about the plate types available in the respective version of \pkg{opm} is obtained by entering
 
-Currently substrate-layouts of 44 different plates are available within \pkg{opm} and listed in Table~\ref{tab:platesTable}. An overview about currently available plates types can be viewed by
-
-<<label=plate-type>>=
+<<label=plate-types, results=hide>>=
 plate_type(full = TRUE)
 @
 
-\begin{table}
-\centering
-	\begin{tabular}{| l | l |}
-\hline
-\textbf{Plate}													& \textbf{Group}\\
-\hline
-\hline
-PM01 (Carbon Sources) 									& C utilization\\
-PM02 (Carbon Sources) 									& C utilization\\
-\hline
-PM04 (Phosphorus and Sulfur Sources) 					& P/S utilization\\
-\hline
-PM05 (Nutrient Supplements) 								& C / N utilization\\
-\hline
-PM03 (Nitrogen Sources) 									& N utilization\\
-PM06 (Peptide Nitrogen Sources) 							& N utilization\\
-PM07 (Peptide Nitrogen Sources) 							& N utilization\\
-PM08 (Peptide Nitrogen Sources) 							& N utilization\\
-\hline
-PM09 (Osmolytes) 										& Osmotic sensitivity\\
-\hline
-PM10 (pH) 												& pH sensitivity\\
-\hline
-PM11 (Chemicals) 										& Chemical sensitivity\\
-PM12 (Chemicals) 										& Chemical sensitivity\\
-PM13 (Chemicals) 										& Chemical sensitivity\\
-PM14 (Chemicals) 										& Chemical sensitivity\\
-PM15 (Chemicals) 										& Chemical sensitivity\\
-PM16 (Chemicals) 										& Chemical sensitivity\\
-PM17 (Chemicals) 										& Chemical sensitivity\\
-PM18 (Chemicals) 										& Chemical sensitivity\\
-PM19 (Chemicals)	 										& Chemical sensitivity\\
-PM20 (Chemicals) 										& Chemical sensitivity\\
-PM21 (Chemical Sensitivity) 								& Chemical sensitivity\\
-PM22 (Chemical Sensitivity) 								& Chemical sensitivity\\
-PM23 (Chemical Sensitivity) 								& Chemical sensitivity\\
-PM24 (Chemical Sensitivity) 								& Chemical sensitivity\\
-PM25 (Chemical Sensitivity) 								& Chemical sensitivity\\
-\hline
-Gen III (Identification)									& Identification\\
-ECO (Microbial Community Analysis) 						& Identification\\
-\hline
-PM-M TOX01 (Chemical Sensitivity)						& C utilization mammals\\
-\hline
-PM-M01 (Carbon and Energy Sources) 						& C / N utilization mammals\\
-PM-M02 (Carbon and Energy Sources / Nitrogen Sources) 	& C / N utilization mammals\\
-PM-M03 (Carbon and Energy Sources / Nitrogen Sources) 	& C / N utilization mammals\\
-PM-M04 (Carbon and Energy Sources / Nitrogen Sources) 	& C / N utilization mammals\\
-\hline
-PM-M05 (Ions) 											& Chemical sensitivity mammals\\
-PM-M06 (Hormones \& Metabolic Effectors) 				& Chemical sensitivity mammals\\
-PM-M07 (Hormones \& Metabolic Effectors) 				& Chemical sensitivity mammals\\
-PM-M08 (Hormones \& Metabolic Effectors) 				& Chemical sensitivity mammals\\
-PM-M11 (Anti-Cancer Agents) 								& Chemical sensitivity mammals\\
-PM-M12 (Anti-Cancer Agents) 								& Chemical sensitivity mammals\\
-PM-M13 (Anti-Cancer Agents) 								& Chemical sensitivity mammals\\
-PM-M14 (Anti-Cancer Agents) 								& Chemical sensitivity mammals\\
-\hline
-FF (Fungi Identification) 								& Identification fungi\\
-SF-P2 (Sporulating and Filamentous P2) 					& Identification fungi\\
-SF-N2 (Sporulating and Filamentous N2) 					& Identification fungi\\
-\hline
-	\end{tabular}  
-	\caption{Currently available plate-layouts and substrate information in \pkg{opm}}
-	\label{tab:platesTable}
-\end{table}
+These not only include OmniLog\textregistered \ plates; see the manual and the main tutorial for further details.
+Using other values for \code{full}, or additional arguments, distinct spelling variants can be obtained.
 
-explain available plates/substrate-layout, also ID plates can be run in PM-mode \citep{vaas} accessing substrate information is explained in Section~\ref{application substrates}
-%% later the substrate grouping can be added
 
 \section[Accessing substrate information]{Accessing substrate information}\label{application substrates}
 
-The \pkg{opm} package contains a number of functions suitable for accessing precomputed information on the substrates of wells and plates.
+The \pkg{opm} package contains a number of functions suitable for accessing precomputed information on the substrates within certain wells and entire plates.
 In the manual and help pages these functions are contained in the family ``naming-functions'' with according cross-references.
 One usually would start a search by determining the exact spelling of an internally used name with \code{find\_substrate()}:
 
@@ -272,6 +203,9 @@ substrates
 
 This fetches all terms that end in either query character string, and does so case-insensitively.
 Advanced users can apply the much more powerful ``regex'' and ``approx'' search modes; see the manual for details, entry \code{?find\_substrate}.
+
+Note that \pkg{opm} appends a concentration (or just repetition) indicator as a number after a hash sign (``\#'') to the substrate names wherever necessary.
+Thus a wildcard at the end of a name might often by the most useful search pattern.
 
 Once the internally used names (which are not guaranteed to be stable between distinct \pkg{opm} releases) have been found, information on the substrates can be queried such as their occurrences and positions on plates:
 
@@ -302,117 +236,122 @@ Another use of \code{substrate\_info()} is to convert substrate names to lower c
 See the manual for further details, help page \code{?substrate\_info}.
 
 
-\section[Visualisation by integration in pathway maps]{Visualisation by integration in pathway maps}\label{vis-pathway}
-
-explain pathway based data integration and visualization; map and render user data on relevant pathway graphs
-
-\href{http://www.genome.jp/kegg/}{KEGG} is a database resource for understanding high-level functions and utilities of the biological system, such as the cell, the organism and the ecosystem, from molecular-level information, especially large-scale molecular datasets generated by genome sequencing and other high-throughput experimental technologies.
-Pathway Mapping
-KEGG PATHWAY mapping is the process to map molecular datasets, especially large-scale datasets in genomics, transcriptomics, proteomics, and metabolomics, to the KEGG pathway maps for biological interpretaion of higher-level systemic functions. 
-% erklaeren, wozu man die daten nutzen kann, wenn man grafik und gruppenvergleiche gemacht hat
-
-package \pkg{pathview} \citep{Luo2013}:
-All users need is to supply their gene or compound data and specify the target pathway. 
-Pathview automatically downloads the pathway graph data, parses the data file, maps user data to the pathway, and renders pathway graph with the mapped data. 
-Although built as a stand-alone program, pathview may seamlessly integrate with pathway (and functional) analysis tools for a large-scale and fully automated analysis pipeline. 
-
-
-
-%TODO
-% enter such comments as COMMENTS, not as text:
-
-% describe the installation of  \pkg{pathview}
-% draw attention to dependencies
-
-%TODO
-% * please improve the English
-
-% * remove ALL default arguments from function calls, reduce them to
-%   arguments deviating from the default
-% * use appropriate indentation
-% * use appropriate names for figures (see instructions in main tutorial)
-% * explain why detach() is necessary (ask MG)
-%   
-
-<<label=pathview-map>>=
-detach(package:opm)
-suppressPackageStartupMessages(library("pathview"))
-library("opm")
-# here provide the annotated vector from vaas_1
-xx <- annotated(vaas_1)
-
-# here map the PM data stored in xx onto the pathway-map for galactose-metabolism
-
-vaas_1_KEGG_native <- pathview(gene.data = NULL,
-                           cpd.data = xx , na.col="grey",
-                           low = list(gene = "white", cpd = "white"),
-                           mid = list(gene = "lightsteelblue1", cpd = "lightsteelblue1"),
-                           high = list(gene = "green4", cpd = "magenta4"),
-                           pathway.id = "00052", species = "ko", out.suffix = "KEGG-native",
-                           keys.align = "x", kegg.native = T,
-                           key.pos = "topright",
-                           map.cpdname = TRUE,
-                           is.signal =TRUE,
-                           limit = list(gene=2, cpd=400),
-                           bins = list(gene=0.5, cpd=20),
-                           discrete = list(gene=FALSE, cpd=FALSE),
-                           both.dirs = list(gene = FALSE, cpd = FALSE),
-                           cex = 0.25, sign.pos = "bottomleft", cpd.lab.offset = 0,
-                           same.layer = F,
-                           rank.dir="TB") 
-file.rename("ko00052.KEGG-native.png", "ko00052_KEGG-native.png")
-@
-
-
-\begin{figure}
-\scalebox{1.225}{
-\includegraphics{ko00052_KEGG-native}
-}
-\caption{\label{fig:pathview}
-Map of galactose metabolisms in the native KEGG representation available in ko00052.png.  
-}
-\end{figure}
-
-
-<<label=pathview-map>>=
-vaas_1 <- pathview(gene.data = NULL,
-  cpd.data = xx , na.col ="grey",
-  low = list(gene = "white", cpd = "white"),
-  mid = list(gene = "lightsteelblue1", cpd = "lightsteelblue1"),
-  high = list(gene = "green4", cpd = "magenta4"),
-  pathway.id = "00052", species = "ko", out.suffix = "non-native",
-  keys.align = "x", kegg.native = F,
-  key.pos = "bottomright", map.cpdname = TRUE,
-  is.signal = TRUE, afactor = 1000,
-  limit = list(gene = 2, cpd = 400),
-  bins = list(gene = 0.5, cpd = 20),
-  discrete = list(gene=FALSE, cpd=FALSE),
-  both.dirs = list(gene = FALSE, cpd = FALSE),
-  cex = 0.7, sign.pos = "bottomleft", cpd.lab.offset = 0,
-  same.layer = F,
-  pdf.size = c(10,7),
-  rank.dir = "TB") 
-file.rename("ko00052.non-native.pdf", "ko00052_non-native.pdf")
-@
-\begin{figure}
-\scalebox{1.225}{
-\includegraphics{ko00052_non-native}
-}
-\caption{\label{fig:pathview}
-Map of galactose metabolisms in the non-native KEGG representation.  
-}
-\end{figure}
-
-%TODO
-% update the discussion
-% clearly we do not need the JSS manuscript approach anymore
-% avoid ALL unnecessary text
-
-
-
-An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
-At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, ChEBI, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
-More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
+%\section[Visualisation by integration in pathway maps]{Visualisation by integration in pathway maps}\label{vis-pathway}
+%
+%% preparation to make the annotated vector of PM-data available
+%%here: prepare an OPMS-object containing also results from multiple comparisons using \proglang{opm\_mcp}.
+%%explain pathway based data integration and visualization; map and render user data on relevant pathway graphs
+%
+%
+%\href{http://www.genome.jp/kegg/}{KEGG} is a database resource for understanding high-level functions and utilities of the biological system, such as the cell, the organism and the ecosystem, from molecular-level information, especially large-scale molecular datasets generated by genome sequencing and other high-throughput experimental technologies.
+%Pathway Mapping
+%KEGG PATHWAY mapping is the process to map molecular datasets, especially large-scale datasets in genomics, transcriptomics, proteomics, and metabolomics, to the KEGG pathway maps for biological interpretaion of higher-level systemic functions. 
+%% erklaeren, wozu man die daten nutzen kann, wenn man grafik und gruppenvergleiche gemacht hat
+%
+%% DO NOT REPEAT LITERATURE INFORMATION HERE, INCLUDE THE REFERENCES!
+%
+%package \pkg{pathview} \citep{Luo2013}:
+%All users need is to supply their gene or compound data and specify the target pathway. 
+%Pathview automatically downloads the pathway graph data, parses the data file, maps user data to the pathway, and renders pathway graph with the mapped data. 
+%Although built as a stand-alone program, pathview may seamlessly integrate with pathway (and functional) analysis tools for a large-scale and fully automated analysis pipeline. 
+%
+%
+%
+%%TODO
+%% enter such comments as COMMENTS, not as text:
+%
+%% describe the installation of  \pkg{pathview}
+%% draw attention to dependencies
+%
+%%TODO
+%% * please improve the English
+%
+%% * remove ALL default arguments from function calls, reduce them to
+%%   arguments deviating from the default
+%% * use appropriate indentation
+%% * use appropriate names for figures (see instructions in main tutorial)
+%% * explain why detach() is necessary (ask MG)
+%%   
+%
+%<<label=pathview-map>>=
+%detach(package:opm)
+%suppressPackageStartupMessages(library("pathview"))
+%library("opm")
+%# here provide the annotated vector from vaas_1
+%xx <- annotated(vaas_1)
+%
+%# here map the PM data stored in xx onto the pathway-map for galactose-metabolism
+%
+%vaas_1_KEGG_native <- pathview(gene.data = NULL,
+%                           cpd.data = xx , na.col="grey",
+%                           low = list(gene = "white", cpd = "white"),
+%                           mid = list(gene = "lightsteelblue1", cpd = "lightsteelblue1"),
+%                           high = list(gene = "green4", cpd = "magenta4"),
+%                           pathway.id = "00052", species = "ko", out.suffix = "KEGG-native",
+%                           keys.align = "x", kegg.native = T,
+%                           key.pos = "topright",
+%                           map.cpdname = TRUE,
+%                           is.signal =TRUE,
+%                           limit = list(gene=2, cpd=400),
+%                           bins = list(gene=0.5, cpd=20),
+%                           discrete = list(gene=FALSE, cpd=FALSE),
+%                           both.dirs = list(gene = FALSE, cpd = FALSE),
+%                           cex = 0.25, sign.pos = "bottomleft", cpd.lab.offset = 0,
+%                           same.layer = F,
+%                           rank.dir="TB") 
+%file.rename("ko00052.KEGG-native.png", "ko00052_KEGG-native.png")
+%@
+%
+%
+%\begin{figure}
+%\scalebox{1.225}{
+%\includegraphics{ko00052_KEGG-native}
+%}
+%\caption{\label{fig:pathview}
+%Map of galactose metabolisms in the native KEGG representation available in ko00052.png.  
+%}
+%\end{figure}
+%
+%
+%<<label=pathview-map>>=
+%vaas_1 <- pathview(gene.data = NULL,
+%  cpd.data = xx , na.col ="grey",
+%  low = list(gene = "white", cpd = "white"),
+%  mid = list(gene = "lightsteelblue1", cpd = "lightsteelblue1"),
+%  high = list(gene = "green4", cpd = "magenta4"),
+%  pathway.id = "00052", species = "ko", out.suffix = "non-native",
+%  keys.align = "x", kegg.native = F,
+%  key.pos = "bottomright", map.cpdname = TRUE,
+%  is.signal = TRUE, afactor = 1000,
+%  limit = list(gene = 2, cpd = 400),
+%  bins = list(gene = 0.5, cpd = 20),
+%  discrete = list(gene=FALSE, cpd=FALSE),
+%  both.dirs = list(gene = FALSE, cpd = FALSE),
+%  cex = 0.7, sign.pos = "bottomleft", cpd.lab.offset = 0,
+%  same.layer = F,
+%  pdf.size = c(10,7),
+%  rank.dir = "TB") 
+%file.rename("ko00052.non-native.pdf", "ko00052_non-native.pdf")
+%@
+%\begin{figure}
+%\scalebox{1.225}{
+%\includegraphics{ko00052_non-native}
+%}
+%\caption{\label{fig:pathview}
+%Map of galactose metabolisms in the non-native KEGG representation.  
+%}
+%\end{figure}
+%
+%%TODO
+%% update the discussion
+%% clearly we do not need the JSS manuscript approach anymore
+%% avoid ALL unnecessary text
+%
+%
+%
+%An enhancement of the \pkg{opm} package would be to include much more precomputed information about the substrates, thus greatly facilitating data arrangement and hypothesis testing.
+%At the moment only the translation of well coordinates to substrate names is provided, as well as access to MeSH names and CAS, ChEBI, KEGG and Metacyc IDs (and the according web pages) for the majority of the substrates.
+%More substrate information could be integrated into the package, particularly for arranging the substrate into groups, thus easing testing of phenotypic hypotheses.
 
 \section[Acknowledgements]{Acknowledgements}
 The integration of missing OmniLog\textregistered \ substrates into ChEBI by the ChEBI staff is gratefully acknowledged.
