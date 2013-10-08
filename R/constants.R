@@ -1,20 +1,6 @@
-
-
-################################################################################
-################################################################################
-#
-# Programming constants
-#
-
-
-# Error messages
-#
 NOT_YET <- "not yet implemented"
 BUG_MSG <- "a bug -- this should not happen"
 
-
-# Class names
-#
 WMD <- "WMD"
 OPM <- "OPM"
 OPMA <- "OPMA"
@@ -26,79 +12,30 @@ MOA <- "MOA"
 FOE <- "FOE"
 CMAT <- "CMAT"
 
-
-# Used in all S4 method definitions. The idea is to keep it FALSE during
-# programming but set it to TRUE when building the package. The line contains a
-# special  comment used by pkgutils and should not be changed.
-#
 SEALED <- TRUE #|| SEALED <- FALSE
 
-
-################################################################################
-################################################################################
-#
-# Input constants
-#
-
-
-# Names used in CSV data
-#
 CSV_NAMES <- c(FILE = "File", PLATE_TYPE = "Plate Type", POS = "Position",
   SETUP = "Setup Time")
 
-
-# Expected name of time points in input data
-#
 HOUR <- "Hour"
 
-
-# The known special plates
-#
 SPECIAL_PLATES <- c("Gen III", "ECO", "SF-N2", "SF-P2", "AN2", "FF", "YT")
 names(SPECIAL_PLATES) <- c("gen.iii", "eco", "sf.n2", "sf.p2")
 
-# Pattern used for matching them
-#
 SP_PATTERN <- sub("^SF", "G", SPECIAL_PLATES, TRUE, TRUE)
 SP_PATTERN <- unique(c(SP_PATTERN, SPECIAL_PLATES))
 SP_PATTERN <- toupper(gsub("\\W", "", SP_PATTERN, FALSE, TRUE))
 SP_PATTERN <- sprintf("^(%s)([A-Z]*)$", paste0(SP_PATTERN, collapse = "|"))
 
-
-# Theoretically expected range of the OmniLog measurements (Bochner, pers.
-# comm.)
-#
 THEOR_RANGE <- c(0, 400)
 
-
-################################################################################
-################################################################################
-#
-# Output constants
-#
-
-
-# Curve parameters
-# N.B.: The order must be kept in sync with map_param_names() and with the
-# functions that fetch the name of lambda using CURVE_PARAMS[2L]. So this should
-# not be changed unless great care is taken.
-#
 CURVE_PARAMS <- c("mu", "lambda", "A", "AUC")
 
-# An addtion: the name used to select the discretized values.
-#
 DISC_PARAM <- "disc"
 
-
-# Reserved metadata names (they CAN be used by in the metadata but might yield
-# problems).
-#
 RESERVED_NAMES <- c("Plate", "Well", "Time", "Value", "Parameter")
 names(RESERVED_NAMES) <- tolower(RESERVED_NAMES)
 
-
-# Names used in aggregation/discretization settings.
-#
 SOFTWARE <- "software"
 VERSION <- "version"
 UNKNOWN_VERSION <- "0.0.0"
@@ -110,29 +47,12 @@ KNOWN_METHODS <- list(
   discretization = c("direct", "kmeans", "best-cutoff")
 )
 
-# Optionally used in collect_template() output
 INSTRUMENT <- "Instrument"
 
-# Used by several functions in the headers of HTML output.
-#
 HTML_DOCTYPE <- paste('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"',
   '"http://www.w3.org/TR/html4/strict.dtd">', collapse = " ")
 
-
-################################################################################
-################################################################################
-#
-# Storage of precomputed values
-#
-
 MEMOIZED <- new.env(parent = emptyenv())
-
-
-################################################################################
-################################################################################
-#
-# Default opm options.
-#
 
 OPM_OPTIONS <- new.env(parent = emptyenv())
 OPM_OPTIONS$color.borders <- c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E",
@@ -166,36 +86,13 @@ OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
   "%d.%m.%Y %H:%M:%S", "%b %d %Y %H:%M")
 OPM_OPTIONS$time.zone <- ""
 
-
-################################################################################
-################################################################################
-#
-# Constants related to the phylogeny functions
-#
-
-
-# These must be kepot in sync between phylogeny and discretization functions.
-#
 CHARACTER_STATES <- c(0L:9L, LETTERS)[1L:32L]
 MISSING_CHAR <- "?"
 
-# Used by several functions via match.arg().
-#
 PHYLO_FORMATS <- c("epf", "nexus", "phylip", "hennig", "html")
 
-
-################################################################################
-################################################################################
-#
-# Constants related to the processing of substrate names
-#
-
-
-# We consider only those Greek letters that are likely to occur in substrate
-# names, and deliberately not their uppercase versions.
 GREEK_LETTERS <- c("alpha", "beta", "gamma", "delta", "epsilon")
 names(GREEK_LETTERS) <- substr(GREEK_LETTERS, 1L, 1L)
-
 
 COMPOUND_NAME_HTML_MAP <- c(
   # stereochemistry and configuration
@@ -216,7 +113,6 @@ COMPOUND_NAME_HTML_MAP <- c(
   structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS))
 )
 
-
 SUBSTRATE_PATTERN <- (function() {
   # we prepare for paired parentheses or paired brackets in substrate names
   x <- c(paren = "\\(((?:[^()]+|\\([^()]+\\))+)\\)",
@@ -228,5 +124,4 @@ SUBSTRATE_PATTERN <- (function() {
   x <- c(x, plain = "")
   structure(sprintf("^[A-Z]\\d{2}%s$", x), names = names(x))
 })()
-
 

@@ -77,6 +77,29 @@
   substrate names.
 }
 \details{
+  The query names must be written exactly as used in the
+  stored plate annotations. To determine their spelling,
+  use \code{\link{find_substrate}}.  Each spelling might
+  include a concentration indicator, but the same
+  underlying substrate name yielded the same \acronym{ID}
+  irrespective of the concentration.
+
+  Note that the information is only partially complete,
+  depending on the well and the database. While it is
+  possible to link almost all substrates to, say,
+  \acronym{CAS} numbers, they are not necessarily contained
+  in the other databases. Thanks to the work of the
+  \acronym{ChEBI} staff, which is gratefully acknowledged,
+  \acronym{ChEBI} information is complete as far as
+  possible (large molecules such as proteins or other
+  polymers are not covered by \acronym{ChEBI}).
+
+  For some wells, even a main substrate cannot be
+  identified, causing all its \acronym{ID}s to be missing.
+  This holds for all control wells, for all wells that
+  contain a mixture of (usually two) substrates, and for
+  all wells that are only specified by a certain pH.
+
   The generated \acronym{URL}s should provide plenty of
   information on the respective substrate. In the case of
   \acronym{ChEBI}, \acronym{KEGG} and \acronym{Metacyc},

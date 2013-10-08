@@ -6,7 +6,7 @@
 #
 
 
-# This is preliminary example R code for using vegan, BiodiversityR and opm to
+# This is example R code for using BiodiversityR/vegan together with opm to
 # draw PCA biplots describing Phenotype MicroArray data. An advantage of such
 # plots is that the overall differences between the organisms can be plotted
 # together with indications of the effect of certain subtrates on these
@@ -14,14 +14,17 @@
 # components before plotting. Depending on the biological question, this might
 # be more interesting than drawing heat maps.
 #
+# Some BiodiversityR functions do not seem to work as intended, see the
+# comments below.
+#
 # (C) 2013 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
 #
 # This file is distributed under the terms of the GPL. Hints by Pia Wuest, DSMZ,
 # are gratefully acknowledged.
 
 
-library(opm)
 library(BiodiversityR)
+library(opm)
 
 
 ################################################################################
@@ -85,12 +88,13 @@ custom_pca <- function(x, group = TRUE, circle = scaling == 1,
 ################################################################################
 
 
-# The following code would create an PCA biplot for the vaas_4 example data.
+# The following code creates a PCA biplot for the vaas_4 example data.
 #
-if (FALSE) {
-  x <- opm::extract(vaas_4, as.labels = list("Strain"),
-    as.groups = list("Species"))
-  x.pca <- custom_pca(x)
-}
+x <- opm::extract(vaas_4, as.labels = list("Strain"),
+  as.groups = list("Species"))
+pdf("vaas_4_PCA.pdf")
+x.pca <- custom_pca(x)
+dev.off()
+
 
 

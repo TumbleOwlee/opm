@@ -1,215 +1,17 @@
-
-
-################################################################################
-################################################################################
-#
-# Class definitions and associated functions
-#
-
-
-#' Virtual classes of the opm package
-#'
-#' Classes that are virtual and thus are not directly dealt with by an
-#' \pkg{opm} user: \acronym{WMD}, \acronym{MOA}, \acronym{FOE}, \acronym{OPMX}
-#' and \sQuote{YAML_VIA_LIST}.
-#'
-#' @details
-#' \acronym{WMD} is an acronym for \sQuote{with metadata}.
-#' This is a virtual class facilitating the management of metadata. No objects
-#' can be created from it because metadata without data make not much sense. It
-#' is used by its child classes such as \code{\link{OPM}}.
-#'
-#' Conceptually, this class treats metadata as arbitrarily nested lists
-#' with arbitrary content. Containers of objects that inherit from this class
-#' are not forced to contain the same metadata entries. Problems might arise
-#' if such data are queried and attempted to be converted to, e.g., data
-#' frames because some values might be missing. But metadata can be queried
-#' beforehand for the keys as well as the values they contain, and other
-#' methods support setting, modifying and deleting metadata.
-#'
-#' For \code{\link{OPM}} and the other \pkg{opm} classes that use it,
-#' \sQuote{metadata} refers to information that, in contrast to, e.g.,
-#' \code{\link{csv_data}} must be added by the user \strong{after} reading
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} \acronym{CSV} files.
-#' Metadata might already be present in \acronym{YAML} files created by the
-#' \pkg{opm} package, however.
-#'
-#' \acronym{MOA} is an acronym for \sQuote{matrix or array}. \acronym{MOA} is a
-#' virtual class facilitating the implementation of functionality for
-#' both matrices and arrays. Methods defined for objects from the class can be
-#' applied to either kind of object. See \code{\link{map_values}} and
-#' \code{\link{map_names}} for usage examples.
-#'
-#' \acronym{FOE} is an acronym for \sQuote{formula or expression}.
-#' This is a virtual class facilitating the implementation of functionality
-#' for both formulas and expressions. Methods defined for objects from the
-#' class can be applied to either kind of object.
-#' See \code{\link{metadata.set}} and \code{\link{map_metadata}} for
-#' usage examples.
-#'
-#' \acronym{OPMX} stands for \sQuote{\acronym{OPM} or \acronym{OPMS}}.
-#' It is a virtual class containing helper methods mainly for plotting
-#' \code{\link{OPM}} and \code{\link{OPMS}} objects.
-#' See \code{\link{show}} and \code{\link{sort}} for usage examples.
-#'
-#' See \code{\link{to_yaml}} for a usage example of \sQuote{YAML_VIA_LIST}.
-#' This is a virtual class facilitating the conversion to \acronym{YAML} format
-#' (or its subset, \acronym{JSON}). It can currently be used by any class that
-#' can be coerced to a list.
-#'
-#' @name WMD
-#' @docType class
-#' @export
-#' @aliases WMD-class
-#' @seealso methods::Methods base::matrix base::array base::expression
-#'   stats::formula
-#' @family classes
-#' @keywords methods classes
-#'
 setClass(WMD,
   slots = c(metadata = "list"),
   contains = "VIRTUAL",
   sealed = SEALED
 )
 
-#' @rdname WMD
-#' @name MOA
-#' @aliases MOA-class
-#' @docType class
-#' @export
-#'
 NULL
 
 setClassUnion(MOA, c("matrix", "array"))
 
-#' @rdname WMD
-#' @name FOE
-#' @aliases FOE-class
-#' @docType class
-#' @export
-#'
 NULL
 
 setClassUnion(FOE, c("formula", "expression"))
 
-
-################################################################################
-
-
-#' Real classes of the opm package
-#'
-#' Classes whose members can directly be generated and manipulated by an
-#' \pkg{opm} user: \acronym{OPM}, \acronym{OPMA}, \acronym{OPMD} and
-#' \acronym{OPMS}.
-#'
-#' @details
-#' \acronym{OPM} is an acronym for
-#' \sQuote{OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} Phenotype
-#' Microarray}. This is the class for holding single-plate
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
-#' without aggregated values, but with information read from the original input
-#' \acronym{CSV} files as well as an additional arbitrary amount of arbitrarily
-#' organised metadata. Objects of this class are usually created by inputting
-#' files with \code{\link{read_single_opm}} or \code{\link{read_opm}}.
-#'
-#' \acronym{OPM} inherits from \code{\link{WMD}} and, hence, has all its
-#' methods.
-#'
-#' Regarding the coercion of this class to other classes (see the \code{as}
-#' method from the \pkg{methods} package), consider the following:
-#' \itemize{
-#'   \item The coercion of this class (and its child classes) to a list (and
-#'   vice versa) relies on a mapping between slot names and keys in the list,
-#'   i.e. the list must be appropriately named. For instance, this is the
-#'   mechanism when reading from and writing to \acronym{YAML}, see
-#'   \code{\link{to_yaml}}.
-#'   \item Coercions to other data frames and matrices first coerce the
-#'   \code{\link{measurements}} and then add the other slots as attributes.
-#'   \item Methods such as \code{\link{flatten}} and \code{\link{extract}} might
-#'   be way more appropriate for converting \acronym{OPM} objects.
-#' }
-#'
-#' \acronym{OPMA} is an acronym for \sQuote{\acronym{OPM}, aggregated}. This is
-#' the class for holding single-plate
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
-#' together with aggregated values. Objects of this class are usually created by
-#' calling \code{\link{do_aggr}} on an \acronym{OPM} object, or by inputting
-#' files with \code{\link{read_single_opm}} or \code{\link{read_opm}} if these
-#' files already contain aggregated data.
-#'
-#' \acronym{OPMA} inherits from \acronym{OPM} and, hence, has all its methods.
-#'
-#' \acronym{OPMD} is an acronym for \sQuote{\acronym{OPM}, discretized}. This is
-#' the class for holding single-plate
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
-#' together with aggregated \strong{and} discretized values. Objects of this
-#' class are usually created by calling \code{\link{do_disc}} on an
-#' \acronym{OPMA} object, or by inputting files with
-#' \code{\link{read_single_opm}} or \code{\link{read_opm}} if these files
-#' already contain discretized data.
-#'
-#' \acronym{OPMD} inherits from \acronym{OPMA} and, hence, has all its methods.
-#'
-#' The discretized data are considered as \sQuote{consistent} with the curve
-#' parameter from which they have been estimated if no \code{FALSE} value
-#' corresponds to curve parameter larger than the curve parameter of any
-#' \code{TRUE} value; \code{NA} values are not considered when checking
-#' consistency. The \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
-#' determines whether an error or only a warning is issued in the case of
-#' inconsistency.
-#'
-#' \acronym{OPMS} is the class for holding multi-plate
-#' OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} phenotype microarray data
-#' with or without aggregated or discretized values. Regarding the name:
-#' \acronym{OPMS} is just the plural of \acronym{OPM}. Objects of this class are
-#' usually created by calling \code{\link{opms}} or other combination functions
-#' on \acronym{OPM} or derived objects, or by inputting files with
-#' \code{\link{read_opm}} if these files altogether contain more than a single
-#' plate. The data may have been obtained from distinct organisms and/or
-#' replicates, but \strong{must} correspond to the same plate type and
-#' \strong{must} contain the same wells.
-#'
-#' As a rule, \acronym{OPMS} has the same methods as the \acronym{OPM} class,
-#' but adapted to a collection of more than one \acronym{OPM} object. Also,
-#' \acronym{OPMS} can hold \acronym{OPMD} and \acronym{OPMA} as well as
-#' \acronym{OPM} objects, even though this is not indicated for all its methods
-#' in this manual.
-#'
-#' @examples
-#' # conversion of a list to an OPM object is tolerant against re-orderings
-#' # (but not against additions and omissions)
-#' x <- as(vaas_1, "list")
-#' x$measurements <- c(rev(x$measurements[7:8]), rev(x$measurements[-7:-8]))
-#' summary(x)
-#' x <- as(x, "OPM")
-#' summary(x)
-#' stopifnot(identical(measurements(x), measurements(vaas_1)))
-#'
-#' # conversion of a list to an OPMA object is tolerant against re-orderings
-#' # and additions (but not against omissions)
-#' x <- as(vaas_1, "list")
-#' x$aggregated <- c(Answer = 42L, rev(x$aggregated), Text = LETTERS)
-#' summary(x)
-#' x <- as(x, "OPMA")
-#' summary(x)
-#' stopifnot(identical(aggregated(x), aggregated(vaas_1)))
-#'
-#' # conversion of a list to an OPMD object is tolerant against re-orderings
-#' # and additions (but not against omissions)
-#' x <- as(vaas_1, "list")
-#' x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
-#' summary(x)
-#' x <- as(x, "OPMD")
-#' summary(x)
-#' stopifnot(identical(discretized(x), discretized(vaas_1)))
-#'
-#' @docType class
-#' @export
-#' @aliases OPM-class
-#' @seealso methods::Methods methods::new
-#' @family classes
-#' @keywords methods classes
-#'
 setClass(OPM,
   slots = c(measurements = "matrix", csv_data = "character"),
   contains = WMD,
@@ -223,12 +25,6 @@ setClass(OPM,
   sealed = SEALED
 )
 
-#' @rdname OPM
-#' @name OPMA
-#' @aliases OPMA-class
-#' @docType class
-#' @export
-#'
 setClass(OPMA,
   slots = c(aggregated = "matrix", aggr_settings = "list"),
   contains = OPM,
@@ -246,12 +42,6 @@ setClass(OPMA,
   sealed = SEALED
 )
 
-#' @rdname OPM
-#' @name OPMD
-#' @aliases OPMD-class
-#' @docType class
-#' @export
-#'
 setClass(OPMD,
   slots = c(discretized = "logical", disc_settings = "list"),
   contains = OPMA,
@@ -267,12 +57,6 @@ setClass(OPMD,
   sealed = SEALED
 )
 
-#' @docType class
-#' @rdname OPM
-#' @name OPMS
-#' @export
-#' @aliases OPMS-class
-#'
 setClass(OPMS,
   slots = c(plates = "list"),
   validity = function(object) {
@@ -284,35 +68,14 @@ setClass(OPMS,
   sealed = SEALED
 )
 
-#' @rdname WMD
-#' @name OPMX
-#' @aliases OPMX-class
-#' @docType class
-#' @export
-#'
 NULL
 
-# Currently the child classes must provide plate_type() and minmax() for the
-# methods to work
-#
 setClassUnion(OPMX, c(OPM, OPMS))
 
-#' @rdname WMD
-#' @name YAML_VIA_LIST
-#' @aliases YAML_VIA_LIST-class
-#' @docType class
-#' @export
-#'
 NULL
 
 setClassUnion(YAML_VIA_LIST, c(OPM, OPMS, "list"))
 
-
-################################################################################
-
-
-# CMAT class: undocumented, as for internal use only.
-#
 setClass(CMAT,
   contains = "matrix",
   validity = function(object) {
@@ -337,23 +100,6 @@ setClass(CMAT,
   sealed = SEALED
 )
 
-
-################################################################################
-#
-# The definitions of initialize() must be located after the class definitions
-# to avoid a warning during the Roxygen2 runs.
-#
-
-
-#' Initialize
-#'
-#' Initialize methods for some classes.
-#'
-#' @param .Object \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @param ... Additional arguments.
-#' @return \code{\link{OPM}} or \code{\link{OPMS}} object.
-#' @keywords internal
-#'
 setMethod("initialize", OPM, function(.Object, ...) {
   .Object <- callNextMethod()
   plate.type <- CSV_NAMES[["PLATE_TYPE"]]
@@ -385,27 +131,6 @@ setMethod("initialize", CMAT, function(.Object, ...) {
   .Object
 }, sealed = SEALED)
 
-
-################################################################################
-
-
-#' Check OPMX object
-#'
-#' Called when constructing an object of the \code{\link{OPMX}} classes.
-#'
-#' @param object Object potentially suitable for one of the slots of
-#'   \code{\link{OPMX}} classes
-#' @param orig.data Matrix of original, non-aggregated data.
-#' @param settings List or \code{NULL}. If a list, settings used for aggregating
-#'   the data (currently only the \pkg{opm}-native programs are checked).
-#' @param disc Vector of discretized data. At this stage, it must already have
-#'   the same wells than \code{object}, in the same order.
-#' @return Character vector with description of problems, empty if there are
-#'   none.
-#' @details The matrix must contain the hours as first column, the other column
-#'   names must be sorted.
-#' @keywords internal
-#'
 setGeneric("opm_problems",
   function(object, ...) standardGeneric("opm_problems"))
 
@@ -442,10 +167,6 @@ setMethod("opm_problems", "character", function(object) {
   errs
 }, sealed = SEALED)
 
-#= opma_problems opm_problems
-
-#' @rdname opm_problems
-#'
 setGeneric("opma_problems",
   function(object, ...) standardGeneric("opma_problems"))
 
@@ -476,7 +197,6 @@ setMethod("opma_problems", "matrix", function(object, orig.data, settings) {
   errs
 }, sealed = SEALED)
 
-# NB: this function is currently also called when checking @disc_settings
 setMethod("opma_problems", "list", function(object) {
   check_string <- function(what) {
     if (length(x <- object[[what]]) == 1L && is.character(x) && !is.na(x))
@@ -497,11 +217,6 @@ setMethod("opma_problems", "list", function(object) {
   errs
 }, sealed = SEALED)
 
-
-#= opmd_problems opm_problems
-
-#' @rdname opm_problems
-#'
 setGeneric("opmd_problems",
   function(object, ...) standardGeneric("opmd_problems"))
 
@@ -532,10 +247,6 @@ setMethod("opmd_problems", "matrix", function(object, disc, param) {
   errs
 }, sealed = SEALED)
 
-#= opms_problems opm_problems
-
-#' @rdname opm_problems
-#'
 setGeneric("opms_problems",
   function(object, ...) standardGeneric("opms_problems"))
 
@@ -561,24 +272,6 @@ setMethod("opms_problems", "list", function(object) {
   errs
 }, sealed = SEALED)
 
-
-
-################################################################################
-
-
-#' Attach slots or update settings entries
-#'
-#' Attach the contents of all slots, except for the measurements, to another
-#' object. Useful in conversions (coercions). This method is deliberately
-#' \strong{not} defined for \code{\link{OPMS}} objects. Alternatively,
-#' convert old-style to new-style aggregation or discretization settings.
-#'
-#' @param object \code{\link{OPM}} object.
-#' @param other Arbitrary other object.
-#' @param x List.
-#' @return \code{other} with additional attributes, or list.
-#' @keywords internal
-#'
 setGeneric("attach_attr", function(object, ...) standardGeneric("attach_attr"))
 
 setMethod("attach_attr", OPM, function(object, other) {
@@ -587,10 +280,6 @@ setMethod("attach_attr", OPM, function(object, other) {
   other
 }, sealed = SEALED)
 
-#= update_settings_list attach_attr
-
-#' @rdname attach_attr
-#'
 setGeneric("update_settings_list",
   function(x, ...) standardGeneric("update_settings_list"))
 
@@ -614,15 +303,6 @@ setMethod("update_settings_list", "list", function(x) {
   }
   x
 }, sealed = SEALED)
-
-
-################################################################################
-#
-# Conversion functions: OPMX <=> other objects. For principle, see description
-# of OPM class. Conversion of OPMA or OMDS to matrix/data frame is just repeated
-# from OPM because otherwise some elements would be missing.
-#
-
 
 setAs(from = OPM, to = "matrix", function(from) {
   attach_attr(from, from@measurements)
@@ -739,9 +419,4 @@ setAs(from = "list", to = OPMS, function(from) {
 setAs(from = "matrix", to = CMAT, function(from) {
   new(CMAT, from) # overwritten to enforce consistency checks
 })
-
-
-################################################################################
-
-
 

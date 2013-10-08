@@ -14,6 +14,9 @@
 # need only minimal adaptations for real-world use after copying its two pages
 # into an R text editor.
 #
+# For advanced users, we recommend to use batch_opm() instead for most of the
+# steps conducted below.
+#
 # (C) 2013 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
 #
 # This file is distributed under the terms of the GPL.
@@ -21,12 +24,14 @@
 library(opm) # version >= 0.8-0 is needed
 
 # Names of replicate IDs. If not within the input CSV data, automatically
-# generated.
+# generated below. Technically not mandatatory, but useful for addressing each
+# plate.
 #
 replicate <- "Replicate"
 
 # Name of the organism entries used. If not directly found within the CSV data,
-# an error would be raised.
+# a warning would be raised. If you have no strain numbers, use the term that
+# best describes the data you have.
 #
 organism <- "Strain Number"
 
@@ -48,13 +53,23 @@ for (i in 1:length(x)) {
 
   # Creates data frame without converting strings to factors.
   #
-  md <- to_metadata(csv_data(x[[i]]))
+  if (length(x[[i]]) > 1L)
+    md <- to_metadata(csv_data(x[[i]]))
+  else
+    # a special measure only needed if replicates are not present
+    md <- to_metadata(t(as.matrix(csv_data(x[[i]]))))
 
   # Create replicate IDs if they are not included.
   #
   if (!replicate %in% names(md)) {
     md[, replicate] <- 1:nrow(md)
     message("NOTE: inserting replicate IDs")
+  }
+
+  # Insert a dummy organism entry if none is there, with a warning.
+  if (!organism %in% names(md)) {
+    md[, organism] <- "Unkown organism"
+    warning("inserting dummy organism name", immediate. = TRUE)
   }
 
   # Adding metadata is easiest via a data frame whose order of rows is the the
@@ -64,6 +79,7 @@ for (i in 1:length(x)) {
   metadata(x[[i]]) <- md[, c(organism, replicate)]
 
 }
+
 
 ################################################################################
 #
@@ -122,8 +138,9 @@ for (name in names(x)) {
 
   # Write HTML table describing the discretized results.
   #
-  write(phylo_data(x[[name]], format = "html", as.labels = organism),
-    sprintf("Table_%s.html", name))
+  if (length(x[[name]]) > 1)
+    write(phylo_data(x[[name]], format = "html", as.labels = organism),
+      sprintf("Table_%s.html", name))
 
   # Draw XY plot into PDF file.
   #
@@ -134,4 +151,5 @@ for (name in names(x)) {
 }
 
 ################################################################################
+
 

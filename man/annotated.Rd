@@ -20,22 +20,33 @@
   \code{opm_glht} method, either a numeric scalar or one of
   the following character scalars: \describe{
   \item{numeric}{Return the coefficients.}
-  \item{different}{Return -1, 1 or 0 indicating whether the
-  coefficients are significantly smaller or larger than, or
-  insignificantly different from the cutoff given by
+  \item{upwards}{Return \code{FALSE}, \code{NA}, or
+  \code{TRUE} indicating whether the coefficients are
+  significantly smaller or larger than, or insignificantly
+  different from the cutoff given by
   \code{opm_opt("threshold")}. This is calculated from the
   confidence intervals stored in \code{object}.}
-  \item{smaller}{Return 1 or 0 indicating whether or not
-  the coefficients are significantly smaller than the
-  default cutoff.} \item{larger}{Return 1 or 0 indicating
-  whether or not the coefficients are significantly larger
-  than the default cutoff.} \item{equal}{Return 1 or 0
+  \item{downwards}{Return \code{TRUE}, \code{NA}, or
+  \code{FALSE} indicating whether the coefficients are
+  significantly smaller or larger than, or insignificantly
+  different from the default cutoff.} \item{smaller}{Return
+  \code{TRUE} or \code{FALSE} indicating whether or not the
+  coefficients are significantly smaller than the default
+  cutoff.} \item{larger}{Return \code{TRUE} or \code{FALSE}
   indicating whether or not the coefficients are
-  insignificantly different from the default cutoff.} }
+  significantly larger than the default cutoff.}
+  \item{equal}{Return \code{TRUE} or \code{FALSE}
+  indicating whether or not the coefficients are
+  insignificantly different from the default cutoff.}
+  \item{different}{Return \code{TRUE} or \code{FALSE}
+  indicating whether or not the coefficients are
+  significantly different from the default cutoff.} }
   Alternatively, character scalars such as \sQuote{!75.0},
-  \sQuote{<100}, \sQuote{>150} or \sQuote{=85.0} can be
-  provided, with the first character translated to the
-  corresponding meaning in the list above and the remaining
+  \sQuote{<100}, \sQuote{>150}, \sQuote{=85.0},
+  \sQuote{,3.0} or \sQuote{'11.5} can be provided, with the
+  first character translated to the corresponding meaning
+  in the list above (with \sQuote{,} for \sQuote{downwards}
+  and \sQuote{'} for \sQuote{upwards}) and the remaining
   string coerced to the cutoff to be used. If a numeric
   scalar is provided, it is used as cutoff in conjunction
   with the \sQuote{different} mode described above.}
@@ -160,8 +171,25 @@ stopifnot(is.logical(y), identical(names(y), names(x)))
 head(y <- annotated(vaas_4, output = param_names("disc.name"), lmap = 1:3))
 stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 
-## opm_glht method
-## TODO examples needed
+## 'opm_glht' method
+
+# generation of 'opm_ghlt' test object
+y <- opm_mcp(vaas_4[, , 1:12], model = ~ J(Well, Species),
+  m.type = "aov", linfct = c(Pairs.Well = 1), full = FALSE)
+
+# generation of numerical vector
+head(y.ann <- annotated(y))
+stopifnot(is.numeric(y.ann), !is.null(names(y.ann)))
+
+# generation of logical vector indicating whether the compared groups behave
+# equally (= insignificantly different) regarding the considered substrates
+head(y.ann.eq <- annotated(y, output = "equal", lmap = 1:3))
+stopifnot(y.ann.eq > 0, identical(names(y.ann.eq), names(x)[1:12]))
+
+# generation of numeric vector with FALSE => 1, NA => 2 and TRUE => 3 and
+# substrate names after translation of relevant characters to Greek letters
+head(y.ann.eq <- annotated(y, output = "equal", what = "greek", lmap = 1:3))
+stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 }
 \seealso{
   Other multcomp-functions: \code{\link{opm_mcp}}
