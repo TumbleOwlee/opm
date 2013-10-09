@@ -8,6 +8,14 @@
   object of class \sQuote{substrate_match}, an
   \code{\link{OPM}} or an \code{\link{OPMS}} object.}
 
+  \item{type}{Ignored if empty or \code{FALSE}. Otherwise,
+  passed to \code{\link{plate_type}} for normalization and
+  then used to restrict the positions to those in that
+  plate. Changes the output object to a vector; see below
+  for details. In the case of \code{\link{OPMX}} objects,
+  this can be set to \code{TRUE}, causing the use of the
+  plate of \code{object}.}
+
   \item{search}{Character scalar indicating the search
   mode. \describe{ \item{exact}{Query names must exactly
   match (parts of) the well annotations.} \item{glob}{Shell
@@ -96,6 +104,10 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 (y <- find_positions(as.factor(c("D-Glucose", "D-Gloucose"))))
 stopifnot(identical(y, x))
 
+# Restrict to  a certain plate
+(x <- find_positions(c("D-Glucose", "D-Gloucose"), type = "Gen III"))
+stopifnot(is.character(x), any(is.na(x)), !all(is.na(x)))
+
 # List method
 x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))
 x[[1]][1:3]
@@ -131,13 +143,13 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
   \S4method{find_substrate}{character}(object,
     search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) 
 
-  \S4method{find_positions}{character}(object, ...) 
+  \S4method{find_positions}{character}(object, type = NULL, ...) 
 
   \S4method{find_positions}{substrate_match}(object, ...) 
 
   \S4method{find_positions}{list}(object, ...) 
 
-  \S4method{find_positions}{OPM}(object, ...) 
+  \S4method{find_positions}{OPM}(object, type = NULL, ...) 
 
   \S4method{find_substrate}{factor}(object, ...) 
 

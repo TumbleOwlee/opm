@@ -400,7 +400,11 @@ setOldClass("substrate_match")
 setGeneric("find_positions",
   function(object, ...) standardGeneric("find_positions"))
 
-setMethod("find_positions", "character", function(object, ...) {
+setMethod("find_positions", "character", function(object, type = NULL, ...) {
+  if (length(type) && !identical(type, FALSE)) {
+    x <- WELL_MAP[, plate_type(type)[1L], "name"]
+    return(structure(names(x)[match(object, x)], names = object))
+  }
   plates <- colnames(WELL_MAP)
   sapply(object, FUN = function(name) {
     result <- which(WELL_MAP[, , "name"] == name, arr.ind = TRUE)
@@ -418,8 +422,12 @@ setMethod("find_positions", "list", function(object, ...) {
     how = "list", ...)
 }, sealed = SEALED)
 
-setMethod("find_positions", OPM, function(object, ...) {
-  find_positions(wells(object, full = TRUE, in.parens = FALSE), ...)
+setMethod("find_positions", OPM, function(object, type = NULL, ...) {
+  object <- wells(object, full = TRUE, in.parens = FALSE)
+  if (isTRUE(type))
+    structure(names(object), names = object)
+  else
+    find_positions(object, ...)
 }, sealed = SEALED)
 
 setGeneric("substrate_info",

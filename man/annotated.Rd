@@ -171,27 +171,25 @@ stopifnot(is.logical(y), identical(names(y), names(x)))
 head(y <- annotated(vaas_4, output = param_names("disc.name"), lmap = 1:3))
 stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 
-## opm_glht method
+## 'opm_glht' method
 
-# create opm_ghlt object
-y <- opm_mcp(vaas_4[, ,c( 1:12)], model = ~ J(Well, Species),
+# generation of 'opm_ghlt' test object
+y <- opm_mcp(vaas_4[, , 1:12], model = ~ J(Well, Species),
   m.type = "aov", linfct = c(Pairs.Well = 1), full = FALSE)
 
 # generation of numerical vector
-head(anno_glht <- annotated(y))
-stopifnot(is.numeric(anno_glht), !is.null(names(anno_glht)))
+head(y.ann <- annotated(y))
+stopifnot(is.numeric(y.ann), !is.null(names(y.ann)))
 
-# generation of logic vector indication, if the compared groups are equal on
-# the considered substrates
-head(anno_glht_equal <- annotated(y, output = "equal", lmap = 1:3))
-stopifnot(anno_glht_equal > 0,
-  identical(names(anno_glht_equal), names(x)[1:12]))
+# generation of logical vector indicating whether the compared groups behave
+# equally (= insignificantly different) regarding the considered substrates
+head(y.ann.eq <- annotated(y, output = "equal", lmap = 1:3))
+stopifnot(y.ann.eq > 0, identical(names(y.ann.eq), names(x)[1:12]))
 
 # generation of numeric vector with FALSE => 1, NA => 2 and TRUE => 3 and
 # substrate names after translation of relevant characters to Greek letters
-head(anno_glht_eg <- annotated(y, output = "equal", what = "greek",
-  lmap = 1:3))
-stopifnot(is.numeric(anno_glht_eg), !is.null(names(anno_glht_eg)))
+head(y.ann.eq <- annotated(y, output = "equal", what = "greek", lmap = 1:3))
+stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 }
 \seealso{
   Other multcomp-functions: \code{\link{opm_mcp}}

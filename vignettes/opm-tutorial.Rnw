@@ -325,7 +325,8 @@ Example code, including the export of discretization results as  publication-rea
 Textual reports with or without formatting markup can also be produced, as exemplified in Section~\ref{application discrete-text}.
 The discretization settings can be modified in detail; see Section~\ref{application discrete-finetuning}.
 
-Furthermore, substrate informations can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available. Detailed explanations and code examples are included in the vignette ``Working with substrate information in \pkg{opm}''.
+Furthermore, substrate information can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available.
+Detailed explanations and code examples are included in the vignette ``Working with substrate information in \pkg{opm}''.
 
 Finally, it is possible to modify settings that have an effect on multiple functions and/or on frequently used arguments. 
 See Section~\ref{methods settings} for details and Section~\ref{application discrete-table} for a code example.
