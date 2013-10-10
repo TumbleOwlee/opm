@@ -500,7 +500,7 @@ setGeneric("ci_plot", function(object, ...) standardGeneric("ci_plot"))
 setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     prop.offset = 0.04, align = "center", col = "blue", na.action = "warn",
     draw.legend = TRUE, legend.field = c(1, 1), x = "topleft", xpd = TRUE,
-    vline = 0, split.at = param_names("split.at"), ...) {
+    vline = 0, split.at = param_names("split.at"), crr = 0.75, ...) {
 
   single_plot <- function(col.pos) {
     plot(x = NULL, y = NULL, xlim = ranges[, col.pos], ylim = ylim,
@@ -549,7 +549,7 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
   ylim <- best_range(chunk.pos, target = NULL, prop.offset = prop.offset)
 
   # Panel layout and plotting of individual panels
-  old.par <- par(mfcol = best_layout(ncol(object)))
+  old.par <- par(mfcol = best_layout(ncol(object), crr))
   on.exit(par(old.par))
   lapply(seq_len(ncol(object)), FUN = single_plot)
 

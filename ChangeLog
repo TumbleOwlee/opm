@@ -31,6 +31,7 @@
 - flatten() gets a 'numbers' argument
 - new spline-fitting facilities (see set_spline_options())
 - heat_map() gets an 'asqr' argument
+- ci_plot() gets a 'crr' argument
 - new plate_type() method (for displaying the known plate types)
 - support for plate types FF, YT and AN2 added (thanks to Barry Bochner)
 - substrate_info() gets a 'download' argument and more options for 'what'
