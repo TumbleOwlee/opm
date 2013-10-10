@@ -174,7 +174,7 @@ stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 ## 'opm_glht' method
 
 # generation of 'opm_ghlt' test object
-y <- opm_mcp(vaas_4[, , 1:12], model = ~ J(Well, Species),
+y <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well, Species),
   m.type = "aov", linfct = c(Pairs.Well = 1), full = FALSE)
 
 # generation of numerical vector
@@ -184,7 +184,7 @@ stopifnot(is.numeric(y.ann), !is.null(names(y.ann)))
 # generation of logical vector indicating whether the compared groups behave
 # equally (= insignificantly different) regarding the considered substrates
 head(y.ann.eq <- annotated(y, output = "equal", lmap = 1:3))
-stopifnot(y.ann.eq > 0, identical(names(y.ann.eq), names(x)[1:12]))
+stopifnot(y.ann.eq > 0, identical(names(y.ann.eq), names(x)[1:4]))
 
 # generation of numeric vector with FALSE => 1, NA => 2 and TRUE => 3 and
 # substrate names after translation of relevant characters to Greek letters
