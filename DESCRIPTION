@@ -34,6 +34,7 @@ Description: Tools for analysing OmniLog(R) and Microstation Phenotype
     BIOLOG Inc., including plotting, aggregating (estimating curve
     parameters), comparing and discretizing PM data, creating
     phylogenetic formats and reports for taxonomic journals,
+    drawing the PM analysis results in biochemical pathway graphs,
     running multiple comparisons of means, integrating metadata,
     using the YAML format for the storage of data and metadata, and
     batch conversion of large numbers of files.
