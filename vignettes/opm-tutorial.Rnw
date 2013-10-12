@@ -10,6 +10,9 @@
 % * On a suitable system, build and test the package including the vignettes
 %   before conducting a commit. Modify the .Rnw file until all error messages
 %   and warnings disappear.
+% * Similarly, modify the .Rnw file until all error messages and warnings from
+%   LaTex disappear before conducting a commit. This includes fixing all
+%   warnings regarding missing or multiply defined labels.
 %
 % ORGANIZING THE SECTIONS
 % * Put a single sentence in a single line, i.e. start a new line for each new
