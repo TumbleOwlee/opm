@@ -1263,25 +1263,26 @@ Enter \code{help(sort, package = "opm")} and \code{help(merge, package = "opm")}
 
 In the \pkg{opm} manual and help pages, the functions relevant for plotting are contained in a family called ``plotting-functions'' with according cross-references.
 The function \code{xy\_plot} displays the respiration curves as such (see Figure~\ref{fig:xy_plot}).
-In our example the selected \proglang{OPMS} object \code{vaas.1.6} is the subset of the dataset \code{vaas\_et\_al} constructed in Section~\ref{application manipulation}:
+In our example the selected \proglang{OPMS} object \code{vaas.1.6} is the subset of the dataset \code{vaas\_et\_al} constructed in Section~\ref{application manipulation}, additionally reduced to the firs 24 wells:
 
 <<label=xy-plot-dummy, eval=FALSE>>=
-xy_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
+xy_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain"))
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<label=xy-plot-figure, fig=TRUE, echo=FALSE, width=18, height=12>>=
-print(xy_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
+print(xy_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain")))
 @
 }
 \caption{
 \label{fig:xy_plot}
-PM curves from the 6th technical repetition of the first biological repetition plotted using \code{xy\_plot} and by default arranged according to the factual plate layout (see \citep{vaas} for the difference between technical and biological repetitions).
+PM curves from the 6th technical repetition of the first biological repetition and the first 24 wells plotted using \code{xy\_plot} (see \citep{vaas} for the difference between technical and biological repetitions).
 The respective curves from all four strains are superimposed; the affiliation to each strain is indicated by colour (see the legend).
 The x-axes show the measurement time in hours, the y-axes the measured colour intensities in OmniLog\textregistered \ units.
+Compare Figure~\ref{fig:level_plot}, which depicts exactly the same wells.
 }
 \end{figure}
 
@@ -1294,20 +1295,20 @@ Character vectors, lists and formulas are allowed as \code{include} argument.
 See Section~\ref{application metadata} and \code{?metadata} in the help pages for details.
 In the example the combination of species and strain is used, yielding four distinct colours.
 If \code{include} is not used, the colours are assigned per plate.
-Several predefined colour palettes are available in \pkg{opm} (accessible \textit{via} \code{select_colors}) with a maximum of 24 distinct colours.
-If more colours were needed, the user should set up a larger own colour vector and pass it as the argument \code{col} to \code{xy_plot} or preferably use \code{opm\_opt(colors = ...)}.
+Several predefined colour palettes are available in \pkg{opm} (accessible \textit{via} \code{select\_colors}) with a maximum of 24 distinct colours.
+If more colours were needed, the user should set up a larger own colour vector and pass it as the argument \code{col} to \code{xy\_plot} or preferably use \code{opm\_opt(colors = ...)}.
 
-The plotting of sub-panels (see Figure~\ref{fig:xy_plot_2}) works as described above; the only difference is the previous manipulation of the dataset:
+The plotting of fewer sub-panels (see Figure~\ref{fig:xy_plot_2}) works as described above; the only difference is in the manipulation of the dataset (note that the order of wells is changed in the plotted object, but not in the plot):
 
 <<label=xy-plot-partial-dummy, eval=FALSE>>=
-xy_plot(vaas.1.6[, , c("A01", "G11", "H11")],
+xy_plot(vaas.1.6[, , c("H11", "A01", "G11")],
   main = "E. coli vs. P. aeruginosa", include = list("Species", "Strain"))
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<label=xy-plot-partial-figure, fig=TRUE, echo=FALSE, width=9, height=6>>=
-print(xy_plot(vaas.1.6[, , c("A01", "G11", "H11")],
+print(xy_plot(vaas.1.6[, , c("H11", "A01", "G11")],
   main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain")))
 @
@@ -1324,14 +1325,14 @@ The x-axes show the measurement time in hours, the y-axes the measured colour-va
 The function \code{level\_plot} (see Figure~\ref{fig:level_plot}) provides false-colour level plots from the raw respiration measurements over time:
 
 <<label=level-plot-dummy, eval=FALSE>>=
-level_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
+level_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain"))
 @
 
 \begin{figure}
 \scalebox{1.225}{
 <<label=level-plot-figure, fig=TRUE, echo=FALSE, width=18, height=12>>=
-print(level_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
+print(level_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
   include = list("Species", "Strain")))
 @
 }
@@ -1340,6 +1341,7 @@ print(level_plot(vaas.1.6, main = "E. coli vs. P. aeruginosa",
 Visualization of PM curves using the function \code{level\_plot}.
 Each respiration curve is displayed as a thin horizontal line, in which the curve height as measured in colour-value units is represented by color intensity (darker parts indicate higher curves).
 The x-axes correspond to the measurement time in hours.
+Compare Figure~\ref{fig:xy_plot}, which depicts exactly the same wells.
 }
 \end{figure}
 
