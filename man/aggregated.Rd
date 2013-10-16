@@ -43,7 +43,7 @@
   \code{\link{OPMS}} objects with one sublist per plate.
   Otherwise this nested list is converted to a matrix or
   data frame, depending on the value of \code{join}. The
-  following values yield a a matrix in character mode and
+  following values yield a matrix in character mode and
   differ in how they would convert non-scalar values in a
   matrix in list mode, if encountered: \describe{
   \item{json}{Converts to a \acronym{JSON} string.}

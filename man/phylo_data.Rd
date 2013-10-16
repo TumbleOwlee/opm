@@ -286,7 +286,7 @@ stopifnot(is_html(yy), length(yy) == length(y) - 1) # no symbols list
 # the highlighting is also used here, based on the following heuristic:
 # if mean+/-2*sd does not overlap, the character is informative; else
 # if mean+/-sd does not overlap, the character is uninformative; otherwise
-# is is constant
+# it is constant
 
 # this can also be used for formats other than HTML (but not all make sense)
 echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",

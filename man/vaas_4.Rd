@@ -28,7 +28,7 @@
   6th technical replicate from the first biological
   replicate for the strain \emph{Escherichia coli}
   DSM30083T (yes, the type strain of \emph{E. coli}). This
-  is a a subset of \code{vaas_4}.
+  is a subset of \code{vaas_4}.
 
   The complete data set is available as \code{vaas_et_al}
   in the \pkg{opmdata} package.
@@ -66,5 +66,6 @@ data(vaas_1)
 
   \url{http://www.dsmz.de/catalogues/details/culture/DSM-30083.html}
 }
+\keyword{datasets}
 \keyword{datasets}
 

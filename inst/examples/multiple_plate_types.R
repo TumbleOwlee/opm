@@ -72,7 +72,7 @@ for (i in 1:length(x)) {
     warning("inserting dummy organism name", immediate. = TRUE)
   }
 
-  # Adding metadata is easiest via a data frame whose order of rows is the the
+  # Adding metadata is easiest via a data frame whose order of rows is the
   # same than the order of OPM objects within the OPMS object. We get such a
   # data frame from the CSV data, of course.
   #

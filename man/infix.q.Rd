@@ -58,7 +58,7 @@
   \item The formula method attempts to evaluate the right
   side of the formula in the context of the metadata of
   \code{table} and returns the result. For the
-  \code{\link{WMD}} method, is is up to the user to ensure
+  \code{\link{WMD}} method, it is up to the user to ensure
   that the result is a logical scalar, but the method would
   succeed anyway. The \code{\link{OPMS}} method yields an
   error unless each plate yields a logical scalar. Symbols

@@ -50,6 +50,7 @@
 
 - streamlined the documentation (merged many entries) in the manual
 - substrate-information processing is now explained in a 2nd vignette
+- new examples in the example-code directory
 
 
 ################################################################################
