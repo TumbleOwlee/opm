@@ -185,8 +185,8 @@ Examples for each step would then be found in the according subsections of Secti
 An overview of these sections is provided in Section~\ref{methods overview}.
 
 The single most important problem users reported to us when applying \pkg{opm} was that the input files could not be read.
-This was uniformly due to the use of multi-plate CSV files.
-But the most recent versions of the OmniLog\textregistered \ software can batch-export one plate per CSV file, and \pkg{opm} can split multi-plate CSV into files that can be input by the package.
+This was uniformly due to the use of multi-plate \proglang{CSV} files.
+But the most recent versions of the OmniLog\textregistered \ software can batch-export one plate per \proglang{CSV} file, and \pkg{opm} can split multi-plate \proglang{CSV} into files that can be input by the package.
 See Section~\ref{methods import} for details and Section~\ref{application import} for a usage example.
 
 Details on the scientific background could well be skipped during a first reading.
@@ -254,7 +254,7 @@ The package features the statistically robust calculation and attachment of aggr
 Moreover, infrastructure is provided to merge this with any kind of additional metadata.
 These complex data bundles can then be exported in \proglang{YAML} format (\url{http://www.yaml.org/}), which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
 Its subset, \proglang{JSON} (\url{http://www.json.org/}), can also be used, for instance if a proper \proglang{YAML} parser is unavailable.
-As \pkg{opm} is also able to generate \proglang{R} matrices and data frames, output in CSV (character-separated values) is also easy.
+As \pkg{opm} is also able to generate \proglang{R} matrices and data frames, output in \proglang{CSV} (character-separated values) is also easy.
 
 Data evaluation includes the graphical display of the data such as the raw respiration curve kinetics or the confidence intervals of aggregated curve parameters.
 With sophisticated selection methods the user is able to sort, group and arrange the data according the specific experimental questions in the plotting and analysis framework.
@@ -298,7 +298,7 @@ Since experimental frameworks can be imagined where only very limited meta-infor
 % Avoid repetition (of the previous and forthcoming chapters) as far as possible.
 % Remember: repetition causes a huge maintenance problem.
 
-The raw kinetic data can be exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis} as CSV files and imported into the \pkg{opm} package using \code{read\_opm}. 
+The raw kinetic data can be exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis} as \proglang{CSV} files and imported into the \pkg{opm} package using \code{read\_opm}. 
 This is explained in detail in section Section~\ref{methods import}, whereas corresponding code examples are found in Section~\ref{application import}.
 
 Batch processing many files is also possible, even without starting an interactive \proglang{R} session.
@@ -340,21 +340,21 @@ After a successful installation of \pkg{opm}, the complete \proglang{R} code ext
 
 \subsection[Data import]{Data import}\label{methods import}
 
-The proprietary OmniLog\textregistered \ PM data analysis software \textit{File Management/Kinetic Analysis} \citep{biologInc} can export the kinetic raw data from single or multiple plates as CSV files.
+The proprietary OmniLog\textregistered \ PM data analysis software \textit{File Management/Kinetic Analysis} \citep{biologInc} can export the kinetic raw data from single or multiple plates as \proglang{CSV} files.
 These contain a small amount of associated run information that has been entered at the interface of the OmniLog\textregistered \ PM \textit{Data Collection} software, which controls the OmniLog\textregistered \ reader.
-Currently this generation of CSV files involves the creation of intermediary files with the extension ``d5e'' from the original ones with the extension ``oka''.
-For use with \pkg{opm}, the raw kinetic data should be exported into a single CSV file for each measured plate.
-The \pkg{opm} package currently does not support the input of several plates from PM-mode runs stored in a single CSV file, but it offers the function \code{split\_files} for splitting old-style CSV files containing multiple plates.
-(We refer to the CSV exports from the currently distributed OmniLog\textregistered \ PM \textit{File Management/Kinetic Analysis} software as ``old style''.
-Forthcoming versions are expected to export the data in a slightly different CSV format we call ``new style''.
+Currently this generation of \proglang{CSV} files involves the creation of intermediary files with the extension ``d5e'' from the original ones with the extension ``oka''.
+For use with \pkg{opm}, the raw kinetic data should be exported into a single \proglang{CSV} file for each measured plate.
+The \pkg{opm} package currently does not support the input of several plates from PM-mode runs stored in a single \proglang{CSV} file, but it offers the function \code{split\_files} for splitting old-style \proglang{CSV} files containing multiple plates.
+(We refer to the \proglang{CSV} exports from the currently distributed OmniLog\textregistered \ PM \textit{File Management/Kinetic Analysis} software as ``old style''.
+Forthcoming versions are expected to export the data in a slightly different \proglang{CSV} format we call ``new style''.
 Please contact your local representative of the vendor for the latest software version.)
 
-As of version 0.4-0, \pkg{opm} also supports the input of MicroStation\textregistered \ CSV files (frequently used in conjunction with EcoPlate\textregistered \ assay for microbial community analysis) \citep{Vaas2013}.
+As of version 0.4-0, \pkg{opm} also supports the input of MicroStation\textregistered \ \proglang{CSV} files (frequently used in conjunction with EcoPlate\textregistered \ assay for microbial community analysis) \citep{Vaas2013}.
 These files contain only end-point measurements but potentially several plates, which can nevertheless be input together with their potentially also rich meta-information.
 
-The easiest way to load the raw kinetic data (as CSV files or as \proglang{YAML} or \proglang{JSON}) into \proglang{R} in a single step is using the function \code{read\_opm} (see Figure~\ref{fig:work_flow}).
+The easiest way to load the raw kinetic data (as \proglang{CSV} files or as \proglang{YAML} or \proglang{JSON}) into \proglang{R} in a single step is using the function \code{read\_opm} (see Figure~\ref{fig:work_flow}).
 If raw data from only one single-plate OmniLog\textregistered \ PM are imported, the resulting object belongs to the \proglang{S4} class \proglang{OPM}.
-This class for holding single-plate OmniLog\textregistered \ PM data originally only includes the (limited) meta-information read from the original input CSV files, but an arbitrary amount of metadata can be added later on (see Figure~\ref{fig:work_flow}).
+This class for holding single-plate OmniLog\textregistered \ PM data originally only includes the (limited) meta-information read from the original input \proglang{CSV} files, but an arbitrary amount of metadata can be added later on (see Figure~\ref{fig:work_flow}).
 If multiple plates are imported, the resulting object automatically belongs to the \proglang{S4} class \proglang{OPMS}.
 In the \proglang{OPMS} class, data may have been obtained from distinct organisms and/or replicates, but must correspond to the same plate type and must contain the same wells (see Figure~\ref{fig:work_flow}).
 The function \code{read\_opm} has an argument ``convert'' which controls how sets of plates with distinct types are treated; for instance, the function can return a list of  \proglang{OPMS} objects, one for each encountered plate type.
@@ -368,7 +368,7 @@ We would nevertheless recommend storage in \proglang{YAML} format.
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{methods batch}
 
-To process and store huge numbers of raw data files, the function \code{batch\_opm} reads all OmniLog\textregistered \ CSV files (or \proglang{YAML} or \proglang{JSON} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} (or \proglang{JSON} or \proglang{CSV}) format.
+To process and store huge numbers of raw data files, the function \code{batch\_opm} reads all OmniLog\textregistered \ \proglang{CSV} files (or \proglang{YAML} or \proglang{JSON} files previously generated with \pkg{opm}) within a given list of files and/or directories and converts them to \pkg{opm} \proglang{YAML} (or \proglang{JSON} or \proglang{CSV}) format.
 It is possible to let \pkg{opm} automatically include metadata (Section~\ref{methods metadata}) and aggregated values (curve parameters) (Section~\ref{methods aggregating}) as well as discretized values (Section~\ref{methods discrete-binary}) during this conversion.
 Alternatively, graphics files containing the output of \code{xy\_plot} or \code{level\_plot} can be batch-produced; see Section~\ref{methods plotting} for Details.
 File selection and unselection using regular expressions or globbing patterns is integrated in the function.
@@ -382,20 +382,20 @@ On such systems it can also be run in parallel, making use of multi-core machine
 
 The interface of the \textit{Data Collection} software of the OmniLog\textregistered \ reader is restricted in size and contains only comparatively few fields for entering accompanying information  to each plate such as on the organism under study or the culture conditions.
 Further, not all of these fields are exported together with the raw measurements.
-The few metadata that come along with the imported CSV file can be accessed \textit{via} \code{csv_data}.
+The few metadata that come along with the imported \proglang{CSV} file can be accessed \textit{via} \code{csv_data}.
 But for most experimental designs it is clearly necessary to add much more meta-information to the kinetic data.
 It has to be emphasized that metadata can include all kind of describing characteristics of the observed organism(s) such as taxonomic affiliation, geographical and/or ecological origin, and of the performed experimental setting such as culture conditions, genetic modifications, physiological information of any kind and so on.
 
 To this end, the \pkg{opm} user can integrate the metadata into \proglang{OPM} and \proglang{OPMS} objects using the function \code{include\_metadata} (among other functions for this task; see Figure~\ref{fig:overview}).
-Usually, the metadata are kept in a data frame which can conveniently be saved to, and generated directly from, a CSV file.
+Usually, the metadata are kept in a data frame which can conveniently be saved to, and generated directly from, a \proglang{CSV} file.
 For an unambiguous match between the raw kinetic data in the \proglang{OPMS} object and the collected metadata, a unique identifier is needed.
 This is, by default, provided by the combination of \textit{Setup Time} and \textit{Position}, which should unequivocally identify certain plates.
 \textit{Setup Time} indicates the date and time at the precision of seconds of starting the batch read in the OmniLog\textregistered \ reader.
 \textit{Position} indicates the position of the plate in the OmniLog\textregistered \ reader.
 (For instance, \textit{10-A} indicates the plate sliding carriage number 10 in slot A of the reader, but for \pkg{opm} the meaning is irrelevant, as these entries only serves as identifiers.)
-Both \textit{Setup Time} and \textit{Position} are automatically recorded by the OmniLog\textregistered \ reader \textit{Data Collection} software and are exported by the OmniLog\textregistered \ PM \textit{File Management/Kinetic Analysis} software into CSV files together with the raw kinetic data.
+Both \textit{Setup Time} and \textit{Position} are automatically recorded by the OmniLog\textregistered \ reader \textit{Data Collection} software and are exported by the OmniLog\textregistered \ PM \textit{File Management/Kinetic Analysis} software into \proglang{CSV} files together with the raw kinetic data.
 
-To facilitate the user-friendly compilation of metadata, \code{collect\_template} generates a data frame (and additionally, if requested, a CSV file) in which each line represents a single PM plate.
+To facilitate the user-friendly compilation of metadata, \code{collect\_template} generates a data frame (and additionally, if requested, a \proglang{CSV} file) in which each line represents a single PM plate.
 The function \code{collect\_template} by default automatically includes the \textit{Setup Time} and \textit{Position} of each plate into the data frame or file providing a structured template for the addition of metadata.
 The user can subsequently add further columns describing any metadata of interest on any PM plate of interest.
 The resulting data frame can then be queried for the information specific to each plate, and the corresponding row integrated into \proglang{OPM} or \proglang{OPMS} objects using \code{include\_metadata}.
@@ -497,7 +497,7 @@ But export in some useful file formats is also possible.
 }
 \caption{\label{fig:overview}
 This scheme provides a detailed overview of the possible strategies and appropriate functions for data analysis using the \pkg{opm} package.
-Beginning with one to several CSV files containing raw kinetic data exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis}, or \proglang{YAML} or \proglang{JSON} files that have been generated in previous \pkg{opm} runs, a variety of work flows are possible for setting up  \proglang{OPM} or \proglang{OPMS} objects.
+Beginning with one to several \proglang{CSV} files containing raw kinetic data exported by the proprietary OmniLog\textregistered \ software \textit{File Management/Kinetic Analysis}, or \proglang{YAML} or \proglang{JSON} files that have been generated in previous \pkg{opm} runs, a variety of work flows are possible for setting up  \proglang{OPM} or \proglang{OPMS} objects.
 Additionally, methods for metadata management, plotting the data in a customized manner, querying and sub-setting the generated objects, statistical comparison of multiple group means, and data-conversion tools including discretization, report generation and output in files are provided.
 How to use \code{annotated} to produce graphics is explained in a separate vignette, ``Working with substrate information in \pkg{opm}'', which is also available together with the package.
 }
@@ -698,15 +698,15 @@ The combination of the keys \textit{Strains}, \textit{Species}, \textit{Experime
 
 \subsection[Data import]{Data import}\label{application import}
 
-The following code describes the import of the OmniLog\textregistered \ CSV file(s) into the \pkg{opm} package.
+The following code describes the import of the OmniLog\textregistered \ \proglang{CSV} file(s) into the \pkg{opm} package.
 In the \pkg{opm} manual and all help pages, all functions relevant for data import are contained in a family of functions called ``IO-functions'' with according cross-references.
 
-The CSV files with the OmniLog\textregistered \ raw data should be stored in one to several user-defined folders.
-Setting the working directory of \proglang{R} to the parent folder of these using \code{setwd} frequently facilitates file selection, but in principle the user can provide any number of paths to input files and/or directories containing such files to the function \code{read\_opm}, which can load several CSV files (and also \proglang{YAML} or \proglang{JSON} files generated by \pkg{opm}) at once.
-A restriction of the input functions is that they can solely read CSV files that only contain the measurements from a single plate per file (either a PM plate or a single GEN-III plate measured in either PM- or identification modus).
-But the package contains a function \code{split_files}, which can be used to split CSV files with multiple plates into one file per plate.
+The \proglang{CSV} files with the OmniLog\textregistered \ raw data should be stored in one to several user-defined folders.
+Setting the working directory of \proglang{R} to the parent folder of these using \code{setwd} frequently facilitates file selection, but in principle the user can provide any number of paths to input files and/or directories containing such files to the function \code{read\_opm}, which can load several \proglang{CSV} files (and also \proglang{YAML} or \proglang{JSON} files generated by \pkg{opm}) at once.
+A restriction of the input functions is that they can solely read \proglang{CSV} files that only contain the measurements from a single plate per file (either a PM plate or a single GEN-III plate measured in either PM- or identification modus).
+But the package contains a function \code{split_files}, which can be used to split \proglang{CSV} files with multiple plates into one file per plate.
 
-To illustrate the file import step by step, a set of input CSV example files is provided with the package.
+To illustrate the file import step by step, a set of input \proglang{CSV} example files is provided with the package.
 Before starting, remember that the \pkg{opm} package must be loaded.
 Then use the built-in function \code{opm\_files} to find the example files in your \proglang{R} installation:
 <<label=opm-files, results=hide>>=
@@ -718,7 +718,7 @@ Afterwards check whether this returned a vector of nine file names, including th
 For demonstration purposes, the test data contain data from EcoPlate\textregistered \, Gen-III, PM01 and PM20 plate types. 
 One of these files contains multiple plates and acts as an example for \code{split_files}; the other ones can be read directly.
 
-As a demonstration of file splitting, consider the following code, which creates single-plate CSV files from the multi-plate file that comes with \pkg{opm}:
+As a demonstration of file splitting, consider the following code, which creates single-plate \proglang{CSV} files from the multi-plate file that comes with \pkg{opm}:
 
 <<label=file-splitting, results=hide>>=
 multi.plate.file <- grep("Multiple", files,
@@ -739,7 +739,7 @@ unlink(grep("Multiple-0000", list.files(),
 @
 
 Using \code{read\_opm}, from a given vector of file and/or directory names, files can be easily selected and deselected using globbing or regular-expression patterns.
-For instance, for reading the three example files in ``new style'' CSV format (see Section~\ref{methods import}), use the following code.
+For instance, for reading the three example files in ``new style'' \proglang{CSV} format (see Section~\ref{methods import}), use the following code.
 
 <<label=read-opm, results=hide>>=
 example.opm <- read_opm(files, include = "*Example_?.csv.xz")
@@ -771,7 +771,9 @@ rm(many.plates) # tidy up
 
 This yields the data from plates with distinct plate types in a single object.
 Note that the objects for each encountered plate type can easily be accessed \textit{via} the names of the list.
-More example code is available \textit{via} \code{opm\_files("examples")}.
+More example code is available \textit{via} \code{opm\_files("demo")}.
+Call \code{demo("multiple-plate-types", package = "opm")} after moving to the directory with input \proglang{CSV} files (or a parent directory of it).
+Unreadable \proglang{CSV} would yield an error.
 
 A single plate could also be imported using \code{read\_single\_opm}.
 But this might only occasionally be useful, as \code{read\_opm} can cope with single files, too.
@@ -779,7 +781,7 @@ But this might only occasionally be useful, as \code{read\_opm} can cope with si
 
 \subsection[Batch conversion of many files]{Batch conversion of many files}\label{application batch}
 
-In addition to \code{read\_opm} and \code{read\_single\_opm} (Section~\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from CSV (or previously generated \proglang{YAML} or \proglang{JSON}) to \proglang{YAML}, \proglang{JSON} or \proglang{CSV} format, is also possible.
+In addition to \code{read\_opm} and \code{read\_single\_opm} (Section~\ref{application import}), which need to be called before an interactive exploration of PM data, batch-processing large numbers of files by converting them from \proglang{CSV} (or previously generated \proglang{YAML} or \proglang{JSON}) to \proglang{YAML}, \proglang{JSON} or \proglang{CSV} format, is also possible.
 This optionally includes aggregating the raw data by estimating curve parameters (Section~\ref{application aggregating}), discretizing these parameters (Section~\ref{application discrete-text}) and integrating metadata (Section~\ref{application metadata}). 
 Again there is a \textit{demo} mode to first investigate the attempted conversions:
 
@@ -817,7 +819,7 @@ Regarding its use, see the documentation of \proglang{Rscript} for details (ente
 
 Several ways for linking metadata to \proglang{OPM} or \proglang{OPMS} objects are possible.
 The easiest one is probably the batch-inclusion after creating a template with plate identifiers associating it with metadata.
-In the first step, either a data frame to be manipulated within \proglang{R} or a CSV file to be modified with a suitable editor are created.
+In the first step, either a data frame to be manipulated within \proglang{R} or a \proglang{CSV} file to be modified with a suitable editor are created.
 The \pkg{opm} package supports metadata integration by creating a template for such a table from an \proglang{OPM} or \proglang{OPMS} objects that contains plate identifiers in the first columns; by default the keys \textit{Setup Time}, \textit{Position} and \textit{File}.
 These data must not be changed, ensuring that the package can later on link the metadata to the dedicated plates according to these identifiers.
 
@@ -840,13 +842,13 @@ An ID for the OmniLog\textregistered \ instrument in use can also be added.
 This makes sense if plates from several such machines are analysed.
 A further option is to normalize the plate-position and setup-time entries; see the manual for details.
 
-The generated CSV file could then be edited using external software; for the purpose of this tutorial, we load it directly and manipulate it in \proglang{R}.
+The generated \proglang{CSV} file could then be edited using external software; for the purpose of this tutorial, we load it directly and manipulate it in \proglang{R}.
 To avoid the usual changes in data format and header of the table during the import a customized import function was implemented as a wrapper for \code{read.delim}:
 <<label=to-metadata-read>>=
 metadata.example <- to_metadata("example_metadata.csv")
 @
-Per default, this expects CSV columns separated by tabulators, with the fields protected by quotes.
-To input other formats, consider the \code{sep} argument for defining an alternative column separator, as well as the \code{strip.white} argument for turning the removal of whitespace at the beginning and end of the fields on or off (which is relevant if a spreadsheet program exports CSV \textit{without} quotes).
+Per default, this expects \proglang{CSV} columns separated by tabulators, with the fields protected by quotes.
+To input other formats, consider the \code{sep} argument for defining an alternative column separator, as well as the \code{strip.white} argument for turning the removal of whitespace at the beginning and end of the fields on or off (which is relevant if a spreadsheet program exports \proglang{CSV} \textit{without} quotes).
 
 Now the user could add information to the data frame by calling \code{edit}, which would open the \proglang{R} editor, or by any other way of manipulating data frames in \proglang{R}.
 New columns could be defined, or the existing metadata modified.
@@ -881,7 +883,7 @@ A couple of other functions have been implemented for manipulating metadata incl
 For instance, the entire meta-information, or specific entries, can be set using the replacement function \code{metadata<-}.
 Setting a specific entry named \code{key} to a specific value \code{value} in all plates would be accomplished by \code{metadata(example.opm, key) <- value}.
 If the right side of the assignment is a data frame with the same length as the \proglang{OPMS} object, each row would be specifically assigned to the \proglang{OPM} object with the same index.
-This comes handy for adding the \code{csv\_data} selected or all information from the OmniLog\textregistered \ CSV files to the metadata:
+This comes handy for adding the \code{csv\_data} selected or all information from the OmniLog\textregistered \ \proglang{CSV} files to the metadata:
 
 <<label=to-metadata-convert, results=hide>>=
 metadata(example.opm)
@@ -1382,7 +1384,9 @@ The default can by set with \code{opm\_opt(hm.colors = ...)}.
 }
 \end{figure}
 
-Additional example code on clustering curve parameters, including an assessment of the uncertainty of the branching, is available \textit{via} \code{opm\_files("examples")}.
+Additional example code on clustering curve parameters, including an assessment of the uncertainty of the branching, is available \textit{via} \code{opm\_files("demo")}.
+Call \code{demo("cluster-with-pvalues", package = "opm")} for running examples based on the  using the \pkg{pvclust} package \citep{Suzuki2011}.
+
 
 The function \code{radial\_plot} is able to plot numeric values as distances from the center of a circular field in directions defined by angles in radians.
 Some selection of wells should usually be applied beforehand for these plots to be useful.
@@ -1523,9 +1527,11 @@ Compare this with Figure~\ref{fig:ci_plot_groups}.
 }
 \end{figure}
 
-Additional example code on visualizing curve parameters is available \textit{via} \code{opm\_files("examples")}.
+Additional example code on visualizing curve parameters is available \textit{via} \code{opm\_files("demo")}.
 It is indeed easy to conduct principal-component analysis (PCA) with matrices created with \code{extract}.
-Examples are given based on the \pkg{BiodiversityR} package \citep{Kindt2005}.
+Call \code{demo("custom-PCA", package = "opm")} for running examples based on the \pkg{BiodiversityR} package \citep{Kindt2005}.
+
+
 \pagebreak
 
 

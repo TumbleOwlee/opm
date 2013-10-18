@@ -72,6 +72,10 @@
   details. The other customized plotting functions of the
   package are contained in the same method family.} }
 }
+\examples{
+demo(package = "opm")
+# additional package installs are needed for some of the demos
+}
 \references{
   \url{http://www.biolog.com/}
 

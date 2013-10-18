@@ -1,6 +1,11 @@
 opm_files <- function(
-    what = c("scripts", "testdata", "auxiliary", "examples", "doc")) {
-  pkg_files(x = opm_string(), what = match.arg(what))
+    what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc")) {
+  what <- match.arg(what)
+  if (what == "examples") {
+    warning("'examples' is deprecated, use 'demo'")
+    what <- "demo"
+  }
+  pkg_files(x = opm_string(), what)
 }
 
 param_names <- function(

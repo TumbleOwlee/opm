@@ -1,33 +1,20 @@
-
-
-################################################################################
-#
-# PREAMBLE
-#
-
-
-# This is example R code for using BiodiversityR/vegan together with opm to
-# draw PCA biplots describing Phenotype MicroArray data. An advantage of such
-# plots is that the overall differences between the organisms can be plotted
-# together with indications of the effect of certain subtrates on these
-# differences. Furthermore, the data are reduced to their independent
-# components before plotting. Depending on the biological question, this might
-# be more interesting than drawing heat maps.
-#
-# Some BiodiversityR functions do not seem to work as intended, see the
-# comments below.
-#
-# (C) 2013 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
-#
-# This file is distributed under the terms of the GPL. Hints by Pia Wuest, DSMZ,
-# are gratefully acknowledged.
+### Analysing Phenotype MicroArray data: drawing PCA biplots
+###
+### Using BiodiversityR and opm to generate PCA biplots of estimated parameters.
+### An advantage of such plots is that the overall differences between the
+### organisms can be plotted together with indications of the effect of certain
+### subtrates on these differences. Furthermore, the data are reduced to their
+### independent components before plotting. Depending on the biological
+### question, this might be more interesting than drawing heat maps. Some
+### BiodiversityR functions do not always seem to work as intended, see the
+### comments below.
 
 
 library(BiodiversityR)
 library(opm)
 
 
-################################################################################
+### Define auxiliary function:
 
 
 #' PCA biplot of PM data with BiodiversityR
@@ -85,16 +72,10 @@ custom_pca <- function(x, group = TRUE, circle = scaling == 1,
 }
 
 
-################################################################################
+### Create PCA biplot for the vaas_4 example data:
 
-
-# The following code creates a PCA biplot for the vaas_4 example data.
-#
 x <- opm::extract(vaas_4, as.labels = list("Strain"),
   as.groups = list("Species"))
-pdf("vaas_4_PCA.pdf")
 x.pca <- custom_pca(x)
-dev.off()
-
 
 

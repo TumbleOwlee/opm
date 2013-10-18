@@ -1,0 +1,3 @@
+cluster-with-pvalues    Use opm and pvclust to calculate clusterings with branch support values
+custom-PCA    Use opm and BiodiversityR/vegan to draw PCA biplots of Phenotype MicroArray data
+multiple-plate-types    Apply opm to all CSV files in the working directory to generate HTML, YAML and PDF output

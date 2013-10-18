@@ -1,27 +1,23 @@
+### Analysing Phenotype MicroArray data: converting CSV files
+###
+### This is example R code for using opm in a standardized setting to create
+### files describing Phenotype MicroArray results run in PM mode, with special
+### emphasis on the kind of information needed in microbial taxonomy.
+###
+### It reads all CSV files within the working directory and produces YAML, HTML
+### and PDF output. This code naively assumes that the relevant meta-information
+### defining the organism groups is found within the CSV files. Apart from that,
+### it would need only minimal adaptations for real-world use after modifying
+### a copy of it within an R text editor.
+###
+### For advanced users, we recommend to use batch_opm() instead for most of the
+### steps conducted below.
 
-################################################################################
-#
-# PREAMBLE
-#
 
-# This is example R code for using opm in a standardized setting to create
-# files describing Phenotype MicroArray results run in PM mode, with special
-# emphasis on the kind of information needed in microbial taxonomy.
-#
-# It reads all CSV files within the working directory and produces YAML, HTML
-# and PDF output. It naively assumes that the relevant meta-information defining
-# the organism groups is found within the CSV files. Apart from that, it would
-# need only minimal adaptations for real-world use after copying its two pages
-# into an R text editor.
-#
-# For advanced users, we recommend to use batch_opm() instead for most of the
-# steps conducted below.
-#
-# (C) 2013 by Markus Goeker (markus [DOT] goeker [AT] dsmz [DOT] de)
-#
-# This file is distributed under the terms of the GPL.
+library(opm)
 
-library(opm) # version >= 0.8-0 is needed
+
+### Default settings:
 
 # Names of replicate IDs. If not within the input CSV data, automatically
 # generated below. Technically not mandatatory, but useful for addressing each
@@ -36,18 +32,17 @@ replicate <- "Replicate"
 organism <- "Strain Number"
 
 
-################################################################################
-#
-# INPUT SECTION
-#
+### DATA INPUT:
 
-# Data input. We assume that only the CSV files within the working directory
+# We assume that only the CSV files within the working directory
 # should be input and that the data read should be grouped by plate type.
 #
 x <- read_opm(getwd(), convert = "grp", include = list("csv"))
 
-# Select some CSV data, convert them and enter them as metadata. This needs to
-# be adapted to the way CSV data have been recorded.
+
+### Select some CSV data, convert them and enter them as metadata:
+
+# This needs to be adapted to the way CSV data have been recorded.
 #
 for (i in 1:length(x)) {
 
@@ -81,10 +76,7 @@ for (i in 1:length(x)) {
 }
 
 
-################################################################################
-#
-# COMPUTING SECTION: AGGREGATION AND DISCRETIZATION
-#
+### COMPUTING SECTION: AGGREGATION AND DISCRETIZATION
 
 for (i in 1:length(x)) {
 
@@ -104,10 +96,7 @@ for (i in 1:length(x)) {
 }
 
 
-################################################################################
-#
-# OUTPUT SECTION
-#
+### OUTPUT SECTION:
 
 # Copy the CSS file that comes with opm to the current working directory and set
 # it as default for HTML tables.
@@ -149,7 +138,5 @@ for (name in names(x)) {
   dev.off()
 
 }
-
-################################################################################
 
 
