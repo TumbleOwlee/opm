@@ -306,9 +306,9 @@ setMethod("map_metadata", c(WMD, "missing"), function(object, mapping,
     values = TRUE, classes = "factor") {
   if (L(values))
     object@metadata <- rapply(object@metadata, function(x) if (all(is.na(x)))
-      NULL
-    else
-      x, "ANY", NULL, "replace")
+        NULL
+      else
+        x, "ANY", NULL, "replace")
   object@metadata <- map_values(object@metadata, NULL, classes)
   object
 }, sealed = SEALED)

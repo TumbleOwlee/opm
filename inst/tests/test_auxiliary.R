@@ -632,6 +632,16 @@ test_that("NAs in a list can be repaired", {
 })
 
 
+## rescue_dots
+test_that("rescue_dots re-inserts dots but only where necessary", {
+  x <- 1:10
+  expect_equal(rescue_dots(x), x)
+  x <- c("A_B", "A.B", "_AB", "_A_B", "__AB_", NA, "")
+  got <- rescue_dots(x)
+  expect_equal(got, c("A_B", "A.B", "_AB", "A.B", ".AB.", NA, ""))
+})
+
+
 ################################################################################
 ################################################################################
 #

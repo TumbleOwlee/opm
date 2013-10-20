@@ -195,6 +195,7 @@ The interested user would nevertheless find them in Section~\ref{scientific intr
 All web resources regarding \pkg{opm} are linked on its main website \url{http://opm.dsmz.de/}.
 
 Note that details on how substrate information can be processed by \pkg{opm} are found in a separate vignette, ``Working with substrate information in \pkg{opm}'', which is also available together with the package.
+Finally, do not overlook that there is an \pkg{opm} manual that describes all functions and arguments in much greater detail than possible in any if the vignettes.
 
 
 \subsection[Scientific introduction]{Scientific introduction}\label{scientific introduction}
@@ -329,13 +330,16 @@ Example code, including the export of discretization results as  publication-rea
 Textual reports with or without formatting markup can also be produced, as exemplified in Section~\ref{application discrete-text}.
 The discretization settings can be modified in detail; see Section~\ref{application discrete-finetuning}.
 
-Furthermore, substrate information can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as they are available.
+Furthermore, substrate information can be accessed, including CAS numbers, KEGG and Metacyc IDs as far as available (IDs for the ChEBI database are complete wherever applicable.) 
 Detailed explanations and code examples are included in the vignette ``Working with substrate information in \pkg{opm}''.
+
+Database interaction for storing and receiving PM data is described in the Section~\ref{methods database}.
 
 Finally, it is possible to modify settings that have an effect on multiple functions and/or on frequently used arguments. 
 See Section~\ref{methods settings} for details and Section~\ref{application discrete-table} for a code example.
 
 After a successful installation of \pkg{opm}, the complete \proglang{R} code extracted from this vignette (as well as all other vignette files) can be found \textit{via} \code{opm\_files("doc")}.
+For the manual, see \code{help(package = "opm")}; for the code demonstrations that come with \pkg{opm}, enter \code{demo(package = "opm")}.
 
 
 \subsection[Data import]{Data import}\label{methods import}
@@ -625,6 +629,27 @@ Both methods are accessible \textit{via} \code{do\_disc}.
 Export as richly annotated, publication-ready \proglang{HTML} table or text is possible using \code{phylo\_data} and \code{listing}.
 If analysis with phylogenetic programs was of interest, in the case of an intermediary state the data should then be analysed as described above.
 If intermediary values were coded as missing information they could be analysed under either Wagner or unordered (Fitch) maximum parsimony in \proglang{PAUP*} \citep{farris, fitch} or with the options for binary phenotypic characters in \proglang{RAxML} \citep{berger}, or corresponding settings in other programs.
+
+
+\subsection[Database]{Database input and output}\label{methods database}
+
+This topic is for advanced users and bioinformaticians, as it requires setting up, or at least having access to, a database server.
+For this reason, automatically executed (and thus checked) code for database I/O of PM data directly within \proglang{R} can neither be included here nor in the example sections of the \pkg{opm} manual.
+We have tested all of the following statements, and all of the mentioned code examples, on our own workstations.
+But for a successful database interaction users might need information that is not directly related to \pkg{opm} and thus cannot be treated in the documentation of this package.
+We can nevertheless provide example code that uses \pkg{opm} together with database-specific \proglang{R} packages for storing and receiving PM data.
+
+Database interaction differs greatly depending on whether a relational database or one of the more recent ``NoSQL'' alternatives is concerned.
+A popular document-oriented database is \proglang{MongoDB}, which is accessible \textit{via} the \pkg{RMongo} package \citep{Chheng2013}.
+If you have set up a local \proglang{MongoDB} server and installed \pkg{RMongo}, call \code{demo("MongoDB-IO", package = "opm")} for a usage example.
+The data storage used within \pkg{opm} fits well to a document-oriented database because \proglang{OPMX} objects do not enforce a particular structure for storing the metadata (see Section~\ref{methods metadata}).
+The same holds for the ``options'' entries of the aggregation and discretization settings.
+
+For working with a relational database management system (RDBMS), a scheme needs to be defined beforehand for storing the PM data, and additional conversions and selections are necessary.
+Future versions of this tutorial will provide hints regarding working with RDBMS and PM data in this section.
+Example code for RDBMS usage exists, but is so far only available from the \pkg{opm} R-Forge repository \textit{via} \proglang{SVN}.
+Programmers interested in this code should download it from there and consult the documentation or contact the authors.
+In the meantime, however, the output \proglang{YAML} format (or its subset, \proglang{JSON}) is likely to facilitate the quick establishment of third-party software for importing PM data into a database.
 
 
 \subsection[Global settings]{Global settings}\label{methods settings}
@@ -2124,19 +2149,13 @@ But since the design of the \pkg{opm} objects is not intended to be limited to s
 Particularly the generation of \proglang{S4} objects featuring a rich set of methods as containers for either single or multiple OmniLog\textregistered \ PM plates enables not only the transfer of raw kinetic data into \proglang{R} but also eases their further processing.
 The complex data bundles can also be exported in \proglang{YAML} format, which is a human-readable data serialization format that can be read by most common programming languages and facilitates fast and easy data exchange between laboratories.
 If a proper \proglang{YAML} parser was unavailable, its subset \proglang{JSON} could also be used.
+The interaction between \pkg{opm} and databases is also based on these formats; see Section~\ref{methods database}.
 The package can also generate \proglang{CSV} output files, but due to the limitation of this format these files cannot be read back into \pkg{opm} in a meaningful way (but into \proglang{R}).
-
-These features render the \pkg{opm} package the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
-Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 
 Power and limitations regarding usage of substrate information and their implementation for data arrangement and hypothesis testing are discussed in detail in the vignette ``Working with substrate information in \pkg{opm}''.
 
-Last but not least, it might also be useful to provide functionality for a direct cross-talk between \pkg{opm} and database management systems.
-The current version is entirely file-based, and whereas powerful selection mechanisms for both input files and container objects for previously imported PM plates have already been implemented, \pkg{opm} does not directly include database access.
-The development version of an auxiliary package, \pkg{opmDB}, however, is already available from the \pkg{opm} R-Forge repository \textit{via} \proglang{SVN}.
-Programmers interested in this package should download it from there and consult the documentation or contact the authors.
-In the meantime, however, the output \proglang{YAML} format (or its subset, \proglang{JSON}) is likely to facilitate the quick establishment of third-party software for importing PM data into a database.
-
+These features render the \pkg{opm} package the first comprehensive toolbox for the management and a broad range of analyses of OmniLog\textregistered \ PM data.
+Its usage requires some familiarity with \proglang{R}, but is otherwise intuitive and straightforward also for biologists who are not used to command-line based software.
 To summarize, we are convinced that the \pkg{opm} package already enables the users to analyse OmniLog\textregistered \ PM data in rather unlimited exploratory directions \citep{vaas, Vaas2013}.
 
 

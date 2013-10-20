@@ -4,7 +4,12 @@
 \alias{opm.package-package}
 \title{The opm package}
 \description{
-  Package for analysing OmniLog Phenotype MicroArray data.
+  Package for analysing
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  Phenotype MicroArray data. In addition to this manual,
+  tutorials (vignettes) are available together with the
+  package, as well as code examples accessible via
+  \code{demo}.
 }
 \details{
   Here is a brief guideline for using this manual:
@@ -51,7 +56,9 @@
   on libyaml as parser instead of Syck, are faster and
   contain some bug fixes.  The \acronym{YAML}-related
   functions of \pkg{opm} are \code{\link{to_yaml}} and
-  \code{\link{batch_opm}}.}
+  \code{\link{batch_opm}}. Optionally, \acronym{JSON} code
+  can be output, which uses a subset of the \acronym{YAML}
+  format.}
 
   \item{running time}{Computations on such high-dimensional
   data may take some time. The limiting steps are
@@ -73,8 +80,17 @@
   package are contained in the same method family.} }
 }
 \examples{
+\dontrun{ ## demo of some I/O, plotting, text and table generation options
+
+  # Beforehand, set 'my.csv.dir' to the name of a directory that contains
+  # CSV files with input data (and no other kinds of CSV files) either
+  # directly or within its subdirectories.
+  setwd(my.csv.dir)
+  demo("multiple-plate-types", package = "opm")
+}
+
 demo(package = "opm")
-# additional package installs are needed for some of the demos
+# the other demos require additional libraries to be installed
 }
 \references{
   \url{http://www.biolog.com/}
@@ -97,6 +113,8 @@ demo(package = "opm")
   \strong{7}, e34846.
 
   \url{http://www.yaml.org/}
+
+  \url{http://www.json.org/}
 }
 \keyword{package}
 

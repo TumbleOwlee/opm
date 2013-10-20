@@ -21,6 +21,15 @@
   vector are \strong{not} conserved by default in output
   \acronym{YAML}).}
 
+  \item{nodots}{Logical scalar indicating whether dots in
+  list names should be converted to underscores. This is
+  necessary in some situations (we met this problem when
+  storing \acronym{JSON} documents in a document-oriented
+  database). Converted names will additionally be marked by
+  prepending an underscore, which assists in getting the
+  original spelling back but is anything else than
+  fail-safe.}
+
   \item{...}{Optional other arguments passed to
   \code{as.yaml} from the \pkg{yaml} package.}
 }
@@ -80,6 +89,6 @@ write(to_yaml(x), "out.yml")
 \alias{to_yaml,YAML_VIA_LIST-method}
 \usage{
   \S4method{to_yaml}{YAML_VIA_LIST}(object, sep = TRUE,
-    line.sep = "\n", json = FALSE, listify = FALSE, ...) 
+    line.sep = "\n", json = FALSE, listify = nodots, nodots = FALSE, ...) 
 
 }

@@ -286,6 +286,7 @@ setGeneric("update_settings_list",
 setMethod("update_settings_list", "list", function(x) {
   if (is.null(names(x)))
     stop("expected named list 'x'")
+  x <- map_names(x, rescue_dots)
   if (!length(software <- x[[SOFTWARE]])) {
     x[[SOFTWARE]] <- software <- opm_string()
     warning(sprintf("inserting '%s' as '%s' entry", software, SOFTWARE))
@@ -326,8 +327,9 @@ setAs(from = "list", to = OPM, function(from) {
       sort.int(colnames(mat)[-hour.pos]))
     mat[, sorted.names, drop = FALSE]
   }
-  new(OPM, csv_data = unlist(from$csv_data),
-    metadata = repair_na_strings.list(as.list(from$metadata), "character"),
+  md <- repair_na_strings.list(as.list(from$metadata), "character")
+  new(OPM, csv_data = map_names(unlist(from$csv_data), rescue_dots),
+    metadata = map_names(md, rescue_dots),
     measurements = convert_measurements(from$measurements))
 })
 

@@ -2,13 +2,19 @@
 \alias{merge}
 \title{Merge plates}
 \arguments{
-  \item{x}{\code{\link{OPMS}} object.}
+  \item{x}{\code{\link{OPMX}} object.}
 
   \item{y}{Numeric vector indicating the time(s) (in hours)
   between two subsequent plates. Must be positive
   throughout, and its length should fit to the number of
   plates (e.g., either \code{1} or \code{length(x) - 1}
-  would work). If missing, \code{0.25} is used.}
+  would work). If missing, \code{0.25} is used.
+
+  If \code{x} is an \code{\link{OPM}} object, a missing or
+  numeric \code{y} argument causes \code{merge} to just
+  return \code{x} because there is nothing to merge. But
+  \code{y} can be an \code{\link{OPM}} object in that case,
+  which, if compatible, will be merge with \code{x}.}
 
   \item{sort.first}{Logical scalar. Sort the plates
   according to their setup times before merging?}
@@ -47,6 +53,12 @@
   The \code{CMAT} method is only for internal use.
 }
 \examples{
+## OPM methods
+stopifnot(identical(merge(vaas_1, 0.5), vaas_1)) # nothing to merge
+summary(x <- merge(vaas_1, vaas_1)) # biologically unreasonable!
+stopifnot(is(x, "OPM"), dim(x) == c(2 * hours(vaas_1, "size"), 96))
+
+## OPMS methods
 summary(x <- merge(vaas_4)) # biologically unreasonable for these data!
 stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 }
@@ -77,14 +89,26 @@ stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 
 \docType{methods}
 \alias{merge-methods}
+\alias{merge,OPM,missing-method}
+\alias{merge,OPM,numeric-method}
+\alias{merge,OPM,OPM-method}
 \alias{merge,OPMS,numeric-method}
 \alias{merge,OPMS,missing-method}
 \alias{merge,CMAT,ANY-method}
 \usage{
+  \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE,
+    parse = TRUE) 
+
+  \S4method{merge}{OPM,numeric}(x, y, sort.first = TRUE,
+    parse = TRUE) 
+
+  \S4method{merge}{OPM,OPM}(x, y, sort.first = TRUE,
+    parse = TRUE) 
+
   \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE,
     parse = TRUE) 
 
-  \S4method{merge}{OPMS,missing}(x, sort.first = TRUE,
+  \S4method{merge}{OPMS,missing}(x, y, sort.first = TRUE,
     parse = TRUE) 
 
   \S4method{merge}{CMAT,ANY}(x, y) 

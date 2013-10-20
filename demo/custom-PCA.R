@@ -1,13 +1,15 @@
 ### Analysing Phenotype MicroArray data: drawing PCA biplots
-###
-### Using BiodiversityR and opm to generate PCA biplots of estimated parameters.
-### An advantage of such plots is that the overall differences between the
-### organisms can be plotted together with indications of the effect of certain
-### subtrates on these differences. Furthermore, the data are reduced to their
-### independent components before plotting. Depending on the biological
-### question, this might be more interesting than drawing heat maps. Some
-### BiodiversityR functions do not always seem to work as intended, see the
-### comments below.
+
+# Using BiodiversityR and opm to generate PCA biplots of estimated parameters.
+# An advantage of such plots is that the overall differences between the
+# organisms can be plotted together with indications of the effect of certain
+# subtrates on these differences. Furthermore, the data are reduced to their
+# independent components before plotting. Depending on the biological
+# question, this might be more interesting than drawing heat maps. Some
+# BiodiversityR functions do not always seem to work as intended, see the
+# comments below.
+
+# Author: Markus Goeker, with assistance by Pia Wuest (DSMZ)
 
 
 library(BiodiversityR)

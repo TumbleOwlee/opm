@@ -1,5 +1,21 @@
 setGeneric("merge")
 
+setMethod("merge", c(OPM, "missing"), function(x, y, sort.first = TRUE,
+    parse = TRUE) {
+  x
+}, sealed = SEALED)
+
+setMethod("merge", c(OPM, "numeric"), function(x, y, sort.first = TRUE,
+    parse = TRUE) {
+  x
+}, sealed = SEALED)
+
+setMethod("merge", c(OPM, OPM), function(x, y, sort.first = TRUE,
+    parse = TRUE) {
+  x <- new(OPMS, plates = list(x, y))
+  merge(x = x, y = 0.25, sort.first = sort.first, parse = parse)
+}, sealed = SEALED)
+
 setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   if (any(y <= 0))
@@ -20,7 +36,7 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
     metadata = metadata(x[1L]))
 }, sealed = SEALED)
 
-setMethod("merge", c(OPMS, "missing"), function(x, sort.first = TRUE,
+setMethod("merge", c(OPMS, "missing"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   merge(x, 0.25, sort.first = sort.first, parse = parse)
 }, sealed = SEALED)
@@ -562,15 +578,22 @@ setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
 setGeneric("to_yaml", function(object, ...) standardGeneric("to_yaml"))
 
 setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
-    line.sep = "\n", json = FALSE, listify = FALSE, ...) {
+    line.sep = "\n", json = FALSE, listify = nodots, nodots = FALSE, ...) {
+  replace_dots <- function(x) {
+    if (any(bad <- grepl(".", x, FALSE, FALSE, TRUE)))
+      x[bad] <- paste0("_", chartr(".", "_", x[bad]))
+    x
+  }
   to_map <- function(items) if (is.null(names(items)))
     items
   else
     as.list(items)
-  LL(sep, line.sep, json, listify)
+  LL(sep, line.sep, json, listify, nodots)
   object <- as(object, "list")
   if (listify)
     object <- rapply(object, to_map, "ANY", NULL, "replace")
+  if (nodots)
+    object <- map_names(object, replace_dots)
   if (json) {
     result <- toJSON(object, "C")
   } else {

@@ -1,17 +1,19 @@
 ### Analysing Phenotype MicroArray data: converting CSV files
-###
-### This is example R code for using opm in a standardized setting to create
-### files describing Phenotype MicroArray results run in PM mode, with special
-### emphasis on the kind of information needed in microbial taxonomy.
-###
-### It reads all CSV files within the working directory and produces YAML, HTML
-### and PDF output. This code naively assumes that the relevant meta-information
-### defining the organism groups is found within the CSV files. Apart from that,
-### it would need only minimal adaptations for real-world use after modifying
-### a copy of it within an R text editor.
-###
-### For advanced users, we recommend to use batch_opm() instead for most of the
-### steps conducted below.
+
+# This is example R code for using opm in a standardized setting to create
+# files describing Phenotype MicroArray results run in PM mode, with special
+# emphasis on the kind of information needed in microbial taxonomy.
+#
+# It reads all CSV files within the working directory and produces YAML, HTML
+# and PDF output. This code naively assumes that the relevant meta-information
+# defining the organism groups is found within the CSV files. Apart from that,
+# it would need only minimal adaptations for real-world use after modifying
+# a copy of it within an R text editor.
+#
+# For advanced users, we recommend to use batch_opm() instead for most of the
+# steps conducted below.
+
+# Author: Markus Goeker
 
 
 library(opm)

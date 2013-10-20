@@ -1021,6 +1021,12 @@ repair_na_strings.list <- function(object,
   rapply(object, mapfun, "character", NULL, "replace")
 }
 
+rescue_dots <- function(x) {
+  if (is.character(x) && any(bad <- grepl("^_[^_]*_", x, FALSE, TRUE)))
+    x[bad] <- chartr("_", ".", substr(x[bad], 2L, nchar(x[bad])))
+  x
+}
+
 insert <- function(object, ...) UseMethod("insert")
 
 insert.list <- function(object, other, ..., .force = FALSE, .strict = FALSE) {
