@@ -102,8 +102,8 @@ stopifnot(length(x) > length(y))
 \alias{metadata-methods}
 \alias{metadata,OPMS-method}
 \alias{metadata,WMD-method}
-\alias{metadata_chars,WMD-method}
 \alias{metadata_chars-methods}
+\alias{metadata_chars,WMD-method}
 \alias{metadata_chars,OPMS-method}
 \usage{
   \S4method{metadata}{OPMS}(object, ...) 

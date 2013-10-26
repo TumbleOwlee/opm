@@ -73,7 +73,7 @@
   \item{object}{\code{\link{OPMX}} object.}
 
   \item{factor}{Numeric scalar >= 1 indicating how much the
-  dataset shall be thinned out.}
+  data set shall be thinned out.}
 
   \item{drop}{Logical scalar. See \code{\link{[}}.}
 
@@ -89,10 +89,10 @@
   Select a subset of the plates in an \code{\link{OPMS}}
   object based on the content of the metadata.
   Alternatively, select a common subset of time points from
-  all plates. \code{thin_out} keeps only each n-th time
-  point from \code{\link{OPM}} measurements. This is a
-  mainly experimental function that might be of use in
-  testing.
+  all plates. \code{thin_out} keeps only a regular subset
+  of the time points from \code{\link{OPM}} measurements.
+  This is a mainly experimental function that might be of
+  use in testing.
 }
 \details{
   Thinning the plates out is experimental insofar as it has
@@ -189,8 +189,8 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
 \docType{methods}
 \alias{subset-methods}
 \alias{subset,OPMS-method}
-\alias{thin_out,OPM-method}
 \alias{thin_out-methods}
+\alias{thin_out,OPM-method}
 \alias{thin_out,OPMS-method}
 \usage{
   \S4method{subset}{OPMS}(x, query, values = TRUE,

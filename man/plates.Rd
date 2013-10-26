@@ -82,8 +82,8 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 \alias{plates,OPMS-method}
 \alias{plates,OPM-method}
 \alias{plates,list-method}
-\alias{oapply,OPM-method}
 \alias{oapply-methods}
+\alias{oapply,OPM-method}
 \alias{oapply,OPMS-method}
 \usage{
   \S4method{plates}{OPMS}(object) 

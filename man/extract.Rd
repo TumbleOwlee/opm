@@ -137,7 +137,7 @@
   is \code{FALSE}.
 
   For the data-frame method, just the names of the columns
-  to extract, or their indices, as vector, if \code{direct}
+  to extract, or their indexes, as vector, if \code{direct}
   is \code{TRUE}. Alternatively, the name of the class to
   extract from the data frame to form the matrix values.
 
@@ -175,7 +175,7 @@
 \description{
   Extract selected aggregated and/or discretized values
   into common matrix or data frame. The \code{extract}
-  data-frame method conducts normalisation and/or computes
+  data-frame method conducts normalization and/or computes
   normalized point-estimates and respective confidence
   intervals for user-defined experimental groups. It is
   mainly a helper function for \code{\link{ci_plot}}.
@@ -241,17 +241,17 @@ y <- extract(x, as.groups = "Species",  norm.per = "none")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 350, y = 1)
 
-# normalisation by plate means
+# normalization by plate means
 y <- extract(x, as.groups = "Species",  norm.per = "row")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 130, y = 1)
 
-# normalisation by well means
+# normalization by well means
 y <- extract(x, as.groups = "Species",  norm.per = "column")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 20, y = 1)
 
-# normalisation by subtraction of the well means of well A10 only
+# normalization by subtraction of the well means of well A10 only
 y <- extract(x, as.groups = "Species",  norm.per = "row", norm.by = 10,
   subtract = TRUE)
 # plotting using ci_plot()
@@ -314,8 +314,8 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \alias{extract-methods}
 \alias{extract,OPMS-method}
 \alias{extract,data.frame-method}
-\alias{extract_columns,OPMS-method}
 \alias{extract_columns-methods}
+\alias{extract_columns,OPMS-method}
 \alias{extract_columns,data.frame-method}
 \usage{
   \S4method{extract}{OPMS}(object, as.labels,

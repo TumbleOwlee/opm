@@ -85,8 +85,8 @@ stopifnot(identical(anyDuplicated(x), 2L))
 \alias{duplicated,OPM,ANY-method}
 \alias{duplicated,OPMS,missing-method}
 \alias{duplicated,OPMS,ANY-method}
-\alias{anyDuplicated,OPM,ANY-method}
 \alias{anyDuplicated-methods}
+\alias{anyDuplicated,OPM,ANY-method}
 \alias{anyDuplicated,OPMS,missing-method}
 \alias{anyDuplicated,OPMS,ANY-method}
 \usage{

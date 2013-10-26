@@ -98,7 +98,7 @@ test_that("all plates can be subset", {
 })
 
 ## [
-test_that("the entire OMSS object can be subset", {
+test_that("the entire OPMS object can be subset", {
   few <- OPMS.INPUT[]
   expect_equal(few, OPMS.INPUT)
   few <- OPMS.INPUT[1L:2L]
@@ -112,6 +112,9 @@ test_that("the entire OMSS object can be subset", {
   dims[2L] <- 10L
   expect_equal(dim(few), dims)
 })
+
+## [[
+## UNTESTED
 
 
 ################################################################################

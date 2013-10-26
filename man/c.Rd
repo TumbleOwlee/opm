@@ -78,16 +78,16 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
   base::c
 
   Other combination-functions: \code{\link{[<-}},
-  \code{\link{opms}}
+  \code{\link{[[<-}}, \code{\link{opms}}
 }
 \keyword{manip}
 
 \docType{methods}
 \alias{c-methods}
 \alias{c,OPMX-method}
+\alias{plus-methods}
 \alias{plus,OPM,OPM-method}
 \alias{+,OPM,OPM-method}
-\alias{plus-methods}
 \alias{plus,OPM,OPMS-method}
 \alias{+,OPM,OPMS-method}
 \alias{plus,OPM,list-method}

@@ -17,7 +17,7 @@
   measurements from four selected plates from the study by
   Vaas et al. (2012). Metadata have been added to fully
   describe the conducted PM experiments: these plates are
-  the 6th technical replicate from the first biological
+  the sixth technical replicate from the first biological
   replicate for the four bacterial strains considered in
   the study.
 
@@ -25,7 +25,7 @@
   measurements from a single selected plate from the study
   by Vaas et al. (2012). Metadata have been added to fully
   describe the conducted PM experiments: this plate is the
-  6th technical replicate from the first biological
+  sixth technical replicate from the first biological
   replicate for the strain \emph{Escherichia coli}
   DSM30083T (yes, the type strain of \emph{E. coli}). This
   is a subset of \code{vaas_4}.

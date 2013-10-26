@@ -17,10 +17,14 @@ if (!exists("TEST.DIR"))
 ## try_opms
 ## UNTESTED
 
+## close_index_gaps
+## UNTESTED
 
 ## [<-
 ## UNTESTED
 
+## [[<-
+## UNTESTED
 
 ## +
 test_that("`+`() can be used to put plates together", {

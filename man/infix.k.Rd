@@ -23,7 +23,7 @@
   \code{\link{WMD}} object.
 }
 \details{
-  The behaviour of these methods depends on the object used
+  The behavior of these methods depends on the object used
   as query.  \code{infix.largek} is usually stricter than
   \code{infix.k}, sometimes equivalent. \itemize{ \item
   Using a character vector as query, \code{infix.k} tests
@@ -66,7 +66,7 @@
   examples with \code{\link{OPMS}} objects.
 }
 \examples{
-# The dataset contains the metadata keys 'Species' and 'Experiment' but
+# The data set contains the metadata keys 'Species' and 'Experiment' but
 # neither 'Trial' nor 'Organism' nor 'Run':
 # In the following we use stopifnot(), which fails unless all arguments
 # passed are TRUE.
@@ -149,9 +149,9 @@ rm(missing.name) # tidy up
 \alias{\%k\%,formula,WMD-method}
 \alias{infix.k,expression,WMD-method}
 \alias{\%k\%,expression,WMD-method}
+\alias{infix.largek-methods}
 \alias{infix.largek,character,WMD-method}
 \alias{\%K\%,character,WMD-method}
-\alias{infix.largek-methods}
 \alias{infix.largek,list,WMD-method}
 \alias{\%K\%,list,WMD-method}
 \alias{infix.largek,WMD,WMD-method}
@@ -160,6 +160,7 @@ rm(missing.name) # tidy up
 \alias{\%K\%,formula,WMD-method}
 \alias{infix.largek,expression,WMD-method}
 \alias{\%K\%,expression,WMD-method}
+\alias{infix.k-methods}
 \alias{infix.k,factor,WMD-method}
 \alias{\%k\%,factor,WMD-method}
 \alias{infix.largek-methods}

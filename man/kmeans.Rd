@@ -111,7 +111,7 @@
 \description{
   Calculate or plot the Calinski-Harabasz statistics from
   \code{kmeans} results. The result of \code{plot} is a
-  simple scatterplot which can be modified with arguments
+  simple scatter plot which can be modified with arguments
   passed to \code{plot} from the \pkg{graphics} package.
   Alternatively, determine the borders between clusters of
   one-dimensional data, create a histogram in which these

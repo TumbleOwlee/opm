@@ -91,9 +91,9 @@
 }
 \value{
   Character vector. For the \code{listing} methods, a
-  character vector or matrix with additional class atribute
-  \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}. See the
-  examples for details.
+  character vector or matrix with additional class
+  attribute \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}.
+  See the examples for details.
 }
 \description{
   Get the names of the wells contained in an
@@ -203,9 +203,10 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \alias{wells,OPM-method}
 \alias{wells,ANY-method}
 \alias{wells,missing-method}
-\alias{listing,OPMD-method}
 \alias{listing-methods}
+\alias{listing,OPMD-method}
 \alias{listing,OPMS-method}
+\alias{wells-methods}
 \alias{wells,OPMS-method}
 \usage{
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,

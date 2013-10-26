@@ -13,7 +13,7 @@
 
   When mapping names, \code{object} can be any \R object.
   The default method applies the mapping to the
-  \sQuote{names} attribute. The behaviour is special for
+  \sQuote{names} attribute. The behavior is special for
   lists, which are traversed recursively to also consider
   sublists with names. Data frames and \code{\link{MOA}}
   objects (that is, including matrices and arrays) are also
@@ -46,7 +46,7 @@
   \code{class} of \code{object}.  \item \code{mapping} can
   also be a formula, it is then used to compute on lists.
   The see examples below.  \item If \code{mapping} is an
-  expression, all sub-expressions will be evualated in
+  expression, all sub-expressions will be evaluated in
   \code{object} represented as an environment, which after
   conversion back to a list, is returned.  \item If
   \code{mapping} is \code{NULL} and \code{object} is a
@@ -355,8 +355,8 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \alias{map_values,NULL,function-method}
 \alias{map_values,NULL,character-method}
 \alias{map_values,NULL,missing-method}
-\alias{map_names,list,function-method}
 \alias{map_names-methods}
+\alias{map_names,list,function-method}
 \alias{map_names,list,character-method}
 \alias{map_names,list,missing-method}
 \alias{map_names,data.frame,function-method}

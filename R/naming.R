@@ -1,11 +1,18 @@
-opm_files <- function(
-    what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc")) {
-  what <- match.arg(what)
-  if (what == "examples") {
-    warning("'examples' is deprecated, use 'demo'")
-    what <- "demo"
-  }
-  pkg_files(x = opm_string(), what)
+opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
+    "examples", "doc", "css", "omnilog", "multiple")) {
+  switch(match.arg(what),
+    css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
+      TRUE, TRUE, TRUE),
+    examples = {
+      warning("'examples' is deprecated, use 'demo'")
+      pkg_files(opm_string(), "demo")
+    },
+    multiple = grep("Multiple\\.csv(\\.[^.]+)?$",
+      pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
+    omnilog = grep("Example(_Old_Style)?_\\d+\\.csv(\\.[^.]+)?$",
+      pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
+    pkg_files(opm_string(), what)
+  )
 }
 
 param_names <- function(
@@ -28,8 +35,8 @@ select_colors <- function(
     red = "#FF0000", teal = "#008080", purple = "#800080", olive = "#808000",
     gray = "#808080", aqua = "#00FFFF", fuchsia = "#FF00FF",
     yellow = "#FFFF00", silver = "#C0C0C0", white = "#FFFFFF")
-  # Names of W3c colours (except white) sorted so as to maximize contrast
-  # between adjacent colours. See pkgutils::max_rgb_contrast().
+  # Names of W3c colors (except white) sorted so as to maximize contrast
+  # between adjacent colors. See pkgutils::max_rgb_contrast().
   sorted_w3c_colors <- function() w3c_colors()[c("teal", "purple", "olive",
     "black", "silver", "blue", "lime", "red", "aqua", "fuchsia", "yellow",
     "navy", "green", "maroon", "gray")]
@@ -42,7 +49,7 @@ select_colors <- function(
     "mediumvioletred", "violetred3", "deeppink3", "lightcoral", "pink1",
     "indianred3", "magenta1")
   # Colours from two ColorBrewer palettes, sorted so as to maximize contrast
-  # between adjacent colours.
+  # between adjacent colors.
   brewer_colors <- function() c(
     "#CAB2D6", "#A6CEE3", "#80B1D3", "#CCEBC5", "#FDB462", "#8DD3C7",
     "#33A02C", "#B3DE69", "#B15928", "#FF7F00", "#1F78B4", "#B2DF8A",

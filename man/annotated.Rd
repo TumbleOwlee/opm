@@ -109,7 +109,7 @@
   translating substrate names to IDs. The methods differ
   only in the way numeric and logical values are generated.
 
-  The \code{\link{OPMA}} methods simply choses a certain
+  The \code{\link{OPMA}} methods simply chooses a certain
   parameter. The \code{\link{OPMD}} method can also return
   discretized values and optionally translates them using
   \code{lmap}.

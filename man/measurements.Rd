@@ -124,11 +124,12 @@ stopifnot(length(x) == 4, x == 95.75)
 \docType{methods}
 \alias{measurements-methods}
 \alias{measurements,OPM-method}
+\alias{well-methods}
 \alias{well,OPM-method}
 \alias{hours-methods}
 \alias{hours,OPM-method}
-\alias{hours-methods}
 \alias{hours,OPMS-method}
+\alias{measurements-methods}
 \alias{measurements,OPMS-method}
 \alias{well-methods}
 \alias{well,OPMS-method}

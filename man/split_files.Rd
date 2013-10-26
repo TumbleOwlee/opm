@@ -59,17 +59,18 @@
   \item{include}{Logical scalar. Also include the separator
   lines in the output files?}
 
-  \item{format}{Character scalar determining the outfile
-  name format. It is passed to \code{sprintf} and expects
-  three placeholders: \itemize{ \item the basename of the
-  file; \item the index of the section; \item the file
-  extension.  } Getting \code{format} wrong might result in
-  non-unique filenames and thus probably in overwritten
-  files; accordingly, it should be used with care.}
+  \item{format}{Character scalar determining the output
+  file name format. It is passed to \code{sprintf} and
+  expects three placeholders: \itemize{ \item the base name
+  of the file; \item the index of the section; \item the
+  file extension.  } Getting \code{format} wrong might
+  result in non-unique file names and thus probably in
+  overwritten files; accordingly, it should be used with
+  care.}
 
   \item{compressed}{Logical scalar. Passed to
   \code{\link{file_pattern}}, but here only affects the way
-  filenames are split in extensions and basenames.  Should
+  file names are split in extensions and base names. Should
   only be set to \code{FALSE} if input files are not
   compressed (and have according file extensions).}
 
@@ -80,28 +81,28 @@
   \item{x}{Character vector or convertible to such. Names
   of the files to be modified.}
 
-  \item{overwrite}{Logical scalar. Overwrite pre-existing
-  files, and do not care for duplicate names created by
-  cleaning the filenames?}
+  \item{overwrite}{Logical scalar. Overwrite already
+  existing files, and do not care for duplicate names
+  created by cleaning the file names?}
 
   \item{empty.tmpl}{Character scalar. The template to use
-  for filenames that become empty after cleaning. Should
+  for file names that become empty after cleaning. Should
   include an integer placeholder to enable incrementing an
-  index for creating unique filenames. (Empty filenames
+  index for creating unique file names. (Empty file names
   should occur rarely anyway.)}
 }
 \value{
   \code{split_files} creates a list of character vectors,
   each vector containing the names of the newly generated
-  files. The names of the list are the input filenames. The
-  list is returned invisibly.
+  files. The names of the list are the input file names.
+  The list is returned invisibly.
 
   \code{clean_filenames} yields a character vector, its
   names corresponding to the renamed old files, values
   corresponding to the novel names, returned invisibly.
 }
 \description{
-  Split files or clean filenames.
+  Split files or clean file names.
 }
 \details{
   \code{split_files} subdivides each file into sections
@@ -109,7 +110,7 @@
   Sections are determined with patterns that match the
   start of a section. This function is useful for splitting
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  multi-plate CSV files before inputting them with
+  multiple-plate CSV files before inputting them with
   \code{\link{read_opm}}. It is used by
   \code{\link{batch_opm}} for this purpose. See also the
   \sQuote{Examples}.
@@ -129,7 +130,7 @@
 ## split_files()
 
 # Splitting an old-style CSV file containing several plates
-(x <- grep("Multiple", opm_files("testdata"), value = TRUE, fixed = TRUE))
+(x <- opm_files("multiple"))
 if (length(x) > 0) {
   outdir <- tempdir()
   # For old-style CSV, use either "^Data File" as pattern or "Data File*"
@@ -143,7 +144,7 @@ if (length(x) > 0) {
 } else {
   warning("opm example files not found")
 }
-## One could split new-style CSV as follows (if x is a vector of filenames):
+## One could split new-style CSV as follows (if x is a vector of file names):
 # split_files(x, pattern = '^"Data File",')
 ## note the correct setting of the quotes
 ## A pattern that covers both old and new-style CSV is:

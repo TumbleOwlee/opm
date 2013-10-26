@@ -121,8 +121,8 @@ run_batch_opm <- function(input, opt) {
     proc <- 1L
   batch_opm(names = input, proc = proc, disc.args = make_disc_args(opt),
     outdir = opt$dir, aggr.args = make_aggr_args(opt),
-    md.args = make_md_args(opt), verbose = !opt$quiet,
-    table.args = make_table_args(opt),
+    md.args = make_md_args(opt), verbose = !opt$quiet, force.aggr = opt$force,
+    table.args = make_table_args(opt), force.disc = opt$force,
     overwrite = opt$overwrite, include = opt$include, device = opt$format,
     exclude = opt$exclude, gen.iii = opt$type, output = opt$result,
     combine.into = opt$join, csv.args = opt$keys)
@@ -158,12 +158,16 @@ option.parser <- OptionParser(option_list = list(
   make_option(c("-f", "--format"), type = "character", default = "postscript",
     help = "Graphics output format [default: %default]", metavar = "NAME"),
 
+  make_option(c("-F", "--force"), action = "store_true", default = FALSE,
+    help = paste("Overwrite previous aggregated/discretized values",
+      "[default: %default]")),
+
   ## A bug in Rscript causes '-g' to generate strange warning messages.
   ## See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
   # g
 
-  ## Reserved for help message
-  # h
+  make_option(c("-h", "--help"), action = "store_true", default = FALSE,
+    help = "Show this help message and exit [default: %default]"),
 
   make_option(c("-i", "--include"), type = "character", default = NULL,
     help = "File inclusion globbing pattern [default: <see package>]",
@@ -236,7 +240,14 @@ option.parser <- OptionParser(option_list = list(
   make_option(c("-z", "--discretize"), action = "store_true", default = FALSE,
     help = "Discretize after estimating curve parameters [default: %default]")
 
-), usage = "%prog [options] [directories/files]")
+), usage = "%prog [options] [directories/files]", add_help_option = FALSE,
+  epilogue = c(
+    listing(RESULT, header = "The output modes are:", footer = "",
+      prepend = 5L, indent = 10L),
+    listing(AGGREGATION, header = "The aggregation modes are:", footer = "",
+      prepend = 5L, indent = 10L)
+  )
+)
 
 
 opt <- parse_args(option.parser, positional_arguments = TRUE)
@@ -260,10 +271,6 @@ opt$list <- must(as.integer(parse_key_list(opt$list)))
 
 if (!length(input)) {
   print_help(option.parser)
-  cat(listing(RESULT, header = "The output modes are:", footer = "",
-    prepend = 5L, indent = 10L), sep = "\n")
-  cat(listing(AGGREGATION, header = "The aggregation modes are:", footer = "",
-    prepend = 5L, indent = 10L), sep = "\n")
   quit(status = 1L)
 }
 

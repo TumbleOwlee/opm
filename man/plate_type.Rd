@@ -38,10 +38,11 @@
 
   \item{to}{Character scalar indicating the plate type.
   User-defined plate types must be given literally. For
-  generation-III plates, use \sQuote{gen.iii}; for
-  ecoplates, use \sQuote{eco}; the remaining allowed values
-  are only \sQuote{sf.n2} and \sQuote{sf.p2}, but matching
-  is case-insensitive.}
+  generation-III plates, use \sQuote{gen.iii}; for the
+  EcoPlate\eqn{\textsuperscript{\texttrademark}}{(TM)}, use
+  \sQuote{eco}; the remaining allowed values are only
+  \sQuote{sf.n2} and \sQuote{sf.p2}, but matching is
+  case-insensitive.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -136,7 +137,7 @@ stopifnot(is.character(x), plate_type(vaas_1) \%in\% x)
 
 # 'OPM' method
 plate_type(copy <- gen_iii(vaas_1))
-stopifnot(identical(vaas_1, copy)) # the dataset already had that plate type
+stopifnot(identical(vaas_1, copy)) # the data set already had that plate type
 plate_type(copy <- gen_iii(vaas_1, "eco")) # which is wrong, actually
 stopifnot(!identical(vaas_1, copy))
 
@@ -147,7 +148,7 @@ plate_type(copy <- gen_iii(vaas_4, "eco"))
 stopifnot(!identical(vaas_4, copy)) # as above
 }
 \seealso{
-  base::strtrim base::abbreviate base::gsu
+  base::strtrim base::abbreviate base::gsub
 
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}}, \code{\link{listing}},
@@ -166,9 +167,10 @@ stopifnot(!identical(vaas_4, copy)) # as above
 \alias{plate_type,character-method}
 \alias{plate_type,factor-method}
 \alias{plate_type,missing-method}
-\alias{gen_iii,OPM-method}
 \alias{gen_iii-methods}
+\alias{gen_iii,OPM-method}
 \alias{gen_iii,OPMS-method}
+\alias{plate_type-methods}
 \alias{plate_type,OPMS-method}
 \usage{
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,

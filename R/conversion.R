@@ -56,9 +56,8 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
   if (length(levels(groups)) == length(groups))
     return(x)
   cn <- colnames(x) # later put back, avoiding correction of duplicate names
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
-  x <- aggregate(x, by = list(groups), FUN = c, recursive = TRUE,
-    simplify = FALSE)
+  x <- aggregate(as.data.frame(x, stringsAsFactors = FALSE), by = list(groups),
+    FUN = c, recursive = TRUE, simplify = FALSE)
   x <- as.matrix(x[, -1L, drop = FALSE])
   x[] <- lapply(x, sort.int, na.last = TRUE)
   rownames(x) <- levels(groups)

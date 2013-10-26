@@ -474,8 +474,10 @@ setMethod("phylo_data", "matrix", function(object,
 }, sealed = SEALED)
 
 setMethod("phylo_data", "data.frame", function(object, as.labels = NULL,
-    what = "numeric", sep = " ", ...) {
-  object <- extract_columns(object, as.labels = as.labels, what = what,
+    subset = what, sep = " ", what = "numeric", ...) {
+  if (!missing(what))
+    warning("'what' is deprecated, use 'subset'")
+  object <- extract_columns(object, as.labels = as.labels, what = subset,
     direct = FALSE, sep = sep)
   phylo_data(object, ...)
 }, sealed = SEALED)

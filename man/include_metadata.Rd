@@ -10,7 +10,7 @@
   \item{name}{Like \code{object}, but for the \code{edit}
   method.}
 
-  \item{md}{Dataframe containing keys as column names, or
+  \item{md}{Data frame containing keys as column names, or
   name of file from which to read the data frame. Handled
   by \code{\link{to_metadata}}.}
 
@@ -42,7 +42,7 @@
   \code{\link{map_values}}. If the left side of the formula
   is missing, the entire metadata are replaced by the
   result, which is an error if the result is not a list.
-  \item If \code{mapping} is missing, the behaviour is
+  \item If \code{mapping} is missing, the behavior is
   special; see the next two arguments. }}
 
   \item{values}{Mostly a logical scalar. \itemize{ \item
@@ -201,13 +201,14 @@ stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
 \alias{include_metadata-methods}
 \alias{include_metadata,OPM-method}
 \alias{include_metadata,OPMS-method}
-\alias{map_metadata,WMD,function-method}
 \alias{map_metadata-methods}
+\alias{map_metadata,WMD,function-method}
 \alias{map_metadata,WMD,character-method}
 \alias{map_metadata,WMD,FOE-method}
 \alias{map_metadata,WMD,missing-method}
 \alias{map_metadata,OPMS,missing-method}
 \alias{map_metadata,OPMS,ANY-method}
+\alias{edit-methods}
 \alias{edit,OPMX-method}
 \usage{
   \S4method{include_metadata}{OPM}(object, md,

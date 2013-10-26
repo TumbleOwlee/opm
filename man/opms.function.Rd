@@ -79,7 +79,7 @@ stopifnot(is(x, "OPMS"), length(x) == 8L)
 }
 \seealso{
   Other combination-functions: \code{\link{[<-}},
-  \code{\link{c}}, \code{\link{plus}}
+  \code{\link{[[<-}}, \code{\link{c}}, \code{\link{plus}}
 }
 \keyword{manip}
 

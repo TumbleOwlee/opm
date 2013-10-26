@@ -124,6 +124,7 @@ stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
 \docType{methods}
 \alias{csv_data-methods}
 \alias{csv_data,OPM-method}
+\alias{filename-methods}
 \alias{filename,OPM-method}
 \alias{setup_time-methods}
 \alias{setup_time,OPM-method}

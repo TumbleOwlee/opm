@@ -2,18 +2,18 @@
 \alias{phylo_data}
 \title{Export phylogenetic data}
 \arguments{
-  \item{object}{Data frame, numeric matrix or \sQuote{OPMS}
-  object (with aggregated values). Currently only
-  \sQuote{integer}, \sQuote{logical}, \sQuote{double} and
-  \sQuote{character} matrix content is supported. The
-  data-frame and \sQuote{OPMS} methods first call
-  \code{\link{extract}} and then the matrix method. The
-  methods for \sQuote{OPMD_Listing} and
+  \item{object}{Data frame, numeric matrix or
+  \code{\link{OPMS}} object (with aggregated values).
+  Currently only \sQuote{integer}, \sQuote{logical},
+  \sQuote{double} and \sQuote{character} matrix content is
+  supported. The data-frame and \code{\link{OPMS}} methods
+  first call \code{\link{extract}} and then the matrix
+  method. The methods for \sQuote{OPMD_Listing} and
   \sQuote{OPMS_Listing} objects can be applied to the
   results of \code{\link{listing}}.}
 
   \item{format}{Character scalar determining the output
-  format, either \sQuote{epf} (Extended Phylip Format),
+  format, either \sQuote{epf} (Extended PHYLIP Format),
   \sQuote{nexus}, \sQuote{phylip}, \sQuote{hennig} or
   \sQuote{html}.
 
@@ -68,8 +68,8 @@
   same organism or treatment.}
 
   \item{cutoff}{Numeric scalar. If joining results in
-  multi-state characters, they can be filtered by removing
-  all entries with a relative frequency less than
+  multiple-state characters, they can be filtered by
+  removing all entries with a relative frequency less than
   \sQuote{cutoff}. Makes not much sense for non-integer
   numeric data.}
 
@@ -99,25 +99,29 @@
   \code{TRUE}, it is an error if the Tidy executable is not
   found.}
 
-  \item{as.labels}{Vector of data-frame indices or
-  \sQuote{OPMS} metadata entries. See
+  \item{as.labels}{Vector of data-frame indexes or
+  \code{\link{OPMS}} metadata entries. See
   \code{\link{extract}}.}
 
-  \item{what}{Character scalar. See \code{\link{extract}}.}
+  \item{what}{Character scalar. See \code{\link{extract}}.
+  Deprecated; use \code{subset} instead.}
 
   \item{sep}{Character scalar. See \code{\link{extract}}.}
 
-  \item{subset}{Character scalar passed to the
-  \sQuote{OPMS} method of \code{\link{extract}}.}
+  \item{subset}{Character scalar. For the
+  \code{\link{OPMS}} method, passed to the
+  \code{\link{OPMS}} method of \code{\link{extract}}. For
+  the data-frame method, a selection of column classes to
+  extract.}
 
   \item{extract.args}{Optional list of arguments passed to
   that method.}
 
   \item{discrete.args}{Optional list of arguments passed
-  from the \sQuote{OPMS} method to \code{\link{discrete}}.
-  If set to \code{NULL}, discretization is turned off.
-  Ignored if precomputed discretized values are chosen by
-  setting \code{subset} to
+  from the \code{\link{OPMS}} method to
+  \code{\link{discrete}}. If set to \code{NULL},
+  discretization is turned off. Ignored if precomputed
+  discretized values are chosen by setting \code{subset} to
   \code{\link{param_names}("disc.name")}.}
 
   \item{...}{Optional arguments passed between the methods
@@ -156,7 +160,7 @@
   modified, see \code{\link{html_args}}. The
   \sQuote{hennig} (Hennig86) format is the one used by
   \acronym{TNT}; it allows continuous characters to be
-  analysed as such. Regarding the meaning of
+  analyzed as such. Regarding the meaning of
   \sQuote{character} as used here, see the \sQuote{Details}
   section of \code{\link{discrete}}.
 
@@ -188,7 +192,7 @@ rownames(x) <- c("Ahoernchen", "Behoernchen") # Chip and Dale in German
 # EPF is a comparatively restricted format
 echo(y.epf <- phylo_data(x, format = "epf"))
 stopifnot(is.character(y.epf), length(y.epf) == 3)
-stopifnot(identical(y.epf, phylo_data(as.data.frame(x), what = "factor",
+stopifnot(identical(y.epf, phylo_data(as.data.frame(x), subset = "factor",
   format = "epf")))
 
 # PHYLIP is even more restricted (shorter labels!)
@@ -222,7 +226,7 @@ stopifnot(identical(length(y.hennig), hennig.len.1 - 1L))
 ## examples with real data and HTML
 
 # setting the CSS file that comes with opm as default
-opm_opt(css.file = grep("[.]css$", opm_files("auxiliary"), value = TRUE))
+opm_opt(css.file = opm_files("css")[[1]])
 
 # see discrete() for the conversion and note the OPMS example below: one
 # could also get the results directly from OPMS objects
@@ -372,7 +376,7 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
     prefer.char = format == "html", run.tidy = FALSE, ...) 
 
   \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
-    what = "numeric", sep = " ", ...) 
+    subset = what, sep = " ", what = "numeric", ...) 
 
   \S4method{phylo_data}{OPMS}(object, as.labels,
     subset = param_names("disc.name"), sep = " ", extract.args = list(),

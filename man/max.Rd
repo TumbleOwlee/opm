@@ -61,8 +61,8 @@ stopifnot(max(vaas_4) > x) # obviously
 \alias{max-methods}
 \alias{max,OPM-method}
 \alias{max,OPMS-method}
-\alias{minmax,OPM-method}
 \alias{minmax-methods}
+\alias{minmax,OPM-method}
 \alias{minmax,OPMS-method}
 \usage{
   \S4method{max}{OPM}(x, ..., na.rm = FALSE) 

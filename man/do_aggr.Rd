@@ -116,10 +116,10 @@
   collected information.
 }
 \details{
-  Behaviour is special if the \code{\link{plate_type}} is
+  Behavior is special if the \code{\link{plate_type}} is
   one of those that have to be explicitly set using
   \code{\link{gen_iii}} and there is just one point
-  measurement. Because this behaviour is usual for plates
+  measurement. Because this behavior is usual for plates
   measured either in Generation-III (identification) mode
   or on a
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)},
@@ -127,9 +127,9 @@
   parameter (maximum height) and all other parameters are
   set to \code{NA}.
 
-  The \sQuote{OPMS} method just applies the \sQuote{OPM}
-  method to each contained plate in turn; there are no
-  inter-dependencies.
+  The \code{\link{OPMS}} method just applies the
+  \code{\link{OPM}} method to each contained plate in turn;
+  there are no inter-dependencies.
 
   Examples with \code{plain = TRUE} are not given, as only
   the return value is different: Let \code{x} be the normal

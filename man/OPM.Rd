@@ -17,13 +17,13 @@
 \details{
   \acronym{OPM} is an acronym for
   \sQuote{OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  Phenotype Microarray}. This is the class for holding
+  Phenotype MicroArray}. This is the class for holding
   single-plate
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data without aggregated values, but
   with information read from the original input
   \acronym{CSV} files as well as an additional arbitrary
-  amount of arbitrarily organised metadata. Objects of this
+  amount of arbitrarily organized metadata. Objects of this
   class are usually created by inputting files with
   \code{\link{read_single_opm}} or \code{\link{read_opm}}.
 
@@ -82,7 +82,7 @@
   determines whether an error or only a warning is issued
   in the case of inconsistency.
 
-  \acronym{OPMS} is the class for holding multi-plate
+  \acronym{OPMS} is the class for holding multiple-plate
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data with or without aggregated or
   discretized values. Regarding the name: \acronym{OPMS} is

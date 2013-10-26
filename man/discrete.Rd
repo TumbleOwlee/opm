@@ -59,17 +59,19 @@
   \code{gap} mode and if \code{output} is not
   \sQuote{character}. Otherwise, the possible values are
   \itemize{ \item a single-element character vector, which
-  is split into its elements; \item a multi-element
+  is split into its elements; \item a multiple-element
   character vector which is used directly; \item an integer
   vector indicating the elements to pick from the default
   character states.  } In the latter case, a single integer
   is interpreted as the upper bound of an integer vector
   starting at 1.}
 
-  \item{as.labels}{Vector of data-frame indices. See
-  \code{\link{extract}}.}
+  \item{as.labels}{Vector of data-frame indexes. See
+  \code{\link{extract}}.  (If given, this argument must be
+  named.)}
 
-  \item{sep}{Character scalar. See \code{\link{extract}}.}
+  \item{sep}{Character scalar. See \code{\link{extract}}.
+  (If given, this argument must be named.)}
 
   \item{y}{Factor or character vector indicating group
   affiliations. Its length must correspond to the number of
@@ -114,7 +116,7 @@
   list of matrices or a matrix. If \code{all} is
   \code{TRUE}, a list of matrices structures like the
   single matrix returned if \code{combined} is \code{TRUE}.
-  If \code{all} is \code{FALSE}, a matrix with two colums
+  If \code{all} is \code{FALSE}, a matrix with two columns
   called \sQuote{maximum} \sQuote{objective}, and one row
   per level of \code{y}.
 }
@@ -246,8 +248,8 @@ plot(y$b, type = "l")
 \alias{discrete,numeric-method}
 \alias{discrete,MOA-method}
 \alias{discrete,data.frame-method}
-\alias{best_cutoff,matrix,character-method}
 \alias{best_cutoff-methods}
+\alias{best_cutoff,matrix,character-method}
 \alias{best_cutoff,matrix,factor-method}
 \usage{
   \S4method{discrete}{numeric}(x, range, gap = FALSE,
@@ -256,8 +258,8 @@ plot(y$b, type = "l")
 
   \S4method{discrete}{MOA}(x, ...) 
 
-  \S4method{discrete}{data.frame}(x, as.labels = NULL, sep = " ",
-    ...) 
+  \S4method{discrete}{data.frame}(x, ..., as.labels = NULL,
+    sep = " ") 
 
   \S4method{best_cutoff}{matrix,character}(x, y, ...) 
 

@@ -40,6 +40,7 @@ stopifnot(has_aggr(vaas_4), has_disc(vaas_4)) # OPMS methods
 \docType{methods}
 \alias{has_aggr-methods}
 \alias{has_aggr,OPM-method}
+\alias{has_disc-methods}
 \alias{has_disc,OPM-method}
 \alias{has_aggr-methods}
 \alias{has_aggr,OPMS-method}

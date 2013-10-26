@@ -53,8 +53,8 @@ vaas_4 # calls show()
 \alias{summary-methods}
 \alias{summary,OPM-method}
 \alias{summary,OPMS-method}
-\alias{show,OPMX-method}
 \alias{show-methods}
+\alias{show,OPMX-method}
 \alias{show,CMAT-method}
 \usage{
   \S4method{summary}{OPM}(object, ...) 

@@ -110,6 +110,24 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   x
 }, sealed = SEALED)
 
+setMethod("[[", c(OPMS, "ANY", "ANY"), function(x, i, j, k, ..., exact = TRUE) {
+  if (!missing(...))
+    stop("incorrect number of dimensions")
+  if (missing(k))
+    k <- TRUE
+  x@plates[[i]][j, k, drop = !exact]
+}, sealed = SEALED)
+
+setMethod("[[", c(OPMS, "ANY", "missing"), function(x, i, j, k, ...,
+    exact = TRUE) {
+  if (!missing(...))
+    stop("incorrect number of dimensions")
+  if (missing(k))
+    x@plates[[i]]
+  else
+    x@plates[[i]][TRUE, k, drop = !exact]
+}, sealed = SEALED)
+
 setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
   if (missing(...))
     max(x@measurements[, -1L, drop = FALSE], na.rm = na.rm)

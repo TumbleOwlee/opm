@@ -169,15 +169,15 @@ stopifnot(is.null(rep(vaas_4, 0)))
 \alias{sort,OPMX,missing-method}
 \alias{sort,OPM,logical-method}
 \alias{sort,OPMS,logical-method}
-\alias{unique,OPM,ANY-method}
 \alias{unique-methods}
+\alias{unique,OPM,ANY-method}
 \alias{unique,OPMS,missing-method}
 \alias{unique,OPMS,ANY-method}
-\alias{rev,OPM-method}
 \alias{rev-methods}
+\alias{rev,OPM-method}
 \alias{rev,OPMS-method}
-\alias{rep,OPM-method}
 \alias{rep-methods}
+\alias{rep,OPM-method}
 \alias{rep,OPMS-method}
 \usage{
   \S4method{sort}{OPMX,missing}(x, decreasing, ...) 

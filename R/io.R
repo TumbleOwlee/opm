@@ -359,6 +359,34 @@ read_single_opm <- function(filename) {
   stop(listing(c(errs, Filename = filename), header = "Unknown file format:"))
 }
 
+finish_template <- function(object, outfile, sep, previous, md.args, demo) {
+  if (demo) {
+    if (length(previous))
+      message(sprintf("\n<= '%s'", previous))
+    if (length(outfile) && nzchar(outfile[1L]))
+      message(sprintf("\n=> '%s'", outfile))
+    return(invisible(object))
+  }
+  if (length(previous))
+    tryCatch(suppressWarnings(
+        previous <- do.call(to_metadata, c(list(object = previous), md.args))
+      ), error = function(e) {
+        if (identical(outfile, previous))
+          previous <<- NULL
+        else
+          stop(conditionMessage(e))
+      })
+  if (length(previous))
+    object <- merge.data.frame(previous, object, all = TRUE)
+  object <- unique.data.frame(object)
+  if (length(outfile) && nzchar(outfile[1L])) {
+    write.table(object, file = outfile, sep = sep, row.names = FALSE)
+    invisible(object)
+  } else {
+    object
+  }
+}
+
 setGeneric("collect_template",
   function(object, ...) standardGeneric("collect_template"))
 
@@ -371,39 +399,23 @@ setMethod("collect_template", "character", function(object, outfile = NULL,
     if (is.list(opm.data)) # possible in case of YAML input
       do.call(rbind, lapply(opm.data, FUN = collect_template,
         selection = selection, normalize = normalize, add.cols = add.cols,
-        instrument = instrument))
+        instrument = instrument, outfile = NULL, previous = NULL, sep = sep,
+        md.args = md.args))
     else
       collect_template(opm.data, selection = selection, normalize = normalize,
-        add.cols = add.cols, instrument = instrument)
+        add.cols = add.cols, instrument = instrument, outfile = NULL,
+        previous = NULL, sep = sep, md.args = md.args)
   }, include = include, ..., simplify = FALSE, demo = demo)
-  if (demo)
-    return(invisible(result))
-  result <- do.call(rbind, result)
+  if (!demo)
+    result <- do.call(rbind, result)
   rownames(result) <- NULL # if 'previous' was given, row names lacked anyway
-  if (!is.null(previous))
-    tryCatch({
-      suppressWarnings(previous <- do.call(to_metadata,
-        c(list(object = previous), md.args)))
-    }, error = function(e) {
-      if (identical(outfile, previous))
-        previous <<- NULL
-      else
-        stop(conditionMessage(e))
-    })
-  if (!is.null(previous))
-    result <- merge(previous, result, all = TRUE)
-  result <- unique(result)
-  if (is.null(outfile) || !nzchar(outfile))
-    result
-  else {
-    write.table(result, file = outfile, sep = sep, row.names = FALSE)
-    invisible(result)
-  }
+  finish_template(result, outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
-setMethod("collect_template", OPM, function(object,
+setMethod("collect_template", OPM, function(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
     selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL) {
+    instrument = NULL, ..., demo = FALSE) {
   result <- as.list(csv_data(object, selection, normalize = normalize))
   if (length(instrument)) {
     if (!is.logical(L(instrument)))
@@ -417,41 +429,64 @@ setMethod("collect_template", OPM, function(object,
       list(NULL, add.cols))
     result <- cbind(result, to.add, stringsAsFactors = FALSE)
   }
-  result
+  finish_template(result, outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
-setMethod("collect_template", OPMS, function(object, ...) {
-  result <- lapply(object@plates, collect_template, ...)
-  do.call(rbind, result)
+setMethod("collect_template", OPMS, function(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) {
+  result <- lapply(object@plates, collect_template, selection = selection,
+    add.cols = add.cols, normalize = normalize, instrument = instrument,
+    outfile = NULL, previous = NULL, sep = sep, md.args = md.args)
+  finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
 setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
-setMethod("to_metadata", "character", function(object, sep = "\t",
-    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) {
+setMethod("to_metadata", "character", function(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = NA, ...) {
+  if (length(object) > 1L && !is.null(names(object))) {
+    if (is.na(L(strip.white)))
+      strip.white <- FALSE
+    x <- matrix(object, 1L, length(object), FALSE, list(NULL, names(object)))
+    return(to_metadata(object = x, sep = sep, strip.white = strip.white,
+      stringsAsFactors = stringsAsFactors, optional = optional, ...))
+  }
+  if (is.na(L(strip.white)))
+    strip.white <- TRUE
   read.delim(file = L(object), sep = sep, check.names = !optional,
     strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
 }, sealed = SEALED)
 
 setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  as.data.frame(x = object, stringsAsFactors = stringsAsFactors,
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
+  x <- as.data.frame(x = object, stringsAsFactors = stringsAsFactors,
     optional = optional, ...)
+  if (L(strip.white))
+    x <- strip_whitespace(x)
+  x
 }, sealed = SEALED)
 
 setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  collect(x = list(object@metadata), what = "values",
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
+  x <- collect(x = list(object@metadata), what = "values",
     optional = optional, stringsAsFactors = stringsAsFactors,
     dataframe = TRUE, keep.unnamed = NA, ...)
+  if (L(strip.white))
+    x <- strip_whitespace(x)
+  x
 }, sealed = SEALED)
 
 setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) {
-  collect(x = metadata(object), what = "values",
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
+  x <- collect(x = metadata(object), what = "values",
     optional = optional, stringsAsFactors = stringsAsFactors,
     dataframe = TRUE, keep.unnamed = NA, ...)
+  if (L(strip.white))
+    x <- strip_whitespace(x)
+  x
 }, sealed = SEALED)
 
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
@@ -522,7 +557,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     if (length(disc.args)) {
       if (force.aggr || !has_disc(data)) {
         if (verbose)
-          message("conversion: discretizing data")
+          message("conversion: discretizing data...")
         data <- do.call(do_disc, c(list(data), disc.args))
       } else if (verbose)
         message("conversion: previously discretized data present, ",
@@ -594,7 +629,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
 
   LL(force.aggr, force.disc, gen.iii, device, overwrite)
 
-  # If a metadata filename is given, read it into data frame right now to
+  # If a metadata file name is given, read it into data frame right now to
   # avoid opening the file each time in the batch_process() loop
   if (length(md.args) && is.character(md.args$md)) {
     tmp <- md.args

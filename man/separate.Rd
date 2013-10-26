@@ -78,7 +78,7 @@
   matrix or data frame. For instance, file names created by
   a batch export conducted by a some software are usually
   more or less regularly structured and contain content at
-  distinct possitions. In such situations, the correct
+  distinct positions. In such situations, the correct
   splitting approach can be recognized by yielding the same
   number of fields from each vector element.
 }

@@ -20,7 +20,7 @@
   these arguments are concatenated into a list and used as
   if \code{x} was given as a list (see above). That is, the
   argument names are used as the keys for setting values.
-  This is usally easier than working with a list.}
+  This is usually easier than working with a list.}
 }
 \value{
   List or atomic vector. If one to several values are set,
@@ -36,7 +36,7 @@
   \code{\link{xy_plot}} and other plotting functions.}
   \item{color.borders}{Character vector with default color
   borders between which \code{\link{level_plot}}
-  interpolates to obtain a colour palette.}
+  interpolates to obtain a color palette.}
   \item{comb.key.join}{Used by functions that support
   combination of metadata entries converted to data-frame
   columns immediately after their selection. Sets the
@@ -79,7 +79,7 @@
   used as column name for trivial groups (either all items
   in the same group or each item in a group of its own)
   created by \code{\link{extract}}.}
-  \item{heatmap.colors}{Colour palette used by
+  \item{heatmap.colors}{Color palette used by
   \code{\link{heat_map}}.} \item{html.attr}{Used by
   \code{\link{phylo_data}} for automatically creating
   \acronym{HTML} \sQuote{title} and \sQuote{class}

@@ -71,7 +71,7 @@ setMethod("discrete", "numeric", function(x, range, gap = FALSE,
       )
     structure(map[ints], cutoffs = range, names = names(x))
 
-  } else { # binary- to multi-state mode without a gap
+  } else { # binary- to multiple-state mode without a gap
 
     if (any(x > range[2L] | x < range[1L]))
       stop("if not in 'gap' mode, all values must be between ", range[1L],
@@ -98,8 +98,8 @@ setMethod("discrete", MOA, function(x, ...) {
   map_values(object = x, mapping = discrete, ...)
 }, sealed = SEALED)
 
-setMethod("discrete", "data.frame", function(x, as.labels = NULL, sep = " ",
-    ...) {
+setMethod("discrete", "data.frame", function(x, ..., as.labels = NULL,
+    sep = " ") {
   discrete(extract_columns(x, what = "numeric", as.labels = as.labels,
     sep = sep, direct = FALSE), ...)
 }, sealed = SEALED)

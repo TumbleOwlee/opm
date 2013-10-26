@@ -2,7 +2,7 @@
 \alias{ci_plot}
 \title{Plot point estimates with CIs}
 \arguments{
-  \item{object}{\code{\link{OPMS}} object or (seldomly) a
+  \item{object}{\code{\link{OPMS}} object or (rarely) a
   data frame. If an \code{\link{OPMS}} object, it is in
   most cases necessary to restrict the plates to at most
   about one dozen wells. See \code{\link{[}} for how to
@@ -12,10 +12,10 @@
   an \pkg{opm} user but via the \code{\link{OPMS}} method,
   unless it is used after \code{\link{extract}} was applied
   to a data frame for calculating point estimates and
-  confidence intervals from groups of oberservations. See
+  confidence intervals from groups of observations. See
   there for details.
 
-  Otherwise, the data frame should be as exported bythe
+  Otherwise, the data frame should be as exported by the
   \code{\link{OPMS}} method of \code{\link{extract}} with
   \code{ci} set to \code{TRUE}. There must be a column
   named \code{\link{param_names}("split.at")} followed by
@@ -44,7 +44,7 @@
   one of \sQuote{center}, \sQuote{left} and
   \sQuote{right}.}
 
-  \item{col}{Character scalar. Colour to be used.}
+  \item{col}{Character scalar. Color to be used.}
 
   \item{na.action}{Character scalar. What to do if a
   confidence interval contains \code{NA} values; one of

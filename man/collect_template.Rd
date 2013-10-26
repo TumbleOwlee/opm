@@ -5,27 +5,32 @@
 \arguments{
   \item{object}{Character vector or \code{\link{OPM}} or
   \code{\link{OPMS}} object. The \code{\link{OPM}} and
-  \code{\link{OPMS}} methods just collect a data frame from
+  \code{\link{OPMS}} methods collect a data frame from
   their input object.
 
-  If a character vector is provided, it acts like the
+  If a character vector is provided to
+  \code{\link{collect_template}}, it acts like the
   \code{names} argument of \code{\link{read_opm}}. That is,
   if it is a directory name, this is automatically scanned
   for all \acronym{CSV} and \acronym{YAML} files it
   contains (unless restrictions with patterns are made).
   One can also provide file names, or a mixture of file and
-  directory names.  Regarding the supported input file
+  directory names. Regarding the supported input file
   formats, see \code{\link{read_single_opm}}.
 
   \code{to_metadata} needs the name of an input file
-  (character scalar), or any object convertible to a data
-  frame. Might also be \code{\link{WMD}} or
-  \code{\link{OPMS}} object.}
+  (unnamed character scalar), or any object convertible to
+  a data frame. Might also be \code{\link{WMD}} or
+  \code{\link{OPMS}} object. If a named character vector
+  with more than a single element, it is used as the first
+  row of the resulting data frame. This behavior is mainly
+  intended for using this function after a call to the
+  \code{\link{OPM}} method of \code{csv_data}.}
 
-  \item{outfile}{Character scalar. Ignored if \code{NULL}
-  or empty string.  Otherwise, interpreted as the name of a
-  \acronym{CSV} output file. If metadata have already been
-  collected in an older file with the same name, old
+  \item{outfile}{Character scalar. Ignored if \code{NULL},
+  empty or empty string. Otherwise, interpreted as the name
+  of a \acronym{CSV} output file.  If metadata have already
+  been collected in an older file with the same name, old
   metadata will be kept, identifiers for novel files will
   be included, their so far empty entries set to \code{NA}.
   Users who wish to keep the old version can use two
@@ -33,13 +38,14 @@
   \code{previous}.}
 
   \item{sep}{Character scalar. \acronym{CSV} field
-  separator for \code{outfile} and for the input files of
-  \code{to_metadata}.}
+  separator for \code{outfile} and for the input file of
+  \code{to_metadata} (which ignores the argument unless
+  \code{object} is interpreted as input file).}
 
-  \item{previous}{Ignored if \code{NULL}. Otherwise passed
-  to \code{\link{to_metadata}}. If it is a filename
-  different from \code{outfile}, it is an error if the file
-  does not exist.}
+  \item{previous}{Ignored if empty. Otherwise passed to
+  \code{\link{to_metadata}}. If it is a file name different
+  from \code{outfile}, it is an error if the file does not
+  exist.}
 
   \item{md.args}{List of other arguments passed to the
   \sQuote{to_metadata} methods.}
@@ -66,12 +72,13 @@
   pattern). Passed to \code{\link{batch_collect}}.}
 
   \item{...}{Other arguments passed to
-  \code{\link{batch_collect}}, or arguments passed from the
-  \code{\link{OPMS}} to the \code{\link{OPM}} method, or to
-  \code{read.delim} or \code{as.data.frame}.}
+  \code{\link{batch_collect}}, or to \code{read.delim} or
+  \code{as.data.frame}.}
 
   \item{demo}{Logical scalar. Run in \sQuote{demo} mode?
-  Also passed to \code{\link{batch_collect}}.}
+  Also passed to \code{\link{batch_collect}}. If
+  \code{TRUE}, file input and output would be omitted and
+  only the respective file names shown.}
 
   \item{stringsAsFactors}{Logical scalar passed to
   \code{as.data.frame}.}
@@ -80,15 +87,20 @@
   \code{as.data.frame} or used after negation as
   \sQuote{check.names} argument of \code{read.delim}.}
 
-  \item{strip.white}{Logical scalar passed to
-  \code{read.delim}.}
+  \item{strip.white}{Logical scalar. For the filename
+  method, passed to \code{read.delim} (and set to
+  \code{TRUE} if it is \code{NA}). It is often advisable to
+  set this to \code{FALSE} if \acronym{CSV} input is done
+  for a later call to \code{collect_template}. For a
+  character vector not interpreted as file name, set to
+  \code{FALSE} if \code{NA}.}
 }
 \value{
-  \code{to_metadata} yields a data frame. Reagrding
+  \code{to_metadata} yields a data frame. Regarding
   \code{collect_template}, in the case of the character
   method, a data frame, returned invisibly if
   \code{outfile} is given; if \code{demo} is \code{TRUE}, a
-  character vector of filenames instead, also returned
+  character vector of file names instead, returned
   invisibly. The \code{\link{OPM}} method returns a data
   frame with one row and the number of columns equal to the
   sum of the lengths of \code{selection} and
@@ -118,24 +130,23 @@
   not modifying column names). The default method reads
   metadata from an object convertible to a data frame and
   is only a thin wrapper of \code{as.data.frame} but
-  contains the same useful adaptations as the filename
+  contains the same useful adaptations as the file-name
   method.
 
   The \code{\link{WMD}} and \code{\link{OPMS}} methods
   create a data frame from the contained metadata, where
   necessary converting nested metadata entries to
   data-frame columns of mode \sQuote{list}. The number of
-  rows of the resuling data frame corresponds to the length
-  of \code{object}, the number of columns to the size of
-  the set created from all valid names at the top level of
-  the metadata entries.
+  rows of the resulting data frame corresponds to the
+  length of \code{object}, the number of columns to the
+  size of the set created from all valid names at the top
+  level of the metadata entries.
 }
 \examples{
 ## collect_template()
 
 # Character method
-test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
-  value = TRUE, perl = TRUE)
+test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the files are found
 
   # Without writing to a file
@@ -228,8 +239,8 @@ stopifnot(identical(copy, vaas_4))
 \alias{collect_template,character-method}
 \alias{collect_template,OPM-method}
 \alias{collect_template,OPMS-method}
-\alias{to_metadata,character-method}
 \alias{to_metadata-methods}
+\alias{to_metadata,character-method}
 \alias{to_metadata,ANY-method}
 \alias{to_metadata,WMD-method}
 \alias{to_metadata,OPMS-method}
@@ -239,22 +250,26 @@ stopifnot(identical(copy, vaas_4))
     selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
     instrument = NULL, include = list(), ..., demo = FALSE) 
 
-  \S4method{collect_template}{OPM}(object,
+  \S4method{collect_template}{OPM}(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
     selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL) 
+    instrument = NULL, ..., demo = FALSE) 
 
-  \S4method{collect_template}{OPMS}(object, ...) 
+  \S4method{collect_template}{OPMS}(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) 
 
-  \S4method{to_metadata}{character}(object, sep = "\t",
-    strip.white = TRUE, stringsAsFactors = FALSE, optional = TRUE, ...) 
+  \S4method{to_metadata}{character}(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = NA, ...) 
 
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) 
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
 
   \S4method{to_metadata}{WMD}(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) 
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
 
   \S4method{to_metadata}{OPMS}(object, stringsAsFactors = FALSE,
-    optional = TRUE, ...) 
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
 
 }

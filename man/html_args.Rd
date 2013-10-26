@@ -26,7 +26,7 @@
   vector.}
 
   \item{multiple.sep}{Character scalar used for joining
-  multi-state characters together.}
+  multiple-state characters together.}
 
   \item{organisms.start}{Character scalar prepended to the
   organism part of the table legend. Ignored if empty.}
@@ -59,7 +59,7 @@
   file does not exist, but the page will then probably not
   be displayed as intended.
 
-  Under Windows it is recommended to convert a filename
+  Under Windows it is recommended to convert a file name
   \code{f} beforehand using \code{normalizePath(f, winslash
   = "/")}.}
 
@@ -126,7 +126,7 @@
 
   Label cleaning invokes either the replacement of
   disallowed characters or the enclosing of all labels in
-  single quotes and the doubling of pre-existing single
+  single quotes and the doubling of already existing single
   quotes, if any.
 }
 \examples{
@@ -145,7 +145,7 @@ stopifnot(nchar(y) == 22) # padded to uniform length
 stopifnot(grepl("^'.*'$", y)) # all strings enclosed in sinqle quotes
 }
 \seealso{
-  base::normalizePath base::I base::gsu
+  base::normalizePath base::I base::gsub
 
   Other phylogeny-functions: \code{\link{phylo_data}}
 }

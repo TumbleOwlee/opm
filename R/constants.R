@@ -110,7 +110,8 @@ COMPOUND_NAME_HTML_MAP <- (function(x)
 
 COMPOUND_NAME_HTML_MAP <- c(
   COMPOUND_NAME_HTML_MAP,
-  structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS))
+  structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS)),
+  structure(sprintf("&%s;", GREEK_LETTERS), names = GREEK_LETTERS)
 )
 
 SUBSTRATE_PATTERN <- (function() {

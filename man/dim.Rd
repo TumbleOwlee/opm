@@ -7,7 +7,7 @@
 
   \item{...}{\code{\link{OPMS}} objects. Several ones can
   be provided, but all but the first one are ignored. For
-  reasons of comparability, the \code{\link{OPM}} methodof
+  reasons of comparability, the \code{\link{OPM}} method of
   \code{seq} deliberately results in an error.}
 }
 \value{
@@ -79,11 +79,11 @@ stopifnot(identical(x, y))
 \alias{dim-methods}
 \alias{dim,OPM-method}
 \alias{dim,OPMS-method}
-\alias{length,OPM-method}
 \alias{length-methods}
+\alias{length,OPM-method}
 \alias{length,OPMS-method}
-\alias{seq,OPM-method}
 \alias{seq-methods}
+\alias{seq,OPM-method}
 \alias{seq,OPMS-method}
 \usage{
   \S4method{dim}{OPM}(x) 

@@ -83,9 +83,9 @@
   \item{json}{Create \acronym{JSON} files, by default one
   per input file.} \item{levelplot}{Create graphics files,
   by default one per input file, containing the output of
-  \code{\link{level_plot}}.} \item{split}{Split multi-plate
-  new style or old style \acronym{CSV} files with
-  \code{\link{split_files}}.} \item{yaml}{Create
+  \code{\link{level_plot}}.} \item{split}{Split
+  multiple-plate new style or old style \acronym{CSV} files
+  with \code{\link{split_files}}.} \item{yaml}{Create
   \acronym{YAML} files, by default one per input file.}
   \item{xyplot}{Create graphics files, by default one per
   input file, containing the output of
@@ -128,8 +128,8 @@
   \code{\link{do_aggr}} for details.}
 
   \item{outdir}{Character vector. Directories in which to
-  place the outfiles.  If \code{NULL} or only containing
-  empty strings, each infile's directory is used.}
+  place the output files. If \code{NULL} or only containing
+  empty strings, the directory of each input file is used.}
 
   \item{overwrite}{Character scalar. If \sQuote{yes},
   conversion is always tried if \code{infile} exists and is
@@ -221,7 +221,7 @@
   or hang. This problem was observed with \acronym{CSV}
   files that were generated on a distinct operating system
   and contained special characters such as German umlauts.
-  It is then necessary to explicitely (and correctly)
+  It is then necessary to explicitly (and correctly)
   specify the encoding used in these files; see the
   \sQuote{file.encoding} option of \code{\link{opm_opt}}
   for how to do this.
@@ -253,8 +253,7 @@
   \acronym{CSV}.
 }
 \examples{
-test.files <- grep("Multiple", opm_files("testdata"), invert = TRUE,
-  value = TRUE, fixed = TRUE)
+test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the files are found
   num.files <- length(list.files(outdir <- tempdir()))
   x <- batch_opm(test.files[1], outdir = outdir)

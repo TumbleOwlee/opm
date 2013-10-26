@@ -284,6 +284,11 @@ test_that("explode_dir deals with non-existing files", {
 # Metadata IO
 #
 
+
+## finish_template
+## UNTESTED
+
+
 ## to_metadata
 test_that("to_metadata converts objects in the right way", {
   x <- data.frame(a = 1:10, b = letters[1:10])

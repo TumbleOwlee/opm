@@ -18,7 +18,7 @@
   are sometimes biologically unreasonable because they are
   too large or too small, and some corrections might be
   appropriate. \describe{ \item{no}{No modification.}
-  \item{full}{Negative lamdda estimates are set to zero.}
+  \item{full}{Negative lambda estimates are set to zero.}
   \item{medium}{Lambda estimates larger than
   \code{\link{hours}(object)} (i.e., the maximum time value
   observed) are set to that value. Negative lambda
@@ -130,9 +130,10 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 \docType{methods}
 \alias{aggregated-methods}
 \alias{aggregated,OPMA-method}
-\alias{aggr_settings,OPMA-method}
 \alias{aggr_settings-methods}
+\alias{aggr_settings,OPMA-method}
 \alias{aggr_settings,OPMS-method}
+\alias{aggregated-methods}
 \alias{aggregated,OPMS-method}
 \usage{
   \S4method{aggregated}{OPMA}(object, subset = NULL, ci = TRUE,

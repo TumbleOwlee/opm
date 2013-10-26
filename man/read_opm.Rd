@@ -134,15 +134,14 @@
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   formats are tried and deselect
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
-  files entirely. Negative indixes can be used, but
+  files entirely. Negative indexes can be used, but
   non-negative values not within the range listed above
   will result in an error. If it known in advance which
   formats are (not) to be expected, subsetting or just
   changing the order can be used to accelerate data input.
 }
 \examples{
-test.files <- grep("Multiple|Ecoplate", opm_files("testdata"), invert = TRUE,
-  value = TRUE, perl = TRUE)
+test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the folder is found
   x <- read_opm(test.files, demo = TRUE) # check first what you would get
   stopifnot(identical(test.files, x))
@@ -167,7 +166,7 @@ x <- read_opm(".")
 }
 
 # read_single_opm()
-test.files <- opm_files("testdata")
+test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the folder is found
   x <- read_single_opm(test.files[1]) # => 'OPM' object
   class(x)

@@ -32,7 +32,7 @@
   \method{glob_to_regex}{factor} (object)
 }
 \arguments{
-  \item{names}{Character vector containing filenames or
+  \item{names}{Character vector containing file names or
   directories, or convertible to such.}
 
   \item{object}{Character vector or factor.}
@@ -43,7 +43,7 @@
   ignored. If a list, used as arguments of
   \code{\link{file_pattern}} and its result used as regular
   expression. Note that selection is done \strong{after}
-  expanding the directory names to filenames.}
+  expanding the directory names to file names.}
 
   \item{exclude}{Like \code{include}, but for excluding
   matching input files.  Note that exclusion is done
@@ -74,7 +74,7 @@
   \strong{before} expanding the names of directories, if
   any.}
 
-  \item{fun}{Collecting function. Should use the filename
+  \item{fun}{Collecting function. Should use the file name
   as first argument.}
 
   \item{fun.args}{Optional list of arguments to \code{fun}
@@ -95,11 +95,11 @@
   used for naming the elements of the result?}
 
   \item{out.ext}{Character scalar. The extension of the
-  outfile names (without the dot).}
+  output file names (without the dot).}
 
   \item{outdir}{Character vector. Directories in which to
-  place the outfiles.  If \code{NULL} or only containing
-  empty strings, each infile's directory is used.}
+  place the output files. If \code{NULL} or only containing
+  empty strings, the directory of each input file is used.}
 
   \item{in.ext}{Character scalar. Passed through
   \code{\link{file_pattern}}, then used for the replacement
@@ -110,7 +110,7 @@
   \sQuote{both} means either \acronym{CSV} or
   \acronym{YAML} \emph{or} \acronym{JSON}. \sQuote{yorj}
   means either \acronym{YAML} or \acronym{JSON}.
-  Alternaticely, directly the extension or extensions, or a
+  Alternatively, directly the extension or extensions, or a
   list of file names (not \code{NA}).}
 
   \item{compressed}{Logical scalar. Shall compressed files
@@ -126,10 +126,10 @@
 
   \item{demo}{Logical scalar. In the case of
   \code{batch_process}, if \code{TRUE} do not convert
-  files, but print the attempted infile-outfile conversions
-  and invisibly return a matrix with infiles in the first
-  and outfiles in the second column? For the other
-  functions, the effect is equivalent.}
+  files, but print the attempted input file-output file
+  conversions and invisibly return a matrix with input
+  files in the first and output files in the second column?
+  For the other functions, the effect is equivalent.}
 
   \item{io.fun}{Conversion function. Should accept
   \code{infile} and \code{outfile} as the first two
@@ -175,17 +175,17 @@
 }
 \description{
   Batch-collect information from a series of input files or
-  batch-convert data from infiles to data in outfiles.
-  Alternatively, turn a mixed file/directory list into a
-  list of files or create a regular expression matching
-  certain file extensions, or convert a wildcard pattern to
-  a regular expression. These functions are not normally
-  directly called by an \pkg{opm} user but by the other IO
-  functions of the package such as
+  batch-convert data from input files to data in output
+  files. Alternatively, turn a mixed file/directory list
+  into a list of files or create a regular expression
+  matching certain file extensions, or convert a wildcard
+  pattern to a regular expression. These functions are not
+  normally directly called by an \pkg{opm} user but by the
+  other IO functions of the package such as
   \code{\link{collect_template}} or
   \code{\link{batch_opm}}. One can use their \code{demo}
   argument directly for testing the results of the applied
-  filename patterns.
+  file name patterns.
 }
 \details{
   Other functions that call \code{explode_dir} have a
@@ -219,7 +219,7 @@
   \item{?bc}{Matches \sQuote{abc}, \sQuote{Xbc}, \sQuote{
   bc} etc. but not \sQuote{aabc}, \sQuote{abbc},
   \sQuote{bc} etc.} } Despite their simplicity, globbing
-  patterns are often sufficient for selecting filenames.
+  patterns are often sufficient for selecting file names.
 }
 \examples{
 # explode_dir()
@@ -240,7 +240,7 @@ stopifnot(length(y) == length(x))
 stopifnot(length(x) == 0L || length(x) > length(y))
 
 # batch_collect()
-# Read the first line from each of the OPM test dataset files
+# Read the first line from each of the OPM test data set files
 f <- opm_files("testdata")
 if (length(f) > 0) { # if the files are found
   x <- batch_collect(f, fun = readLines, fun.args = list(n = 1L))
@@ -254,7 +254,7 @@ if (length(f) > 0) { # if the files are found
 # For serious tasks, consider to first try the function in 'demo' mode.
 
 # batch_process()
-# Read the first line from each of the OPM test dataset files and store it
+# Read the first line from each of the OPM test data set files and store it
 # in temporary files
 pf <- function(infile, outfile) write(readLines(infile, n = 1), outfile)
 infiles <- opm_files("testdata")
@@ -288,7 +288,8 @@ stopifnot(!identical(y, z))
 stopifnot(identical(as.factor(y), z))
 }
 \seealso{
-  base::list.files base::Sys.glo utils::glob2rx base::regex
+  base::list.files base::Sys.glob utils::glob2rx
+  base::regex
 
   Other io-functions: \code{\link{batch_opm}},
   \code{\link{clean_filenames}},

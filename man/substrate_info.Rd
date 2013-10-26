@@ -102,7 +102,7 @@
 
   The generated \acronym{URL}s should provide plenty of
   information on the respective substrate. In the case of
-  \acronym{ChEBI}, \acronym{KEGG} and \acronym{Metacyc},
+  \acronym{ChEBI}, \acronym{KEGG} and \acronym{MetaCyc},
   much information is directly displayed on the page
   itself, whereas the chosen \acronym{CAS} site contains a
   number of links providing additional chemical details.

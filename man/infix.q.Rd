@@ -23,7 +23,7 @@
   expression or \code{\link{WMD}} object.
 }
 \details{
-  The behaviour of these methods depends on the object used
+  The behavior of these methods depends on the object used
   as query.  \code{infix.largeq} is usually stricter than
   \code{infix.q}, sometimes equivalent. \itemize{
 
@@ -74,7 +74,7 @@
   examples with \code{\link{OPMS}} objects.
 }
 \examples{
-# The dataset vaas_1 contains the metadata keys 'Species' and 'Experiment'
+# The data set vaas_1 contains the metadata keys 'Species' and 'Experiment'
 # with the values 'Escherichia coli' and 'First replicate'.
 
 ## Character methods
@@ -164,9 +164,9 @@ rm(missing.name) # tidy up
 \alias{\%q\%,formula,WMD-method}
 \alias{infix.q,expression,WMD-method}
 \alias{\%q\%,expression,WMD-method}
+\alias{infix.largeq-methods}
 \alias{infix.largeq,character,WMD-method}
 \alias{\%Q\%,character,WMD-method}
-\alias{infix.largeq-methods}
 \alias{infix.largeq,list,WMD-method}
 \alias{\%Q\%,list,WMD-method}
 \alias{infix.largeq,WMD,WMD-method}
@@ -175,6 +175,7 @@ rm(missing.name) # tidy up
 \alias{\%Q\%,formula,WMD-method}
 \alias{infix.largeq,expression,WMD-method}
 \alias{\%Q\%,expression,WMD-method}
+\alias{infix.q-methods}
 \alias{infix.q,factor,WMD-method}
 \alias{\%q\%,factor,WMD-method}
 \alias{infix.largeq-methods}

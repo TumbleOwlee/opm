@@ -187,6 +187,16 @@ assert_splittable_matrix <- function(x, split.at) {
   pos
 }
 
+strip_whitespace <- function(x) {
+  strip <- function(x) sub("^\\s+", "", sub("\\s+$", "", x, FALSE, TRUE),
+    FALSE, TRUE)
+  for (i in which(vapply(x, is.character, NA)))
+    x[, i] <- strip(x[, i])
+  for (i in which(vapply(x, is.factor, NA)))
+    levels(x[, i]) <- strip(levels(x[, i]))
+  x
+}
+
 metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
 
 metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {

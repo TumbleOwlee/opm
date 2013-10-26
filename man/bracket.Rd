@@ -1,5 +1,6 @@
 \name{[}
 \alias{[}
+\alias{[[}
 \title{Select subset}
 \arguments{
   \item{x}{\code{\link{OPM}}, \code{\link{OPMA}} or
@@ -41,6 +42,9 @@
   \code{\link{OPM}} object? Has no effect if \code{x}
   already is an \code{\link{OPM}} object or contains only
   such objects.}
+
+  \item{exact}{Logical scalar. Has the opposite effect of
+  \code{drop}.}
 }
 \value{
   \code{\link{OPM}}, \code{\link{OPMA}} or
@@ -122,8 +126,10 @@ x <- vaas_4[, 1:100]
 stopifnot(dim(x) == c(4, 100, 96))
 
 # Create OPMS object with fewer wells
-x <- vaas_4[, , 1:12]
+(x <- vaas_4[, , 1:12])
 stopifnot(dim(x) == c(4, 384, 12))
+# alternative with [[ (can only select a single plate)
+stopifnot(identical(x[2], vaas_4[[2, , 1:12]]))
 
 # The same with well names
 x <- vaas_4[, , ~ A01:A12] # within x, these are well names 1 to 12
@@ -164,6 +170,11 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 \alias{[,OPMD,ANY,ANY,ANY-method}
 \alias{bracket,OPMS,ANY,ANY,ANY-method}
 \alias{[,OPMS,ANY,ANY,ANY-method}
+\alias{double.bracket-methods}
+\alias{double.bracket,OPMS,ANY,ANY-method}
+\alias{[[,OPMS,ANY,ANY-method}
+\alias{double.bracket,OPMS,ANY,missing-method}
+\alias{[[,OPMS,ANY,missing-method}
 \usage{
   \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 
@@ -176,5 +187,10 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 
   \S4method{[}{OPMS,ANY,ANY,ANY}(x, i, j, k, ...,
     drop = FALSE) 
+
+  \S4method{[[}{OPMS,ANY,ANY}(x, i, j, k, ..., exact = TRUE) 
+
+  \S4method{[[}{OPMS,ANY,missing}(x, i, j, k, ...,
+    exact = TRUE) 
 
 }

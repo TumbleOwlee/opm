@@ -160,8 +160,8 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 \alias{as.data.frame,OPMS-method}
 \alias{as.data.frame,kegg_compounds-method}
 \alias{as.data.frame,kegg_compound-method}
-\alias{flatten,OPM-method}
 \alias{flatten-methods}
+\alias{flatten,OPM-method}
 \alias{flatten,OPMS-method}
 \usage{
   \S4method{as.data.frame}{OPM}(x, row.names = NULL,

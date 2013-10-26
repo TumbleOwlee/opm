@@ -202,7 +202,7 @@ stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
 (y <- disc_settings(x)[[1]]) # stored discretization settings
 stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
-# no subgroups, all 4 datasets in one group, and some additional entries
+# no subgroups, all 4 data sets in one group, and some additional entries
 }
 \seealso{
   Other discretization-functions:

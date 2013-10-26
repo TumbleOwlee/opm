@@ -37,15 +37,16 @@
   case, the formula can specify the key to be replaced. See
   the examples below and \code{\link{map_values}} for
   details.  \item If \code{object} is of class
-  \sQuote{OPMS}, \code{value} can be a data frame whose
-  number of rows must be equal to the number of plates.
-  Metadata to be set will then be selected from each
-  individual row in turn and in input order. This works
-  analogously if \code{value} is an \code{OPMS} object. The
-  lengths of both objects must match. If \code{value} is a
-  \code{WMD} object, its metadata entries will be recycled.
-  \item If \code{object} is of class \sQuote{WMD},
-  \code{value} cannot be of class \sQuote{OPMS}.  }}
+  \code{\link{OPMS}}, \code{value} can be a data frame
+  whose number of rows must be equal to the number of
+  plates.  Metadata to be set will then be selected from
+  each individual row in turn and in input order. This
+  works analogously if \code{value} is an
+  \code{\link{OPMS}} object. The lengths of both objects
+  must match. If \code{value} is a \code{\link{WMD}}
+  object, its metadata entries will be recycled. \item If
+  \code{object} is of class \code{\link{WMD}}, \code{value}
+  cannot be of class \code{\link{WMD}}.  }}
 }
 \value{
   \code{value}.

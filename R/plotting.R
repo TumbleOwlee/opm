@@ -285,7 +285,7 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
       RESERVED_NAMES[c("value", "time", "well")]),
     data = flatten(x, ...), type = "l", layout = layout,
     as.table = TRUE,
-    # Curve colour and panel height
+    # Curve color and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -331,17 +331,17 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
   # OPMS-specific addition of defaults
   legend.fmt <- insert(as.list(legend.fmt), space = space, .force = FALSE)
 
-  # Selection of a colour set
+  # Selection of a color set
   col <- try_select_colors(col)
 
   # Conversion
   data <- flatten(x, ...)
 
-  # Assignment of colours to plates
+  # Assignment of colors to plates
   param <- flattened_to_factor(object = data, sep = legend.sep)
   key.text <- levels(param)
   if (length(col) < length(key.text))
-    stop("colour should be by plate or metadata, but there are too few colours")
+    stop("color should be by plate or metadata, but there are too few colors")
   key.col <- col[seq_along(key.text)]
   col <- col[param]
 
@@ -354,7 +354,7 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
       RESERVED_NAMES[c("value", "time", "well")]),
     data = data, type = "l", layout = layout,
     as.table = TRUE, groups = `_GROUPING`,
-    # Curve colours and panel height
+    # Curve colors and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -408,7 +408,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
   x$`_GROUPING` <- do.call(paste, c(x[, pos, drop = FALSE], sep = legend.sep))
   x$`_GROUPING` <- as.factor(x$`_GROUPING`)
 
-  # Assignment of colours
+  # Assignment of colors
   col <- try_select_colors(col)
   key.text <- levels(x$`_GROUPING`)
   if (length(key.text) > length(col))
@@ -428,7 +428,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
     # Principally unchangeable arguments
     x = f, data = x, type = "l", layout = layout,
     as.table = TRUE, groups = `_GROUPING`,
-    # Curve colours (panel height is omitted)
+    # Curve colors (panel height is omitted)
     col = col,
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -455,8 +455,9 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
 setGeneric("level_plot", function(x, ...) standardGeneric("level_plot"))
 
 setMethod("level_plot", OPM, function(x, main = list(),
-    colors = opm_opt("color.borders"), cex = NULL, space = "Lab", bias = 0.5,
-    num.colors = 200L, ...) {
+    colors = opm_opt("color.borders"), panel.headers = FALSE, cex = NULL,
+    strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",
+    space = "Lab", bias = 0.5, num.colors = 200L, ...) {
   if (is.null(cex))
     cex <- guess_cex(dim(x)[2L])
   main <- main_title(x, main)
@@ -617,7 +618,7 @@ setMethod("heat_map", "matrix", function(object,
     colors <- try_select_colors(colors)
     groups <- as.factor(groups)
     if (length(colors) < length(levels(groups)))
-      stop("more groups than colours given")
+      stop("more groups than colors given")
     structure(colors[groups], names = as.character(groups))
   }
 
@@ -688,22 +689,24 @@ setMethod("heat_map", OPMS, function(object, as.labels,
 
 setGeneric("radial_plot", function(object, ...) standardGeneric("radial_plot"))
 
-setMethod("radial_plot", "matrix", function(object, rp.type = "p",
+setMethod("radial_plot", "matrix", function(object, as.labels = NULL,
+    subset = TRUE, sep = " ", extract.args = list(), rp.type = "p",
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
     x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
-    point.symbols = NA, point.col = NA, poly.col = NA, ...) {
+    point.symbols = NA, point.col = NA, poly.col = NA,
+    main = paste0(as.labels, sep = sep), ...) {
   LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch)
   line.col <- try_select_colors(line.col)
   changed.par <- NULL
   on.exit(if (!is.null(changed.par))
     par(changed.par))
-  changed.par <- radial.plot(lengths = object,
+  changed.par <- radial.plot(lengths = object[, subset, drop = FALSE],
     labels = colnames(object), rp.type = rp.type, radlab = radlab,
     show.centroid = show.centroid, lwd = lwd, mar = mar,
     show.grid.labels = show.grid.labels, line.col = line.col,
     point.symbols = point.symbols, point.col = point.col, poly.col = poly.col,
-    ...)
+    main = main, ...)
   if (!is.null(rn <- rownames(object))) {
     if (draw.legend) {
       legend.args <- insert(as.list(legend.args), x = x, y = y, col = line.col,
@@ -718,9 +721,9 @@ setMethod("radial_plot", "matrix", function(object, rp.type = "p",
   invisible(result)
 }, sealed = SEALED)
 
-setMethod("radial_plot", "data.frame", function(object, as.labels, sep = " ",
-    ...) {
-  invisible(radial_plot(extract_columns(object, what = "numeric",
+setMethod("radial_plot", "data.frame", function(object, as.labels,
+    subset = "numeric", sep = " ", extract.args = list(), ...) {
+  invisible(radial_plot(extract_columns(object, what = subset,
     direct = FALSE, as.labels = as.labels, sep = sep), ...))
 }, sealed = SEALED)
 

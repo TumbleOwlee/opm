@@ -11,7 +11,7 @@
   \item{model}{A model formula, or a character vector or a
   list containing the names of factors to be included in
   the model for fitting.  In order to join two or more
-  metadata-variables into one factor use pseudofunction
+  metadata-variables into one factor use pseudo-function
   \code{J} (described in \code{\link{extract}}). This is
   necessary especially when \code{linfct = Pairs}, see the
   examples below.  For model specifications using formulas
@@ -139,8 +139,8 @@
   \item{...}{Optional arguments passed to
   \code{\link{extract}}. Most of them would be passed to
   \code{\link{wells}} for creating substrate names. Some
-  restrictions are necessary here if the resuling object
-  shall latter on be analysed with \code{\link{annotated}};
+  restrictions are necessary here if the resulting object
+  shall latter on be analyzed with \code{\link{annotated}};
   see there for details.}
 }
 \value{

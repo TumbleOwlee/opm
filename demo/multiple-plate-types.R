@@ -22,7 +22,7 @@ library(opm)
 ### Default settings:
 
 # Names of replicate IDs. If not within the input CSV data, automatically
-# generated below. Technically not mandatatory, but useful for addressing each
+# generated below. Technically not mandatory, but useful for addressing each
 # plate.
 #
 replicate <- "Replicate"
@@ -48,13 +48,9 @@ x <- read_opm(getwd(), convert = "grp", include = list("csv"))
 #
 for (i in 1:length(x)) {
 
-  # Creates data frame without converting strings to factors.
+  # Create data frame without converting strings to factors.
   #
-  if (length(x[[i]]) > 1L)
-    md <- to_metadata(csv_data(x[[i]]))
-  else
-    # a special measure only needed if replicates are not present
-    md <- to_metadata(t(as.matrix(csv_data(x[[i]]))))
+  md <- to_metadata(csv_data(x[[i]]))
 
   # Create replicate IDs if they are not included.
   #
@@ -89,9 +85,9 @@ for (i in 1:length(x)) {
   x[[i]] <- do_aggr(x[[i]], boot = 0, cores = 8, method = "splines",
     options = set_spline_options("smooth.spline"))
 
-  # The discretization is using exact k-means partitioning, without estimation
-  # of an intermediary state. This is OK if > 1 replicates are there and one can
-  # calculate ambiguity in another manner (see below).
+  # This discretization is using exact k-means partitioning, without estimation
+  # of an intermediary state. This is OK if > 1 replicates are there and one
+  # can calculate ambiguity in another manner (see below).
   #
   x[[i]] <- do_disc(x[[i]], cutoff = FALSE)
 
@@ -104,8 +100,7 @@ for (i in 1:length(x)) {
 # it as default for HTML tables.
 #
 opm_opt(css.file = "opm_styles.css")
-file.copy(grep("[.]css$", opm_files("auxiliary"), value = TRUE),
-  opm_opt("css.file"), overwrite = TRUE)
+file.copy(opm_files("css")[[1]], opm_opt("css.file"), overwrite = TRUE)
 
 # For each plate type, create each of the following files:
 #
@@ -127,7 +122,8 @@ for (name in names(x)) {
   write(phylo_data(listing(x[[name]], as.groups = organism, html = TRUE)),
     sprintf("Description_%s.html", name))
 
-  # Write HTML table describing the discretized results.
+  # Write HTML table describing the discretized results. This cannot be done
+  # unless there are several replicates.
   #
   if (length(x[[name]]) > 1)
     write(phylo_data(x[[name]], format = "html", as.labels = organism),

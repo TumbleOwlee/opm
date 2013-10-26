@@ -75,9 +75,10 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 \docType{methods}
 \alias{discretized-methods}
 \alias{discretized,OPMD-method}
-\alias{disc_settings,OPMD-method}
 \alias{disc_settings-methods}
+\alias{disc_settings,OPMD-method}
 \alias{disc_settings,OPMS-method}
+\alias{discretized-methods}
 \alias{discretized,OPMS-method}
 \usage{
   \S4method{discretized}{OPMD}(object, full = FALSE, in.parens = TRUE,

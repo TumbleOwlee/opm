@@ -2,11 +2,12 @@
 \alias{heat_map}
 \title{Heat map}
 \arguments{
-  \item{object}{Matrix, data frame or \sQuote{OPMS} object.
-  The matrix method is mainly designed for curve-parameter
-  matrices as created by \code{\link{extract}} but can be
-  used with any numeric matrix. If a data frame, it must
-  contain at least one column with numeric data.}
+  \item{object}{Matrix, data frame or \code{\link{OPMS}}
+  object. The matrix method is mainly designed for
+  curve-parameter matrices as created by
+  \code{\link{extract}} but can be used with any numeric
+  matrix. If a data frame, it must contain at least one
+  column with numeric data.}
 
   \item{as.labels}{Character, numeric or logical vector
   indicating the positions of the columns to be joined and
@@ -23,7 +24,7 @@
   and group names. See \code{\link{extract}} for details.}
 
   \item{subset}{Character scalar passed to the
-  \sQuote{OPMS} method of \code{\link{extract}}.}
+  \code{\link{OPMS}} method of \code{\link{extract}}.}
 
   \item{extract.args}{Optional list of arguments passed to
   that method.}
@@ -46,7 +47,7 @@
   substrate are of interest, \sQuote{column} should be
   used.}
 
-  \item{r.groups}{Determines the plotting of a colour bar
+  \item{r.groups}{Determines the plotting of a color bar
   indicating row groups.
 
   If \code{NULL}, ignored. If a function, applied to the
@@ -59,10 +60,10 @@
   Finally the groups are converted to a factor and used for
   selecting from \code{r.col}.}
 
-  \item{r.col}{Character vector of colour names used by
+  \item{r.col}{Character vector of color names used by
   \code{r.groups}.  Ignored if that is \code{NULL}.}
 
-  \item{c.groups}{Determines the plotting of a colour bar
+  \item{c.groups}{Determines the plotting of a color bar
   indicating column groups.
 
   If \code{NULL}, ignored. If a function, applied to the
@@ -75,7 +76,7 @@
   Finally the groups are converted to a factor and used for
   selecting from \code{c.col}.}
 
-  \item{c.col}{Character vector of colour names used by
+  \item{c.col}{Character vector of color names used by
   \code{c.groups}.  Ignored if that is \code{NULL}.}
 
   \item{magnif}{Numeric vector. Factor(s) used per default
@@ -92,22 +93,22 @@
   relative size of the margin (i) at the bottom and (ii) at
   the left.}
 
-  \item{col}{Character vector containing the proper heatmap
-  colours.}
+  \item{col}{Character vector containing the proper heat
+  map colors.}
 
   \item{asqr}{Logical scalar indicating whether the data
   should be treated with the arcus sinus-square root
-  transformation. This usally only makes sense for
+  transformation. This usually only makes sense for
   proportion data. If \code{NA}, percentages are assumed.}
 
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
   transparent from the argument list of \code{heat_map}. If
-  set explicitly, the default \code{heatmap.2} behaviour is
-  restored.  \code{\dots} also represents all arguments
-  passed from the \sQuote{OPMS} or data-frame methods to
-  the matrix method.}
+  set explicitly, the default \code{heatmap.2} behavior is
+  restored. \code{\dots} also represents all arguments
+  passed from the \code{\link{OPMS}} or data-frame methods
+  to the matrix method.}
 
   \item{use.fun}{Character scalar. If \sQuote{gplots}, it
   is attempted to load the \pkg{gplots} package and use its
@@ -119,7 +120,7 @@
   A list as output by \code{heatmap} or \code{heatmap.2}
   with the additional entries \sQuote{rowColMap} or
   \sQuote{colColMap} giving the mapping(s) of group names
-  to colours as named character vector(s), if this feature
+  to colors as named character vector(s), if this feature
   was used.
 }
 \description{
@@ -127,9 +128,10 @@
   and \code{heatmap.2} from the \pkg{gplots} package with
   some adaptations likely to be useful for
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data.
-  The data-frame and \sQuote{OPMS} methods extract a
-  numeric matrix from a given data frame or \sQuote{OPMS}
-  object and pass the result to the matrix method.
+  The data-frame and \code{\link{OPMS}} methods extract a
+  numeric matrix from a given data frame or
+  \code{\link{OPMS}} object and pass the result to the
+  matrix method.
 }
 \examples{
 # Matrix method (usually unnecessary, see below)
