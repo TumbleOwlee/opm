@@ -98,7 +98,13 @@ metadata(x) <- md[, c(organism, replicate)]
 # really have on your machine, and keep in mind that parallelization does not
 # work under Windows (for reasons caused by R itself).
 #
-x <- do_aggr(x, boot = 0, cores = 8, method = "splines",
+if (grepl("windows", R.version$platform, TRUE, TRUE)) {
+  nc <- 1
+} else {
+  nc <- 8
+}
+
+x <- do_aggr(x, boot = 0, cores = nc, method = "splines",
   options = set_spline_options("smooth.spline"))
 
 # Let's have a look at the upper part of the aggregation settings.
