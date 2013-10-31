@@ -68,6 +68,17 @@ setClass(OPMS,
   sealed = SEALED
 )
 
+setClass(MOPMX,
+  contains = "list",
+  prototype = structure(list(), names = character()),
+  validity = function(object) {
+    if (all(vapply(object@.Data, is, NA, OPMX)))
+      TRUE
+    else
+      "not ell elements inherit from 'OPMX'"
+  }, sealed = SEALED
+)
+
 NULL
 
 setClassUnion(OPMX, c(OPM, OPMS))
@@ -416,6 +427,20 @@ setAs(from = "list", to = OPMS, function(from) {
       else
         OPM)
   }))
+})
+
+setAs(from = "list", to = MOPMX, function(from) {
+  new(MOPMX, from)
+})
+
+setAs(from = OPMX, to = MOPMX, function(from) {
+  new(MOPMX, list(from))
+})
+
+setAs(from = MOPMX, to = OPMX, function(from) {
+  if (length(from) != 1L)
+    stop("conversion impossible: number of elements is not 1")
+  from[[1L]]
 })
 
 setAs(from = "matrix", to = CMAT, function(from) {

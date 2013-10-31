@@ -196,6 +196,7 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 }
 \keyword{htest}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{annotated-methods}
 \alias{annotated,OPMA-method}
@@ -205,16 +206,13 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 \usage{
   \S4method{annotated}{OPMA}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) 
-
   \S4method{annotated}{OPMD}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) 
-
   \S4method{annotated}{OPMS}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
     conc = FALSE) 
-
   \S4method{annotated}{opm_glht}(object, what = "kegg", how = "ids",
     output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join"),
     conc = FALSE) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -126,35 +126,28 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
 \keyword{character}
 \keyword{utilities}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
+\alias{find_positions-methods}
+\alias{find_positions,OPM-method}
+\alias{find_positions,OPMS-method}
+\alias{find_positions,character-method}
+\alias{find_positions,factor-method}
+\alias{find_positions,list-method}
+\alias{find_positions,substrate_match-method}
 \alias{find_substrate-methods}
 \alias{find_substrate,character-method}
-\alias{find_positions-methods}
-\alias{find_positions,character-method}
-\alias{find_positions,substrate_match-method}
-\alias{find_positions,list-method}
-\alias{find_positions,OPM-method}
-\alias{find_substrate-methods}
 \alias{find_substrate,factor-method}
-\alias{find_positions-methods}
-\alias{find_positions,factor-method}
-\alias{find_positions,OPMS-method}
 \usage{
-  \S4method{find_substrate}{character}(object,
-    search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) 
-
+  \S4method{find_positions}{OPM}(object, type = NULL, ...) 
+  \S4method{find_positions}{OPMS}(object, ...) 
   \S4method{find_positions}{character}(object, type = NULL, ...) 
-
+  \S4method{find_positions}{factor}(object, ...) 
+  \S4method{find_positions}{list}(object, ...) 
   \S4method{find_positions}{substrate_match}(object, ...) 
 
-  \S4method{find_positions}{list}(object, ...) 
-
-  \S4method{find_positions}{OPM}(object, type = NULL, ...) 
-
+  \S4method{find_substrate}{character}(object,
+    search = c("exact", "glob", "approx", "regex", "pmatch"), max.dev = 0.2) 
   \S4method{find_substrate}{factor}(object, ...) 
-
-  \S4method{find_positions}{factor}(object, ...) 
-
-  \S4method{find_positions}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

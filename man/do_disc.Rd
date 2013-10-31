@@ -2,8 +2,8 @@
 \alias{do_disc}
 \title{Discretize curve parameters}
 \arguments{
-  \item{object}{\code{\link{OPMA}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPMA}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{cutoff}{Determines the discretization approach. If
   non-empty, passed as \code{range} argument to
@@ -65,9 +65,9 @@
   \code{\link{OPMA}} objects (because they represent a
   single group with a single member).}
 
-  \item{...}{Optional arguments passed to
-  \code{\link{extract}}. Only relevant for certain settings
-  of \code{groups}, see above.}
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{extract}}. The latter is only relevant
+  for certain settings of \code{groups}, see above.}
 }
 \value{
   If \code{plain} is \code{FALSE}, an \code{\link{OPMD}} or
@@ -211,16 +211,18 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 \keyword{category}
 \keyword{character}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{do_disc-methods}
+\alias{do_disc,MOPMX-method}
 \alias{do_disc,OPMA-method}
 \alias{do_disc,OPMS-method}
 \usage{
+  \S4method{do_disc}{MOPMX}(object, ...) 
   \S4method{do_disc}{OPMA}(object, cutoff, groups = FALSE,
     plain = FALSE, subset = opm_opt("disc.param"), unify = FALSE) 
-
   \S4method{do_disc}{OPMS}(object, cutoff = TRUE, groups = FALSE,
     plain = FALSE, subset = opm_opt("disc.param"), unify = !length(cutoff),
     ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -74,8 +74,9 @@
   methods::Methods base::matrix base::array
   base::expression stats::formula
 
-  Other classes: \code{\link{OPM}}, \code{\link{OPMA}},
-  \code{\link{OPMD}}, \code{\link{OPMS}}
+  Other classes: \code{\link{MOPMX}}, \code{\link{OPM}},
+  \code{\link{OPMA}}, \code{\link{OPMD}},
+  \code{\link{OPMS}}
 }
 \keyword{classes}
 \keyword{methods}

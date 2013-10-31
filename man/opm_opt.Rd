@@ -157,16 +157,15 @@ stopifnot(digits == 4)
 }
 \keyword{utilities}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{opm_opt-methods}
+\alias{opm_opt,character-method}
 \alias{opm_opt,list-method}
 \alias{opm_opt,missing-method}
-\alias{opm_opt,character-method}
 \usage{
-  \S4method{opm_opt}{list}(x) 
-
-  \S4method{opm_opt}{missing}(x, ...) 
-
   \S4method{opm_opt}{character}(x) 
-
+  \S4method{opm_opt}{list}(x) 
+  \S4method{opm_opt}{missing}(x, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

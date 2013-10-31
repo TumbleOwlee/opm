@@ -102,6 +102,7 @@ level_plot(vaas_4, include = c("Species", "Strain"))
 }
 \keyword{hplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{level_plot-methods}
 \alias{level_plot,OPM-method}
@@ -111,10 +112,9 @@ level_plot(vaas_4, include = c("Species", "Strain"))
     colors = opm_opt("color.borders"), panel.headers = FALSE, cex = NULL,
     strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",
     space = "Lab", bias = 0.5, num.colors = 200L, ...) 
-
   \S4method{level_plot}{OPMS}(x, main = list(),
     colors = opm_opt("color.borders"), panel.headers = TRUE, cex = NULL,
     strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",
     space = "Lab", bias = 0.5, num.colors = 200L, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

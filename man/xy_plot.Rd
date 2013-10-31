@@ -195,6 +195,7 @@ xy_plot(vaas_4, include = c("Species", "Strain"),
 }
 \keyword{hplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{xy_plot-methods}
 \alias{xy_plot,OPM-method}
@@ -207,7 +208,6 @@ xy_plot(vaas_4, include = c("Species", "Strain"),
     theor.max = TRUE, draw.grid = TRUE,
     strip.fmt = list(), striptext.fmt = list(),
     ...) 
-
   \S4method{xy_plot}{OPMS}(x, col = opm_opt("colors"), lwd = 1,
     neg.ctrl = "A01", base.col = "black", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
@@ -215,11 +215,10 @@ xy_plot(vaas_4, include = c("Species", "Strain"),
     strip.fmt = list(), striptext.fmt = list(),
     legend.fmt = list(), legend.sep = " ", draw.legend = TRUE,
     ...) 
-
   \S4method{xy_plot}{data.frame}(x, f, groups,
     col = opm_opt("colors"), lwd = 1, neg.ctrl = NULL, base.col = "black",
     base.lwd = lwd, main = groups, xlab = elem(f, 3L:2L), ylab = elem(f, 2L),
     draw.grid = TRUE, space = "top", strip.fmt = list(), striptext.fmt = list(),
     legend.fmt = list(), legend.sep = " ", draw.legend = TRUE, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -3,10 +3,10 @@
 \alias{plate_type}
 \title{Plate type displayed or modified}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object, or character vector of original plate name(s), or
-  factor. If missing, the function displays the plate types
-  \pkg{opm} knows about.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object, or character vector of
+  original plate name(s), or factor. If missing, the
+  function displays the plate types \pkg{opm} knows about.}
 
   \item{full}{Logical scalar. If \code{TRUE}, add (or
   replace by) the full name of the plate type (if
@@ -161,34 +161,33 @@ stopifnot(!identical(vaas_4, copy)) # as above
 \keyword{manip}
 \keyword{utilities}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{plate_type-methods}
-\alias{plate_type,OPM-method}
-\alias{plate_type,character-method}
-\alias{plate_type,factor-method}
-\alias{plate_type,missing-method}
 \alias{gen_iii-methods}
+\alias{gen_iii,MOPMX-method}
 \alias{gen_iii,OPM-method}
 \alias{gen_iii,OPMS-method}
 \alias{plate_type-methods}
+\alias{plate_type,MOPMX-method}
+\alias{plate_type,OPM-method}
 \alias{plate_type,OPMS-method}
+\alias{plate_type,character-method}
+\alias{plate_type,factor-method}
+\alias{plate_type,missing-method}
 \usage{
+  \S4method{gen_iii}{MOPMX}(object, ...) 
+  \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
+  \S4method{gen_iii}{OPMS}(object, ...) 
+
+  \S4method{plate_type}{MOPMX}(object, ...) 
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
     subtype = FALSE) 
-
+  \S4method{plate_type}{OPMS}(object, ...) 
   \S4method{plate_type}{character}(object, full = FALSE,
     in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
     brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,
     normalize = TRUE, subtype = FALSE) 
-
   \S4method{plate_type}{factor}(object, ...) 
-
   \S4method{plate_type}{missing}(object, ...) 
-
-  \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
-
-  \S4method{gen_iii}{OPMS}(object, ...) 
-
-  \S4method{plate_type}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

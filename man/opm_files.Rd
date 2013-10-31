@@ -5,7 +5,7 @@
 \title{Files, parameter names and color sets used by the package}
 \usage{
   opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc",
-    "css", "omnilog", "multiple"))
+    "css", "omnilog", "single", "multiple"))
 
   param_names(what = c("param.names", "disc.name", "reserved.md.names", "split.at"))
     
@@ -24,7 +24,7 @@
   the extracted \R code.} \item{demo}{Example \R code using
   the \pkg{opm} package that neither fitted into these help
   pages nor into the vignette. Can directly be loaded via
-  \code{demo(package = "opm")}}.
+  \code{demo}; see \code{demo(package = "opm")}}.
   \item{examples}{\strong{Deprecated} synonym of
   \sQuote{demo}.} \item{multiple}{Not directly readable
   (i.e., multiple-plate) test files.}
@@ -35,13 +35,14 @@
   uses of the \pkg{opm} package, particularly for the batch
   processing of many files.  When called without input
   arguments or with the \sQuote{-h} switch, the scripts
-  output usage information.} \item{testdata}{Files as
-  output by the
-  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  instrument for testing data input and metadata
-  management.} } and the following kinds of parameter
-  names: \describe{ \item{param.names}{Names of the
-  estimated curve parameters used internally and in the
+  output usage information.} \item{single}{Directly
+  readable (i.e., single-plate) test files.}
+  \item{testdata}{Files as output by the devices such as
+  the OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  instrument.  Included here as examples for data input
+  (and metadata management).} } and the following kinds of
+  parameter names: \describe{ \item{param.names}{Names of
+  the estimated curve parameters used internally and in the
   output} \item{disc.name}{Alternative name used to select
   discretized values instead.}
   \item{reserved.md.names}{Names that should not be used in

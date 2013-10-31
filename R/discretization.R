@@ -329,3 +329,8 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
   object
 }, sealed = SEALED)
 
+setMethod("do_disc", "MOPMX", function(object, ...) {
+  object@.Data <- lapply(X = object@.Data, FUN = do_disc, ...)
+  object
+}, sealed = SEALED)
+

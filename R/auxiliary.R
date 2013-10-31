@@ -81,6 +81,7 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
     storage.mode(x) <- "character"
     x
   }
+  how <- tryCatch(match.arg(how), error = function(e) how)
   switch(how,
     yaml = unlist_matrix(x, to_yaml, json = FALSE, listify = TRUE),
     json = unlist_matrix(x, to_yaml, json = TRUE, listify = TRUE),
@@ -88,6 +89,41 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
     collect(x = x, what = how, dataframe = TRUE, stringsAsFactors = FALSE,
       optional = TRUE, keep.unnamed = TRUE, min.cov = 1L)
   )
+}
+
+sub_indexes <- function(x) {
+  x <- vapply(x, length, 0L)
+  add <- c(0L, cumsum(x))
+  x <- lapply(x, seq_len)
+  for (i in seq_along(x)[-1L])
+    x[[i]] <- x[[i]] + add[[i]]
+  attr(x, "total") <- add[[length(add)]]
+  x
+}
+
+simplify_conditionally <- function(x) {
+  if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
+    return(x)
+  if (length(n <- unique.default(vapply(x, length, 0L))) > 1L)
+    return(x)
+  if (n > 1L)
+    do.call(rbind, x)
+  else
+    unlist(x, FALSE, TRUE)
+}
+
+close_index_gaps <- function(x) {
+  if (any(bad <- vapply(x, is.null, NA))) {
+    warning("closing gaps in indexes")
+    return(x[!bad])
+  }
+  x
+}
+
+fix_names <- function(x, y) {
+  if (any(bad <- !nzchar(x)[i <- seq_along(y)] & nzchar(y)))
+    x[i][bad] <- y[bad]
+  x
 }
 
 is_uniform <- function(x, na.rm = FALSE) {
@@ -196,6 +232,8 @@ strip_whitespace <- function(x) {
     levels(x[, i]) <- strip(levels(x[, i]))
   x
 }
+
+vector2row <- function(x) matrix(x, 1L, length(x), FALSE, list(NULL, names(x)))
 
 metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
 

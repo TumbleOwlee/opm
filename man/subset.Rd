@@ -186,6 +186,7 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
 }
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{subset-methods}
 \alias{subset,OPMS-method}
@@ -200,7 +201,6 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
     use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T")) 
 
   \S4method{thin_out}{OPM}(object, factor, drop = FALSE) 
-
   \S4method{thin_out}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

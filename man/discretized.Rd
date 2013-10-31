@@ -72,22 +72,24 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{discretized-methods}
-\alias{discretized,OPMD-method}
 \alias{disc_settings-methods}
+\alias{disc_settings,MOPMX-method}
 \alias{disc_settings,OPMD-method}
 \alias{disc_settings,OPMS-method}
 \alias{discretized-methods}
+\alias{discretized,MOPMX-method}
+\alias{discretized,OPMD-method}
 \alias{discretized,OPMS-method}
 \usage{
-  \S4method{discretized}{OPMD}(object, full = FALSE, in.parens = TRUE,
-    max = opm_opt("max.chars"), ...) 
-
+  \S4method{disc_settings}{MOPMX}(object, join = NULL) 
   \S4method{disc_settings}{OPMD}(object, join = NULL) 
-
   \S4method{disc_settings}{OPMS}(object, join = NULL) 
 
+  \S4method{discretized}{MOPMX}(object, ...) 
+  \S4method{discretized}{OPMD}(object, full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), ...) 
   \S4method{discretized}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -360,32 +360,29 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
 \keyword{character}
 \keyword{cluster}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{phylo_data-methods}
-\alias{phylo_data,matrix-method}
-\alias{phylo_data,data.frame-method}
-\alias{phylo_data,OPMS-method}
 \alias{phylo_data,OPMD_Listing-method}
+\alias{phylo_data,OPMS-method}
 \alias{phylo_data,OPMS_Listing-method}
+\alias{phylo_data,data.frame-method}
+\alias{phylo_data,matrix-method}
 \usage{
+  \S4method{phylo_data}{OPMD_Listing}(object,
+    html.args = html_args(), run.tidy = FALSE) 
+  \S4method{phylo_data}{OPMS}(object, as.labels,
+    subset = param_names("disc.name"), sep = " ", extract.args = list(),
+    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) 
+  \S4method{phylo_data}{OPMS_Listing}(object,
+    html.args = html_args(), run.tidy = FALSE) 
+  \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
+    subset = what, sep = " ", what = "numeric", ...) 
   \S4method{phylo_data}{matrix}(object,
     format = opm_opt("phylo.fmt"), outfile = "", enclose = TRUE, indent = 3L,
     paup.block = FALSE, delete = c("none", "uninf", "constant", "ambig"),
     join = FALSE, cutoff = 0, digits = opm_opt("digits"),
     comments = comment(object), html.args = html_args(),
     prefer.char = format == "html", run.tidy = FALSE, ...) 
-
-  \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
-    subset = what, sep = " ", what = "numeric", ...) 
-
-  \S4method{phylo_data}{OPMS}(object, as.labels,
-    subset = param_names("disc.name"), sep = " ", extract.args = list(),
-    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) 
-
-  \S4method{phylo_data}{OPMD_Listing}(object,
-    html.args = html_args(), run.tidy = FALSE) 
-
-  \S4method{phylo_data}{OPMS_Listing}(object,
-    html.args = html_args(), run.tidy = FALSE) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

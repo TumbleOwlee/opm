@@ -95,6 +95,17 @@ setMethod("oapply", OPMS, function(object, fun, ...,
   result
 }, sealed = SEALED)
 
+setMethod("oapply", MOPMX, function(object, fun, ...,
+    simplify = TRUE) {
+  result <- sapply(X = object@.Data, FUN = fun, ..., simplify = simplify,
+    USE.NAMES = TRUE)
+  if (simplify && is.list(result))
+    tryCatch(new(class(object), result[!vapply(result, is.null, NA)]),
+      error = function(e) result)
+  else
+    result
+}, sealed = SEALED)
+
 setGeneric("flattened_to_factor",
   function(object, ...) standardGeneric("flattened_to_factor"))
 

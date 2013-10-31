@@ -85,23 +85,20 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 \keyword{attribute}
 \keyword{list}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{contains-methods}
-\alias{contains,list,list-method}
+\alias{contains,OPM,OPM-method}
+\alias{contains,OPM,OPMS-method}
 \alias{contains,OPMS,OPM-method}
 \alias{contains,OPMS,OPMS-method}
-\alias{contains,OPM,OPMS-method}
-\alias{contains,OPM,OPM-method}
+\alias{contains,list,list-method}
 \usage{
+  \S4method{contains}{OPM,OPM}(object, other, ...) 
+  \S4method{contains}{OPM,OPMS}(object, other, ...) 
+  \S4method{contains}{OPMS,OPM}(object, other, ...) 
+  \S4method{contains}{OPMS,OPMS}(object, other, ...) 
   \S4method{contains}{list,list}(object, other,
     values = TRUE, exact = FALSE, ...) 
-
-  \S4method{contains}{OPMS,OPM}(object, other, ...) 
-
-  \S4method{contains}{OPMS,OPMS}(object, other, ...) 
-
-  \S4method{contains}{OPM,OPMS}(object, other, ...) 
-
-  \S4method{contains}{OPM,OPM}(object, other, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

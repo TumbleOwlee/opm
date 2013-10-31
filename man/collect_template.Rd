@@ -234,42 +234,43 @@ stopifnot(identical(copy, vaas_4))
 \keyword{attribute}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{collect_template-methods}
-\alias{collect_template,character-method}
+\alias{collect_template,MOPMX-method}
 \alias{collect_template,OPM-method}
 \alias{collect_template,OPMS-method}
+\alias{collect_template,character-method}
 \alias{to_metadata-methods}
-\alias{to_metadata,character-method}
 \alias{to_metadata,ANY-method}
-\alias{to_metadata,WMD-method}
 \alias{to_metadata,OPMS-method}
+\alias{to_metadata,WMD-method}
+\alias{to_metadata,character-method}
 \usage{
+  \S4method{collect_template}{MOPMX}(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) 
+  \S4method{collect_template}{OPM}(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) 
+  \S4method{collect_template}{OPMS}(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) 
   \S4method{collect_template}{character}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
     selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
     instrument = NULL, include = list(), ..., demo = FALSE) 
 
-  \S4method{collect_template}{OPM}(object, outfile = NULL,
-    sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL, ..., demo = FALSE) 
-
-  \S4method{collect_template}{OPMS}(object, outfile = NULL,
-    sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL, ..., demo = FALSE) 
-
-  \S4method{to_metadata}{character}(object, stringsAsFactors = FALSE,
-    optional = TRUE, sep = "\t", strip.white = NA, ...) 
-
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
-
-  \S4method{to_metadata}{WMD}(object, stringsAsFactors = FALSE,
-    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
-
   \S4method{to_metadata}{OPMS}(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
-
+  \S4method{to_metadata}{WMD}(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
+  \S4method{to_metadata}{character}(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = NA, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

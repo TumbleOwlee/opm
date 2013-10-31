@@ -51,14 +51,6 @@ try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
     error = function(e) object)
 }
 
-close_index_gaps <- function(x) {
-  if (any(bad <- vapply(x, is.null, NA))) {
-    warning("closing gaps in indexes")
-    return(x[!bad])
-  }
-  x
-}
-
 setMethod("[<-", c(OPMS, "ANY", "missing", "NULL"), function(x, i, j,
     value) {
   x@plates[i] <- NULL
@@ -80,24 +72,110 @@ setMethod("[<-", c(OPMS, "ANY", "missing", "list"), function(x, i, j, value) {
   new(OPMS, plates = close_index_gaps(x@plates)) # checks and unnaming needed
 }, sealed = SEALED)
 
-setMethod("[[<-", c(OPMS, "ANY", "missing", "NULL"), function(x, i, j, value) {
-  x@plates[[i]] <- NULL
-  case(length(x@plates), NULL, x@plates[[1L]], x) # no check necessary here
-}, sealed = SEALED)
+setMethod("[<-", c(MOPMX, "ANY", "missing", OPMX), function(x, i, j, value) {
+  x@.Data[i] <- value
+  x@.Data <- close_index_gaps(x@.Data)
+  x
+})
 
-setMethod("[[<-", c(OPMS, "ANY", "missing", OPM), function(x, i, j, value) {
-  x@plates[[i]] <- value
-  if (any(bad <- vapply(x@plates, is.null, NA))) {
-    warning("closing gaps in indexes")
-    x@plates <- x@plates[!bad]
-  }
-  new(OPMS, plates = x@plates) # check and unnaming needed
-}, sealed = SEALED)
+setMethod("[<-", c(MOPMX, "character", "missing", OPMX), function(x, i, j,
+    value) {
+  n <- names(x)
+  x@.Data[i] <- value
+  names(x) <- fix_names(names(x), n)
+  x@.Data <- close_index_gaps(x@.Data)
+  x
+})
+
+setMethod("[<-", c(MOPMX, "ANY", "missing", "list"), function(x, i, j, value) {
+  x@.Data[i] <- value
+  x@.Data <- close_index_gaps(x@.Data)
+  validObject(x)
+  x
+})
+
+setMethod("[<-", c(MOPMX, "character", "missing", "list"), function(x, i, j,
+    value) {
+  n <- names(x)
+  x@.Data[i] <- value
+  names(x) <- fix_names(names(x), n)
+  x@.Data <- close_index_gaps(x@.Data)
+  validObject(x)
+  x
+})
+
+setMethod("[<-", c(MOPMX, "ANY", "missing", "NULL"), function(x, i, j, value) {
+  x@.Data[i] <- NULL
+  x@.Data <- close_index_gaps(x@.Data)
+  x
+})
+
+setMethod("[<-", c(MOPMX, "character", "missing", "NULL"), function(x, i, j,
+    value) {
+  x@.Data[match(i, names(x), 0L)] <- NULL
+  x
+})
+
+setMethod("[<-", c(MOPMX, "ANY", "missing", "ANY"), function(x, i, j, value) {
+  stop("'value' must be object inheriting from 'OPMX' or list of such objects")
+})
+
+setMethod("[[<-", c(MOPMX, "ANY", "missing", OPMX), function(x, i, j, value) {
+  x@.Data[[i]] <- value
+  x@.Data <- close_index_gaps(x@.Data)
+  x
+})
+
+setMethod("[[<-", c(MOPMX, "character", "missing", OPMX), function(x, i, j,
+    value) {
+  n <- names(x)
+  x@.Data[[i]] <- value
+  names(x) <- fix_names(names(x), n)
+  x
+})
+
+setMethod("[[<-", c(MOPMX, "ANY", "missing", "NULL"), function(x, i, j, value) {
+  x@.Data[[i]] <- value
+  x
+})
+
+setMethod("[[<-", c(MOPMX, "character", "missing", "NULL"), function(x, i, j,
+    value) {
+  if (m <- match(i, names(x), 0L))
+    x@.Data[[m]] <- value
+  x
+})
+
+setMethod("[[<-", c(MOPMX, "ANY", "missing", "ANY"), function(x, i, j, value) {
+  stop("'value' must be NULL or inherit from 'OPMX'")
+})
+
+setMethod("$<-", c(MOPMX, "OPMX"), function(x, name, value) {
+  x[[name]] <- value
+  x
+})
+
+setMethod("$<-", c(MOPMX, "ANY"), function(x, name, value) {
+  x[[name]] <- value
+  x
+})
+
+setMethod("$<-", c(MOPMX, "NULL"), function(x, name, value) {
+  x[[name]] <- value
+  x
+})
 
 setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
   if (missing(..1))
     return(x)
   try_opms.list(list(x, ...))
+}, sealed = SEALED)
+
+setMethod("c", MOPMX, function(x, ..., recursive = FALSE) {
+  if (missing(..1))
+    return(x)
+  y <- as.list(c(x@.Data, ..., recursive = recursive))
+  tryCatch(new(class(x), y), error = function(e) y)
 }, sealed = SEALED)
 
 setMethod("+", c(OPM, OPM), function(e1, e2) {
@@ -144,7 +222,7 @@ opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
   result <- to_opm_list.list(list(...), precomputed, skip, group)
   if (is.null(wanted)) {
     if (group)
-      lapply(result, opms_or_first_or_NULL)
+      new(MOPMX, lapply(result, opms_or_first_or_NULL))
     else
       opms_or_first_or_NULL(result)
   } else # group was TRUE in that case, and to_opm_list() has split the list

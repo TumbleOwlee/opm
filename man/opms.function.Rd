@@ -78,8 +78,9 @@ dim(x <- opms(vaas_4, vaas_4))
 stopifnot(is(x, "OPMS"), length(x) == 8L)
 }
 \seealso{
-  Other combination-functions: \code{\link{[<-}},
-  \code{\link{[[<-}}, \code{\link{c}}, \code{\link{plus}}
+  Other combination-functions: \code{\link{$<-}},
+  \code{\link{[<-}}, \code{\link{[[<-}}, \code{\link{c}},
+  \code{\link{plus}}
 }
 \keyword{manip}
 

@@ -198,37 +198,33 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \keyword{category}
 \keyword{character}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{wells-methods}
-\alias{wells,OPM-method}
-\alias{wells,ANY-method}
-\alias{wells,missing-method}
 \alias{listing-methods}
 \alias{listing,OPMD-method}
 \alias{listing,OPMS-method}
 \alias{wells-methods}
+\alias{wells,ANY-method}
+\alias{wells,OPM-method}
 \alias{wells,OPMS-method}
+\alias{wells,missing-method}
 \usage{
-  \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
-    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
-    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
-    plate = plate_type(object)) 
-
-  \S4method{wells}{ANY}(object, full = TRUE, in.parens = FALSE,
-    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
-    word.wise = FALSE, paren.sep = " ", downcase = FALSE, plate = "PM01") 
-
-  \S4method{wells}{missing}(object, ...) 
-
   \S4method{listing}{OPMD}(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 
-
   \S4method{listing}{OPMS}(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) 
 
+  \S4method{wells}{ANY}(object, full = TRUE, in.parens = FALSE,
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE, plate = "PM01") 
+  \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
+    max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
+    word.wise = FALSE, paren.sep = " ", downcase = FALSE,
+    plate = plate_type(object)) 
   \S4method{wells}{OPMS}(object, ...) 
-
+  \S4method{wells}{missing}(object, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

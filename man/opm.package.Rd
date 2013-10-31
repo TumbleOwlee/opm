@@ -83,7 +83,7 @@
 \dontrun{ ## demo of some I/O, plotting, text and table generation options
 
   # Beforehand, set 'my.csv.dir' to the name of a directory that contains
-  # CSV files with input data (and no other kinds of CSV files) either
+  # CSV files with input data (and *no* other kinds of CSV files) either
   # directly or within its subdirectories.
   setwd(my.csv.dir)
   demo("multiple-plate-types", package = "opm")
@@ -91,6 +91,9 @@
 
 demo(package = "opm")
 # the other demos require additional libraries to be installed
+
+# list all classes, methods and functions exported by the package
+ls("package:opm")
 }
 \references{
   \url{http://www.biolog.com/}

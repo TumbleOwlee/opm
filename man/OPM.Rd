@@ -1,5 +1,7 @@
 \docType{class}
 \name{OPM}
+\alias{MOPMX}
+\alias{MOPMX-class}
 \alias{OPM}
 \alias{OPM-class}
 \alias{OPMA}
@@ -25,23 +27,26 @@
   \acronym{CSV} files as well as an additional arbitrary
   amount of arbitrarily organized metadata. Objects of this
   class are usually created by inputting files with
-  \code{\link{read_single_opm}} or \code{\link{read_opm}}.
+  \code{\link{read_single_opm}} or \code{\link{read_opm}},
+  not with a call to \code{new} or \code{as}.
 
   \acronym{OPM} inherits from \code{\link{WMD}} and, hence,
   has all its methods.
 
   Regarding the coercion of this class to other classes
   (see the \code{as} method from the \pkg{methods}
-  package), consider the following: \itemize{ \item The
+  package), consider the following: \itemize{ \item
+  Conversion of its child classes to this class is
+  straightforward, see the examples below.  \item The
   coercion of this class (and its child classes) to a list
-  (and vice versa) relies on a mapping between slot names
-  and keys in the list, i.e. the list must be appropriately
-  named. For instance, this is the mechanism when reading
-  from and writing to \acronym{YAML}, see
-  \code{\link{to_yaml}}.  \item Coercions to other data
-  frames and matrices first coerce the
-  \code{\link{measurements}} and then add the other slots
-  as attributes.  \item Methods such as
+  (and vice versa) is only for expert users and relies on a
+  mapping between slot names and keys in the list, i.e. the
+  list must be appropriately named. For instance, this is
+  the mechanism when reading from and writing to
+  \acronym{YAML}, see \code{\link{to_yaml}}.  \item
+  Coercions to other data frames and matrices first coerce
+  the \code{\link{measurements}} and then add the other
+  slots as attributes.  \item Methods such as
   \code{\link{flatten}} and \code{\link{extract}} might be
   way more appropriate for converting \acronym{OPM}
   objects. }
@@ -91,10 +96,11 @@
   other combination functions on \acronym{OPM} or derived
   objects, or by inputting files with
   \code{\link{read_opm}} if these files altogether contain
-  more than a single plate. The data may have been obtained
-  from distinct organisms and/or replicates, but
-  \strong{must} correspond to the same plate type and
-  \strong{must} contain the same wells.
+  more than a single plate. \acronym{OPMS} objects are not
+  normally created with a call to \code{new} or \code{as}.
+  The data may have been obtained from distinct organisms
+  and/or replicates, but \strong{must} correspond to the
+  same plate type and \strong{must} contain the same wells.
 
   As a rule, \acronym{OPMS} has the same methods as the
   \acronym{OPM} class, but adapted to a collection of more
@@ -102,34 +108,34 @@
   hold \acronym{OPMD} and \acronym{OPMA} as well as
   \acronym{OPM} objects, even though this is not indicated
   for all its methods in this manual.
+
+  \acronym{MOPMX} is an object for holding \acronym{OPMX}
+  objects with potentially multiple plate types. Regarding
+  the name: the \acronym{OPMS} stands for
+  \sQuote{multiple}. \acronym{MOPMX} objects are generated
+  by \code{\link{read_opm}(convert = "grp")} and
+  \code{\link{opms}(group = TRUE)}. They currently contain
+  relatively few methods of their own and behave like
+  lists. \acronym{MOPMX} objects can be created with
+  \code{new} or \code{as} and then further manipulated; see
+  the examples below.
 }
 \examples{
-# conversion of a list to an OPM object is tolerant against re-orderings
-# (but not against additions and omissions)
-x <- as(vaas_1, "list")
-x$measurements <- c(rev(x$measurements[7:8]), rev(x$measurements[-7:-8]))
-summary(x)
-x <- as(x, "OPM")
-summary(x)
-stopifnot(identical(measurements(x), measurements(vaas_1)))
+## OPMX conversions with as()
+showMethods("coerce", classes = c("OPM", "OPMA", "OPMD"))
+data(vaas_1)
+data(vaas_4)
+(x <- as(vaas_1, "OPMA")) # drops the discretized data
+stopifnot(has_disc(vaas_1), !has_disc(x))
+(x <- as(vaas_1, "OPM")) # drops the aggregated data
+stopifnot(has_aggr(vaas_1), !has_aggr(x))
 
-# conversion of a list to an OPMA object is tolerant against re-orderings
-# and additions (but not against omissions)
-x <- as(vaas_1, "list")
-x$aggregated <- c(Answer = 42L, rev(x$aggregated), Text = LETTERS)
-summary(x)
-x <- as(x, "OPMA")
-summary(x)
-stopifnot(identical(aggregated(x), aggregated(vaas_1)))
-
-# conversion of a list to an OPMD object is tolerant against re-orderings
-# and additions (but not against omissions)
-x <- as(vaas_1, "list")
-x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
-summary(x)
-x <- as(x, "OPMD")
-summary(x)
-stopifnot(identical(discretized(x), discretized(vaas_1)))
+## MOPMX creation and conversion
+(x <- new("MOPMX")) # don't do this with the other classes
+(x <- as(vaas_1, "MOPMX"))
+(x <- as(vaas_4, "MOPMX"))
+# conversion backwards is only possible as long as the MOPMX object contains
+# only a single OPMX object
 }
 \seealso{
   methods::Methods methods::new

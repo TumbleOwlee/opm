@@ -425,6 +425,8 @@ Note particularly that \proglang{OPM}, which only contains raw data, CSV data an
 These can usually co-occur in a single \proglang{OPMS} object but for some calculations the additional information in \proglang{OPMA} or \proglang{OPMD} objects is strictly required.
 The query functions \code{has\_aggr} and \code{has\_disc} are available for checking from which kinds of objects an \proglang{OPMS} is composed.
 See their help pages (e.g., \code{?has\_aggr}) and Section~\ref{application} for further details.
+Another container class, \proglang{MOPMX}, offers looser collections of objects.
+\proglang{MOPMX} objects are lists restricted to objects of the previously listed classes as elements, which may or may not have the same plate type.
 The non-virtual classes in the upper part of the figure are either well-known in \proglang{R} (e.g., matrices) or not directly manipulated by the user (\proglang{CMAT}).
 }
 \end{figure}

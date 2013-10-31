@@ -3,8 +3,8 @@
 \alias{plates}
 \title{Get available plates or apply function to them}
 \arguments{
-  \item{object}{List, \code{\link{OPM}} or
-  \code{\link{OPMS}} object.}
+  \item{object}{List, \code{\link{OPM}}, \code{\link{OPMS}}
+  or \code{\link{MOPMX}} object.}
 
   \item{fun}{A function. Should accept an \code{\link{OPM}}
   object as first argument.}
@@ -17,7 +17,9 @@
   simplify this to a vector, matrix or \code{\link{OPMS}}
   object (if the result is a list of \code{\link{OPM}} or
   \code{\link{OPMA}} objects). If this is impossible, a
-  list is returned.}
+  list is returned.  The \code{\link{MOPMX}} method tries
+  creating a \code{\link{MOPMX}} object again after
+  removing \code{NULL} values, if any.}
 }
 \value{
   For \code{plates}, a list of \code{\link{OPM}} objects
@@ -77,25 +79,26 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 \keyword{attribute}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{plates-methods}
-\alias{plates,OPMS-method}
-\alias{plates,OPM-method}
-\alias{plates,list-method}
 \alias{oapply-methods}
+\alias{oapply,MOPMX-method}
 \alias{oapply,OPM-method}
 \alias{oapply,OPMS-method}
+\alias{plates-methods}
+\alias{plates,OPM-method}
+\alias{plates,OPMS-method}
+\alias{plates,list-method}
 \usage{
-  \S4method{plates}{OPMS}(object) 
-
-  \S4method{plates}{OPM}(object) 
-
-  \S4method{plates}{list}(object) 
-
+  \S4method{oapply}{MOPMX}(object, fun, ...,
+    simplify = TRUE) 
   \S4method{oapply}{OPM}(object, fun, ...,
     simplify = TRUE) 
-
   \S4method{oapply}{OPMS}(object, fun, ...,
     simplify = TRUE) 
 
+  \S4method{plates}{OPM}(object) 
+  \S4method{plates}{OPMS}(object) 
+  \S4method{plates}{list}(object) 
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -4,8 +4,8 @@
 \alias{map_metadata}
 \title{Add or map metadata or edit them by hand}
 \arguments{
-  \item{object}{\code{\link{OPM}} (\code{\link{WMD}})
-  object or \code{\link{OPMS}} object.}
+  \item{object}{\code{\link{OPM}} (\code{\link{WMD}}),
+  \code{\link{OPMS}} or \code{\link{MOPMX}} object.}
 
   \item{name}{Like \code{object}, but for the \code{edit}
   method.}
@@ -193,47 +193,49 @@ stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
   utils::edit
 
   Other metadata-functions: \code{\link{metadata}},
-                                \code{\link{metadata_chars}}
+                                    \code{\link{metadata_chars}}
 }
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
+\alias{edit-methods}
+\alias{edit,OPMX-method}
 \alias{include_metadata-methods}
+\alias{include_metadata,MOPMX-method}
 \alias{include_metadata,OPM-method}
 \alias{include_metadata,OPMS-method}
 \alias{map_metadata-methods}
-\alias{map_metadata,WMD,function-method}
-\alias{map_metadata,WMD,character-method}
-\alias{map_metadata,WMD,FOE-method}
-\alias{map_metadata,WMD,missing-method}
-\alias{map_metadata,OPMS,missing-method}
+\alias{map_metadata,MOPMX,ANY-method}
+\alias{map_metadata,MOPMX,missing-method}
 \alias{map_metadata,OPMS,ANY-method}
-\alias{edit-methods}
-\alias{edit,OPMX-method}
+\alias{map_metadata,OPMS,missing-method}
+\alias{map_metadata,WMD,FOE-method}
+\alias{map_metadata,WMD,character-method}
+\alias{map_metadata,WMD,function-method}
+\alias{map_metadata,WMD,missing-method}
 \usage{
+  \S4method{edit}{OPMX}(name, ...) 
+
+  \S4method{include_metadata}{MOPMX}(object, ...) 
   \S4method{include_metadata}{OPM}(object, md,
     keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
     remove.keys = TRUE, ...) 
-
   \S4method{include_metadata}{OPMS}(object, ...) 
 
-  \S4method{map_metadata}{WMD,function}(object, mapping,
-    values = TRUE, classes = "ANY", ...) 
-
-  \S4method{map_metadata}{WMD,character}(object, mapping,
+  \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 
+  \S4method{map_metadata}{MOPMX,missing}(object, mapping,
     values = TRUE, classes = "factor") 
-
-  \S4method{map_metadata}{WMD,FOE}(object, mapping,
-    values = parent.frame()) 
-
-  \S4method{map_metadata}{WMD,missing}(object, mapping,
-    values = TRUE, classes = "factor") 
-
+  \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 
   \S4method{map_metadata}{OPMS,missing}(object, mapping,
     values = TRUE, classes = "factor") 
-
-  \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 
-
-  \S4method{edit}{OPMX}(name, ...) 
-
+  \S4method{map_metadata}{WMD,FOE}(object, mapping,
+    values = parent.frame()) 
+  \S4method{map_metadata}{WMD,character}(object, mapping,
+    values = TRUE, classes = "factor") 
+  \S4method{map_metadata}{WMD,function}(object, mapping,
+    values = TRUE, classes = "ANY", ...) 
+  \S4method{map_metadata}{WMD,missing}(object, mapping,
+    values = TRUE, classes = "factor") 
 }
+%% END INSERTION BY repair_S4_docu.rb

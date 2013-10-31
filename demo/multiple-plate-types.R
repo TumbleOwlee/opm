@@ -10,6 +10,9 @@
 # it would need only minimal adaptations for real-world use after modifying
 # a copy of it within an R text editor.
 #
+# But note that collect_template() and include_metadata() offer a much more
+# flexible mechanism for including metadata.
+#
 # For advanced users, we recommend to use batch_opm() instead for most of the
 # steps conducted below.
 
@@ -36,62 +39,82 @@ organism <- "Strain Number"
 
 ### DATA INPUT:
 
-# We assume that only the CSV files within the working directory
-# should be input and that the data read should be grouped by plate type.
+# We assume that only the CSV files within the working directory should be input
+# and that the data read should be grouped by plate type. This code fails if
+# unreadable CSV files are there (the 'include' and/or 'exclude' argument would
+# be needed).
 #
 x <- read_opm(getwd(), convert = "grp", include = list("csv"))
+
+stopifnot(names(x) == plate_type(x)) # the names already indicate the plate type
+
+x # shows a summary of the contained elements
 
 
 ### Select some CSV data, convert them and enter them as metadata:
 
-# This needs to be adapted to the way CSV data have been recorded.
+
+# This needs to be adapted to the way CSV data have been recorded. Remember that
+# collect_template() and include_metadata() offer a much more flexible mechanism
+# for including metadata.
+
+
+# Create data frame without converting strings to factors.
 #
-for (i in 1:length(x)) {
+md <- to_metadata(csv_data(x))
 
-  # Create data frame without converting strings to factors.
-  #
-  md <- to_metadata(csv_data(x[[i]]))
-
-  # Create replicate IDs if they are not included.
-  #
-  if (!replicate %in% names(md)) {
-    md[, replicate] <- 1:nrow(md)
-    message("NOTE: inserting replicate IDs")
-  }
-
-  # Insert a dummy organism entry if none is there, with a warning.
-  if (!organism %in% names(md)) {
-    md[, organism] <- "Unkown organism"
-    warning("inserting dummy organism name", immediate. = TRUE)
-  }
-
-  # Adding metadata is easiest via a data frame whose order of rows is the
-  # same than the order of OPM objects within the OPMS object. We get such a
-  # data frame from the CSV data, of course.
-  #
-  metadata(x[[i]]) <- md[, c(organism, replicate)]
-
+# Create replicate IDs if they are not included.
+#
+if (!replicate %in% names(md)) {
+  message("NOTE: inserting replicate IDs")
+  md[, replicate] <- 1:nrow(md)
+} else if (any(bad <- is.na(md[, replicate]))) {
+  message("NOTE: inserting replicate IDs")
+  md[bad, replicate] <- (1:nrow(md))[bad] # might yield non-unique IDs
+  md[, replicate] <- make.unique(md[, replicate]) # now enforce unique IDs
 }
+
+# Insert a dummy organism entry if none is there, with a warning.
+#
+if (!organism %in% names(md)) {
+  md[, organism] <- "Unkown organism"
+  warning("inserting dummy organism name", immediate. = TRUE)
+} else if (any(bad <- is.na(md[, organism]))) {
+  md[bad, organism] <- "Unkown organism"
+  warning("inserting dummy organism name", immediate. = TRUE)
+}
+
+# Adding metadata is easiest via a data frame whose order of rows is the same
+# than the order of OPM objects within the OPMS object and the order of OPMX
+# objects within a MOPMX object. We get such a data frame from the CSV data, of
+# course.
+#
+metadata(x) <- md[, c(organism, replicate)]
 
 
 ### COMPUTING SECTION: AGGREGATION AND DISCRETIZATION
 
-for (i in 1:length(x)) {
+# That's the time-consuming step here. Specify at most as many cores as you
+# really have on your machine, and keep in mind that parallelization does not
+# work under Windows (for reasons caused by R itself).
+#
+x <- do_aggr(x, boot = 0, cores = 8, method = "splines",
+  options = set_spline_options("smooth.spline"))
 
-  # That's the time-consuming step here. Specify at most as many cores as you
-  # really have on your machine, and keep in mind that parallelization does not
-  # work under Windows (for reasons caused by R itself).
-  #
-  x[[i]] <- do_aggr(x[[i]], boot = 0, cores = 8, method = "splines",
-    options = set_spline_options("smooth.spline"))
+# Let's have a look at the upper part of the aggregation settings.
+#
+head(aggr_settings(x, join = "json"), 1)
 
-  # This discretization is using exact k-means partitioning, without estimation
-  # of an intermediary state. This is OK if > 1 replicates are there and one
-  # can calculate ambiguity in another manner (see below).
-  #
-  x[[i]] <- do_disc(x[[i]], cutoff = FALSE)
 
-}
+# This discretization is using exact k-means partitioning, without estimation
+# of an intermediary state. This is OK if > 1 replicates are there and one
+# can calculate ambiguity in another manner (see below).
+#
+x <- do_disc(x, cutoff = FALSE)
+
+# Let's have a look at the upper part of the discretization settings.
+#
+head(disc_settings(x, join = "json"), 1)
 
 
 ### OUTPUT SECTION:

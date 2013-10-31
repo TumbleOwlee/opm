@@ -121,30 +121,32 @@ stopifnot(length(x) == 4, x == 95.75)
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{measurements-methods}
-\alias{measurements,OPM-method}
-\alias{well-methods}
-\alias{well,OPM-method}
 \alias{hours-methods}
+\alias{hours,MOPMX-method}
 \alias{hours,OPM-method}
 \alias{hours,OPMS-method}
 \alias{measurements-methods}
+\alias{measurements,MOPMX-method}
+\alias{measurements,OPM-method}
 \alias{measurements,OPMS-method}
 \alias{well-methods}
+\alias{well,MOPMX-method}
+\alias{well,OPM-method}
 \alias{well,OPMS-method}
 \usage{
-  \S4method{measurements}{OPM}(object, i) 
-
-  \S4method{well}{OPM}(object, i, drop = TRUE, use.names = TRUE) 
-
+  \S4method{hours}{MOPMX}(object, ...) 
   \S4method{hours}{OPM}(object,
     what = c("max", "all", "size", "summary", "interval", "minmax")) 
-
   \S4method{hours}{OPMS}(object, ...) 
 
+  \S4method{measurements}{MOPMX}(object, ...) 
+  \S4method{measurements}{OPM}(object, i) 
   \S4method{measurements}{OPMS}(object, ...) 
 
+  \S4method{well}{MOPMX}(object, ...) 
+  \S4method{well}{OPM}(object, i, drop = TRUE, use.names = TRUE) 
   \S4method{well}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

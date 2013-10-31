@@ -65,7 +65,7 @@
   the wells, the rows the estimated parameters and their
   CIs.
 
-  \code{aggr_settings} returns a named list id \code{join}
+  \code{aggr_settings} returns a named list if \code{join}
   is empty. Other values yield a matrix or data frame (or
   an error). See the description of the argument above and
   the examples below for further details.
@@ -127,23 +127,25 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{aggregated-methods}
-\alias{aggregated,OPMA-method}
 \alias{aggr_settings-methods}
+\alias{aggr_settings,MOPMX-method}
 \alias{aggr_settings,OPMA-method}
 \alias{aggr_settings,OPMS-method}
 \alias{aggregated-methods}
+\alias{aggregated,MOPMX-method}
+\alias{aggregated,OPMA-method}
 \alias{aggregated,OPMS-method}
 \usage{
+  \S4method{aggr_settings}{MOPMX}(object, join = NULL) 
+  \S4method{aggr_settings}{OPMA}(object, join = NULL) 
+  \S4method{aggr_settings}{OPMS}(object, join = NULL) 
+
+  \S4method{aggregated}{MOPMX}(object, ...) 
   \S4method{aggregated}{OPMA}(object, subset = NULL, ci = TRUE,
     trim = c("no", "full", "medium"), full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), ...) 
-
-  \S4method{aggr_settings}{OPMA}(object, join = NULL) 
-
-  \S4method{aggr_settings}{OPMS}(object, join = NULL) 
-
   \S4method{aggregated}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

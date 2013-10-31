@@ -1,11 +1,12 @@
 \name{summary}
 \alias{summary}
-\title{Summarize OPM or OPMS objects}
+\title{Summarize OPMX or MOPMX objects}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
-  \item{...}{Optional arguments passed to \code{formatDL}.}
+  \item{...}{Optional arguments to be included in the
+  output.}
 }
 \value{
   For the \code{\link{OPM}} method, a named list of the
@@ -19,8 +20,9 @@
 }
 \description{
   Generate a summary (which also prints nicely to the
-  screen), or display an \code{\link{OPM}} or
-  \code{\link{OPMS}} object on screen.
+  screen), or display an \code{\link{OPM}},
+  \code{\link{OPMS}} or \code{\link{MOPMX}} object on
+  screen.
 }
 \details{
   Currently the \code{show} methods are just wrappers for
@@ -49,20 +51,23 @@ vaas_4 # calls show()
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
+\alias{show-methods}
+\alias{show,CMAT-method}
+\alias{show,MOPMX-method}
+\alias{show,OPMX-method}
 \alias{summary-methods}
+\alias{summary,MOPMX-method}
 \alias{summary,OPM-method}
 \alias{summary,OPMS-method}
-\alias{show-methods}
-\alias{show,OPMX-method}
-\alias{show,CMAT-method}
 \usage{
-  \S4method{summary}{OPM}(object, ...) 
-
-  \S4method{summary}{OPMS}(object, ...) 
-
+  \S4method{show}{CMAT}(object) 
+  \S4method{show}{MOPMX}(object) 
   \S4method{show}{OPMX}(object) 
 
-  \S4method{show}{CMAT}(object) 
-
+  \S4method{summary}{MOPMX}(object, ...) 
+  \S4method{summary}{OPM}(object, ...) 
+  \S4method{summary}{OPMS}(object, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

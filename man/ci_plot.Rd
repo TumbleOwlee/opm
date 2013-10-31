@@ -125,17 +125,17 @@ stopifnot(is.character(x), identical(length(x), 4L))
 }
 \keyword{hplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{ci_plot-methods}
-\alias{ci_plot,data.frame-method}
 \alias{ci_plot,OPMS-method}
+\alias{ci_plot,data.frame-method}
 \usage{
+  \S4method{ci_plot}{OPMS}(object, as.labels,
+    subset = opm_opt("curve.param"), ...) 
   \S4method{ci_plot}{data.frame}(object, rowname.sep = " ",
     prop.offset = 0.04, align = "center", col = "blue", na.action = "warn",
     draw.legend = TRUE, legend.field = c(1, 1), x = "topleft", xpd = TRUE,
     vline = 0, split.at = param_names("split.at"), crr = 0.75, ...) 
-
-  \S4method{ci_plot}{OPMS}(object, as.labels,
-    subset = opm_opt("curve.param"), ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -324,14 +324,14 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     switch(convert, no = result, NULL),
     switch(convert, no = result, result[[1L]]),
     case(convert,
-      no = result,
+      no = new(MOPMX, result),
       yes = new(OPMS, plates = result),
-      grp = lapply(do_split(result), do_opms),
-      sep = do_split(result),
+      grp = new(MOPMX, lapply(do_split(result), do_opms)),
+      sep = lapply(do_split(result), new, Class = MOPMX),
       try = tryCatch(new(OPMS, plates = result), error = function(e) {
         warning("the data from distinct files could not be converted to a ",
           "single OPMS object and will be returned as a list")
-        result
+        new(MOPMX, result)
       })
     )
   )
@@ -442,6 +442,16 @@ setMethod("collect_template", OPMS, function(object, outfile = NULL,
   finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
+setMethod("collect_template", MOPMX, function(object, outfile = NULL,
+    sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    instrument = NULL, ..., demo = FALSE) {
+  result <- lapply(object, collect_template, selection = selection,
+    add.cols = add.cols, normalize = normalize, instrument = instrument,
+    outfile = NULL, previous = NULL, sep = sep, md.args = md.args)
+  finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
+}, sealed = SEALED)
+
 setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
@@ -450,9 +460,8 @@ setMethod("to_metadata", "character", function(object, stringsAsFactors = FALSE,
   if (length(object) > 1L && !is.null(names(object))) {
     if (is.na(L(strip.white)))
       strip.white <- FALSE
-    x <- matrix(object, 1L, length(object), FALSE, list(NULL, names(object)))
-    return(to_metadata(object = x, sep = sep, strip.white = strip.white,
-      stringsAsFactors = stringsAsFactors, optional = optional, ...))
+    return(to_metadata(object = vector2row(object), strip.white = strip.white,
+      sep = sep, stringsAsFactors = stringsAsFactors, optional = optional, ...))
   }
   if (is.na(L(strip.white)))
     strip.white <- TRUE

@@ -1,5 +1,5 @@
 opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
-    "examples", "doc", "css", "omnilog", "multiple")) {
+    "examples", "doc", "css", "omnilog", "single", "multiple")) {
   switch(match.arg(what),
     css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
       TRUE, TRUE, TRUE),
@@ -11,6 +11,8 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
       pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
     omnilog = grep("Example(_Old_Style)?_\\d+\\.csv(\\.[^.]+)?$",
       pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
+    single = grep("Multiple\\.csv(\\.[^.]+)?$", pkg_files(opm_string(),
+      "testdata"), TRUE, TRUE, TRUE, FALSE, FALSE, TRUE),
     pkg_files(opm_string(), what)
   )
 }
@@ -145,6 +147,11 @@ setMethod("gen_iii", OPM, function(object, to = "gen.iii") {
 
 setMethod("gen_iii", OPMS, function(object, ...) {
   object@plates <- lapply(X = object@plates, FUN = gen_iii, ...)
+  object
+}, sealed = SEALED)
+
+setMethod("gen_iii", MOPMX, function(object, ...) {
+  object@.Data <- lapply(X = object@.Data, FUN = gen_iii, ...)
   object
 }, sealed = SEALED)
 
@@ -639,16 +646,7 @@ lapply(c(
 lapply(c(
     #+
     find_positions,
-    substrate_info
-    #-
-  ), FUN = function(func_) {
-  setMethod(func_, OPMS, function(object, ...) {
-    func_(object@plates[[1L]], ...)
-  }, sealed = SEALED)
-})
-
-lapply(c(
-    #+
+    substrate_info,
     wells,
     plate_type
     #-

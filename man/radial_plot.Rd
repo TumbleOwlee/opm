@@ -128,12 +128,17 @@ stopifnot(is.character(yy), names(yy) == rownames(x))
 }
 \keyword{hplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{radial_plot-methods}
-\alias{radial_plot,matrix-method}
-\alias{radial_plot,data.frame-method}
 \alias{radial_plot,OPMS-method}
+\alias{radial_plot,data.frame-method}
+\alias{radial_plot,matrix-method}
 \usage{
+  \S4method{radial_plot}{OPMS}(object, as.labels,
+    subset = opm_opt("curve.param"), sep = " ", extract.args = list(), ...) 
+  \S4method{radial_plot}{data.frame}(object, as.labels,
+    subset = "numeric", sep = " ", extract.args = list(), ...) 
   \S4method{radial_plot}{matrix}(object, as.labels = NULL,
     subset = TRUE, sep = " ", extract.args = list(), rp.type = "p",
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
@@ -141,11 +146,5 @@ stopifnot(is.character(yy), names(yy) == rownames(x))
     x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
     point.symbols = NA, point.col = NA, poly.col = NA,
     main = paste0(as.labels, sep = sep), ...) 
-
-  \S4method{radial_plot}{data.frame}(object, as.labels,
-    subset = "numeric", sep = " ", extract.args = list(), ...) 
-
-  \S4method{radial_plot}{OPMS}(object, as.labels,
-    subset = opm_opt("curve.param"), sep = " ", extract.args = list(), ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

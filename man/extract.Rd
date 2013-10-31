@@ -310,6 +310,7 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \keyword{htest}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{extract-methods}
 \alias{extract,OPMS-method}
@@ -322,7 +323,6 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, sep = " ", dups = "warn",
     exact = TRUE, strict = TRUE, full = TRUE, max = 10000L, ...) 
-
   \S4method{extract}{data.frame}(object, as.groups = TRUE,
     norm.per = c("row", "column", "none"), norm.by = TRUE, subtract = TRUE,
     direct = inherits(norm.by, "AsIs"), dups = c("warn", "error", "ignore"),
@@ -331,9 +331,8 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
   \S4method{extract_columns}{OPMS}(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) 
-
   \S4method{extract_columns}{data.frame}(object, what,
     as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
     factors = is.list(what), direct = inherits(what, "AsIs")) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

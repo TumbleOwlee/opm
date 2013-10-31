@@ -3,8 +3,8 @@
 \alias{metadata_chars}
 \title{Get metadata}
 \arguments{
-  \item{object}{\code{\link{WMD}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{WMD}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{key}{\code{NULL}, vector, factor or formula.
   \itemize{ \item If \code{NULL} or otherwise empty, return
@@ -95,25 +95,28 @@ stopifnot(length(x) > length(y))
   Other metadata-functions: \code{\link{edit}},
   \code{\link{include_metadata}},
   \code{\link{map_metadata}}, \code{\link{metadata.set}},
-                              }
+                                  }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{metadata-methods}
+\alias{metadata,MOPMX-method}
 \alias{metadata,OPMS-method}
 \alias{metadata,WMD-method}
 \alias{metadata_chars-methods}
-\alias{metadata_chars,WMD-method}
+\alias{metadata_chars,MOPMX-method}
 \alias{metadata_chars,OPMS-method}
+\alias{metadata_chars,WMD-method}
 \usage{
+  \S4method{metadata}{MOPMX}(object, ...) 
   \S4method{metadata}{OPMS}(object, ...) 
-
   \S4method{metadata}{WMD}(object, key = NULL, exact = TRUE,
     strict = FALSE) 
 
+  \S4method{metadata_chars}{MOPMX}(object, ...) 
+  \S4method{metadata_chars}{OPMS}(object, ...) 
   \S4method{metadata_chars}{WMD}(object, values = TRUE,
     classes = "factor") 
-
-  \S4method{metadata_chars}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

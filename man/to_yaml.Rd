@@ -84,11 +84,12 @@ write(to_yaml(x), "out.yml")
 \keyword{IO}
 \keyword{character}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{to_yaml-methods}
 \alias{to_yaml,YAML_VIA_LIST-method}
 \usage{
   \S4method{to_yaml}{YAML_VIA_LIST}(object, sep = TRUE,
     line.sep = "\n", json = FALSE, listify = nodots, nodots = FALSE, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

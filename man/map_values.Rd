@@ -327,137 +327,102 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \keyword{list}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{map_values-methods}
-\alias{map_values,list,character-method}
-\alias{map_values,list,function-method}
-\alias{map_values,list,NULL-method}
-\alias{map_values,list,missing-method}
-\alias{map_values,list,formula-method}
-\alias{map_values,list,expression-method}
-\alias{map_values,data.frame,function-method}
-\alias{map_values,data.frame,character-method}
-\alias{map_values,data.frame,NULL-method}
-\alias{map_values,data.frame,missing-method}
-\alias{map_values,MOA,character-method}
-\alias{map_values,MOA,missing-method}
-\alias{map_values,MOA,function-method}
-\alias{map_values,character,function-method}
-\alias{map_values,character,character-method}
-\alias{map_values,character,missing-method}
-\alias{map_values,factor,function-method}
-\alias{map_values,factor,character-method}
-\alias{map_values,factor,missing-method}
-\alias{map_values,logical,function-method}
-\alias{map_values,logical,vector-method}
-\alias{map_values,logical,NULL-method}
-\alias{map_values,logical,missing-method}
-\alias{map_values,NULL,function-method}
-\alias{map_values,NULL,character-method}
-\alias{map_values,NULL,missing-method}
 \alias{map_names-methods}
-\alias{map_names,list,function-method}
-\alias{map_names,list,character-method}
-\alias{map_names,list,missing-method}
-\alias{map_names,data.frame,function-method}
-\alias{map_names,data.frame,character-method}
-\alias{map_names,data.frame,missing-method}
-\alias{map_names,MOA,function-method}
-\alias{map_names,MOA,character-method}
-\alias{map_names,MOA,missing-method}
-\alias{map_names,ANY,function-method}
 \alias{map_names,ANY,character-method}
+\alias{map_names,ANY,function-method}
 \alias{map_names,ANY,missing-method}
+\alias{map_names,MOA,character-method}
+\alias{map_names,MOA,function-method}
+\alias{map_names,MOA,missing-method}
+\alias{map_names,data.frame,character-method}
+\alias{map_names,data.frame,function-method}
+\alias{map_names,data.frame,missing-method}
+\alias{map_names,list,character-method}
+\alias{map_names,list,function-method}
+\alias{map_names,list,missing-method}
+\alias{map_values-methods}
+\alias{map_values,MOA,character-method}
+\alias{map_values,MOA,function-method}
+\alias{map_values,MOA,missing-method}
+\alias{map_values,NULL,character-method}
+\alias{map_values,NULL,function-method}
+\alias{map_values,NULL,missing-method}
+\alias{map_values,character,character-method}
+\alias{map_values,character,function-method}
+\alias{map_values,character,missing-method}
+\alias{map_values,data.frame,NULL-method}
+\alias{map_values,data.frame,character-method}
+\alias{map_values,data.frame,function-method}
+\alias{map_values,data.frame,missing-method}
+\alias{map_values,factor,character-method}
+\alias{map_values,factor,function-method}
+\alias{map_values,factor,missing-method}
+\alias{map_values,list,NULL-method}
+\alias{map_values,list,character-method}
+\alias{map_values,list,expression-method}
+\alias{map_values,list,formula-method}
+\alias{map_values,list,function-method}
+\alias{map_values,list,missing-method}
+\alias{map_values,logical,NULL-method}
+\alias{map_values,logical,function-method}
+\alias{map_values,logical,missing-method}
+\alias{map_values,logical,vector-method}
 \usage{
-  \S4method{map_values}{list,character}(object, mapping,
-    coerce = character()) 
-
-  \S4method{map_values}{list,function}(object, mapping,
-    coerce = character(), ...) 
-
-  \S4method{map_values}{list,NULL}(object, mapping,
-    coerce = character()) 
-
-  \S4method{map_values}{list,missing}(object, mapping,
-    coerce = character()) 
-
-  \S4method{map_values}{list,formula}(object, mapping,
-    coerce = parent.frame()) 
-
-  \S4method{map_values}{list,expression}(object, mapping,
-    coerce = parent.frame()) 
-
-  \S4method{map_values}{data.frame,function}(object, mapping,
-    coerce = character(), ...) 
-
-  \S4method{map_values}{data.frame,character}(object, mapping,
-    coerce = character()) 
-
-  \S4method{map_values}{data.frame,NULL}(object, mapping,
-    coerce = character(), ...) 
-
-  \S4method{map_values}{data.frame,missing}(object,
-    coerce = character()) 
+  \S4method{map_names}{ANY,character}(object, mapping) 
+  \S4method{map_names}{ANY,function}(object, mapping, ...) 
+  \S4method{map_names}{ANY,missing}(object) 
+  \S4method{map_names}{MOA,character}(object, mapping) 
+  \S4method{map_names}{MOA,function}(object, mapping, ...) 
+  \S4method{map_names}{MOA,missing}(object) 
+  \S4method{map_names}{data.frame,character}(object, mapping) 
+  \S4method{map_names}{data.frame,function}(object, mapping,
+    ...) 
+  \S4method{map_names}{data.frame,missing}(object) 
+  \S4method{map_names}{list,character}(object, mapping) 
+  \S4method{map_names}{list,function}(object, mapping, ...) 
+  \S4method{map_names}{list,missing}(object) 
 
   \S4method{map_values}{MOA,character}(object, mapping,
     coerce = TRUE) 
-
-  \S4method{map_values}{MOA,missing}(object, coerce = TRUE) 
-
   \S4method{map_values}{MOA,function}(object, mapping, ...) 
-
+  \S4method{map_values}{MOA,missing}(object, coerce = TRUE) 
+  \S4method{map_values}{NULL,character}(object, mapping) 
+  \S4method{map_values}{NULL,function}(object, mapping, ...) 
+  \S4method{map_values}{NULL,missing}(object, mapping) 
+  \S4method{map_values}{character,character}(object, mapping) 
   \S4method{map_values}{character,function}(object, mapping,
     ...) 
-
-  \S4method{map_values}{character,character}(object, mapping) 
-
   \S4method{map_values}{character,missing}(object) 
-
+  \S4method{map_values}{data.frame,NULL}(object, mapping,
+    coerce = character(), ...) 
+  \S4method{map_values}{data.frame,character}(object, mapping,
+    coerce = character()) 
+  \S4method{map_values}{data.frame,function}(object, mapping,
+    coerce = character(), ...) 
+  \S4method{map_values}{data.frame,missing}(object,
+    coerce = character()) 
+  \S4method{map_values}{factor,character}(object, mapping) 
   \S4method{map_values}{factor,function}(object, mapping,
     ...) 
-
-  \S4method{map_values}{factor,character}(object, mapping) 
-
   \S4method{map_values}{factor,missing}(object) 
-
+  \S4method{map_values}{list,NULL}(object, mapping,
+    coerce = character()) 
+  \S4method{map_values}{list,character}(object, mapping,
+    coerce = character()) 
+  \S4method{map_values}{list,expression}(object, mapping,
+    coerce = parent.frame()) 
+  \S4method{map_values}{list,formula}(object, mapping,
+    coerce = parent.frame()) 
+  \S4method{map_values}{list,function}(object, mapping,
+    coerce = character(), ...) 
+  \S4method{map_values}{list,missing}(object, mapping,
+    coerce = character()) 
+  \S4method{map_values}{logical,NULL}(object, mapping) 
   \S4method{map_values}{logical,function}(object, mapping,
     ...) 
-
-  \S4method{map_values}{logical,vector}(object, mapping) 
-
-  \S4method{map_values}{logical,NULL}(object, mapping) 
-
   \S4method{map_values}{logical,missing}(object) 
-
-  \S4method{map_values}{NULL,function}(object, mapping, ...) 
-
-  \S4method{map_values}{NULL,character}(object, mapping) 
-
-  \S4method{map_values}{NULL,missing}(object, mapping) 
-
-  \S4method{map_names}{list,function}(object, mapping, ...) 
-
-  \S4method{map_names}{list,character}(object, mapping) 
-
-  \S4method{map_names}{list,missing}(object) 
-
-  \S4method{map_names}{data.frame,function}(object, mapping,
-    ...) 
-
-  \S4method{map_names}{data.frame,character}(object, mapping) 
-
-  \S4method{map_names}{data.frame,missing}(object) 
-
-  \S4method{map_names}{MOA,function}(object, mapping, ...) 
-
-  \S4method{map_names}{MOA,character}(object, mapping) 
-
-  \S4method{map_names}{MOA,missing}(object) 
-
-  \S4method{map_names}{ANY,function}(object, mapping, ...) 
-
-  \S4method{map_names}{ANY,character}(object, mapping) 
-
-  \S4method{map_names}{ANY,missing}(object) 
-
+  \S4method{map_values}{logical,vector}(object, mapping) 
 }
+%% END INSERTION BY repair_S4_docu.rb

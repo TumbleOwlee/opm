@@ -35,6 +35,26 @@ test_that("we can memoize queries", {
 ## UNTESTED
 
 
+## close_index_gaps
+## UNTESTED
+
+
+## fix_names
+## UNTESTED
+
+
+## sub_indexes
+test_that("sub-indexes can be got and incremented", {
+  x <- list(a = 1:2, b = 'a', c = c(TRUE, FALSE, FALSE))
+  got <- sub_indexes(x)
+  expect_equal(got, structure(list(a = 1:2, b = 3, c = 4:6), total = 6L))
+})
+
+
+## simplify_conditionally
+## UNTESTED
+
+
 ## is_uniform
 test_that("uniformity can be checked", {
   x <- list(a = 1:2, b = 1:2, a = 1:2)
@@ -107,6 +127,9 @@ test_that("rows can be picked", {
 ## UNTESTED
 
 ## strip_whitespace
+## UNTESTED
+
+## vector2row
 ## UNTESTED
 
 

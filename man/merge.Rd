@@ -87,30 +87,26 @@ stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 }
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{merge-methods}
+\alias{merge,CMAT,ANY-method}
+\alias{merge,OPM,OPM-method}
 \alias{merge,OPM,missing-method}
 \alias{merge,OPM,numeric-method}
-\alias{merge,OPM,OPM-method}
-\alias{merge,OPMS,numeric-method}
 \alias{merge,OPMS,missing-method}
-\alias{merge,CMAT,ANY-method}
+\alias{merge,OPMS,numeric-method}
 \usage{
-  \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-
-  \S4method{merge}{OPM,numeric}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-
+  \S4method{merge}{CMAT,ANY}(x, y) 
   \S4method{merge}{OPM,OPM}(x, y, sort.first = TRUE,
     parse = TRUE) 
-
-  \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE,
+  \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE,
     parse = TRUE) 
-
+  \S4method{merge}{OPM,numeric}(x, y, sort.first = TRUE,
+    parse = TRUE) 
   \S4method{merge}{OPMS,missing}(x, y, sort.first = TRUE,
     parse = TRUE) 
-
-  \S4method{merge}{CMAT,ANY}(x, y) 
-
+  \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE,
+    parse = TRUE) 
 }
+%% END INSERTION BY repair_S4_docu.rb

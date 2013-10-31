@@ -57,6 +57,7 @@ stopifnot(max(vaas_4) > x) # obviously
 \keyword{attribute}
 \keyword{dplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{max-methods}
 \alias{max,OPM-method}
@@ -66,11 +67,9 @@ stopifnot(max(vaas_4) > x) # obviously
 \alias{minmax,OPMS-method}
 \usage{
   \S4method{max}{OPM}(x, ..., na.rm = FALSE) 
-
   \S4method{max}{OPMS}(x, ..., na.rm = FALSE) 
 
   \S4method{minmax}{OPM}(x, ..., na.rm = FALSE) 
-
   \S4method{minmax}{OPMS}(x, ..., na.rm = FALSE) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

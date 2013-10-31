@@ -207,6 +207,40 @@ setMethod("metadata<-", c(OPMS, "ANY", "ANY"), function(object, key, value) {
   object
 }, sealed = SEALED)
 
+setMethod("metadata<-", c(MOPMX, "missing", "ANY"), function(object, key,
+    value) {
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]]) <- value
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c(MOPMX, "ANY", "ANY"), function(object, key,
+    value) {
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]], key) <- value
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c(MOPMX, "missing", "data.frame"), function(object, key,
+    value) {
+  indexes <- sub_indexes(object)
+  if (nrow(value) != attr(indexes, "total"))
+    stop("number of rows in 'value' unequal to number of plates in 'object'")
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]]) <- value[indexes[[i]], , drop = FALSE]
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c(MOPMX, "ANY", "data.frame"), function(object, key,
+    value) {
+  indexes <- sub_indexes(object)
+  if (nrow(value) != attr(indexes, "total"))
+    stop("number of rows in 'value' unequal to number of plates in 'object'")
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]], key) <- value[indexes[[i]], , drop = FALSE]
+  object
+}, sealed = SEALED)
+
 setGeneric("include_metadata",
   function(object, ...) standardGeneric("include_metadata"))
 
@@ -274,6 +308,11 @@ setMethod("include_metadata", OPMS, function(object, ...) {
   object
 }, sealed = SEALED)
 
+setMethod("include_metadata", MOPMX, function(object, ...) {
+  object@.Data <- lapply(X = object@.Data, FUN = include_metadata, ...)
+  object
+}, sealed = SEALED)
+
 setGeneric("map_metadata",
   function(object, mapping, ...) standardGeneric("map_metadata"))
 
@@ -326,6 +365,19 @@ setMethod("map_metadata", c(OPMS, "ANY"), function(object, mapping, ...) {
   object
 }, sealed = SEALED)
 
+setMethod("map_metadata", c(MOPMX, "missing"), function(object, mapping,
+    values = TRUE, classes = "factor") {
+  object@.Data <- lapply(X = object@.Data, FUN = map_metadata,
+    values = values, classes = classes)
+  object
+}, sealed = SEALED)
+
+setMethod("map_metadata", c(MOPMX, "ANY"), function(object, mapping, ...) {
+  object@.Data <- lapply(X = object@.Data, FUN = map_metadata,
+    mapping = mapping, ...)
+  object
+}, sealed = SEALED)
+
 setGeneric("edit")
 
 setMethod("edit", OPMX, function(name, ...) {
@@ -369,5 +421,9 @@ setMethod("metadata_chars", WMD, function(object, values = TRUE,
 
 setMethod("metadata_chars", OPMS, function(object, ...) {
   map_values(unlist(lapply(object@plates, FUN = metadata_chars, ...)))
+}, sealed = SEALED)
+
+setMethod("metadata_chars", MOPMX, function(object, ...) {
+  map_values(unlist(lapply(object@.Data, FUN = metadata_chars, ...)))
 }, sealed = SEALED)
 

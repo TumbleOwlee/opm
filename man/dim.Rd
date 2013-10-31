@@ -75,6 +75,7 @@ stopifnot(identical(x, y))
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{dim-methods}
 \alias{dim,OPM-method}
@@ -87,15 +88,12 @@ stopifnot(identical(x, y))
 \alias{seq,OPMS-method}
 \usage{
   \S4method{dim}{OPM}(x) 
-
   \S4method{dim}{OPMS}(x) 
 
   \S4method{length}{OPM}(x) 
-
   \S4method{length}{OPMS}(x) 
 
   \S4method{seq}{OPM}(...) 
-
   \S4method{seq}{OPMS}(...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

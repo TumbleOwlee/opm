@@ -62,34 +62,34 @@ extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
 
 summary.splines_bootstrap <- function (object, ...) {
 
-    cnames <- unlist(map_param_names(), use.names = FALSE)
+  cnames <- unlist(map_param_names(), use.names = FALSE)
 
-    res <- data.frame(t(sapply(object, extract_curve_params.opm_model)))
-    res$mu <- unlist(res$mu)
-    res$lambda <- unlist(res$lambda)
-    res$A <- unlist(res$A)
-    res$AUC <- unlist(res$AUC)
+  res <- data.frame(t(sapply(object, extract_curve_params.opm_model)))
+  res$mu <- unlist(res$mu)
+  res$lambda <- unlist(res$lambda)
+  res$A <- unlist(res$A)
+  res$AUC <- unlist(res$AUC)
 
-    mu <- mean(res$mu, na.rm = TRUE)
-    lambda <- mean(res$lambda, na.rm = TRUE)
-    A <- mean(res$A, na.rm = TRUE)
-    AUC <- mean(res$AUC, na.rm = TRUE)
-    mu.sd <- sd(res$mu, na.rm = TRUE)
-    lambda.sd <- sd(res$lambda, na.rm = TRUE)
-    A.sd <- sd(res$A, na.rm = TRUE)
-    AUC.sd <- sd(res$AUC, na.rm = TRUE)
-    table <- c(mu, lambda, A, AUC,
-      mu - qnorm(0.975) * mu.sd,
-      lambda - qnorm(0.975) * lambda.sd,
-      A - qnorm(0.975) * A.sd,
-      AUC - qnorm(0.975) * AUC.sd,
-      mu + qnorm(0.975) * mu.sd,
-      lambda + qnorm(0.975) * lambda.sd,
-      A + qnorm(0.975) * A.sd,
-      AUC + qnorm(0.975) * AUC.sd)
-    table <- data.frame(t(table))
-    colnames(table) <- cnames
-    return(table)
+  mu <- mean(res$mu, na.rm = TRUE)
+  lambda <- mean(res$lambda, na.rm = TRUE)
+  A <- mean(res$A, na.rm = TRUE)
+  AUC <- mean(res$AUC, na.rm = TRUE)
+  mu.sd <- sd(res$mu, na.rm = TRUE)
+  lambda.sd <- sd(res$lambda, na.rm = TRUE)
+  A.sd <- sd(res$A, na.rm = TRUE)
+  AUC.sd <- sd(res$AUC, na.rm = TRUE)
+  table <- c(mu, lambda, A, AUC,
+    mu - qnorm(0.975) * mu.sd,
+    lambda - qnorm(0.975) * lambda.sd,
+    A - qnorm(0.975) * A.sd,
+    AUC - qnorm(0.975) * AUC.sd,
+    mu + qnorm(0.975) * mu.sd,
+    lambda + qnorm(0.975) * lambda.sd,
+    A + qnorm(0.975) * A.sd,
+    AUC + qnorm(0.975) * AUC.sd)
+  table <- data.frame(t(table))
+  colnames(table) <- cnames
+  return(table)
 }
 
 pe_and_ci <- function(x, ...) UseMethod("pe_and_ci")
@@ -279,7 +279,13 @@ setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
 }, sealed = SEALED)
 
 setMethod("do_aggr", "OPMS", function(object, ...) {
-  new(OPMS, plates = lapply(X = object@plates, FUN = do_aggr, ...))
+  object@plates <- lapply(X = object@plates, FUN = do_aggr, ...)
+  object
+}, sealed = SEALED)
+
+setMethod("do_aggr", "MOPMX", function(object, ...) {
+  object@.Data <- lapply(X = object@.Data, FUN = do_aggr, ...)
+  object
 }, sealed = SEALED)
 
 setMethod("do_aggr", "matrix", function(object, what = c("AUC", "A"),

@@ -171,9 +171,8 @@ test_that("read_opm can read two compatible files", {
   expect_is(opm.1, "OPMS")
   expect_equal(NULL, names(plates(opm.1)))
   opm.1 <- read_opm(files, convert = "no")
-  expect_is(opm.1, "list")
+  expect_is(opm.1, "MOPMX")
   expect_equal(2L, length(opm.1))
-  expect_equal(NULL, names(opm.1))
 })
 
 ## read_opm
@@ -183,31 +182,28 @@ test_that("read_opm can read three partially incompatible files", {
     "Example_Old_Style_1.csv.xz"))
 
   expect_warning(opm.1 <- read_opm(files))
-  expect_is(opm.1, "list")
+  expect_is(opm.1, "MOPMX")
   expect_equal(3L, length(opm.1))
-  expect_equal(NULL, names(opm.1))
 
   expect_warning(opm.1 <- read_opm(files, convert = "try"))
-  expect_is(opm.1, "list")
+  expect_is(opm.1, "MOPMX")
   expect_equal(3L, length(opm.1))
-  expect_equal(NULL, names(opm.1))
 
   expect_error(opm.1 <- read_opm(files, convert = "yes"))
 
   opm.1 <- read_opm(files, convert = "no")
-  expect_is(opm.1, "list")
+  expect_is(opm.1, "MOPMX")
   expect_equal(3L, length(opm.1))
-  expect_equal(NULL, names(opm.1))
 
   opm.1 <- read_opm(files, convert = "sep")
   expect_is(opm.1, "list")
   expect_equal(2L, length(opm.1))
-  expect_true(all(vapply(opm.1, is.list, NA)))
+  expect_true(all(vapply(opm.1, is, NA, "MOPMX")))
   expect_true(all(vapply(opm.1[[1]], is, NA, OPM)))
   expect_true(all(vapply(opm.1[[2]], is, NA, OPM)))
 
   opm.1 <- read_opm(files, convert = "grp")
-  expect_is(opm.1, "list")
+  expect_is(opm.1, "MOPMX")
   expect_equal(2L, length(opm.1))
   expect_is(opm.1[[1L]], OPMS)
   expect_is(opm.1[[2L]], OPM)

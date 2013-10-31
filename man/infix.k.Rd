@@ -137,138 +137,95 @@ rm(missing.name) # tidy up
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{infix.k-methods}
-\alias{infix.k,character,WMD-method}
-\alias{\%k\%,character,WMD-method}
-\alias{infix.k,list,WMD-method}
-\alias{\%k\%,list,WMD-method}
-\alias{infix.k,WMD,WMD-method}
-\alias{\%k\%,WMD,WMD-method}
-\alias{infix.k,formula,WMD-method}
-\alias{\%k\%,formula,WMD-method}
-\alias{infix.k,expression,WMD-method}
-\alias{\%k\%,expression,WMD-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,character,WMD-method}
-\alias{\%K\%,character,WMD-method}
-\alias{infix.largek,list,WMD-method}
-\alias{\%K\%,list,WMD-method}
-\alias{infix.largek,WMD,WMD-method}
-\alias{\%K\%,WMD,WMD-method}
-\alias{infix.largek,formula,WMD-method}
-\alias{\%K\%,formula,WMD-method}
-\alias{infix.largek,expression,WMD-method}
-\alias{\%K\%,expression,WMD-method}
-\alias{infix.k-methods}
-\alias{infix.k,factor,WMD-method}
-\alias{\%k\%,factor,WMD-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,factor,WMD-method}
-\alias{\%K\%,factor,WMD-method}
-\alias{infix.k-methods}
-\alias{infix.k,list,OPMS-method}
-\alias{\%k\%,list,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,list,OPMS-method}
-\alias{\%K\%,list,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,WMD,OPMS-method}
-\alias{\%k\%,WMD,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,WMD,OPMS-method}
-\alias{\%K\%,WMD,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,character,OPMS-method}
-\alias{\%k\%,character,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,character,OPMS-method}
-\alias{\%K\%,character,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,factor,OPMS-method}
-\alias{\%k\%,factor,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,factor,OPMS-method}
-\alias{\%K\%,factor,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,formula,OPMS-method}
-\alias{\%k\%,formula,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,formula,OPMS-method}
-\alias{\%K\%,formula,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,expression,OPMS-method}
-\alias{\%k\%,expression,OPMS-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,expression,OPMS-method}
-\alias{\%K\%,expression,OPMS-method}
-\alias{infix.k-methods}
-\alias{infix.k,WMD,ANY-method}
-\alias{\%k\%,WMD,ANY-method}
-\alias{infix.largek-methods}
-\alias{infix.largek,WMD,ANY-method}
-\alias{\%K\%,WMD,ANY-method}
-\alias{infix.k-methods}
-\alias{infix.k,OPMS,ANY-method}
-\alias{\%k\%,OPMS,ANY-method}
 \alias{infix.largek-methods}
 \alias{infix.largek,OPMS,ANY-method}
 \alias{\%K\%,OPMS,ANY-method}
+\alias{infix.largek,WMD,ANY-method}
+\alias{\%K\%,WMD,ANY-method}
+\alias{infix.largek,WMD,OPMS-method}
+\alias{\%K\%,WMD,OPMS-method}
+\alias{infix.largek,WMD,WMD-method}
+\alias{\%K\%,WMD,WMD-method}
+\alias{infix.largek,character,OPMS-method}
+\alias{\%K\%,character,OPMS-method}
+\alias{infix.largek,character,WMD-method}
+\alias{\%K\%,character,WMD-method}
+\alias{infix.largek,expression,OPMS-method}
+\alias{\%K\%,expression,OPMS-method}
+\alias{infix.largek,expression,WMD-method}
+\alias{\%K\%,expression,WMD-method}
+\alias{infix.largek,factor,OPMS-method}
+\alias{\%K\%,factor,OPMS-method}
+\alias{infix.largek,factor,WMD-method}
+\alias{\%K\%,factor,WMD-method}
+\alias{infix.largek,formula,OPMS-method}
+\alias{\%K\%,formula,OPMS-method}
+\alias{infix.largek,formula,WMD-method}
+\alias{\%K\%,formula,WMD-method}
+\alias{infix.largek,list,OPMS-method}
+\alias{\%K\%,list,OPMS-method}
+\alias{infix.largek,list,WMD-method}
+\alias{\%K\%,list,WMD-method}
+\alias{infix.k-methods}
+\alias{infix.k,OPMS,ANY-method}
+\alias{\%k\%,OPMS,ANY-method}
+\alias{infix.k,WMD,ANY-method}
+\alias{\%k\%,WMD,ANY-method}
+\alias{infix.k,WMD,OPMS-method}
+\alias{\%k\%,WMD,OPMS-method}
+\alias{infix.k,WMD,WMD-method}
+\alias{\%k\%,WMD,WMD-method}
+\alias{infix.k,character,OPMS-method}
+\alias{\%k\%,character,OPMS-method}
+\alias{infix.k,character,WMD-method}
+\alias{\%k\%,character,WMD-method}
+\alias{infix.k,expression,OPMS-method}
+\alias{\%k\%,expression,OPMS-method}
+\alias{infix.k,expression,WMD-method}
+\alias{\%k\%,expression,WMD-method}
+\alias{infix.k,factor,OPMS-method}
+\alias{\%k\%,factor,OPMS-method}
+\alias{infix.k,factor,WMD-method}
+\alias{\%k\%,factor,WMD-method}
+\alias{infix.k,formula,OPMS-method}
+\alias{\%k\%,formula,OPMS-method}
+\alias{infix.k,formula,WMD-method}
+\alias{\%k\%,formula,WMD-method}
+\alias{infix.k,list,OPMS-method}
+\alias{\%k\%,list,OPMS-method}
+\alias{infix.k,list,WMD-method}
+\alias{\%k\%,list,WMD-method}
 \usage{
-  \S4method{\%k\%}{character,WMD}(x, table) 
-
-  \S4method{\%k\%}{list,WMD}(x, table) 
-
-  \S4method{\%k\%}{WMD,WMD}(x, table) 
-
-  \S4method{\%k\%}{formula,WMD}(x, table) 
-
-  \S4method{\%k\%}{expression,WMD}(x, table) 
-
+  \S4method{\%K\%}{OPMS,ANY}(x, table) 
+  \S4method{\%K\%}{WMD,ANY}(x, table) 
+  \S4method{\%K\%}{WMD,OPMS}(x, table) 
+  \S4method{\%K\%}{WMD,WMD}(x, table) 
+  \S4method{\%K\%}{character,OPMS}(x, table) 
   \S4method{\%K\%}{character,WMD}(x, table) 
-
+  \S4method{\%K\%}{expression,OPMS}(x, table) 
+  \S4method{\%K\%}{expression,WMD}(x, table) 
+  \S4method{\%K\%}{factor,OPMS}(x, table) 
+  \S4method{\%K\%}{factor,WMD}(x, table) 
+  \S4method{\%K\%}{formula,OPMS}(x, table) 
+  \S4method{\%K\%}{formula,WMD}(x, table) 
+  \S4method{\%K\%}{list,OPMS}(x, table) 
   \S4method{\%K\%}{list,WMD}(x, table) 
 
-  \S4method{\%K\%}{WMD,WMD}(x, table) 
-
-  \S4method{\%K\%}{formula,WMD}(x, table) 
-
-  \S4method{\%K\%}{expression,WMD}(x, table) 
-
-  \S4method{\%k\%}{factor,WMD}(x, table) 
-
-  \S4method{\%K\%}{factor,WMD}(x, table) 
-
-  \S4method{\%k\%}{list,OPMS}(x, table) 
-
-  \S4method{\%K\%}{list,OPMS}(x, table) 
-
-  \S4method{\%k\%}{WMD,OPMS}(x, table) 
-
-  \S4method{\%K\%}{WMD,OPMS}(x, table) 
-
-  \S4method{\%k\%}{character,OPMS}(x, table) 
-
-  \S4method{\%K\%}{character,OPMS}(x, table) 
-
-  \S4method{\%k\%}{factor,OPMS}(x, table) 
-
-  \S4method{\%K\%}{factor,OPMS}(x, table) 
-
-  \S4method{\%k\%}{formula,OPMS}(x, table) 
-
-  \S4method{\%K\%}{formula,OPMS}(x, table) 
-
-  \S4method{\%k\%}{expression,OPMS}(x, table) 
-
-  \S4method{\%K\%}{expression,OPMS}(x, table) 
-
-  \S4method{\%k\%}{WMD,ANY}(x, table) 
-
-  \S4method{\%K\%}{WMD,ANY}(x, table) 
-
   \S4method{\%k\%}{OPMS,ANY}(x, table) 
-
-  \S4method{\%K\%}{OPMS,ANY}(x, table) 
-
+  \S4method{\%k\%}{WMD,ANY}(x, table) 
+  \S4method{\%k\%}{WMD,OPMS}(x, table) 
+  \S4method{\%k\%}{WMD,WMD}(x, table) 
+  \S4method{\%k\%}{character,OPMS}(x, table) 
+  \S4method{\%k\%}{character,WMD}(x, table) 
+  \S4method{\%k\%}{expression,OPMS}(x, table) 
+  \S4method{\%k\%}{expression,WMD}(x, table) 
+  \S4method{\%k\%}{factor,OPMS}(x, table) 
+  \S4method{\%k\%}{factor,WMD}(x, table) 
+  \S4method{\%k\%}{formula,OPMS}(x, table) 
+  \S4method{\%k\%}{formula,WMD}(x, table) 
+  \S4method{\%k\%}{list,OPMS}(x, table) 
+  \S4method{\%k\%}{list,WMD}(x, table) 
 }
+%% END INSERTION BY repair_S4_docu.rb

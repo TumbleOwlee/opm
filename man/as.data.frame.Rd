@@ -152,14 +152,15 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 \keyword{dplot}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{as.data.frame-methods}
 \alias{as.data.frame,OPM-method}
 \alias{as.data.frame,OPMA-method}
 \alias{as.data.frame,OPMD-method}
 \alias{as.data.frame,OPMS-method}
-\alias{as.data.frame,kegg_compounds-method}
 \alias{as.data.frame,kegg_compound-method}
+\alias{as.data.frame,kegg_compounds-method}
 \alias{flatten-methods}
 \alias{flatten,OPM-method}
 \alias{flatten,OPMS-method}
@@ -167,30 +168,24 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
   \S4method{as.data.frame}{OPM}(x, row.names = NULL,
     optional = FALSE, sep = "_", ...,
     stringsAsFactors = default.stringsAsFactors()) 
-
   \S4method{as.data.frame}{OPMA}(x, row.names = NULL,
     optional = FALSE, sep = "_", ...,
     stringsAsFactors = default.stringsAsFactors()) 
-
   \S4method{as.data.frame}{OPMD}(x, row.names = NULL,
     optional = FALSE, sep = "_", ...,
     stringsAsFactors = default.stringsAsFactors()) 
-
   \S4method{as.data.frame}{OPMS}(x, row.names = NULL,
     optional = FALSE, sep = "_", ...,
     stringsAsFactors = default.stringsAsFactors()) 
-
-  \S4method{as.data.frame}{kegg_compounds}(x, row.names = NULL,
-    optional = TRUE, ..., stringsAsFactors = FALSE) 
-
   \S4method{as.data.frame}{kegg_compound}(x, row.names = NULL,
+    optional = TRUE, ..., stringsAsFactors = FALSE) 
+  \S4method{as.data.frame}{kegg_compounds}(x, row.names = NULL,
     optional = TRUE, ..., stringsAsFactors = FALSE) 
 
   \S4method{flatten}{OPM}(object, include = NULL, fixed = NULL,
     factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
     numbers = FALSE, ...) 
-
   \S4method{flatten}{OPMS}(object, include = NULL, fixed = list(),
     ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

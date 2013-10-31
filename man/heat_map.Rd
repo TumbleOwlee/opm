@@ -158,12 +158,18 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
 }
 \keyword{hplot}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{heat_map-methods}
-\alias{heat_map,matrix-method}
-\alias{heat_map,data.frame-method}
 \alias{heat_map,OPMS-method}
+\alias{heat_map,data.frame-method}
+\alias{heat_map,matrix-method}
 \usage{
+  \S4method{heat_map}{OPMS}(object, as.labels,
+    subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
+    extract.args = list(), ...) 
+  \S4method{heat_map}{data.frame}(object, as.labels,
+    as.groups = NULL, sep = " ", ...) 
   \S4method{heat_map}{matrix}(object,
     hclustfun = "ward", distfun = "euclidean", scale = "none",
     r.groups = "row.groups", r.col = opm_opt("colors"),
@@ -179,12 +185,5 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
     col = opm_opt("heatmap.colors"), asqr = FALSE,
     ...,
     use.fun = c("gplots", "stats")) 
-
-  \S4method{heat_map}{data.frame}(object, as.labels,
-    as.groups = NULL, sep = " ", ...) 
-
-  \S4method{heat_map}{OPMS}(object, as.labels,
-    subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
-    extract.args = list(), ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

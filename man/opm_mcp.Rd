@@ -339,6 +339,7 @@ if (do.plot)
 }
 \keyword{htest}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{opm_mcp-methods}
 \alias{opm_mcp,OPMS-method}
@@ -347,11 +348,10 @@ if (do.plot)
   \S4method{opm_mcp}{OPMS}(object, model, linfct = 1L,
     m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
     ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) 
-
   \S4method{opm_mcp}{data.frame}(object, model, linfct = 1L,
     m.type = c("glm", "lm", "aov"), rhs = 0, alternative = "two.sided",
     glht.args = list(), ops = "+",
     output = c("mcp", "data", "model", "linfct", "contrast"),
     sep = opm_opt("comb.value.join"), split.at = param_names("split.at")) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

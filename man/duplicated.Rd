@@ -80,27 +80,24 @@ stopifnot(identical(anyDuplicated(x), 2L))
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{duplicated-methods}
-\alias{duplicated,OPM,ANY-method}
-\alias{duplicated,OPMS,missing-method}
-\alias{duplicated,OPMS,ANY-method}
 \alias{anyDuplicated-methods}
 \alias{anyDuplicated,OPM,ANY-method}
-\alias{anyDuplicated,OPMS,missing-method}
 \alias{anyDuplicated,OPMS,ANY-method}
+\alias{anyDuplicated,OPMS,missing-method}
+\alias{duplicated-methods}
+\alias{duplicated,OPM,ANY-method}
+\alias{duplicated,OPMS,ANY-method}
+\alias{duplicated,OPMS,missing-method}
 \usage{
-  \S4method{duplicated}{OPM,ANY}(x, incomparables, ...) 
-
-  \S4method{duplicated}{OPMS,missing}(x, incomparables, ...) 
-
-  \S4method{duplicated}{OPMS,ANY}(x, incomparables,
-    what = c("all", "csv", "metadata"), ...) 
-
   \S4method{anyDuplicated}{OPM,ANY}(x, incomparables, ...) 
-
+  \S4method{anyDuplicated}{OPMS,ANY}(x, incomparables, ...) 
   \S4method{anyDuplicated}{OPMS,missing}(x, incomparables, ...) 
 
-  \S4method{anyDuplicated}{OPMS,ANY}(x, incomparables, ...) 
-
+  \S4method{duplicated}{OPM,ANY}(x, incomparables, ...) 
+  \S4method{duplicated}{OPMS,ANY}(x, incomparables,
+    what = c("all", "csv", "metadata"), ...) 
+  \S4method{duplicated}{OPMS,missing}(x, incomparables, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

@@ -113,8 +113,6 @@ test_that("the entire OPMS object can be subset", {
   expect_equal(dim(few), dims)
 })
 
-## [[
-## UNTESTED
 
 
 ################################################################################

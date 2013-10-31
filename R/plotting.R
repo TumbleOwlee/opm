@@ -9,26 +9,49 @@ setMethod("summary", OPM, function(object, ...) {
     `Plate type` = plate_type(object),
     Position = csv_data(object, what = "position"),
     `Setup time` = csv_data(object, what = "setup_time"),
-    Metadata = sum(rapply(object@metadata, f = function(item) 1L)),
+    Metadata = sum(rapply(object@metadata, function(item) 1L)),
     Aggregated = has_aggr(object),
-    Discretized = has_disc(object)
+    Discretized = has_disc(object),
+    ...
   )
   class(result) <- "OPM_Summary"
   result
 }, sealed = SEALED)
 
 setMethod("summary", OPMS, function(object, ...) {
-  result <- lapply(object@plates, summary)
-  x <- list(dimensions = dim(object),
-    aggregated = length(which(has_aggr(object))),
-    discretized = length(which(has_disc(object))),
-    plate.type = plate_type(object))
-  attr(result, "overall") <- x
+  result <- lapply(X = object@plates, FUN = summary, ...)
+  attr(result, "overall") <- list(Dimensions = dim(object),
+    Aggregated = sum(has_aggr(object)), Discretized = sum(has_disc(object)),
+    Plate.type = plate_type(object))
   class(result) <- "OPMS_Summary"
   result
 }, sealed = SEALED)
 
+setMethod("summary", MOPMX, function(object, ...) {
+  select_parts <- function(x) if (is.null(y <- attr(x, "overall")))
+      c(list(Length = 1L, Plate.type = x[["Plate type"]]),
+        x[c("Aggregated", "Discretized")])
+    else
+      c(list(Length = y[["Dimensions"]][[1L]]),
+        y[c("Plate.type", "Aggregated", "Discretized")])
+  if (length(object)) {
+    result <- lapply(lapply(X = object, FUN = summary, ...), select_parts)
+    result <- do.call(rbind, lapply(result, as.data.frame))
+    if (!is.null(n <- names(object)))
+      rownames(result) <- make.names(n, TRUE)
+  } else {
+    result <- as.data.frame(matrix(NA, 0L, 4L, FALSE))
+    colnames(result) <- c("Length", "Plate.type", "Aggregated", "Discretized")
+  }
+  class(result) <- c("MOPMX_Summary", oldClass(result))
+  result
+}, sealed = SEALED)
+
 setMethod("show", OPMX, function(object) {
+  print(summary(object))
+}, sealed = SEALED)
+
+setMethod("show", MOPMX, function(object) {
   print(summary(object))
 }, sealed = SEALED)
 
@@ -70,8 +93,17 @@ print.OPMS_Summary <- function(x, ...) {
   tmpl <- "=> %s object with %i plates (%i aggregated, %i discretized)"
   tmpl <- paste(tmpl, "of type '%s', %i well(s) and about %i time point(s).")
   y <- attr(x, "overall")
-  cat(sprintf(tmpl, OPMS, y$dimensions[1L], y$aggregated, y$discretized,
-    y$plate.type, y$dimensions[3L], y$dimensions[2L]), sep = "\n")
+  cat(sprintf(tmpl, OPMS, y$Dimensions[1L], y$Aggregated, y$Discretized,
+    y$Plate.type, y$Dimensions[3L], y$Dimensions[2L]), sep = "\n")
+  invisible(x)
+}
+
+print.MOPMX_Summary <- function(x, ...) {
+  NextMethod()
+  cat("", sprintf(
+    "=> MOPMX object with %i element(s), details are shown above.", nrow(x)),
+    " Access the elements with [[ or $ to apply certain methods.",
+    sep = "\n")
   invisible(x)
 }
 

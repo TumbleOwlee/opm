@@ -243,28 +243,26 @@ plot(y$b, type = "l")
 \keyword{category}
 \keyword{character}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{discrete-methods}
-\alias{discrete,numeric-method}
-\alias{discrete,MOA-method}
-\alias{discrete,data.frame-method}
 \alias{best_cutoff-methods}
 \alias{best_cutoff,matrix,character-method}
 \alias{best_cutoff,matrix,factor-method}
+\alias{discrete-methods}
+\alias{discrete,MOA-method}
+\alias{discrete,data.frame-method}
+\alias{discrete,numeric-method}
 \usage{
-  \S4method{discrete}{numeric}(x, range, gap = FALSE,
-    output = c("character", "integer", "logical", "factor", "numeric"),
-    middle.na = TRUE, states = 32L, ...) 
-
-  \S4method{discrete}{MOA}(x, ...) 
-
-  \S4method{discrete}{data.frame}(x, ..., as.labels = NULL,
-    sep = " ") 
-
   \S4method{best_cutoff}{matrix,character}(x, y, ...) 
-
   \S4method{best_cutoff}{matrix,factor}(x, y,
     combined = TRUE, lower = min(x, na.rm = TRUE),
     upper = max(x, na.rm = TRUE), all = FALSE) 
 
+  \S4method{discrete}{MOA}(x, ...) 
+  \S4method{discrete}{data.frame}(x, ..., as.labels = NULL,
+    sep = " ") 
+  \S4method{discrete}{numeric}(x, range, gap = FALSE,
+    output = c("character", "integer", "logical", "factor", "numeric"),
+    middle.na = TRUE, states = 32L, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

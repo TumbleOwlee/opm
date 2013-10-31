@@ -1,6 +1,5 @@
 \name{[}
 \alias{[}
-\alias{[[}
 \title{Select subset}
 \arguments{
   \item{x}{\code{\link{OPM}}, \code{\link{OPMA}} or
@@ -41,10 +40,9 @@
   \code{\link{OPMA}} or \code{\link{OPMD}} object to an
   \code{\link{OPM}} object? Has no effect if \code{x}
   already is an \code{\link{OPM}} object or contains only
-  such objects.}
-
-  \item{exact}{Logical scalar. Has the opposite effect of
-  \code{drop}.}
+  such objects. For the \code{\link{MOPMX}} method,
+  \code{TRUE} means dropping the class and generating a
+  list.}
 }
 \value{
   \code{\link{OPM}}, \code{\link{OPMA}} or
@@ -74,16 +72,18 @@
   of the returned object), even if it could be simplified
   to a vector. The time column is not counted and always
   copied. It is an error to delete the entire matrix. In
-  all other respects, this method behaves like the `[`
-  methods from the \pkg{base} package.
+  all other respects, the \code{\link{OPM}} method behaves
+  like the `[` methods from the \pkg{base} package.
 
   The \code{\link{OPMS}} method selects a subset of the
   plates and/or the measurements of the individual plates.
   It simplifies the outcome to a \code{\link{OPM}} or
   \code{\link{OPMA}} object if only a single plate remains
-  and to \code{NULL} if no plate remains. This behaves like
-  subsetting a three-dimensional array with plates as first
-  dimension, time points as second, and wells as third.
+  and to \code{NULL} if no plate remains. This is different
+  from subsetting a list in \R. \code{\link{OPMS}}
+  subsetting rather behaves like subsetting a
+  three-dimensional array with plates as first dimension,
+  time points as second, and wells as third.
 }
 \examples{
 ## OPM(A) method
@@ -128,8 +128,6 @@ stopifnot(dim(x) == c(4, 100, 96))
 # Create OPMS object with fewer wells
 (x <- vaas_4[, , 1:12])
 stopifnot(dim(x) == c(4, 384, 12))
-# alternative with [[ (can only select a single plate)
-stopifnot(identical(x[2], vaas_4[[2, , 1:12]]))
 
 # The same with well names
 x <- vaas_4[, , ~ A01:A12] # within x, these are well names 1 to 12
@@ -160,8 +158,11 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 }
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{bracket-methods}
+\alias{bracket,MOPMX,ANY,missing,ANY-method}
+\alias{[,MOPMX,ANY,missing,ANY-method}
 \alias{bracket,OPM,ANY,ANY,ANY-method}
 \alias{[,OPM,ANY,ANY,ANY-method}
 \alias{bracket,OPMA,ANY,ANY,ANY-method}
@@ -170,27 +171,16 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 \alias{[,OPMD,ANY,ANY,ANY-method}
 \alias{bracket,OPMS,ANY,ANY,ANY-method}
 \alias{[,OPMS,ANY,ANY,ANY-method}
-\alias{double.bracket-methods}
-\alias{double.bracket,OPMS,ANY,ANY-method}
-\alias{[[,OPMS,ANY,ANY-method}
-\alias{double.bracket,OPMS,ANY,missing-method}
-\alias{[[,OPMS,ANY,missing-method}
 \usage{
+  \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, j,
+    drop = FALSE) 
   \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 
-
   \S4method{[}{OPMA,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 
-
   \S4method{[}{OPMD,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 
-
   \S4method{[}{OPMS,ANY,ANY,ANY}(x, i, j, k, ...,
     drop = FALSE) 
-
-  \S4method{[[}{OPMS,ANY,ANY}(x, i, j, k, ..., exact = TRUE) 
-
-  \S4method{[[}{OPMS,ANY,missing}(x, i, j, k, ...,
-    exact = TRUE) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

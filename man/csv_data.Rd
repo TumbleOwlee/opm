@@ -5,8 +5,8 @@
 \alias{setup_time}
 \title{Information from input CSV file}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{keys}{Character vector (or other objects usable as
   vector index). An optional sub-selection. If empty (the
@@ -38,10 +38,14 @@
   methods.}
 }
 \value{
-  Named character vector (unnamed character scalar in the
-  case of \code{filename}, \code{setup_time} and
-  \code{filename} and if \code{what} is not
-  \sQuote{select}).
+  For the \code{\link{OPM}} method, a named character
+  vector (unnamed character scalar in the case of
+  \code{filename}, \code{setup_time} and \code{filename}
+  and if \code{what} is not \sQuote{select}). For the other
+  methods either a named character vector (if the selection
+  yields a single entry) or a character matrix with one row
+  per plate. Missing entries in one of the plates yield
+  \code{NA} in the output.
 }
 \description{
   Information about the plate as originally read from the
@@ -121,41 +125,36 @@ stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
 }
 \keyword{attribute}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{csv_data-methods}
+\alias{csv_data,MOPMX-method}
 \alias{csv_data,OPM-method}
-\alias{filename-methods}
-\alias{filename,OPM-method}
-\alias{setup_time-methods}
-\alias{setup_time,OPM-method}
-\alias{position-methods}
-\alias{position,OPM-method}
-\alias{csv_data-methods}
 \alias{csv_data,OPMS-method}
 \alias{filename-methods}
+\alias{filename,OPM-method}
 \alias{filename,OPMS-method}
 \alias{position-methods}
+\alias{position,OPM-method}
 \alias{position,OPMS-method}
 \alias{setup_time-methods}
+\alias{setup_time,OPM-method}
 \alias{setup_time,OPMS-method}
 \usage{
+  \S4method{csv_data}{MOPMX}(object, ...) 
   \S4method{csv_data}{OPM}(object,
     keys = character(), strict = TRUE,
     what = c("select", "filename", "setup_time", "position", "other"),
     normalize = FALSE) 
-
-  \S4method{filename}{OPM}(object) 
-
-  \S4method{setup_time}{OPM}(object) 
-
-  \S4method{position}{OPM}(object) 
-
   \S4method{csv_data}{OPMS}(object, ...) 
 
+  \S4method{filename}{OPM}(object) 
   \S4method{filename}{OPMS}(object, ...) 
 
+  \S4method{position}{OPM}(object) 
   \S4method{position}{OPMS}(object, ...) 
 
+  \S4method{setup_time}{OPM}(object) 
   \S4method{setup_time}{OPMS}(object, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

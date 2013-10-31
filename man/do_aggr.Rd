@@ -2,12 +2,12 @@
 \alias{do_aggr}
 \title{Aggregate kinetics using curve-parameter estimation}
 \arguments{
-  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}}
-  object or matrix as output by \code{\link{measurements}},
-  i.e. with the time points in the first columns and the
-  measurements in the remaining columns (there must be at
-  least two). For deviations from this scheme see
-  \code{time.pos} and \code{transposed}.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object or matrix as output by
+  \code{\link{measurements}}, i.e. with the time points in
+  the first columns and the measurements in the remaining
+  columns (there must be at least two). For deviations from
+  this scheme see \code{time.pos} and \code{transposed}.}
 
   \item{boot}{Integer scalar. Number of bootstrap
   replicates used to estimate 95-percent confidence
@@ -213,19 +213,20 @@ stopifnot(identical(dim(x), c(3L, 96L)))
 }
 \keyword{smooth}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{do_aggr-methods}
+\alias{do_aggr,MOPMX-method}
 \alias{do_aggr,OPM-method}
 \alias{do_aggr,OPMS-method}
 \alias{do_aggr,matrix-method}
 \usage{
+  \S4method{do_aggr}{MOPMX}(object, ...) 
   \S4method{do_aggr}{OPM}(object, boot = 100L, verbose = FALSE,
     cores = 1L, options = list(), method = "grofit", plain = FALSE) 
-
   \S4method{do_aggr}{OPMS}(object, ...) 
-
   \S4method{do_aggr}{matrix}(object, what = c("AUC", "A"),
     boot = 100L, ci = 0.95, as.pe = "median", ci.type = "norm",
     time.pos = 1L, transposed = FALSE, raw = FALSE, ...) 
-
 }
+%% END INSERTION BY repair_S4_docu.rb

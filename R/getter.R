@@ -110,23 +110,13 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   x
 }, sealed = SEALED)
 
-setMethod("[[", c(OPMS, "ANY", "ANY"), function(x, i, j, k, ..., exact = TRUE) {
-  if (!missing(...))
-    stop("incorrect number of dimensions")
-  if (missing(k))
-    k <- TRUE
-  x@plates[[i]][j, k, drop = !exact]
-}, sealed = SEALED)
-
-setMethod("[[", c(OPMS, "ANY", "missing"), function(x, i, j, k, ...,
-    exact = TRUE) {
-  if (!missing(...))
-    stop("incorrect number of dimensions")
-  if (missing(k))
-    x@plates[[i]]
-  else
-    x@plates[[i]][TRUE, k, drop = !exact]
-}, sealed = SEALED)
+setMethod("[", c(MOPMX, "ANY", "missing", "ANY"), function(x, i, j,
+    drop = FALSE) {
+  if (drop) # remove the class, return a list
+    return(x@.Data[i])
+  x@.Data <- x@.Data[i] # keeps the class
+  x
+})
 
 setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
   if (missing(...))
@@ -217,6 +207,26 @@ setMethod("csv_data", OPM, function(object,
       result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
   }
   result
+}, sealed = SEALED)
+
+setMethod("csv_data", "OPMS", function(object, ...) {
+  x <- lapply(X = object@plates, FUN = csv_data, ...)
+  if (all(vapply(x, length, 0L) == 1L))
+    return(unlist(x, FALSE, TRUE))
+  x <- lapply(x, vector2row)
+  for (i in seq_along(x)) # next step necessary to keep all rows
+    rownames(x[[i]]) <- i # TODO: this should go into collect()
+  collect(x, "datasets", 1L, TRUE)
+}, sealed = SEALED)
+
+setMethod("csv_data", "MOPMX", function(object, ...) {
+  x <- lapply(X = object, FUN = csv_data, ...)
+  if (all(is.vec <- !vapply(x, is.matrix, 0L)))
+    return(unlist(x, FALSE, TRUE))
+  x[is.vec] <- lapply(x[is.vec], vector2row)
+  for (i in seq_along(x)) # next step necessary to keep all rows
+    rownames(x[[i]]) <- paste(i, seq_len(nrow(x[[i]])), sep = ".")
+  collect(x, "datasets", 1L, TRUE) # TODO: the above should go into collect()
 }, sealed = SEALED)
 
 setGeneric("filename", function(object, ...) standardGeneric("filename"))
@@ -322,6 +332,14 @@ setMethod("aggr_settings", OPMS, function(object, join = NULL) {
     result
 }, sealed = SEALED)
 
+setMethod("aggr_settings", MOPMX, function(object, join = NULL) {
+  result <- lapply(object@.Data, aggr_settings, join)
+  if (length(join))
+    do.call(rbind, result)
+  else
+    result
+}, sealed = SEALED)
+
 setGeneric("discretized", function(object, ...) standardGeneric("discretized"))
 
 setMethod("discretized", OPMD, function(object, full = FALSE, in.parens = TRUE,
@@ -347,6 +365,14 @@ setMethod("disc_settings", OPMS, function(object, join = NULL) {
   result <- lapply(object@plates, slot, "disc_settings")
   if (length(join))
     list2matrix(result, join)
+  else
+    result
+}, sealed = SEALED)
+
+setMethod("disc_settings", MOPMX, function(object, join = NULL) {
+  result <- lapply(object@.Data, disc_settings, join)
+  if (length(join))
+    do.call(rbind, result)
   else
     result
 }, sealed = SEALED)
@@ -476,31 +502,38 @@ setMethod("anyDuplicated", c(OPMS, "ANY"), function(x, incomparables, ...) {
 lapply(c(
     #+
     aggregated,
-    csv_data,
     discretized,
     has_aggr,
     has_disc,
     hours,
     measurements,
     metadata,
-    filename,
-    position,
-    setup_time,
+    filename, # deprecated
+    position, # deprecated
+    setup_time, # deprecated
     well
     #-
   ), FUN = function(func_) {
   setMethod(func_, OPMS, function(object, ...) {
-    simplify_conditionally <- function(x) { # instead of sapply()
-      if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
-        return(x)
-      if (length(n <- unique.default(vapply(x, length, 0L))) > 1L)
-        return(x)
-      if (n > 1L)
-        do.call(rbind, x)
-      else
-        unlist(x)
-    }
     simplify_conditionally(lapply(object@plates, FUN = func_, ...))
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    aggregated,
+    discretized,
+    has_aggr,
+    has_disc,
+    hours,
+    measurements,
+    metadata,
+    plate_type,
+    well
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, MOPMX, function(object, ...) {
+    simplify_conditionally(lapply(object@.Data, FUN = func_, ...))
   }, sealed = SEALED)
 })
 

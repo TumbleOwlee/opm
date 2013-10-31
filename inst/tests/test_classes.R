@@ -110,6 +110,38 @@ test_that("the OPMS example data can be converted to a list and back", {
 
 })
 
+## as
+test_that("the OPM example data can be converted to a list and back", {
+  # conversion of a list to an OPM object is tolerant against re-orderings
+  # (but not against additions and omissions)
+  x <- as(SMALL, "list")
+  x$measurements <- c(rev(x$measurements[7:8]), rev(x$measurements[-7:-8]))
+  x <- as(x, "OPM")
+  stopifnot(identical(measurements(x), measurements(SMALL)))
+})
+
+## as
+test_that("the OPMA example data can be converted to a list and back", {
+  # conversion of a list to an OPMA object is tolerant against re-orderings
+  # and additions (but not against omissions)
+  x <- as(SMALL.AGG, "list")
+  x$aggregated <- c(Answer = 42L, rev(x$aggregated), Text = LETTERS)
+  x <- as(x, "OPMA")
+  stopifnot(identical(aggregated(x), aggregated(SMALL.AGG)))
+})
+
+## as
+test_that("OPMD objects can be converted to a list and back", {
+  # conversion of a list to an OPMA object is tolerant against re-orderings
+  # and additions (but not against omissions)
+  d <- do_disc(SMALL.AGG, TRUE)
+  x <- as(d, "list")
+  x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
+  x <- as(x, "OPMD")
+  stopifnot(identical(discretized(x), discretized(d)))
+})
+
+
 
 ################################################################################
 
@@ -125,6 +157,14 @@ test_that("the example objects have the correct classes", {
 })
 
 
-################################################################################
+## initialize
+test_that("MOPMX objects are correctly created", {
+  expect_error(x <- new("MOPMX", list(A = NULL, B = SMALL)))
+  x <- new("MOPMX", list(B = SMALL, THIN.AGG))
+  expect_equal(names(x), c("B", ""))
+})
 
+
+
+################################################################################
 

@@ -191,28 +191,24 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 }
 \keyword{utilities}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{substrate_info-methods}
-\alias{substrate_info,character-method}
-\alias{substrate_info,substrate_match-method}
-\alias{substrate_info,list-method}
 \alias{substrate_info,OPM-method}
-\alias{substrate_info,factor-method}
 \alias{substrate_info,OPMS-method}
+\alias{substrate_info,character-method}
+\alias{substrate_info,factor-method}
+\alias{substrate_info,list-method}
+\alias{substrate_info,substrate_match-method}
 \usage{
+  \S4method{substrate_info}{OPM}(object, ...) 
+  \S4method{substrate_info}{OPMS}(object, ...) 
   \S4method{substrate_info}{character}(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
       "greek", "concentration", "html", "all"), browse = 0L, download = FALSE,
     ...) 
-
-  \S4method{substrate_info}{substrate_match}(object, ...) 
-
-  \S4method{substrate_info}{list}(object, ...) 
-
-  \S4method{substrate_info}{OPM}(object, ...) 
-
   \S4method{substrate_info}{factor}(object, ...) 
-
-  \S4method{substrate_info}{OPMS}(object, ...) 
-
+  \S4method{substrate_info}{list}(object, ...) 
+  \S4method{substrate_info}{substrate_match}(object, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

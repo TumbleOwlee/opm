@@ -126,20 +126,19 @@ stopifnot(sapply(y, class) == c("integer", "factor", "factor"))
 \keyword{character}
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{separate-methods}
 \alias{separate,character-method}
-\alias{separate,factor-method}
 \alias{separate,data.frame-method}
+\alias{separate,factor-method}
 \usage{
   \S4method{separate}{character}(object, split = opm_opt("split"),
     simplify = FALSE, keep.const = TRUE, list.wise = FALSE,
     strip.white = list.wise) 
-
-  \S4method{separate}{factor}(object, split = opm_opt("split"),
-    simplify = FALSE, keep.const = TRUE, ...) 
-
   \S4method{separate}{data.frame}(object, split = opm_opt("split"),
     simplify = FALSE, keep.const = TRUE, coerce = TRUE, name.sep = ".", ...) 
-
+  \S4method{separate}{factor}(object, split = opm_opt("split"),
+    simplify = FALSE, keep.const = TRUE, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb

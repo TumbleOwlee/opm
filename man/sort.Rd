@@ -164,41 +164,36 @@ stopifnot(is.null(rep(vaas_4, 0)))
 }
 \keyword{manip}
 
+%% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
-\alias{sort-methods}
-\alias{sort,OPMX,missing-method}
-\alias{sort,OPM,logical-method}
-\alias{sort,OPMS,logical-method}
-\alias{unique-methods}
-\alias{unique,OPM,ANY-method}
-\alias{unique,OPMS,missing-method}
-\alias{unique,OPMS,ANY-method}
-\alias{rev-methods}
-\alias{rev,OPM-method}
-\alias{rev,OPMS-method}
 \alias{rep-methods}
 \alias{rep,OPM-method}
 \alias{rep,OPMS-method}
+\alias{rev-methods}
+\alias{rev,OPM-method}
+\alias{rev,OPMS-method}
+\alias{sort-methods}
+\alias{sort,OPM,logical-method}
+\alias{sort,OPMS,logical-method}
+\alias{sort,OPMX,missing-method}
+\alias{unique-methods}
+\alias{unique,OPM,ANY-method}
+\alias{unique,OPMS,ANY-method}
+\alias{unique,OPMS,missing-method}
 \usage{
-  \S4method{sort}{OPMX,missing}(x, decreasing, ...) 
-
-  \S4method{sort}{OPM,logical}(x, decreasing, ...) 
-
-  \S4method{sort}{OPMS,logical}(x, decreasing, by = "setup_time",
-    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) 
-
-  \S4method{unique}{OPM,ANY}(x, incomparables, ...) 
-
-  \S4method{unique}{OPMS,missing}(x, incomparables, ...) 
-
-  \S4method{unique}{OPMS,ANY}(x, incomparables, ...) 
-
-  \S4method{rev}{OPM}(x) 
-
-  \S4method{rev}{OPMS}(x) 
-
   \S4method{rep}{OPM}(x, ...) 
-
   \S4method{rep}{OPMS}(x, ...) 
 
+  \S4method{rev}{OPM}(x) 
+  \S4method{rev}{OPMS}(x) 
+
+  \S4method{sort}{OPM,logical}(x, decreasing, ...) 
+  \S4method{sort}{OPMS,logical}(x, decreasing, by = "setup_time",
+    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) 
+  \S4method{sort}{OPMX,missing}(x, decreasing, ...) 
+
+  \S4method{unique}{OPM,ANY}(x, incomparables, ...) 
+  \S4method{unique}{OPMS,ANY}(x, incomparables, ...) 
+  \S4method{unique}{OPMS,missing}(x, incomparables, ...) 
 }
+%% END INSERTION BY repair_S4_docu.rb
