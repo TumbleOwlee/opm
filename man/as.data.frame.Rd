@@ -75,7 +75,7 @@
 }
 \description{
   These \code{as.data.frame} methods create a data frame
-  from aggregated and discretized values in a manner
+  from aggregated and discretised values in a manner
   distinct from \code{\link{extract}}. \code{flatten}
   converts into a \sQuote{flat} data frame, including all
   measurements in a single column (suitable, e.g., for
@@ -103,9 +103,9 @@
   for the \sQuote{options} entry (which is not a scalar).
   \item For \code{\link{OPMD}} objects (and
   \code{\link{OPMS}} objects that contain them), one column
-  with the discretized data.  \item For \code{\link{OPMD}}
+  with the discretised data.  \item For \code{\link{OPMD}}
   objects (and \code{\link{OPMS}} objects that contain
-  them), the used discretization settings, one column per
+  them), the used discretisation settings, one column per
   entry, except for the \sQuote{options} entry (which is
   not a scalar).  }
 

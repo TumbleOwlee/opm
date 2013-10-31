@@ -116,10 +116,10 @@
   collected information.
 }
 \details{
-  Behavior is special if the \code{\link{plate_type}} is
+  Behaviour is special if the \code{\link{plate_type}} is
   one of those that have to be explicitly set using
   \code{\link{gen_iii}} and there is just one point
-  measurement. Because this behavior is usual for plates
+  measurement. Because this behaviour is usual for plates
   measured either in Generation-III (identification) mode
   or on a
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)},

@@ -25,7 +25,7 @@
   phenotype microarray data without aggregated values, but
   with information read from the original input
   \acronym{CSV} files as well as an additional arbitrary
-  amount of arbitrarily organized metadata. Objects of this
+  amount of arbitrarily organised metadata. Objects of this
   class are usually created by inputting files with
   \code{\link{read_single_opm}} or \code{\link{read_opm}},
   not with a call to \code{new} or \code{as}.
@@ -65,19 +65,19 @@
   has all its methods.
 
   \acronym{OPMD} is an acronym for \sQuote{\acronym{OPM},
-  discretized}. This is the class for holding single-plate
+  discretised}. This is the class for holding single-plate
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data together with aggregated
-  \strong{and} discretized values. Objects of this class
+  \strong{and} discretised values. Objects of this class
   are usually created by calling \code{\link{do_disc}} on
   an \acronym{OPMA} object, or by inputting files with
   \code{\link{read_single_opm}} or \code{\link{read_opm}}
-  if these files already contain discretized data.
+  if these files already contain discretised data.
 
   \acronym{OPMD} inherits from \acronym{OPMA} and, hence,
   has all its methods.
 
-  The discretized data are considered as
+  The discretised data are considered as
   \sQuote{consistent} with the curve parameter from which
   they have been estimated if no \code{FALSE} value
   corresponds to curve parameter larger than the curve
@@ -90,7 +90,7 @@
   \acronym{OPMS} is the class for holding multiple-plate
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data with or without aggregated or
-  discretized values. Regarding the name: \acronym{OPMS} is
+  discretised values. Regarding the name: \acronym{OPMS} is
   just the plural of \acronym{OPM}. Objects of this class
   are usually created by calling \code{\link{opms}} or
   other combination functions on \acronym{OPM} or derived
@@ -125,7 +125,7 @@
 showMethods("coerce", classes = c("OPM", "OPMA", "OPMD"))
 data(vaas_1)
 data(vaas_4)
-(x <- as(vaas_1, "OPMA")) # drops the discretized data
+(x <- as(vaas_1, "OPMA")) # drops the discretised data
 stopifnot(has_disc(vaas_1), !has_disc(x))
 (x <- as(vaas_1, "OPM")) # drops the aggregated data
 stopifnot(has_aggr(vaas_1), !has_aggr(x))

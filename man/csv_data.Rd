@@ -28,7 +28,7 @@
 
   \item{normalize}{Logical scalar indicating whether plate
   position and setup time entries (if selected) should be
-  normalized. This should always work for the plate
+  normalised. This should always work for the plate
   positions, but for the setup times it depends on the
   values for the \code{\link{opm_opt}} keys
   \sQuote{time.fmt} and \sQuote{time.zone} (see also
@@ -78,7 +78,7 @@ stopifnot(is.character(x), length(x) == 1L)
 
 (x <- csv_data(vaas_1, what = "position")) # single position (of course)
 (y <- csv_data(vaas_1, what = "position", normalize = TRUE))
-stopifnot(x == " 7-B", y == "07-B") # four characters when normalized
+stopifnot(x == " 7-B", y == "07-B") # four characters when normalised
 
 (x <- csv_data(vaas_1, what = "setup_time")) # single setup time (of course)
 (y <- csv_data(vaas_1, what = "setup_time", normalize = TRUE))

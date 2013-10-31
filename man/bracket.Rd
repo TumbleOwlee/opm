@@ -36,7 +36,7 @@
   error to specify additional dimensions.}
 
   \item{drop}{Logical scalar. Remove the aggregated data
-  (and the discretized data, if any) and turn an
+  (and the discretised data, if any) and turn an
   \code{\link{OPMA}} or \code{\link{OPMD}} object to an
   \code{\link{OPM}} object? Has no effect if \code{x}
   already is an \code{\link{OPM}} object or contains only
@@ -60,9 +60,9 @@
   \code{\link{OPM}} one, but the function applies the
   subsetting to the original and the aggregated data in
   parallel. The \code{\link{OPMD}} method applies the
-  selection also to the discretized data.
+  selection also to the discretised data.
 
-  The aggregated and discretized data may also be dropped
+  The aggregated and discretised data may also be dropped
   entirely; this might be appropriate if a subset of the
   time points is selected, potentially yielding aggregated
   values that do not fit to the measurements anymore.
@@ -96,7 +96,7 @@ stopifnot(x == c(384, 96))
 copy <- vaas_1[, 11:22]
 (x <- dim(copy))
 stopifnot(x == c(384, 12))
-# indexing with formulas allows for sequences of well coordinates
+# indexing with formulae allows for sequences of well coordinates
 copy <- vaas_1[, ~ A11:B10] # "A11" is 11th, "B10" is 22th well name
 stopifnot(dim(copy) == c(384, 12)) # same result as above
 # can also be combined

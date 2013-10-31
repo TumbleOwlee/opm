@@ -21,7 +21,7 @@
   \code{\link{setup_time}} via \code{strptime} before
   ordering? Has only an effect if \code{by} is
   \sQuote{setup_time}. It is an error if the time format is
-  not recognized.  See \code{\link{opm_opt}}, arguments
+  not recognised.  See \code{\link{opm_opt}}, arguments
   \sQuote{time.fmt} and \sQuote{time.zone}, for modifying
   the parsing of setup-time entries.}
 

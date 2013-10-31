@@ -34,12 +34,12 @@
   \item{disc.args}{If not \code{NULL} but a list, passed as
   arguments to \code{\link{do_disc}} with the data read
   from each individual file as additional argument
-  \code{object}.  If \code{NULL}, discretization takes not
-  place (but discretized data may already be present in
+  \code{object}.  If \code{NULL}, discretisation takes not
+  place (but discretised data may already be present in
   case of \acronym{YAML} input).}
 
   \item{force.disc}{Logical scalar. If \code{FALSE}, do not
-  discretize already discretized data (which can be present
+  discretise already discretised data (which can be present
   in \acronym{YAML} input).}
 
   \item{device}{Character scalar describing the graphics
@@ -198,11 +198,11 @@
   value of \sQuote{options} is an arbitrarily nested
   mapping with arbitrary content.} \item{discretized}{A
   mapping, only present if curve parameters have been
-  estimated and also discretized. Its keys correspond to
+  estimated and also discretised. Its keys correspond to
   those of \sQuote{measurements} with the exception of
   \sQuote{hours}. The values are logical scalars.}
   \item{disc_settings}{A mapping, only present if curve
-  parameters have been estimated and also discretized. Its
+  parameters have been estimated and also discretised. Its
   keys are \sQuote{software}, \sQuote{version} and
   \sQuote{options}. The value of the former two is a
   character scalar. The value of \sQuote{options} is an

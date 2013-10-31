@@ -9,7 +9,7 @@
   \code{\link{OPM}} or an \code{\link{OPMS}} object.}
 
   \item{type}{Ignored if empty or \code{FALSE}. Otherwise,
-  passed to \code{\link{plate_type}} for normalization and
+  passed to \code{\link{plate_type}} for normalisation and
   then used to restrict the positions to those in that
   plate. Changes the output object to a vector; see below
   for details. In the case of \code{\link{OPMX}} objects,

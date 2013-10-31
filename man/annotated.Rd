@@ -63,7 +63,7 @@
   unambiguously match substrate names within contrast
   names.  For the \code{\link{OPMS}} method, a numeric
   scalar working like the \code{cutoff} argument of
-  \code{\link{listing}}. Has only an effect if discretized
+  \code{\link{listing}}. Has only an effect if discretised
   values are chosen (and are available).}
 
   \item{conc}{Logical scalar indicating whether
@@ -111,14 +111,14 @@
 
   The \code{\link{OPMA}} methods simply chooses a certain
   parameter. The \code{\link{OPMD}} method can also return
-  discretized values and optionally translates them using
+  discretised values and optionally translates them using
   \code{lmap}.
 
   The \code{\link{OPMS}} method returns the averages of the
   selected parameter estimates over all contained plates.
-  It is an error to select discretized values instead if
+  It is an error to select discretised values instead if
   they are not available for all plates.  If otherwise, the
-  discretized values are aggregated as indicated by the
+  discretised values are aggregated as indicated by the
   \code{sep} argument.
 
   The \code{opm_glht} method makes only sense if each

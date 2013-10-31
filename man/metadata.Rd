@@ -15,7 +15,7 @@
   neither empty nor a list nor a formula (i.e. usually a
   character or numeric vector), \code{key} is treated as a
   single list key. Factors are converted to
-  \sQuote{character} mode.  \item Formulas can also be used
+  \sQuote{character} mode.  \item Formulae can also be used
   and are converted to a list or character or numeric
   vector using the rules described under \sQuote{Details}.
   \item It is in general not recommended to use numeric

@@ -40,7 +40,7 @@
 \details{
   This \code{\link{OPMS}} method is intended for dealing
   with slowly growing or reacting organisms that need to be
-  analyzed with subsequent runs of the same plate in PM
+  analysed with subsequent runs of the same plate in PM
   mode. Results obtained with \emph{Geodermatophilus}
   strains and Generation-III plates indicate that this
   works well in practice. See the references.

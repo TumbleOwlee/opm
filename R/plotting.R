@@ -317,7 +317,7 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
       RESERVED_NAMES[c("value", "time", "well")]),
     data = flatten(x, ...), type = "l", layout = layout,
     as.table = TRUE,
-    # Curve color and panel height
+    # Curve colour and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -363,17 +363,17 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
   # OPMS-specific addition of defaults
   legend.fmt <- insert(as.list(legend.fmt), space = space, .force = FALSE)
 
-  # Selection of a color set
+  # Selection of a colour set
   col <- try_select_colors(col)
 
   # Conversion
   data <- flatten(x, ...)
 
-  # Assignment of colors to plates
+  # Assignment of colours to plates
   param <- flattened_to_factor(object = data, sep = legend.sep)
   key.text <- levels(param)
   if (length(col) < length(key.text))
-    stop("color should be by plate or metadata, but there are too few colors")
+    stop("colour should be by plate or metadata, but there are too few colours")
   key.col <- col[seq_along(key.text)]
   col <- col[param]
 
@@ -386,7 +386,7 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
       RESERVED_NAMES[c("value", "time", "well")]),
     data = data, type = "l", layout = layout,
     as.table = TRUE, groups = `_GROUPING`,
-    # Curve colors and panel height
+    # Curve colours and panel height
     col = col, ylim = c(0, y.max),
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -440,11 +440,11 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
   x$`_GROUPING` <- do.call(paste, c(x[, pos, drop = FALSE], sep = legend.sep))
   x$`_GROUPING` <- as.factor(x$`_GROUPING`)
 
-  # Assignment of colors
+  # Assignment of colours
   col <- try_select_colors(col)
   key.text <- levels(x$`_GROUPING`)
   if (length(key.text) > length(col))
-    stop("number of colors must be at least as large as number of groups")
+    stop("number of colours must be at least as large as number of groups")
   key.col <- col[seq_along(key.text)]
   col <- key.col
 
@@ -460,7 +460,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
     # Principally unchangeable arguments
     x = f, data = x, type = "l", layout = layout,
     as.table = TRUE, groups = `_GROUPING`,
-    # Curve colors (panel height is omitted)
+    # Curve colours (panel height is omitted)
     col = col,
     # Axis annotation
     scales = list(x = list(rot = 90)),
@@ -650,7 +650,7 @@ setMethod("heat_map", "matrix", function(object,
     colors <- try_select_colors(colors)
     groups <- as.factor(groups)
     if (length(colors) < length(levels(groups)))
-      stop("more groups than colors given")
+      stop("more groups than colours given")
     structure(colors[groups], names = as.character(groups))
   }
 

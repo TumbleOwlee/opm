@@ -8,7 +8,7 @@
   the main title.  Works like the \code{main} argument of
   \code{\link{xy_plot}}.}
 
-  \item{colors}{Character vector indicating the colors (at
+  \item{colors}{Character vector indicating the colours (at
   least two).}
 
   \item{panel.headers}{\code{NULL}, logical scalar,
@@ -27,7 +27,7 @@
 
   \item{strip.fmt}{List controlling the format of the
   description strip above each panel. For instance, the
-  background color is set using the \sQuote{bg} key. For
+  background colour is set using the \sQuote{bg} key. For
   further details, see \code{strip.custom} from the
   \pkg{lattice} package. \code{strip.fmt} is ignored if
   panel.headers is \code{FALSE} and currently always
@@ -46,7 +46,7 @@
   \item{space}{Character scalar passed to
   \code{colorRampPalette} from the \pkg{grDevices} package.
   These and the following arguments are for fine-tuning the
-  color palette used for plotting.}
+  colour palette used for plotting.}
 
   \item{bias}{Numeric scalar also passed to
   \code{colorRampPalette}.}

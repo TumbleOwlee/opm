@@ -1,7 +1,7 @@
 \name{has_aggr}
 \alias{has_aggr}
 \alias{has_disc}
-\title{Are aggregated or discretized data present?}
+\title{Are aggregated or discretised data present?}
 \arguments{
   \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
   object.}
@@ -13,7 +13,7 @@
   Logical vector, one element per plate.
 }
 \description{
-  Check whether aggregated or discretized data are present.
+  Check whether aggregated or discretised data are present.
   (See \code{\link{do_aggr}} and \code{\link{do_disc}} for
   generating such data.) This always returns \code{FALSE}
   for the \code{\link{OPM}} class, but not necessarily for

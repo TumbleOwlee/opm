@@ -1,6 +1,6 @@
 \name{summary}
 \alias{summary}
-\title{Summarize OPMX or MOPMX objects}
+\title{Summarise OPMX or MOPMX objects}
 \arguments{
   \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
   \code{\link{MOPMX}} object.}

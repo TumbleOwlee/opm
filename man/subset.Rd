@@ -23,8 +23,8 @@
   metadata entries contain certain values, or choose the
   plates for which these metadata have been set at all (to
   some arbitrary value). See the mentioned functions for
-  details, and note the special behavior if \code{query} is
-  a character vector and \code{values} is \code{FALSE}.}
+  details, and note the special behaviour if \code{query}
+  is a character vector and \code{values} is \code{FALSE}.}
 
   \item{invert}{Logical scalar. If \code{TRUE}, return the
   plates for which the condition is not \code{TRUE}.}
@@ -44,7 +44,7 @@
   used. Otherwise all previous arguments except
   \code{object} are ignored, and the function yields an
   error unless all elements of \code{object} have
-  discretized values.
+  discretised values.
 
   In that case, if \sQuote{any}, wells are selected that
   contain positive reactions in at least one plate. If
@@ -124,7 +124,7 @@ mustbe(vaas_4[c(1, 3)],
   subset(vaas_4, ~ Strain \%in\% c("DSM18039", "DSM1707")))
 mustbe(vaas_4[c(1, 3)],
   subset(vaas_4, ~ Strain == "DSM18039" || Strain == "DSM1707"))
-# note that particularly formulas can be used to set up very complex queries
+# note that particularly formulae can be used to set up very complex queries
 
 # select all plates that have aggregated values
 dim(x <- subset(vaas_4, has_aggr(vaas_4)))

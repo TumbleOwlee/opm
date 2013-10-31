@@ -13,7 +13,7 @@
 
   When mapping names, \code{object} can be any \R object.
   The default method applies the mapping to the
-  \sQuote{names} attribute. The behavior is special for
+  \sQuote{names} attribute. The behaviour is special for
   lists, which are traversed recursively to also consider
   sublists with names. Data frames and \code{\link{MOA}}
   objects (that is, including matrices and arrays) are also

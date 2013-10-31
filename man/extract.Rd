@@ -23,7 +23,7 @@
 
   \item{subset}{Character vector. The parameter(s) to put
   in the matrix. If it is
-  \code{\link{param_names}("disc.name")}, discretized data
+  \code{\link{param_names}("disc.name")}, discretised data
   are returned, and \code{ci} is ignored..}
 
   \item{ci}{Logical scalar. Also return the confidence
@@ -94,11 +94,11 @@
   \code{\link{wells}}.}
 
   \item{norm.per}{Character scalar indicating the presence
-  and direction of a normalization step.  \describe{
-  \item{none}{No normalization.} \item{row}{Normalization
+  and direction of a normalisation step.  \describe{
+  \item{none}{No normalisation.} \item{row}{Normalisation
   per row. By default, this would subtract the mean of each
   plate from each of its values (over all wells of that
-  plate).} \item{column}{Normalization per column. By
+  plate).} \item{column}{Normalisation per column. By
   default, this would subtract the mean of each well from
   each of its values (over all plates in which this well is
   present).} } This step can further by modified by the
@@ -106,11 +106,11 @@
 
   \item{norm.by}{Vector indicating which wells (columns) or
   plates (rows) are used to calculate means used for the
-  normalization. By default, the mean is calculated over
-  all rows or columns if normalization is requested using
+  normalisation. By default, the mean is calculated over
+  all rows or columns if normalisation is requested using
   \code{norm.per}. But if \code{direct} is \code{TRUE},
   \code{norm.by} is directly interpreted as numeric vector
-  used for normalization.}
+  used for normalisation.}
 
   \item{direct}{Logical scalar. For \code{extract},
   indicating how to use \code{norm.by}. See there for
@@ -119,7 +119,7 @@
   of one to several given classes.}
 
   \item{subtract}{Logical scalar indicating whether
-  normalization (if any) is done by subtracting or
+  normalisation (if any) is done by subtracting or
   dividing.}
 
   \item{split.at}{Character vector defining alternative
@@ -162,7 +162,7 @@
   used, a triplet structure of the rows, as indicated in
   the new \code{split.at} column: (i) group mean, (ii)
   lower and (iii) upper boundary of the group confidence
-  interval. The data could then be visualized using
+  interval. The data could then be visualised using
   \code{\link{ci_plot}}. See the examples.
 
   For the \code{OPMS} method of \code{extract_columns}, a
@@ -173,10 +173,10 @@
   argument.
 }
 \description{
-  Extract selected aggregated and/or discretized values
+  Extract selected aggregated and/or discretised values
   into common matrix or data frame. The \code{extract}
-  data-frame method conducts normalization and/or computes
-  normalized point-estimates and respective confidence
+  data-frame method conducts normalisation and/or computes
+  normalised point-estimates and respective confidence
   intervals for user-defined experimental groups. It is
   mainly a helper function for \code{\link{ci_plot}}.
   \code{extract_columns} extracts only selected metadata
@@ -224,7 +224,7 @@ x <- lapply(param_names(), function(name) extract(vaas_4, subset = name,
   as.labels = list("Species", "Strain"), dataframe = TRUE))
 x <- do.call(rbind, x)
 
-# get discretized data
+# get discretised data
 (x <- extract(vaas_4, subset = param_names("disc.name"),
   as.labels = list("Strain")))[, 1:3]
 stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
@@ -241,17 +241,17 @@ y <- extract(x, as.groups = "Species",  norm.per = "none")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 350, y = 1)
 
-# normalization by plate means
+# normalisation by plate means
 y <- extract(x, as.groups = "Species",  norm.per = "row")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 130, y = 1)
 
-# normalization by well means
+# normalisation by well means
 y <- extract(x, as.groups = "Species",  norm.per = "column")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 20, y = 1)
 
-# normalization by subtraction of the well means of well A10 only
+# normalisation by subtraction of the well means of well A10 only
 y <- extract(x, as.groups = "Species",  norm.per = "row", norm.by = 10,
   subtract = TRUE)
 # plotting using ci_plot()

@@ -47,7 +47,7 @@
   substrate are of interest, \sQuote{column} should be
   used.}
 
-  \item{r.groups}{Determines the plotting of a color bar
+  \item{r.groups}{Determines the plotting of a colour bar
   indicating row groups.
 
   If \code{NULL}, ignored. If a function, applied to the
@@ -60,10 +60,10 @@
   Finally the groups are converted to a factor and used for
   selecting from \code{r.col}.}
 
-  \item{r.col}{Character vector of color names used by
+  \item{r.col}{Character vector of colour names used by
   \code{r.groups}.  Ignored if that is \code{NULL}.}
 
-  \item{c.groups}{Determines the plotting of a color bar
+  \item{c.groups}{Determines the plotting of a colour bar
   indicating column groups.
 
   If \code{NULL}, ignored. If a function, applied to the
@@ -76,7 +76,7 @@
   Finally the groups are converted to a factor and used for
   selecting from \code{c.col}.}
 
-  \item{c.col}{Character vector of color names used by
+  \item{c.col}{Character vector of colour names used by
   \code{c.groups}.  Ignored if that is \code{NULL}.}
 
   \item{magnif}{Numeric vector. Factor(s) used per default
@@ -94,7 +94,7 @@
   the left.}
 
   \item{col}{Character vector containing the proper heat
-  map colors.}
+  map colours.}
 
   \item{asqr}{Logical scalar indicating whether the data
   should be treated with the arcus sinus-square root
@@ -105,8 +105,8 @@
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
   transparent from the argument list of \code{heat_map}. If
-  set explicitly, the default \code{heatmap.2} behavior is
-  restored. \code{\dots} also represents all arguments
+  set explicitly, the default \code{heatmap.2} behaviour is
+  restored.  \code{\dots} also represents all arguments
   passed from the \code{\link{OPMS}} or data-frame methods
   to the matrix method.}
 
@@ -120,7 +120,7 @@
   A list as output by \code{heatmap} or \code{heatmap.2}
   with the additional entries \sQuote{rowColMap} or
   \sQuote{colColMap} giving the mapping(s) of group names
-  to colors as named character vector(s), if this feature
+  to colours as named character vector(s), if this feature
   was used.
 }
 \description{

@@ -31,12 +31,12 @@
 }
 \details{
   The following keys can be used with the following kinds
-  of values: \describe{ \item{colors}{Default color set
+  of values: \describe{ \item{colors}{Default colour set
   used by the \code{\link{OPMS}} method of
   \code{\link{xy_plot}} and other plotting functions.}
-  \item{color.borders}{Character vector with default color
+  \item{color.borders}{Character vector with default colour
   borders between which \code{\link{level_plot}}
-  interpolates to obtain a color palette.}
+  interpolates to obtain a colour palette.}
   \item{comb.key.join}{Used by functions that support
   combination of metadata entries converted to data-frame
   columns immediately after their selection. Sets the
@@ -79,7 +79,7 @@
   used as column name for trivial groups (either all items
   in the same group or each item in a group of its own)
   created by \code{\link{extract}}.}
-  \item{heatmap.colors}{Color palette used by
+  \item{heatmap.colors}{Colour palette used by
   \code{\link{heat_map}}.} \item{html.attr}{Used by
   \code{\link{phylo_data}} for automatically creating
   \acronym{HTML} \sQuote{title} and \sQuote{class}
@@ -97,7 +97,7 @@
   several such machines are in use.}
   \item{max.chars}{Integer scalar used when abbreviating
   full substrate names. See \code{\link{wells}} for an
-  example.} \item{min.mode}{Used when making discretization
+  example.} \item{min.mode}{Used when making discretisation
   results uniform within a group. The minimum proportion
   the most frequent value much reach to be used for
   representing all values (if less, frequent, \code{NA} is
@@ -108,7 +108,7 @@
   splitting characters used by \code{\link{separate}}.}
   \item{strict.OPMD}{Logical scalar indicating whether
   \code{\link{OPMD}} objects can only be created if the
-  discretized data are consistent with the parameter from
+  discretised data are consistent with the parameter from
   which they have been estimated.} \item{threshold}{Numeric
   scalar indicating the default threshold used by
   \code{\link{annotated}}.} \item{time.zone}{Character

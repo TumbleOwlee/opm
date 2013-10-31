@@ -23,7 +23,7 @@
   \code{\link{WMD}} object.
 }
 \details{
-  The behavior of these methods depends on the object used
+  The behaviour of these methods depends on the object used
   as query.  \code{infix.largek} is usually stricter than
   \code{infix.k}, sometimes equivalent. \itemize{ \item
   Using a character vector as query, \code{infix.k} tests
@@ -92,7 +92,7 @@ stopifnot(!c("Species", "Trial") \%k\% vaas_1) # only one present
 stopifnot(!c("Organism", "Experiment") \%k\% vaas_1) # only one present
 stopifnot(c("Species", "Experiment") \%k\% vaas_1) # all present
 # querying with \%K\% and vectors of length > 1 mean nested queries; compare
-# this to the behavior of \%k\%!
+# this to the behaviour of \%k\%!
 stopifnot(!c("Species", "Experiment") \%K\% vaas_1)
 # i.e. "Experiment" is not within "Species".
 
@@ -119,7 +119,7 @@ stopifnot(!list(Species = "?", Trial = NA) \%k\% vaas_1) # one key missing
 stopifnot(!list(Organism = "?", Experiment = NA) \%k\% vaas_1) # likewise
 stopifnot(list() \%k\% vaas_1) # empty query always results
 
-# Formulas for querying, compare with list examples above
+# Formulae for querying, compare with list examples above
 stopifnot((~ Experiment) \%k\% vaas_1) # key present
 stopifnot((~ Experiment) \%K\% vaas_1)
 stopifnot(vaas_1 \%k\% ~ Experiment) # key present, no parens needed

@@ -46,7 +46,7 @@
   \item{download}{Logical scalar indicating whether, using
   the available IDs, substrate information should be
   queried from the according web services and returned in
-  customized objects. Note that this is unavailable for
+  customised objects. Note that this is unavailable for
   most values of \code{what}. At the moment only
   \sQuote{kegg} and \sQuote{drug} can be queried for if the
   \pkg{KEGGREST} package is available. This would yield S3

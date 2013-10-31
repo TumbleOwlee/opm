@@ -41,10 +41,10 @@
   consistency within the plot).}
 
   \item{align}{Character scalar. How to apply the offset;
-  one of \sQuote{center}, \sQuote{left} and
-  \sQuote{right}.}
+  in addition to the default, \sQuote{left} and
+  \sQuote{right} are possible.}
 
-  \item{col}{Character scalar. Color to be used.}
+  \item{col}{Character scalar. Colour to be used.}
 
   \item{na.action}{Character scalar. What to do if a
   confidence interval contains \code{NA} values; one of

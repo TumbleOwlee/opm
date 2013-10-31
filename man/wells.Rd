@@ -60,7 +60,7 @@
   passed as eponymous argument to \code{\link{extract}}.
   Thus \code{TRUE} and \code{FALSE} can be used, creating
   either a single group or one per plate. The extracted
-  metadata define groups for which the discretized data are
+  metadata define groups for which the discretised data are
   aggregated.
 
   If \code{x} is an \code{\link{OPMD}} object and
@@ -71,7 +71,7 @@
 
   \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
   is a list. If the relative frequency of the most frequent
-  entry within the discretized values to be joined is below
+  entry within the discretised values to be joined is below
   that cutoff, \code{NA} is used. Ignored if \code{x} is an
   \code{\link{OPMD}} object but added to the result if
   \code{as.groups} is non-empty.}
@@ -101,8 +101,8 @@
   names can be added in parentheses or brackets or used
   instead of the coordinate, and trimmed to a given length.
   The \code{listing} methods create a textual listing of
-  the discretized values. (See \code{\link{do_disc}} for
-  generating discretized data.) This is useful to describe
+  the discretised values. (See \code{\link{do_disc}} for
+  generating discretised data.) This is useful to describe
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray results in a scientific manuscript.
 }
@@ -115,7 +115,7 @@
   several plates if \code{full} is \code{TRUE}. If
   \code{full} is \code{FALSE}, it can be used to study the
   effect of the well-index translation and well-name
-  normalization approaches as used by \pkg{opm},
+  normalisation approaches as used by \pkg{opm},
   particularly by the subsetting methods (see
   \code{\link{[}}).
 }

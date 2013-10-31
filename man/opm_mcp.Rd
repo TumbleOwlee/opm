@@ -14,7 +14,7 @@
   metadata-variables into one factor use pseudo-function
   \code{J} (described in \code{\link{extract}}). This is
   necessary especially when \code{linfct = Pairs}, see the
-  examples below.  For model specifications using formulas
+  examples below.  For model specifications using formulae
   in general, see \code{formula} (in the \pkg{stats}
   package).  For the way models are used by \pkg{opm} for
   selecting metadata entries, see \code{\link{metadata}}.
@@ -140,7 +140,7 @@
   \code{\link{extract}}. Most of them would be passed to
   \code{\link{wells}} for creating substrate names. Some
   restrictions are necessary here if the resulting object
-  shall latter on be analyzed with \code{\link{annotated}};
+  shall latter on be analysed with \code{\link{annotated}};
   see there for details.}
 }
 \value{

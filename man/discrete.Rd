@@ -1,7 +1,7 @@
 \name{discrete}
 \alias{best_cutoff}
 \alias{discrete}
-\title{Discretization functions}
+\title{Discretisation functions}
 \arguments{
   \item{x}{Numeric vector or a \code{\link{MOA}} object
   convertible to a numeric vector. The data-frame method
@@ -33,7 +33,7 @@
   character state, depending on \code{middle.na}.
 
   If \code{FALSE} (the default), apply an
-  equal-width-intervals discretization with the widths
+  equal-width-intervals discretisation with the widths
   determined from the number of requested \code{states} and
   \code{range}.}
 
@@ -91,7 +91,7 @@
 
   \item{all}{Logical scalar. If \code{TRUE}, calculate the
   score for all possible cutoffs for \code{x}. This is slow
-  and is only useful for plotting complete optimization
+  and is only useful for plotting complete optimisation
   curves.}
 
   \item{...}{Optional arguments passed between the methods
@@ -127,8 +127,8 @@
   continuous numeric characters to discrete ones.
   \code{best_cutoff} determines the best cutoff for
   dividing a numeric matrix into two categories by
-  minimizing within-group discrepancies. That is, for each
-  combination of row group and column maximize the number
+  minimising within-group discrepancies. That is, for each
+  combination of row group and column maximise the number
   of contained elements that are in the category in which
   most of the elements within this combination of row group
   and column are located.
@@ -154,7 +154,7 @@
   the one hand and of phylogenetic reconstruction (and thus
   taxonomic classification) on the other hand.
 
-  The scoring function to be maximized by
+  The scoring function to be maximised by
   \code{best_cutoff} is calculated as follows. All values
   in \code{x} are divided into those larger then the cutoff
   and those at most large as the cutoff. For each
@@ -193,7 +193,7 @@ stopifnot(identical(dim(x), dim(y)))
 (yy <- discrete(as.data.frame(x), range = c(3.4, 4.5), gap = TRUE))
 stopifnot(y == yy)
 
-# K-means based discretization of PM data (prefer do_disc() for this)
+# K-means based discretisation of PM data (prefer do_disc() for this)
 x <- extract(vaas_4, as.labels = list("Species", "Strain"),
   in.parens = FALSE)
 (y <- discrete(x, range = TRUE, gap = TRUE))[, 1:3]
@@ -203,13 +203,13 @@ stopifnot(c("0", "?", "1") \%in\% y)
 x <- matrix(c(5:2, 1:2, 7:8), ncol = 2)
 grps <- c("a", "a", "b", "b")
 
-# combined optimization
+# combined optimisation
 (y <- best_cutoff(x, grps))
 stopifnot(is.numeric(y), length(y) == 2) # two-element numeric vector
 stopifnot(y[["maximum"]] < 4, y[["maximum"]] > 3, y[["objective"]] == 2)
 plot(best_cutoff(x, grps, all = TRUE), type = "l")
 
-# separate optimization
+# separate optimisation
 (y <- best_cutoff(x, grps, combined = FALSE))
 stopifnot(is.matrix(y), dim(y) == c(2, 2)) # numeric matrix
 stopifnot(y["a", "objective"] == 2, y["b", "objective"] == 2)
@@ -219,12 +219,12 @@ plot(y$b, type = "l")
 }
 \references{
   Dougherty, J., Kohavi, R., Sahami, M. 1995 Supervised and
-  unsupervised discretization of continuous features. In:
+  unsupervised discretisation of continuous features. In:
   Prieditis, A., Russell, S. (eds.) \emph{Machine Learning:
   Proceedings of the fifth international conference}.
 
   Ventura, D., Martinez, T. R. 1995 An empirical comparison
-  of discretization methods. \emph{Proceedings of the Tenth
+  of discretisation methods. \emph{Proceedings of the Tenth
   International Symposium on Computer and Information
   Sciences}, p. 443--450.
 

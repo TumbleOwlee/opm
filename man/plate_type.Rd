@@ -29,7 +29,7 @@
 
   \item{downcase}{Logical scalar.}
 
-  \item{normalize}{Logical scalar. Attempt to normalize the
+  \item{normalize}{Logical scalar. Attempt to normalise the
   plate-type string before interpreting it?}
 
   \item{subtype}{Logical scalar. Keep the plate subtype
@@ -53,14 +53,14 @@
   otherwise a character vector with the same length than
   \code{object}, or a corresponding factor.  If
   \code{object} is not given, a character vector of
-  normalized plate-type names.
+  normalised plate-type names.
 
   \code{gen_iii} returns a novel \code{\link{OPMX}} object.
 }
 \description{
   Get the type of the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} plate
-  used in the measuring, normalize plate-type names,
+  used in the measuring, normalise plate-type names,
   display known names, or modify the plate type after
   inputting the plate data.
 }
@@ -70,9 +70,9 @@
   more important entries of \code{\link{csv_data}} with
   additional options useful for creating plot titles.
 
-  The character method normalizes the names of
+  The character method normalises the names of
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM
-  plates to the internally used naming scheme. Unrecognized
+  plates to the internally used naming scheme. Unrecognised
   names are returned unchanged.  This needs not normally be
   called by the \pkg{opm} user but might be of interest.
 

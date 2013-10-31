@@ -11,7 +11,7 @@
 \arguments{
   \item{type}{Character scalar. Specifies the spline type
   which should be fitted. This can be either thin plate
-  splines (\dQuote{tp.spline}), penalized B-splines (i.e,
+  splines (\dQuote{tp.spline}), penalised B-splines (i.e,
   P-splines \dQuote{p.spline}) or smoothing splines
   (\dQuote{smooth.spline}).}
 
@@ -21,7 +21,7 @@
 
   \item{gamma}{Integer scalar. Specifies a constant
   multiplier to inflate the degrees of freedom in the
-  \code{"GCV"} \code{method} to increase penalization of
+  \code{"GCV"} \code{method} to increase penalisation of
   models that are too close to the data and thus not smooth
   enough.}
 

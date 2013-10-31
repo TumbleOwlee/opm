@@ -52,7 +52,7 @@
 
   \acronym{FOE} is an acronym for \sQuote{formula or
   expression}. This is a virtual class facilitating the
-  implementation of functionality for both formulas and
+  implementation of functionality for both formulae and
   expressions. Methods defined for objects from the class
   can be applied to either kind of object. See
   \code{\link{metadata.set}} and \code{\link{map_metadata}}

@@ -1,16 +1,16 @@
 \name{do_disc}
 \alias{do_disc}
-\title{Discretize curve parameters}
+\title{Discretise curve parameters}
 \arguments{
   \item{object}{\code{\link{OPMA}}, \code{\link{OPMS}} or
   \code{\link{MOPMX}} object.}
 
-  \item{cutoff}{Determines the discretization approach. If
+  \item{cutoff}{Determines the discretisation approach. If
   non-empty, passed as \code{range} argument to
   \code{discrete} (with \code{gap} set to \code{TRUE}),
-  thus triggering discretization using either k-means
+  thus triggering discretisation using either k-means
   partitioning or one or two predefined thresholds. If
-  empty (e.g., \code{NULL}), a discretization cutoff is
+  empty (e.g., \code{NULL}), a discretisation cutoff is
   determined using \code{\link{best_cutoff}}, which is only
   possible for \code{\link{OPMS}} objects.}
 
@@ -81,24 +81,24 @@
   respectively.
 }
 \description{
-  Discretize the aggregated kinetic data, i.e. infer
+  Discretise the aggregated kinetic data, i.e. infer
   discrete values from the curve parameters stored in an
   \code{\link{OPMA}} or \code{\link{OPMS}} object. Here,
-  only discretization into positive, negative and ambiguous
+  only discretisation into positive, negative and ambiguous
   reactions is supported, and only based on the
   \sQuote{maximum height} curve parameter (which is
   biologically reasonable though).
 }
 \details{
   If \code{unify} is set to \code{FALSE}, the
-  discretization results are always consistent (in the
+  discretisation results are always consistent (in the
   sense described for the \code{\link{OPMD}} class) with
-  the discretized parameter. If \code{unify} is set to
+  the discretised parameter. If \code{unify} is set to
   \code{TRUE} this cannot be guaranteed any more. To
   enforce consistency, use \code{opm_opt(strict.OPMD =
   TRUE)}.
 
-  The discretized values can be queried for using
+  The discretised values can be queried for using
   \code{\link{has_disc}} and received using
   \code{\link{discretized}}.
 }
@@ -108,7 +108,7 @@
 # arbitrary threshold, no ambiguity
 summary(x <- do_disc(vaas_1, cutoff = 100))
 stopifnot(has_disc(x), dim(x) == dim(vaas_1), !is.na(discretized(x)))
-(y <- disc_settings(x))  # stored discretization settings
+(y <- disc_settings(x))  # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
@@ -116,21 +116,21 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 summary(x <- do_disc(vaas_1, cutoff = c(75, 125)))
 # the intermediate reactions are coded as NA
 stopifnot(has_disc(x), dim(x) == dim(vaas_1), any(is.na(discretized(x))))
-(y <- disc_settings(x)) # stored discretization settings
+(y <- disc_settings(x)) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
 # using k-means, two categories, no intermediate ('weak') reactions
 summary(x <- do_disc(vaas_1, cutoff = FALSE))
 stopifnot(has_disc(x), dim(x) == dim(vaas_1), !is.na(discretized(x)))
-(y <- disc_settings(x)) # stored discretization settings
+(y <- disc_settings(x)) # stored discretisation settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
 # using k-means, now allowing intermediate ('weak') reactions
 summary(x <- do_disc(vaas_1, cutoff = TRUE))
 stopifnot(has_disc(x), dim(x) == dim(vaas_1), any(discretized(x)))
-(y <- disc_settings(x)) # stored discretization settings
+(y <- disc_settings(x)) # stored discretisation settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
@@ -140,7 +140,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # arbitrary threshold, no ambiguity, no groups
 x <- do_disc(vaas_4, cutoff = 100)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 
@@ -148,7 +148,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 x <- do_disc(vaas_4, cutoff = 100, unify = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4))
 stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # all plates made uniform (makes not much sense)
@@ -156,7 +156,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # arbitrary threshold, no ambiguity, with groups, 1 plate per group
 x <- do_disc(vaas_4, cutoff = 100, groups = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # here, the plate numbers yield the group names
@@ -164,7 +164,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # arbitrary threshold, no ambiguity, with specified groups
 x <- do_disc(vaas_4, cutoff = 100, groups = "Species")
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # now, groups are from the metadata (but played no role)
@@ -172,25 +172,25 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # using k-means, no ambiguity, with specified groups
 x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species")
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), !is.na(discretized(x)))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
-# grouping by species, discretized separately
+# grouping by species, discretised separately
 
 # same, with unification
 x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species", unify = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4))
 stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
-# grouping by species, discretized separately, then made uniform
+# grouping by species, discretised separately, then made uniform
 
 # using best_cutoff(), groups defined by species affiliation (makes not
 # much sense and by default yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = "Species")
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # groups as above, 2 strains per species, but some additional entries
@@ -199,7 +199,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # and by default also yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
-(y <- disc_settings(x)[[1]]) # stored discretization settings
+(y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
 # no subgroups, all 4 data sets in one group, and some additional entries

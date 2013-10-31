@@ -1,3 +1,5 @@
+
+
 \documentclass[nojss]{jss}
 
 
@@ -78,9 +80,9 @@
 This is the substrate-information tutorial of \pkg{opm} in the version of \today{}.
 The precomputed information on the known Phenotype Microarray (PM) substrates is explained, as well as the methods available to query this information.
 IDs for a variety of databases are stored within \pkg{opm} and can be used to conduct web queries to obtain comprehensive information on the substrates of interest.
-We show how these data can be used to visualize results from PM experiments, including the outcome from advanced multiple-comparison statistics, within biochemical pathway maps.
+We show how these data can be used to visualise results from PM experiments, including the outcome from advanced multiple-comparison statistics, within biochemical pathway maps.
 Moreover, methods are described to automatically detect the substrate features that potentially explain a given experimental outcome.
-This includes determining the relevant pathways to be used in the visualizations.
+This includes determining the relevant pathways to be used in the visualisations.
 }
 
 \Keywords{Respiration Kinetics, pathways, CAS, MeSH, ChEBI, MetaCyc, KEGG, \pkg{pathview}}
@@ -118,14 +120,14 @@ This includes determining the relevant pathways to be used in the visualizations
 
 \section{Introduction}\label{introduction}
 
-A detailed description of the OmniLog\textregistered \ Phenotype MicroArray (PM) system, its measuring procedure and data characteristics are found in the vignette ``\pkg{opm}: An R Package for Analyzing OmniLog\textregistered \ Phenotype MicroArray Data'' (called ``main tutorial'' in the following).
+A detailed description of the OmniLog\textregistered \ Phenotype MicroArray (PM) system, its measuring procedure and data characteristics are found in the vignette ``\pkg{opm}: An R Package for Analysing OmniLog\textregistered \ Phenotype MicroArray Data'' (called ``main tutorial'' in the following).
 The description of the methods below presupposes that the user is familiar with the usage of \pkg{opm} and has studied the main tutorial as well as the entries of the \pkg{opm} manual relevant to her or his research.
 Especially the concepts behind, and the methods available for, the different classes of \pkg{opm} objects should be known before starting with this tutorial. 
 
-In addition to visual inspection or statistical comparative analyzes of PM data, as described in the main tutorial, users might be interested in specific information on the substrates used in PM assays.
+In addition to visual inspection or statistical comparative analyses of PM data, as described in the main tutorial, users might be interested in specific information on the substrates used in PM assays.
 The \pkg{opm} package contains a large variety of additional data on PM substrates.
-Beside methods for assessing this information directly, this tutorial introduces strategies for visualizing the measured PM results by mapping them on pathway maps.
-Furthermore, analysis methods are described for modelling the effect of substrate features on the PM results and thus, e.g., for the identification of those pathways that are particularly suitable for visualizing the PM results in pathway graphs.
+Beside methods for assessing this information directly, this tutorial introduces strategies for visualising the measured PM results by mapping them on pathway maps.
+Furthermore, analysis methods are described for modelling the effect of substrate features on the PM results and thus, e.g., for the identification of those pathways that are particularly suitable for visualising the PM results in pathway graphs.
 
 
 \section{Preparation}\label{preparation}
@@ -222,7 +224,7 @@ subst.info
 
 By default this yields CAS numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but MeSH names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}) \citep{Coletti01072001}, ChEBI IDs \citep{Hastings01012013}, KEGG compound IDs, KEGG drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} have also been collected for the majority of the substrates.
 Using the ``browse'' argument, full URLs can be created and optionally also directly opened in the default web browser.
-Using the ``download'' argument, if KEGG drug or compound IDs have been selected, these can be downloaded from the KEGG server if the \pkg{KEGGREST} is available and converted into customized objects.
+Using the ``download'' argument, if KEGG drug or compound IDs have been selected, these can be downloaded from the KEGG server if the \pkg{KEGGREST} is available and converted into customised objects.
 It is possible to nicely display all available information at once:
 
 <<label=substrate-all-info, results=hide>>=
@@ -234,13 +236,13 @@ Another use of \code{substrate\_info} is to convert substrate names to lower cas
 See the manual for further details, help page \code{?substrate\_info}.
 
 
-\section{Visualization of PM information within pathway maps}\label{vis-pathway}
+\section{Visualisation of PM information within pathway maps}\label{vis-pathway}
 
-In conjunction with other \proglang{R} packages, it is possible to visualize PM results directly in pre-existing pathway maps as, for example, those from the KEGG database.
+In conjunction with other \proglang{R} packages, it is possible to visualise PM results directly in pre-existing pathway maps as, for example, those from the KEGG database.
 These maps are essentially manually drawn biochemical pathway maps representing the currently available knowledge on substrates, enzymes and genes and their connections within pathways. 
 Depending on the availability of genome and gene-annotation information within KEGG, organism-specific, individual maps can be obtained \citep{Kanehisa01012010}.
 
-The mapping itself works by using information produced by \pkg{opm} for a color coding of the nodes (here, representing the substrates) within those maps, as can be done similarly with several other types of ``OMICS'' data such as transcriptomics or proteomics data.
+The mapping itself works by using information produced by \pkg{opm} for a colour coding of the nodes (here, representing the substrates) within those maps, as can be done similarly with several other types of ``OMICS'' data such as transcriptomics or proteomics data.
 For details, see the description on the KEGG website (\url{http://www.genome.jp/kegg/}).
 
 
@@ -273,7 +275,7 @@ x <- annotated(vaas_1, output = param_names()[4])
 head(x)
 @
 
-Visualization of the results of an \proglang{opm\_mcp} analysis is also possible, which offers more (statistically interesting) opportunities for making sense of the PM data in the context of pathways.
+Visualisation of the results of an \proglang{opm\_mcp} analysis is also possible, which offers more (statistically interesting) opportunities for making sense of the PM data in the context of pathways.
 However, this method only makes sense if each coefficient estimated by \code{opm\_mcp} can be linked to a single substrate.
 This is usually only possible for the ``Dunnett'' and ``Pairs'' type of contrasts if applied to the wells (see Section~\ref{pathview-group-diffs}).
 See the main tutorial and the manual for details on this restriction.
@@ -332,15 +334,15 @@ annotab
 All these results are obtained with the setting \code{how = "ids"}; for the usage of \code{how = "value"} see Section ~\ref{finding-pathways}.
 
 
-\subsection{Visualization in pathway maps using pathview}\label{pathview}
+\subsection{Visualisation in pathway maps using pathview}\label{pathview}
 
-\subsubsection{Visualization of group means in pathway maps}\label{pathview-group}
+\subsubsection{Visualisation of group means in pathway maps}\label{pathview-group}
 
 Here we will use the function \code{pathview} from the package of the same name \citep{Luo2013}. 
 This function can download a user-defined pathway graph from KEGG, optionally integrate additional data from other sources, and render the result.
 For integrating experimental data from other ``OMICS'' approaches (such as transcriptomics and proteomics), see the corresponding chapter in the \pkg{pathview} vignette for details. 
 
-Here the \code{pathview} function serves for integrating and visualizing information produced by \pkg{opm} and provided by \code{annotated}.
+Here the \code{pathview} function serves for integrating and visualising information produced by \pkg{opm} and provided by \code{annotated}.
 The user only has to specify the pathway and provide the \pkg{opm} data.
 All other necessary steps (download of pathway graph data as XML file from KEGG, parsing of this data file, integrating user-defined data into the pathway representation, and rendering of final output graphics) are automatically conducted by \code{pathview}.
 See the \pkg{pathview} vignette for technical details.
@@ -365,7 +367,7 @@ A list of the existing maps and their corresponding numbers are available on the
 \code{pathview} allows only for using KEGG orthology (the \emph{ko} maps) or species-specific letter codes.
 See \url{http://www.genome.jp/kegg/catalog/org_list.html} for an up-to-date list of organisms with complete genome information in KEGG.
 
-A vector as returned by \code{annotated} (see Section~\ref{annotated-input}) serves as input for the visualization procedure based on \code{pathview}.
+A vector as returned by \code{annotated} (see Section~\ref{annotated-input}) serves as input for the visualisation procedure based on \code{pathview}.
 For demonstration purposes, we use subsets of \code{vaas_et_al} containing the \textit{Escherichia coli} strains from the first biological repetition. 
 
 <<label=example-data>>=
@@ -375,7 +377,7 @@ coli.k12 <- subset(coli.sub, list(Strain = "DSM18039"))
 coli.type <- subset(coli.sub, list(Strain = "DSM30083T"))
 @
 
-Afterward we create the annotated vectors containing the average maximum curve heights for the two groups separately:
+Afterwards we create the annotated vectors containing the average maximum curve heights for the two groups separately:
 
 <<label=example-data-anno>>=
 anno.k12 <- annotated(coli.k12)
@@ -438,7 +440,7 @@ Note particularly the substrates Raffinose, Stachyose and Sucrose (in the middle
         \caption{
         \label{fig:pathview-native-sep-strains}
         Galactose metabolism pathway maps for the two \textit{E. coli} strains K12 and DSM 30083\textsuperscript{T} showing the mean maximum height on 13 substrates. 
-        The aggregated measurement data are represented by according colors and mapped on the corresponding substrates (circles) in the graph. 
+        The aggregated measurement data are represented by according colours and mapped on the corresponding substrates (circles) in the graph. 
    		}
 \end{figure}
 
@@ -450,7 +452,7 @@ Note that the \code{species} arguments offers the possibility to use species-spe
 The substrates (circles) in the maps get standard compound names, which are automatically retrieved from the ChEMBL database using the compound IDs. 
 
 The data for the two strains can be shown analogously using the categorical output of \code{annotated}, see Figure~\ref{fig:pathview-cat-sep-strains}.
-This works because the underlying \proglang{OPMX} object contains discretized data.
+This works because the underlying \proglang{OPMX} object contains discretised data.
 Whereas \code{annotated} would by default return a logical vector in that case, the \code{lmap} argument can be used to create a numeric vector on the fly.
 See the manual for its usage, entry \code{?annotated}.
 
@@ -472,7 +474,7 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
                 \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.k12.ko.bin}}
-                \caption{Respiratory data (mean maximum height, discretized) of \textit{Escherichia coli} strain K12 mapped on the KEGG Galactose pathway.}
+                \caption{Respiratory data (mean maximum height, discretised) of \textit{Escherichia coli} strain K12 mapped on the KEGG Galactose pathway.}
                 \label{fig:pathview-cat-sep-strains-1a}
         \end{subfigure}
         \\
@@ -480,13 +482,13 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
                 \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.type.ko.bin}}
-                \caption{Respiratory data (mean maximum height, discretized) of \textit{Escherichia coli} type strain DSM 30083\textsuperscript{T} mapped on the KEGG Galactose pathway.}
+                \caption{Respiratory data (mean maximum height, discretised) of \textit{Escherichia coli} type strain DSM 30083\textsuperscript{T} mapped on the KEGG Galactose pathway.}
                 \label{fig:pathview-cat-sep-strains-1b}
         \end{subfigure}
         \caption{
         \label{fig:pathview-cat-sep-strains}
         Galactose metabolism pathway maps for the two \textit{E. coli} strains K12 and DSM 30083\textsuperscript{T} showing the mean maximum height on 13 substrates. 
-        The aggregated and discretized measurement data are represented by according colors and mapped on the corresponding substrates (circles) in the graph. 
+        The aggregated and discretised measurement data are represented by according colours and mapped on the corresponding substrates (circles) in the graph. 
         }
 \end{figure}
 
@@ -521,7 +523,7 @@ e.subs.pos
 @
 
 
-\subsubsection{Visualization of differences of group means in pathway maps}\label{pathview-group-diffs}
+\subsubsection{Visualisation of differences of group means in pathway maps}\label{pathview-group-diffs}
 
 Next, we show the maximum-height values from the 13 substrates represented in the Galactose pathway map (number ``00052'') in Figure~\ref{fig:e_coli_single_ci} to demonstrate the sizes of their differences.
 Remember that the vector \code{e.subs.pos} contains the positions of the substrates of interest as a character string.
@@ -599,10 +601,10 @@ Compare also Figure~\ref{fig:e_coli_comp_ci}, which directly depicts the magnitu
 
 In analogy to the last example, the function \code{annotated} can be used to produce categorical annotation vectors for the differences of means.
 Such vectors are very useful because they can specifically highlight the statistically significant differences, and particularly those that are significantly larger than a certain biologically relevant minimum effect size.
-Thus the full power of the functions from the \pkg{multcomp} package underlying \code{opm\_mcp} (see the main tutorial and the manual for details) is available when visualizing PM data in pathway graphs.
+Thus the full power of the functions from the \pkg{multcomp} package underlying \code{opm\_mcp} (see the main tutorial and the manual for details) is available when visualising PM data in pathway graphs.
 
 The mapping of indicators of the significance of the differences between the two strains regarding the Galactose pathway is shown in Figure~\ref{fig:pathview-native-sig-differences}.
-Because we chose the ``upwards'' running mode, up to three colors are used in the map, indicating whether the performance difference is significantly larger than the minimum effect size, insignificantly different from the minimum effect size, or significantly smaller than the minimum effect size.
+Because we chose the ``upwards'' running mode, up to three colours are used in the map, indicating whether the performance difference is significantly larger than the minimum effect size, insignificantly different from the minimum effect size, or significantly smaller than the minimum effect size.
 In Figure ~\ref{fig:pathview-native-sig-differences-1a}, the default minimum effect size of zero is chosen.
 Figure ~\ref{fig:pathview-native-sig-differences-1b} shows the results for a user-defined minimum effect size.
 This can be set using a short-cut notation indicating both the minimum effect size and the kind of comparison to be conducted.
@@ -642,20 +644,20 @@ cat.coli.comp.150 <- opm_path(
         \caption{
         \label{fig:pathview-native-sig-differences}
         Indicators of the significance of the respiration differences between \textit{E. coli} K12 and \textit{E. coli} DSM 30083\textsuperscript{T} regarding the maximum-height values mapped on the Galactose pathway.
-Blue, significantly larger than the chosen minimum effect size; gray, insignificantly different from the chosen minimum effect size; yellow, significantly smaller than the chosen minimum effect size.
+Blue, significantly larger than the chosen minimum effect size; grey, insignificantly different from the chosen minimum effect size; yellow, significantly smaller than the chosen minimum effect size.
 For the direct mapping of the numeric differences see Figure~\ref{fig:pathview-native-differences}.
 Compare also Figure~\ref{fig:e_coli_comp_ci}, which directly depicts the significance of the differences.
         }
 \end{figure}
 
 
-\subsubsection{Visualization of pathway maps in de-novo layout}\label{pathview-denovo-layout}
+\subsubsection{Visualisation of pathway maps in ``Graphviz'' layout}\label{pathview-denovo-layout}
 
-In addition to the native KEGG visualization, \code{pathview} can use a \textit{de-novo} visualisation approach.
+In addition to the native KEGG visualisation, \code{pathview} can use the ``Graphviz''library for an alternative visualisation approach.
 As return value, the function always generates a list containing two data frames.
 The data frame ``plot.data.gene'' contains the data for mapping the genes and, analogously, ``plot.data.cpd'' stores the compound-related data.
 
-In the examples detailed above, a variety of such objects have already been generated, e.g., \code{coli.map.k12} or the \code{coli.map.types} (both described in Section~\ref{pathview-group} and visualized in Figure~\ref{fig:pathview-native-sep-strains} therein).
+In the examples detailed above, a variety of such objects have already been generated, e.g., \code{coli.map.k12} or the \code{coli.map.types} (both described in Section~\ref{pathview-group} and visualised in Figure~\ref{fig:pathview-native-sep-strains} therein).
 
 Next, we show how to produce graphics from these objects instead of directly from KEGG.
 
@@ -671,7 +673,7 @@ coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko",
 \includegraphics[type=pdf,ext=.pdf,read=.pdf,page=1]{ko00052.graphvizk12.ko}
 }
 \caption{\label{fig:pathview-non-native}
-Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the KEGG Galactose pathway and rendered \textit{de novo} by \pkg{pathview} using the ``graphviz'' layout engine.
+Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the KEGG Galactose pathway and rendered by \pkg{pathview} using the ``Graphviz'' layout engine.
 Compare Figure~\ref{fig:1a-pathview-native-sep-strains}, which shows the native KEGG rendering of these data.
 See the main text for a description of some of the limitations when creating graphics in this way.
 }
@@ -683,7 +685,7 @@ See the main text for a description of some of the limitations when creating gra
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 There are, unfortunately, only limited options for tuning the font sizes or the size of the symbols in the graphs.
-Regarding the color arguments, \rcsmark{TODO}.
+Regarding the colour arguments, \rcsmark{TODO}.
 The scaling \rcsmark{TODO}.
 
 
@@ -756,7 +758,7 @@ varImpPlot(coli.comp.rf, main = NULL)
 \label{fig:var-imp-plot}
 Variable importance plot for substrate features that potentially explain the performance differences between the two \textit{E. coli} strains.
 Apparently the category ``Carbohydrates'' has the highest importance for the model.
-That is, one of the strains performs stronger than the other particularly regarding carbohydrate utilization.
+That is, one of the strains performs stronger than the other particularly regarding carbohydrate utilisation.
 For a subset of the carbohydrates, those from the Galactose pathway (``map00052''), this can be confirmed in Figure~\ref{fig:e_coli_comp_ci}.
 }
 \end{figure}
@@ -791,7 +793,7 @@ For a confirmation using \code{opm\_mcp}, see Figure~\ref{fig:e_coli_comp_ci}.
 % this would then be something like \subsection{finding substrates of importance}
 
 
-\section[Acknowledgments]{Acknowledgments}
+\section[Acknowledgements]{Acknowledgements}
 We are grateful to Barry Bochner (BIOLOG Inc.) for providing substrate and plate information on Phenotype MicroArray assays.
 The integration of missing OmniLog\textregistered \ substrates into ChEBI by the ChEBI staff is gratefully acknowledged.
 We thank Weijun Luo for providing hints regarding the use of the \pkg{pathview} package.

@@ -23,7 +23,7 @@
   expression or \code{\link{WMD}} object.
 }
 \details{
-  The behavior of these methods depends on the object used
+  The behaviour of these methods depends on the object used
   as query.  \code{infix.largeq} is usually stricter than
   \code{infix.q}, sometimes equivalent. \itemize{
 
@@ -127,7 +127,7 @@ stopifnot(list() \%Q\% vaas_1)
 stopifnot(vaas_1 \%q\% vaas_1) # obviously
 stopifnot(vaas_1 \%Q\% vaas_1)
 
-## Formulas for querying
+## Formulae for querying
 
 stopifnot((~ Experiment == "First replicate") \%q\% vaas_1)
 stopifnot((~ Experiment == "First replicate") \%Q\% vaas_1)

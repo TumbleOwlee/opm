@@ -79,7 +79,7 @@
   a batch export conducted by a some software are usually
   more or less regularly structured and contain content at
   distinct positions. In such situations, the correct
-  splitting approach can be recognized by yielding the same
+  splitting approach can be recognised by yielding the same
   number of fields from each vector element.
 }
 \examples{

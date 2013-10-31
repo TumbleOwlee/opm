@@ -45,7 +45,7 @@
   \item{single}{Logical scalar. If there is only one group
   per file, i.e. only one output file would result from the
   splitting, create this file anyway?  Such cases could be
-  recognized by empty character vectors as values of the
+  recognised by empty character vectors as values of the
   returned list (see below).}
 
   \item{wildcard}{Logical scalar. Is \code{pattern} a

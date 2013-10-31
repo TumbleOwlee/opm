@@ -1,7 +1,7 @@
 \name{discretized}
 \alias{disc_settings}
 \alias{discretized}
-\title{Get discretized data}
+\title{Get discretised data}
 \arguments{
   \item{object}{\code{\link{OPMD}} or \code{\link{OPMS}}
   object.}
@@ -28,9 +28,9 @@
   \code{disc_settings}. See the examples for details.
 }
 \description{
-  Get the discretized kinetic data or the discretization
+  Get the discretised kinetic data or the discretisation
   settings used. (See \code{\link{do_disc}} for generating
-  discretized data.)
+  discretised data.)
 }
 \examples{
 # 'OPM' methods

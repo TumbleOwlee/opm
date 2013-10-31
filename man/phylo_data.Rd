@@ -120,8 +120,8 @@
   \item{discrete.args}{Optional list of arguments passed
   from the \code{\link{OPMS}} method to
   \code{\link{discrete}}. If set to \code{NULL},
-  discretization is turned off. Ignored if precomputed
-  discretized values are chosen by setting \code{subset} to
+  discretisation is turned off. Ignored if precomputed
+  discretised values are chosen by setting \code{subset} to
   \code{\link{param_names}("disc.name")}.}
 
   \item{...}{Optional arguments passed between the methods
@@ -154,13 +154,13 @@
 
   For exporting NEXUS format, the matrix should normally be
   converted beforehand by applying \code{\link{discrete}}.
-  Exporting \acronym{HTML} is optimized for data
-  discretized with \code{gap} set to \code{TRUE}. For other
+  Exporting \acronym{HTML} is optimised for data
+  discretised with \code{gap} set to \code{TRUE}. For other
   data, the \code{character.states} argument should be
   modified, see \code{\link{html_args}}. The
   \sQuote{hennig} (Hennig86) format is the one used by
   \acronym{TNT}; it allows continuous characters to be
-  analyzed as such. Regarding the meaning of
+  analysed as such. Regarding the meaning of
   \sQuote{character} as used here, see the \sQuote{Details}
   section of \code{\link{discrete}}.
 
@@ -281,7 +281,7 @@ stopifnot(longer(y, y.nouninf))
 echo(y.noconst <- phylo_data(x, "html", delete = "const", join = TRUE))
 stopifnot(longer(y.noconst, y.nouninf))
 
-# getting real numbers, not discretized ones
+# getting real numbers, not discretised ones
 echo(yy <- phylo_data(vaas_4[, , 1:10], as.labels = "Species",
   format = "html", join = TRUE, extract.args = list(in.parens = FALSE),
   subset = "A", discrete.args = NULL,
@@ -328,7 +328,7 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
   \strong{24}, 774--786 [the TNT program].
 
   Goloboff, P.A., Mattoni, C., Quinteros, S. 2005
-  Continuous characters analyzed as such. \emph{Cladistics}
+  Continuous characters analysed as such. \emph{Cladistics}
   \strong{22}, 589--601.
 
   Maddison, D. R., Swofford, D. L., Maddison, W. P. 1997

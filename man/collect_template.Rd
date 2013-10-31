@@ -23,7 +23,7 @@
   a data frame. Might also be \code{\link{WMD}} or
   \code{\link{OPMS}} object. If a named character vector
   with more than a single element, it is used as the first
-  row of the resulting data frame. This behavior is mainly
+  row of the resulting data frame. This behaviour is mainly
   intended for using this function after a call to the
   \code{\link{OPM}} method of \code{csv_data}.}
 
@@ -87,7 +87,7 @@
   \code{as.data.frame} or used after negation as
   \sQuote{check.names} argument of \code{read.delim}.}
 
-  \item{strip.white}{Logical scalar. For the filename
+  \item{strip.white}{Logical scalar. For the file-name
   method, passed to \code{read.delim} (and set to
   \code{TRUE} if it is \code{NA}). It is often advisable to
   set this to \code{FALSE} if \acronym{CSV} input is done

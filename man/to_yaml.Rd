@@ -41,7 +41,7 @@
   \acronym{JSON}.
 }
 \details{
-  \acronym{YAML} is a useful data-serialization standard
+  \acronym{YAML} is a useful data-serialisation standard
   that is understood by many programming languages. It is
   particularly more human readable than \acronym{XML}, and
   vector-like data structures (such as Phenotype MicroArray

@@ -78,7 +78,7 @@
 }
 \value{
   A vector with the row names of \code{object} as names and
-  the corresponding colors as values, equivalent to the
+  the corresponding colours as values, equivalent to the
   legend; \code{NULL} if no row names are present.
 }
 \description{

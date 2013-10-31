@@ -33,7 +33,7 @@
   If \code{key} is otherwise, \code{value} must be list of
   values to be prepended, appended or set as metadata,
   either entirely or specifically, depending on \code{key}.
-  \item Formulas can also be used as \code{value}. In that
+  \item Formulae can also be used as \code{value}. In that
   case, the formula can specify the key to be replaced. See
   the examples below and \code{\link{map_values}} for
   details.  \item If \code{object} is of class

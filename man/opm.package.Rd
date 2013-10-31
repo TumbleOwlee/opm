@@ -4,7 +4,7 @@
 \alias{opm.package-package}
 \title{The opm package}
 \description{
-  Package for analyzing
+  Package for analysing
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   Phenotype MicroArray data. In addition to this manual,
   tutorials (vignettes) are available together with the
@@ -24,7 +24,7 @@
   object of the class \code{\link{OPM}} or derived classes.
   All these classes store PM data; they differ in whether
   they also contain aggregated values (\code{\link{OPMA}})
-  or aggregated and discretized values
+  or aggregated and discretised values
   (\code{\link{OPMD}}), and whether they contain more than
   a single plate (\code{\link{OPMS}}). Example objects are
   available via \code{\link{vaas_4}}.}
@@ -76,7 +76,7 @@
   not required for the installation of \pkg{opm} but can be
   used to draw more advanced heat maps. See
   \code{\link{heat_map}} and its accompanying methods for
-  details. The other customized plotting functions of the
+  details. The other customised plotting functions of the
   package are contained in the same method family.} }
 }
 \examples{

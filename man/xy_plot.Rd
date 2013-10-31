@@ -5,19 +5,21 @@
   \item{x}{\code{\link{OPM}} or \code{\link{OPMS}} object.}
 
   \item{col}{For the \code{\link{OPM}} method, just a
-  character scalar (color name) determining the line color.
+  character scalar (colour name) determining the line
+  colour.
 
   For the \code{\link{OPMS}} method, either a character
-  vector with color codes or one of the arguments of
+  vector with colour codes or one of the arguments of
   \code{\link{select_colors}} (for picking one of the
-  predefined color sets).
+  predefined colour sets).
 
-  It is an error if fewer colors are chosen than the number
-  of plate grouping levels (see the \code{\dots} argument
-  below). For user-chosen color sets, keep in mind that the
-  sets are not checked for duplicates, and see
-  \code{max_rgb_contrast} from the \pkg{pkgutils} package
-  as a method for optimally arranging user-defined colors.}
+  It is an error if fewer colours are chosen than the
+  number of plate grouping levels (see the \code{\dots}
+  argument below). For user-chosen colour sets, keep in
+  mind that the sets are not checked for duplicates, and
+  see \code{max_rgb_contrast} from the \pkg{pkgutils}
+  package as a method for optimally arranging user-defined
+  colours.}
 
   \item{lwd}{Numeric scalar determining the line width.}
 
@@ -33,8 +35,8 @@
   value for assigning the height directly (at your own
   risk).  }}
 
-  \item{base.col}{Character scalar. Baseline color (ignored
-  if no baseline is drawn).}
+  \item{base.col}{Character scalar. Baseline colour
+  (ignored if no baseline is drawn).}
 
   \item{base.lwd}{Numeric scalar determining the width of
   the baseline (ignored if no baseline is drawn).}
@@ -73,7 +75,7 @@
 
   \item{strip.fmt}{List controlling the format of the
   description strip above each panel. For instance, the
-  background color is set using the \sQuote{bg} key. For
+  background colour is set using the \sQuote{bg} key. For
   further details, see \code{strip.custom} from the
   \pkg{lattice} package. Note that the \strong{content} of
   these descriptions is determined by arguments passed from
@@ -83,7 +85,7 @@
   \item{striptext.fmt}{List controlling the textual
   description at the top of each panel. For instance, the
   relative text size is set using the \sQuote{cex} key, the
-  color by \sQuote{col}, the font by \sQuote{font} and the
+  colour by \sQuote{col}, the font by \sQuote{font} and the
   number of lines by \sQuote{lines}. The latter might be of
   interest in conjunction with the \code{paren.sep}
   argument of \code{\link{wells}}. See the argument
@@ -92,7 +94,7 @@
 
   \item{legend.fmt}{List controlling where and how to draw
   the legend. The content of the legend (mainly a
-  description of the assignment of the colors to the
+  description of the assignment of the colours to the
   curves) is determined automatically. See argument
   \sQuote{key} of \code{xyplot} from the \pkg{lattice}
   package for details.}
@@ -111,10 +113,10 @@
   \code{include} is particularly important: the selected
   metadata are joined into a single factor, and the
   assignment of plates to this factor's levels determines
-  the curve color for each plate.  That is, each
+  the curve colour for each plate.  That is, each
   combination of metadata entries as chosen using
-  \code{include} yields one color. If no metadata are
-  selected (the default), each plate gets a color of its
+  \code{include} yields one colour. If no metadata are
+  selected (the default), each plate gets a colour of its
   own. Also note that arguments passed via
   \code{\link{flatten}} to \code{\link{wells}} can be given
   here which determine the content of the panel
@@ -130,7 +132,7 @@
   from the \pkg{lattice} package for details.
 }
 \description{
-  Customized plotting of a single or multiple PM plate(s),
+  Customised plotting of a single or multiple PM plate(s),
   using \code{xyplot} from the \pkg{lattice} package.
 }
 \details{
@@ -141,9 +143,9 @@
   resulting graphics output.
 
   In the case of the \code{\link{OPMS}} method, if metadata
-  are selected, curve colors are determined according to
+  are selected, curve colours are determined according to
   the combinations of these metadata entries, otherwise
-  each plate gets its own color.
+  each plate gets its own colour.
 
   The data-frame method is not intended for phenotype
   microarray data. It is currently \strong{undocumented}
@@ -169,7 +171,7 @@ xy_plot(x, neg.ctrl = 100, col = "pink", base.col = "yellow", main = "Ugly")
 
 # OPMS method
 \dontrun{
-# Color by species and strain; note default main title
+# Colour by species and strain; note default main title
 xy_plot(vaas_4, include = c("Species", "Strain"))
 # Use the largest of the negative-control maxima as baseline
 xy_plot(vaas_4, include = c("Species", "Strain"),

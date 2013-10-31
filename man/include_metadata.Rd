@@ -42,7 +42,7 @@
   \code{\link{map_values}}. If the left side of the formula
   is missing, the entire metadata are replaced by the
   result, which is an error if the result is not a list.
-  \item If \code{mapping} is missing, the behavior is
+  \item If \code{mapping} is missing, the behaviour is
   special; see the next two arguments. }}
 
   \item{values}{Mostly a logical scalar. \itemize{ \item
