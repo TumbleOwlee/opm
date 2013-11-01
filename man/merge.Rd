@@ -45,10 +45,10 @@
   strains and Generation-III plates indicate that this
   works well in practice. See the references.
 
-  See the arguments \sQuote{time.fmt} and
-  \sQuote{time.zone} of \code{\link{opm_opt}} for modifying
-  the parsing of setup-time entries. If it does not work,
-  additional time-string templates must be stored.
+  See the arguments \code{time.fmt} and \code{time.zone} of
+  \code{\link{opm_opt}} for modifying the parsing of
+  setup-time entries. If it does not work, additional
+  time-string templates must be stored.
 
   The \code{CMAT} method is only for internal use.
 }

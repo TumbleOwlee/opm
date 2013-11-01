@@ -15,11 +15,11 @@
   The default method applies the mapping to the
   \sQuote{names} attribute. The behaviour is special for
   lists, which are traversed recursively to also consider
-  sublists with names. Data frames and \code{\link{MOA}}
-  objects (that is, including matrices and arrays) are also
-  treated specially because the \sQuote{dimnames}
-  attribute, not the \sQuote{names} attribute is
-  considered.}
+  contained lists with names. Data frames and
+  \code{\link{MOA}} objects (that is, including matrices
+  and arrays) are also treated specially because the
+  \code{dimnames} attribute, not the \sQuote{names}
+  attribute is considered.}
 
   \item{mapping}{When mapping values, a character vector,
   function, formula, expression, \code{NULL} or missing.
@@ -39,7 +39,7 @@
   function, it would be applied to \code{object} after
   conversion with \code{as.vector}, and it would be
   attempted to add the original attributes (particularly
-  important are \sQuote{dim} and \sQuote{dimnames} back to
+  important are \sQuote{dim} and \code{dimnames} back to
   the result.  \item For \code{\link{MOA}} objects, if
   \code{mapping} is the usual character vector, it then is
   used for mapping the \code{storage.mode}, not the
@@ -91,8 +91,8 @@
   Map values using a character vector, a function or a
   formula, or use a character vector or a function for
   recursively mapping list names, or mapping the
-  \sQuote{colnames} and \sQuote{rownames} attributes of a
-  data frame or matrix. These functions are not normally
+  \code{colnames} and \code{rownames} attributes of a data
+  frame or matrix. These functions are not normally
   directly called by an \pkg{opm} user because
   \code{\link{map_metadata}} is available.
 }
@@ -121,7 +121,7 @@
   are not themselves lists, even if they have a
   \sQuote{names} attribute. Such elements and their names,
   if any, are returned unchanged. If a \sQuote{names},
-  \sQuote{colnames} or \sQuote{rownames} attribute is
+  \code{colnames} or \code{rownames} attribute is
   \code{NULL}, it is ignored.
 
   Alternatively, instead of mapping the names, collect them

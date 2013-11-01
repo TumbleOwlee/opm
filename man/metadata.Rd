@@ -45,7 +45,7 @@
 }
 \value{
   \code{metadata} generates a list (empty if metadata were
-  not set or if subselection using \code{key} did not
+  not set or if partial selection using \code{key} did not
   result).
 
   \code{metadata_chars} yields a character vector, sorted

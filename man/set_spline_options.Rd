@@ -11,9 +11,9 @@
 \arguments{
   \item{type}{Character scalar. Specifies the spline type
   which should be fitted. This can be either thin plate
-  splines (\dQuote{tp.spline}), penalised B-splines (i.e,
-  P-splines \dQuote{p.spline}) or smoothing splines
-  (\dQuote{smooth.spline}).}
+  splines (\kbd{tp.spline}), penalised B-splines (i.e,
+  P-splines \kbd{p.spline}) or smoothing splines
+  (\kbd{smooth.spline}).}
 
   \item{knots}{Integer scalar. Determines the number of
   knots. Per default, the number of knots is chosen

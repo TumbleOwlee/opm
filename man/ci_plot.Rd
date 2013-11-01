@@ -1,6 +1,6 @@
 \name{ci_plot}
 \alias{ci_plot}
-\title{Plot point estimates with CIs}
+\title{Plot point estimates with \acronym{CI}s}
 \arguments{
   \item{object}{\code{\link{OPMS}} object or (rarely) a
   data frame. If an \code{\link{OPMS}} object, it is in

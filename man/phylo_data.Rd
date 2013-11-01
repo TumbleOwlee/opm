@@ -8,28 +8,28 @@
   \sQuote{double} and \sQuote{character} matrix content is
   supported. The data-frame and \code{\link{OPMS}} methods
   first call \code{\link{extract}} and then the matrix
-  method. The methods for \sQuote{OPMD_Listing} and
-  \sQuote{OPMS_Listing} objects can be applied to the
-  results of \code{\link{listing}}.}
+  method. The methods for \code{OPMD_Listing} and
+  \code{OPMS_Listing} objects can be applied to the results
+  of \code{\link{listing}}.}
 
   \item{format}{Character scalar determining the output
-  format, either \sQuote{epf} (Extended PHYLIP Format),
-  \sQuote{nexus}, \sQuote{phylip}, \sQuote{hennig} or
-  \sQuote{html}.
+  format, either \kbd{epf} (Extended \acronym{PHYLIP}
+  Format), \kbd{nexus}, \kbd{phylip}, \kbd{hennig} or
+  \kbd{html}.
 
-  If \sQuote{nexus} or \sQuote{hennig} format are chosen, a
+  If \acronym{NEXUS} or \sQuote{Hennig} format is chosen, a
   non-empty \code{comment} attribute will be output
   together with the data (and appropriately escaped). In
-  case of \sQuote{html} format, a non-empty \code{comment}
+  case of \acronym{HTML} format, a non-empty \code{comment}
   yields the title of the HTML document.
 
-  \sQuote{epf} or \sQuote{extended PHYLIP} is sometimes
-  called \sQuote{relaxed PHYLIP}. The main difference
-  between \sQuote{epf} and \sQuote{phylip} is that the
-  former can use labels with more than ten characters, but
-  its labels must not contain whitespace. (These
-  adaptations are done automatically with
-  \code{\link{safe_labels}}.)}
+  \acronym{EPF} or \sQuote{extended \acronym{PHYLIP}} is
+  sometimes called \sQuote{relaxed \acronym{PHYLIP}}. The
+  main difference between \acronym{EPF} and
+  \acronym{PHYLIP} is that the former can use labels with
+  more than ten characters, but its labels must not contain
+  whitespace.  (These adaptations are done automatically
+  with \code{\link{safe_labels}}.)}
 
   \item{outfile}{Character scalar. If a non-empty character
   scalar, resulting lines are directly written to this
@@ -39,8 +39,8 @@
   in single quotes?  Ignored unless \code{format} is
   \sQuote{nexus}.}
 
-  \item{indent}{Integer scalar. Indentation of subcommands
-  in NEXUS format.  Ignored unless \code{format} is
+  \item{indent}{Integer scalar. Indentation of commands in
+  NEXUS format.  Ignored unless \code{format} is
   \sQuote{nexus} (and a matter of taste anyway).}
 
   \item{paup.block}{Logical scalar. Append a
@@ -57,7 +57,7 @@
   at least one single field) are removed.}
   \item{constant}{Columns which are constant in the strict
   sense are removed.} } \code{delete} is currently ignored
-  for formats other than \sQuote{html}, and note that
+  for formats other than \acronym{HTML}, and note that
   columns become rows in the final \acronym{HTML} output.}
 
   \item{join}{Logical scalar, vector or factor. Unless
@@ -95,9 +95,8 @@
 
   \item{run.tidy}{Logical scalar. Filter the resulting
   \acronym{HTML} through the Tidy program? Ignored unless
-  \code{format} is \sQuote{html}. Otherwise, if
-  \code{TRUE}, it is an error if the Tidy executable is not
-  found.}
+  \code{format} is \kbd{html}. Otherwise, if \code{TRUE},
+  it is an error if the Tidy executable is not found.}
 
   \item{as.labels}{Vector of data-frame indexes or
   \code{\link{OPMS}} metadata entries. See
@@ -157,12 +156,12 @@
   Exporting \acronym{HTML} is optimised for data
   discretised with \code{gap} set to \code{TRUE}. For other
   data, the \code{character.states} argument should be
-  modified, see \code{\link{html_args}}. The
-  \sQuote{hennig} (Hennig86) format is the one used by
-  \acronym{TNT}; it allows continuous characters to be
-  analysed as such. Regarding the meaning of
-  \sQuote{character} as used here, see the \sQuote{Details}
-  section of \code{\link{discrete}}.
+  modified, see \code{\link{html_args}}. The \kbd{hennig}
+  (Hennig86) format is the one used by \acronym{TNT}; it
+  allows continuous characters to be analysed as such.
+  Regarding the meaning of \sQuote{character} as used here,
+  see the \sQuote{Details} section of
+  \code{\link{discrete}}.
 
   The generated \acronym{HTML} is guaranteed to produce
   neither errors nor warnings if checked using the Tidy

@@ -30,23 +30,23 @@
   object, or \code{\link{OPMS}} object, depending on the
   number of files read (0, 1, or more).} \item{try}{Behave
   like \sQuote{yes} but do not result in an error message
-  if conversion to OPMS is impossible; return a list
-  (\code{\link{MOPMX}} object) in that case.}
-  \item{sep}{Return a nested list, each sublist
+  if conversion to \code{\link{OPMS}} is impossible; return
+  a list (\code{\link{MOPMX}} object) in that case.}
+  \item{sep}{Return a nested list, each partial list
   (\code{\link{MOPMX}} object) containing \code{\link{OPM}}
   objects of the same plate type.} \item{grp}{Also split
-  into such sublists but convert them to \code{\link{OPMS}}
-  objects if more than one plate is encountered. An error
-  is raised if this is impossible (in contrast to
-  \sQuote{try}). Return a list (\code{\link{MOPMX}}
-  object).} }}
+  into such contained lists but convert them to
+  \code{\link{OPMS}} objects if more than one plate is
+  encountered. An error is raised if this is impossible (in
+  contrast to \sQuote{try}). Return a list
+  (\code{\link{MOPMX}} object).} }}
 
   \item{gen.iii}{Logical or character scalar. If
   \code{TRUE}, invoke \code{\link{gen_iii}} on each plate.
   This is automatically done with \acronym{CSV} input if
-  the plate type is given as \sQuote{OTH} (which is usually
-  the case for plates run in ID mode). If a character
-  scalar, it is used as the \code{to} argument of
+  the plate type is given as \acronym{OTH} (which is
+  usually the case for plates run in ID mode). If a
+  character scalar, it is used as the \code{to} argument of
   \code{\link{gen_iii}} to set other plate types unless it
   is empty.}
 
@@ -103,7 +103,7 @@
   editor for plain text, not in a spreadsheet program.
 
   Plates run in ID mode are automatically detected as such
-  (their plate type is changed from \sQuote{OTH} to the
+  (their plate type is changed from \acronym{OTH} to the
   internally used spelling of \sQuote{Generation III}). A
   generation-III or other plate type can also be forced
   later on by using \code{\link{gen_iii}}.
@@ -141,7 +141,7 @@
   files entirely. Negative indexes can be used, but
   non-negative values not within the range listed above
   will result in an error. If it known in advance which
-  formats are (not) to be expected, subsetting or just
+  formats are (not) to be expected, subset creation or just
   changing the order can be used to accelerate data input.
 }
 \examples{

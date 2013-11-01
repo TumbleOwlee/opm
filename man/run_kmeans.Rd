@@ -8,17 +8,17 @@
 
   \item{nstart}{Numeric scalar. Ignored if
   \sQuote{Ckmeans.1d.dp} is called.  Otherwise passed to
-  \sQuote{kmeans} from the \pkg{stats} package.}
+  \code{kmeans} from the \pkg{stats} package.}
 
   \item{cores}{Numeric scalar indicating the number of
   cores to use.}
 
   \item{...}{List of optional arguments passed to
-  \sQuote{kmeans} from the \pkg{stats} package.}
+  \code{kmeans} from the \pkg{stats} package.}
 }
 \value{
-  S3 object of class \sQuote{kmeanss}, basically a named
-  list of \sQuote{kmeans} objects.
+  S3 object of class \code{kmeanss}, basically a named list
+  of \code{kmeans} objects.
 }
 \description{
   Run a k-means partitioning analysis. This function is

@@ -1,6 +1,6 @@
 \name{to_yaml}
 \alias{to_yaml}
-\title{Convert to YAML}
+\title{Convert to \acronym{YAML}}
 \arguments{
   \item{object}{Object of one of the classes belonging to
   \code{\link{YAML_VIA_LIST}}.}
@@ -44,7 +44,7 @@
   \acronym{YAML} is a useful data-serialisation standard
   that is understood by many programming languages. It is
   particularly more human readable than \acronym{XML}, and
-  vector-like data structures (such as Phenotype MicroArray
+  vector-like data structures (such as phenotype microarray
   measurements) can be much more compactly encoded.
 
   Many PM data sets at once can be batch-converted into

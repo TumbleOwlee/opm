@@ -38,10 +38,10 @@
 
   \item{to}{Character scalar indicating the plate type.
   User-defined plate types must be given literally. For
-  generation-III plates, use \sQuote{gen.iii}; for the
+  generation-III plates, use \kbd{gen.iii}; for the
   EcoPlate\eqn{\textsuperscript{\texttrademark}}{(TM)}, use
-  \sQuote{eco}; the remaining allowed values are only
-  \sQuote{sf.n2} and \sQuote{sf.p2}, but matching is
+  \kbd{eco}; the remaining allowed values are only
+  \kbd{sf.n2} and \kbd{sf.p2}, but matching is
   case-insensitive.}
 
   \item{...}{Optional arguments passed between the

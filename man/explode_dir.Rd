@@ -107,11 +107,11 @@
 
   \item{type}{Character scalar indicating the file types to
   be matched by extension. For historical reasons,
-  \sQuote{both} means either \acronym{CSV} or
-  \acronym{YAML} \emph{or} \acronym{JSON}. \sQuote{yorj}
-  means either \acronym{YAML} or \acronym{JSON}.
-  Alternatively, directly the extension or extensions, or a
-  list of file names (not \code{NA}).}
+  \kbd{both} means either \acronym{CSV} or \acronym{YAML}
+  \emph{or} \acronym{JSON}, whereas \kbd{yorj} means either
+  \acronym{YAML} or \acronym{JSON}. Alternatively, directly
+  the extension or extensions, or a list of file names (not
+  \code{NA}).}
 
   \item{compressed}{Logical scalar. Shall compressed files
   also be matched?  This affects the returned pattern as
@@ -158,16 +158,15 @@
 
   In normal mode, \code{batch_process} creates an invisibly
   returned character matrix in which each row corresponds
-  to a named character vector with the keys
-  \sQuote{infile}, \sQuote{outfile}, \sQuote{before} and
-  \sQuote{after}. The latter two describe the result of the
-  action(s) before and after attempting to convert
-  \code{infile} to \code{outfile}. \sQuote{after} is the
-  empty string if no conversion was tried (see
-  \code{overwrite}), \sQuote{ok} if conversion was
-  successful and a message describing the problems
-  otherwise. For the results of the \code{demo} mode see
-  above.
+  to a named character vector with the keys \code{infile},
+  \code{outfile}, \code{before} and \code{after}. The
+  latter two describe the result of the action(s) before
+  and after attempting to convert \code{infile} to
+  \code{outfile}. The \code{after} entry is the empty
+  string if no conversion was tried (see \code{overwrite}),
+  \code{ok} if conversion was successful and a message
+  describing the problems otherwise. For the results of the
+  \code{demo} mode see above.
 
   \code{file_pattern} yields a character scalar, holding a
   regular expression. \code{glob_to_regex} yields a vector
@@ -210,16 +209,16 @@
   \sQuote{?} matches a single arbitrary character, whereas
   \sQuote{*} matches zero to an arbitrary number of
   arbitrary characters. Some examples: \describe{
-  \item{a?c}{Matches \sQuote{abc}, \sQuote{axc}, \sQuote{a
-  c} etc. but not \sQuote{abbc}, \sQuote{abbbc},
-  \sQuote{ac} etc.} \item{a*c}{Matches \sQuote{abc},
-  \sQuote{abbc}, \sQuote{ac} etc. but not \sQuote{abd}
-  etc.} \item{ab*}{Matches \sQuote{abc}, \sQuote{abcdefg},
-  \sQuote{abXYZ} etc.  but not \sQuote{acdefg} etc.}
-  \item{?bc}{Matches \sQuote{abc}, \sQuote{Xbc}, \sQuote{
-  bc} etc. but not \sQuote{aabc}, \sQuote{abbc},
-  \sQuote{bc} etc.} } Despite their simplicity, globbing
-  patterns are often sufficient for selecting file names.
+  \item{a?c}{Matches \verb{abc}, \verb{axc}, \verb{a c}
+  etc. but not \verb{abbc}, \verb{abbbc}, \verb{ac} etc.}
+  \item{a*c}{Matches \verb{abc}, \verb{abbc}, \verb{ac}
+  etc. but not \verb{abd} etc.} \item{ab*}{Matches
+  \verb{abc}, \verb{abcdefg}, \verb{abXYZ} etc. but not
+  \verb{acdefg} etc.} \item{?bc}{Matches \verb{abc},
+  \verb{Xbc}, \verb{ bc} etc. but not \verb{aabc},
+  \verb{abbc}, \verb{bc} etc.} } Despite their simplicity,
+  globbing patterns are often sufficient for selecting file
+  names.
 }
 \examples{
 # explode_dir()

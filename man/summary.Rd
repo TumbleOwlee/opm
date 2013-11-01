@@ -1,6 +1,6 @@
 \name{summary}
 \alias{summary}
-\title{Summarise OPMX or MOPMX objects}
+\title{Summarise \acronym{OPMX} or \acronym{MOPMX} objects}
 \arguments{
   \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
   \code{\link{MOPMX}} object.}
@@ -10,12 +10,12 @@
 }
 \value{
   For the \code{\link{OPM}} method, a named list of the
-  class \sQuote{OPM_Summary}, returned invisibly. The
+  class \code{OPM_Summary}, returned invisibly. The
   \sQuote{metadata} entry is the number of non-list
   elements in \code{\link{metadata}}. For the
   \code{\link{OPMS}} method, a list of such lists (one per
   plate), also returned invisibly, with the class set to
-  \sQuote{OPMS_Summary} and some information on the entire
+  \code{OPMS_Summary} and some information on the entire
   object in the attribute \sQuote{overall}.
 }
 \description{

@@ -3,7 +3,7 @@
 \alias{filename}
 \alias{position}
 \alias{setup_time}
-\title{Information from input CSV file}
+\title{Information from input \acronym{CSV} file}
 \arguments{
   \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
   \code{\link{MOPMX}} object.}
@@ -30,9 +30,8 @@
   position and setup time entries (if selected) should be
   normalised. This should always work for the plate
   positions, but for the setup times it depends on the
-  values for the \code{\link{opm_opt}} keys
-  \sQuote{time.fmt} and \sQuote{time.zone} (see also
-  \code{\link{merge}}).}
+  values for the \code{\link{opm_opt}} keys \code{time.fmt}
+  and \code{time.zone} (see also \code{\link{merge}}).}
 
   \item{...}{Optional arguments passed between the
   methods.}

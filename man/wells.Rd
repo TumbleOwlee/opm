@@ -41,8 +41,8 @@
 
   \item{downcase}{Logical scalar indicating whether full
   names should be (carefully) converted to lower case. This
-  uses \code{\link{substrate_info}} in \sQuote{downcase}
-  mode; see there for details.}
+  uses \code{\link{substrate_info}} in \kbd{downcase} mode;
+  see there for details.}
 
   \item{plate}{Name of the plate type. Several ones can be
   given unless \code{object} is of class \code{\link{OPM}}
@@ -66,8 +66,8 @@
   If \code{x} is an \code{\link{OPMD}} object and
   \code{as.groups} is not empty, it is used to create the
   row name of the single row of the resulting
-  \sQuote{OPMS_Listing} object. Otherwise an
-  \sQuote{OPMD_Listing} object is produced.}
+  \code{OPMS_Listing} object. Otherwise an
+  \code{OPMD_Listing} object is produced.}
 
   \item{cutoff}{Numeric scalar used if \sQuote{as.groups}
   is a list. If the relative frequency of the most frequent
@@ -92,8 +92,8 @@
 \value{
   Character vector. For the \code{listing} methods, a
   character vector or matrix with additional class
-  attribute \sQuote{OPMD_Listing} or \sQuote{OPMS_Listing}.
-  See the examples for details.
+  attribute \code{OPMD_Listing} or \code{OPMS_Listing}. See
+  the examples for details.
 }
 \description{
   Get the names of the wells contained in an
@@ -116,7 +116,7 @@
   \code{full} is \code{FALSE}, it can be used to study the
   effect of the well-index translation and well-name
   normalisation approaches as used by \pkg{opm},
-  particularly by the subsetting methods (see
+  particularly by the sub-creation methods (see
   \code{\link{[}}).
 }
 \examples{

@@ -1,6 +1,6 @@
 \name{opm_opt}
 \alias{opm_opt}
-\title{OPM options}
+\title{Global \pkg{opm} options}
 \arguments{
   \item{x}{Character scalar or list or missing. If not
   given, all current settings are returned (as a named

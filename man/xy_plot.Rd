@@ -50,8 +50,8 @@
   \code{FALSE}, returns \code{NULL}.} \item{...}{Other
   arguments are passed to \code{\link{plate_type}}.} } If
   \code{settings} is not a list but a character scalar or
-  an expression, this is used as the \sQuote{predef} entry
-  of the above-mentioned list. If not a list but a logical
+  an expression, this is used as the \kbd{predef} entry of
+  the above-mentioned list. If not a list but a logical
   scalar, it is used as the \sQuote{use} entry of this
   list. If not a list but a numeric value, it is used as
   the \sQuote{max} entry of this list.}
@@ -75,7 +75,7 @@
 
   \item{strip.fmt}{List controlling the format of the
   description strip above each panel. For instance, the
-  background colour is set using the \sQuote{bg} key. For
+  background colour is set using the \kbd{bg} key. For
   further details, see \code{strip.custom} from the
   \pkg{lattice} package. Note that the \strong{content} of
   these descriptions is determined by arguments passed from
@@ -84,12 +84,12 @@
 
   \item{striptext.fmt}{List controlling the textual
   description at the top of each panel. For instance, the
-  relative text size is set using the \sQuote{cex} key, the
+  relative text size is set using the \kbd{cex} key, the
   colour by \sQuote{col}, the font by \sQuote{font} and the
   number of lines by \sQuote{lines}. The latter might be of
   interest in conjunction with the \code{paren.sep}
   argument of \code{\link{wells}}. See the argument
-  \sQuote{par.strip.text} of \code{xyplot} from the
+  \code{par.strip.text} of \code{xyplot} from the
   \pkg{lattice} package for details.}
 
   \item{legend.fmt}{List controlling where and how to draw

@@ -3,7 +3,7 @@
 \alias{rev}
 \alias{sort}
 \alias{unique}
-\title{Sort, unify, revert or repeat OPMS objects}
+\title{Sort, unify, revert or repeat \acronym{OPMS} objects}
 \arguments{
   \item{x}{\code{\link{OPMS}} or \code{\link{OPM}} object.}
 
@@ -22,8 +22,8 @@
   ordering? Has only an effect if \code{by} is
   \sQuote{setup_time}. It is an error if the time format is
   not recognised.  See \code{\link{opm_opt}}, arguments
-  \sQuote{time.fmt} and \sQuote{time.zone}, for modifying
-  the parsing of setup-time entries.}
+  \code{time.fmt} and \code{time.zone}, for modifying the
+  parsing of setup-time entries.}
 
   \item{exact}{Logical scalar. Passed to
   \code{\link{metadata}}. Affects only metadata querying,

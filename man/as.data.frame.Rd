@@ -37,8 +37,8 @@
   row.}
 
   \item{factors}{Logical scalar. See the
-  \sQuote{stringsAsFactors} argument of \code{data.frame}
-  and \code{as.data.frame} from the \pkg{base} package.}
+  \code{stringsAsFactors} argument of \code{data.frame} and
+  \code{as.data.frame} from the \pkg{base} package.}
 
   \item{exact}{Logical scalar. Passed to
   \code{\link{metadata}}.}

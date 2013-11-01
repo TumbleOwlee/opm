@@ -27,8 +27,8 @@
   done in that case.} \item{regex}{Regular-expression
   matching is used.} \item{pmatch}{Uses \code{pmatch} from
   the \pkg{base} package.} } All matching is
-  case-insensitive except for \sQuote{exact} and
-  \sQuote{pmatch} search modes.}
+  case-insensitive except for the \kbd{exact} and
+  \kbd{pmatch} search modes.}
 
   \item{max.dev}{Numeric scalar indicating the maximum
   allowed deviation. If < 1, the proportion of characters

@@ -97,7 +97,7 @@
   map colours.}
 
   \item{asqr}{Logical scalar indicating whether the data
-  should be treated with the arcus sinus-square root
+  should be treated with the arcsine-square root
   transformation. This usually only makes sense for
   proportion data. If \code{NA}, percentages are assumed.}
 
@@ -110,18 +110,18 @@
   passed from the \code{\link{OPMS}} or data-frame methods
   to the matrix method.}
 
-  \item{use.fun}{Character scalar. If \sQuote{gplots}, it
-  is attempted to load the \pkg{gplots} package and use its
+  \item{use.fun}{Character scalar. If \kbd{gplots}, it is
+  attempted to load the \pkg{gplots} package and use its
   \code{heatmap.2} function (the default). If this fails, a
   warning is issued, and \code{heatmap} from the
   \pkg{stats} package (the default) is called instead.}
 }
 \value{
   A list as output by \code{heatmap} or \code{heatmap.2}
-  with the additional entries \sQuote{rowColMap} or
-  \sQuote{colColMap} giving the mapping(s) of group names
-  to colours as named character vector(s), if this feature
-  was used.
+  with the additional entries \code{rowColMap} or
+  \code{colColMap} giving the mapping(s) of group names to
+  colours as named character vector(s), if this feature was
+  used.
 }
 \description{
   A wrapper for \code{heatmap} from the \pkg{stats} package

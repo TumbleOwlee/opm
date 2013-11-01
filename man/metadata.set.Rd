@@ -166,7 +166,7 @@ copy <- vaas_4
 metadata(copy, "Type") <- x
 # one-column data frames are simplified
 stopifnot(identical(metadata(copy, "Type"), x$Type))
-# if keys match, a subselection of the data frame is used
+# if keys match, a partial selection of the data frame is used
 (x <- cbind(x, Notype = !x$Type))
 metadata(copy, "Type") <- x
 stopifnot(identical(metadata(copy, "Type"), x$Type))

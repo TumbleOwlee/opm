@@ -110,8 +110,8 @@
   Sections are determined with patterns that match the
   start of a section. This function is useful for splitting
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  multiple-plate CSV files before inputting them with
-  \code{\link{read_opm}}. It is used by
+  multiple-plate \acronym{CSV} files before inputting them
+  with \code{\link{read_opm}}. It is used by
   \code{\link{batch_opm}} for this purpose. See also the
   \sQuote{Examples}.
 
@@ -123,8 +123,9 @@
   single one. Note that directory parts within the file
   names, if any, are not affected. This function might be
   useful for managing
-  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} CSV
-  files, which can contain a lot of special characters.
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{CSV} files, which can contain a lot of special
+  characters.
 }
 \examples{
 ## split_files()

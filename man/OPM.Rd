@@ -10,7 +10,7 @@
 \alias{OPMD-class}
 \alias{OPMS}
 \alias{OPMS-class}
-\title{Real classes of the opm package}
+\title{Real classes of the \pkg{opm} package}
 \description{
   Classes whose members can directly be generated and
   manipulated by an \pkg{opm} user: \acronym{OPM},
@@ -19,7 +19,7 @@
 \details{
   \acronym{OPM} is an acronym for
   \sQuote{OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  Phenotype MicroArray}. This is the class for holding
+  Phenotype Microarray}. This is the class for holding
   single-plate
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data without aggregated values, but
@@ -83,7 +83,7 @@
   corresponds to curve parameter larger than the curve
   parameter of any \code{TRUE} value; \code{NA} values are
   not considered when checking consistency. The
-  \sQuote{strict.OPMD} entry of \code{\link{opm_opt}}
+  \code{strict.OPMD} entry of \code{\link{opm_opt}}
   determines whether an error or only a warning is issued
   in the case of inconsistency.
 

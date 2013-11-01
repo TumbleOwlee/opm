@@ -2,11 +2,11 @@
 \name{opm.package}
 \alias{opm.package}
 \alias{opm.package-package}
-\title{The opm package}
+\title{The \pkg{opm} package}
 \description{
   Package for analysing
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  Phenotype MicroArray data. In addition to this manual,
+  phenotype microarray data. In addition to this manual,
   tutorials (vignettes) are available together with the
   package, as well as code examples accessible via
   \code{demo}.
@@ -53,12 +53,12 @@
   0.7, this package was not required for the installation
   of \pkg{opm}. It is now mandatory to install one of the
   newer versions of \pkg{yaml} (>= v2.1.5). These are based
-  on libyaml as parser instead of Syck, are faster and
-  contain some bug fixes.  The \acronym{YAML}-related
-  functions of \pkg{opm} are \code{\link{to_yaml}} and
-  \code{\link{batch_opm}}. Optionally, \acronym{JSON} code
-  can be output, which uses a subset of the \acronym{YAML}
-  format.}
+  on \pkg{libyaml} as parser instead of \pkg{Syck}, are
+  faster and contain some bug fixes. The
+  \acronym{YAML}-related functions of \pkg{opm} are
+  \code{\link{to_yaml}} and \code{\link{batch_opm}}.
+  Optionally, \acronym{JSON} code can be output, which uses
+  a subset of the \acronym{YAML} format.}
 
   \item{running time}{Computations on such high-dimensional
   data may take some time. The limiting steps are

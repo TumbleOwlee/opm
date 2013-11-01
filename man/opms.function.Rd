@@ -1,6 +1,6 @@
 \name{opms}
 \alias{opms}
-\title{OPMS constructor}
+\title{\acronym{OPMS} constructor}
 \usage{
   opms(..., precomputed = TRUE, skip = FALSE,
     group = FALSE)
@@ -9,12 +9,14 @@
   \item{...}{One to several objects which are either
   potentially nested lists of \code{\link{OPMS}},
   \code{\link{OPM}} or \code{\link{OPMA}} objects, or
-  really nested lists whose sublists can be converted to an
-  \code{\link{OPM}} or \code{\link{OPMA}} object.}
+  really nested lists whose contained lists can be
+  converted to an \code{\link{OPM}} or \code{\link{OPMA}}
+  object.}
 
   \item{precomputed}{Logical scalar. If \code{TRUE},
-  sublists have already been converted to one of the three
-  classes. Otherwise, suitable sublists will be converted.}
+  contained lists have already been converted to one of the
+  three classes. Otherwise, suitable contained lists will
+  be converted.}
 
   \item{skip}{Logical scalar. If \code{precomputed} is
   \code{TRUE}, silently skip non-list elements of nested
@@ -25,12 +27,13 @@
 
   \item{group}{Logical or character scalar. If \code{TRUE},
   split the list of collected \code{\link{OPM}} objects
-  according to the plate type and convert the sublists
-  separately if they contain more than one plate; otherwise
-  just keep the \code{\link{OPM}} object. \code{FALSE} is
-  the default: all plates are tried to be forced into a
-  single \code{\link{OPMS}} object. If a character scalar,
-  the name of the plate type to be extracted.}
+  according to the plate type and convert the contained
+  lists separately if they contain more than one plate;
+  otherwise just keep the \code{\link{OPM}} object.
+  \code{FALSE} is the default: all plates are tried to be
+  forced into a single \code{\link{OPMS}} object. If a
+  character scalar, the name of the plate type to be
+  extracted.}
 }
 \value{
   \code{\link{OPMS}} object, or list of such objects

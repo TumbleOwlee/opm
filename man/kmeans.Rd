@@ -55,15 +55,15 @@
     xlab = "Clustered values", ...)
 }
 \arguments{
-  \item{x}{Object of class \sQuote{kmeans},
-  \sQuote{Ckmeans.1d.dp} or \sQuote{kmeanss}. For
+  \item{x}{Object of class \code{kmeans},
+  \sQuote{Ckmeans.1d.dp} or \code{kmeanss}. For
   \code{plot}, only the latter.}
 
   \item{y}{Vector of original data subjected to clustering.
-  Automatically determined for the \sQuote{kmeanss}
-  methods. For \code{to_kmeans}, original numeric vector
-  that was used to create a \sQuote{Ckmeans.1d.dp} object,
-  or index of an element of a \sQuote{kmeanss} object.}
+  Automatically determined for the \code{kmeanss} methods.
+  For \code{to_kmeans}, original numeric vector that was
+  used to create a \sQuote{Ckmeans.1d.dp} object, or index
+  of an element of a \code{kmeanss} object.}
 
   \item{k}{Numeric vector or \code{NULL}. If non-empty, it
   indicates the number of groups (previously used as input
@@ -95,7 +95,7 @@
 }
 \value{
   \code{to_kmeans} creates an object of class
-  \sQuote{kmeans}.
+  \code{kmeans}.
 
   \code{borders} creates a numeric vector or list of such
   vectors.
@@ -104,7 +104,7 @@
   \code{hist.default}; see there for details.
 
   \code{calinksi} returns a numeric vector with one element
-  per \sQuote{kmeans} object. \code{plot} returns it
+  per \code{kmeans} object. \code{plot} returns it
   invisibly. Its \sQuote{names} attribute indicates the
   original numbers of clusters requested.
 }
@@ -116,7 +116,7 @@
   Alternatively, determine the borders between clusters of
   one-dimensional data, create a histogram in which these
   borders are plotted, or convert an object to one of class
-  \sQuote{kmeans}.
+  \code{kmeans}.
 }
 \details{
   The borders are calculated as the mean of the maximum of
@@ -128,7 +128,7 @@
 
   \code{y} must also be in the order it has been when
   subjected to clustering, but this is not checked. Using
-  \sQuote{kmeanss} objects thus might preferable in most
+  \code{kmeanss} objects thus might preferable in most
   cases because they contain a copy of the input data.
 }
 \examples{

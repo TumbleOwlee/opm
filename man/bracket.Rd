@@ -58,8 +58,8 @@
 \details{
   The \code{\link{OPMA}} method works like the
   \code{\link{OPM}} one, but the function applies the
-  subsetting to the original and the aggregated data in
-  parallel. The \code{\link{OPMD}} method applies the
+  subset creation to the original and the aggregated data
+  in parallel. The \code{\link{OPMD}} method applies the
   selection also to the discretised data.
 
   The aggregated and discretised data may also be dropped
@@ -80,8 +80,8 @@
   It simplifies the outcome to a \code{\link{OPM}} or
   \code{\link{OPMA}} object if only a single plate remains
   and to \code{NULL} if no plate remains. This is different
-  from subsetting a list in \R. \code{\link{OPMS}}
-  subsetting rather behaves like subsetting a
+  from creating subsets of a list in \R. \code{\link{OPMS}}
+  subset creation rather behaves like subset creation a
   three-dimensional array with plates as first dimension,
   time points as second, and wells as third.
 }

@@ -98,7 +98,7 @@ metadata(x) <- md[, c(organism, replicate)]
 # really have on your machine, and keep in mind that parallelization does not
 # work under Windows (for reasons caused by R itself).
 #
-if (grepl("windows", R.version$platform, TRUE, TRUE)) {
+if (grepl("windows", Sys.info()[["sysname"]], TRUE, TRUE)) {
   nc <- 1
 } else {
   nc <- 8

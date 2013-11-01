@@ -10,11 +10,11 @@
 \alias{WMD-class}
 \alias{YAML_VIA_LIST}
 \alias{YAML_VIA_LIST-class}
-\title{Virtual classes of the opm package}
+\title{Virtual classes of the \pkg{opm} package}
 \description{
   Classes that are virtual and thus are not directly dealt
   with by an \pkg{opm} user: \acronym{WMD}, \acronym{MOA},
-  \acronym{FOE}, \acronym{OPMX} and \sQuote{YAML_VIA_LIST}.
+  \acronym{FOE}, \acronym{OPMX} and \code{YAML_VIA_LIST}.
 }
 \details{
   \acronym{WMD} is an acronym for \sQuote{with metadata}.
@@ -65,7 +65,7 @@
   \code{\link{sort}} for usage examples.
 
   See \code{\link{to_yaml}} for a usage example of
-  \sQuote{YAML_VIA_LIST}. This is a virtual class
+  \code{YAML_VIA_LIST}. This is a virtual class
   facilitating the conversion to \acronym{YAML} format (or
   its subset, \acronym{JSON}). It can currently be used by
   any class that can be coerced to a list.

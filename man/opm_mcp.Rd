@@ -49,26 +49,29 @@
   modified. Linear functions can be specified by either the
   matrix of coefficients or by symbolic descriptions of one
   or more linear hypotheses.  The set of existing types of
-  contrast is extended by the contrast type \sQuote{Pairs}.
-  Here all pair-wise comparison concerning the first entry
-  in \code{model} are computed. Alternatively, the factor
-  which levels should determine the pairs can be addressed
-  directly with, for example \code{linfct = c(Pairs.Well =
-  1)}.  The Dunnett-type contrast has the special feature,
-  that users are free to directly define the group which
-  should serve as the control or base in the set of
-  contrasts. Analogously to \code{Pairs}, the name of the
-  level, separated from the string 'Dunnett' by any sign,
-  can be stated.  See examples below and in the Vignettes
-  and further \code{contrMat} from the \pkg{multcomp}
-  package.  For situations where metadata have
-  non-syntactic names, special signs are exchanged against
-  dots. When applying \code{linfct = c(Pairs = 1)} or
-  \code{linfct = c(Dunnett = 1)} with the above mentioned
-  extension, the sign between the linfct-name and the
-  metadata-name must not be a dot.
+  contrast is extended with the contrast type
+  \sQuote{Pairs}. Here all pair-wise comparison concerning
+  the first entry in \code{model} are computed.
+  Alternatively, the factor whose levels should determine
+  the pairs can be addressed directly with, for example,
+  \code{linfct = c(Pairs.Well = 1)}.
 
-  \item An object inheriting from the \sQuote{AsIs} as
+  The Dunnett-type contrast has the special feature, that
+  users are free to directly define the group which should
+  serve as the control or base in the set of contrasts. In
+  analogy to \code{Pairs}, the name of the level, separated
+  from the string \sQuote{Dunnett} by any sign, can be
+  stated. See examples below and in the vignettes and
+  further \code{contrMat} from the \pkg{multcomp} package.
+
+  In situations where metadata have non-syntactic names,
+  special signs are exchanged against dots. When applying
+  \code{linfct = c(Pairs = 1)} or \code{linfct = c(Dunnett
+  = 1)} with the above mentioned extension, the sign
+  between the \code{linfct} name and the metadata name must
+  not be a dot.
+
+  \item An object inheriting from the \code{AsIs} as
   created by \code{I} from the \pkg{base} package. Such
   objects, irrespective of their class, will be converted
   to an argument list for and then passed to \code{mcp}
@@ -90,16 +93,15 @@
   } After the conversions, if any, this argument is passed
   to \code{glht} as \code{linfct} argument.
 
-  If the \code{output} argument is set to \sQuote{linfct},
-  the function returns the converted \code{linfct}
-  argument, which is useful in exploring the conducted
-  conversions before running the proper tests.}
+  If the \code{output} argument is set to \kbd{linfct}, the
+  function returns the converted \code{linfct} argument,
+  which is useful in exploring the conducted conversions
+  before running the proper tests.}
 
   \item{m.type}{Character scalar indicating which of the
-  following model types to use in model fitting:
-  \sQuote{glm}, \sQuote{aov} or \sQuote{lm}. See the
-  eponymous functions in the \pkg{stats} package for
-  details.}
+  following model types to use in model fitting: \kbd{glm},
+  \kbd{aov} or \kbd{lm}. See the eponymous functions in the
+  \pkg{stats} package for details.}
 
   \item{rhs}{Numeric vector passed to \code{glht} in the
   \pkg{multcomp} package. Also considered when creating
@@ -146,9 +148,9 @@
 \value{
   The kind of object returned by this function are
   determined by the \code{output} argument: \describe{
-  \item{mcp}{The default. An object of class \sQuote{glht}
-  as the result of the multiple comparison of means.
-  Methods for \code{print}, \code{summary}, \code{confint},
+  \item{mcp}{The default. An object of class \code{glht} as
+  the result of the multiple comparison of means. Methods
+  for \code{print}, \code{summary}, \code{confint},
   \code{coef} and \code{vcov} are available for this class.
   See \code{glht} in the \pkg{multcomp} package for
   details.} \item{data}{Reshaped (\sQuote{flattened}) data
@@ -169,8 +171,8 @@
   fit to \code{object}, they could serve as template
   matrices to be further specified by the user. Note that
   this only works if \code{linfct} either is an object of
-  class \sQuote{mcp} or convertible to such an object, and
-  if its values are character scalars that can be passed as
+  class \code{mcp} or convertible to such an object, and if
+  its values are character scalars that can be passed as
   \code{type} argument to \code{contrMat} from the
   \pkg{multcomp} package.} }
 }

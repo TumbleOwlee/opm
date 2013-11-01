@@ -28,14 +28,14 @@
   \code{infix.k}, sometimes equivalent. \itemize{ \item
   Using a character vector as query, \code{infix.k} tests
   whether all given keys are present in the top-level names
-  of the metadata (these may be nested, but all sublists
-  are ignored here). An empty query vector results in
+  of the metadata (these may be nested, but all contained
+  lists are ignored here). An empty query vector results in
   \code{TRUE}. Note that the values of the character
   vector, not its names, if any, are used for querying the
   metadata. In contrast, \code{infix.largek} tests whether
   a given key is present in the metadata and fetches an
   object that is not \code{NULL}. If the key has a length >
-  1, sublists are queried.
+  1, contained lists are queried.
 
   \item Using a list as query, both methods tests whether
   all given keys are present in the names of the metadata.
@@ -104,12 +104,12 @@ stopifnot(list(Species = "ignored") \%k\% vaas_1) # key present
 stopifnot(vaas_1 \%k\% vaas_1) # obviously
 stopifnot(vaas_1 \%K\% vaas_1)
 
-# This fails because we query with a named sublist but the 'Species'
+# This fails because we query with a named 2nd-order list but the 'Species'
 # metadata entry is not even a list.
 stopifnot(!list(Species = list(Genus = "X", Epithet = "Y")) \%k\% vaas_1)
 
-# This is OK because we query with an unnamed sublist: it has no names that
-# one would fail to find.
+# This is OK because we query with an unnamed 2nd-order list: it has no
+# names that one would fail to find.
 stopifnot(list(Species = list("X", "Y")) \%k\% vaas_1)
 
 # More non-nested query examples

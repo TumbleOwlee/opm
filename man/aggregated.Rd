@@ -11,7 +11,7 @@
   \code{\link{param_names}} for the possible values.}
 
   \item{ci}{Logical scalar. Include the estimates of
-  confidence intervals (CIs) in the output?}
+  confidence intervals (\acronym{CI}s) in the output?}
 
   \item{trim}{Character scalar. Parameter estimates from
   intrinsically negative reactions (i.e., no respiration)
@@ -40,20 +40,21 @@
 
   \item{join}{Empty or character scalar. If empty, a list
   is returned; a nested list in the case of
-  \code{\link{OPMS}} objects with one sublist per plate.
-  Otherwise this nested list is converted to a matrix or
-  data frame, depending on the value of \code{join}. The
-  following values yield a matrix in character mode and
-  differ in how they would convert non-scalar values in a
-  matrix in list mode, if encountered: \describe{
-  \item{json}{Converts to a \acronym{JSON} string.}
-  \item{yaml}{Converts to a \acronym{YAML} string.}
-  \item{rcode}{Converts by deparsing, yielding an \R code
-  string.} } All other values of \code{join} are passed as
-  \code{what} argument to the \code{collect} method form
-  the \pkg{pkgutils} package, with \code{dataframe} and
-  \code{keep.unnamed} set to \code{TRUE} but
-  \code{stringsAsFactors} to \code{FALSE}.}
+  \code{\link{OPMS}} objects with one contained list per
+  plate. Otherwise this nested list is converted to a
+  matrix or data frame, depending on the value of
+  \code{join}. The following values yield a matrix in
+  character mode and differ in how they would convert
+  non-scalar values in a matrix in list mode, if
+  encountered: \describe{ \item{json}{Converts to a
+  \acronym{JSON} string.} \item{yaml}{Converts to a
+  \acronym{YAML} string.} \item{rcode}{Converts by
+  deparsing, yielding an \R code string.} } All other
+  values of \code{join} are passed as \code{what} argument
+  to the \code{collect} method form the \pkg{pkgutils}
+  package, with \code{dataframe} and \code{keep.unnamed}
+  set to \code{TRUE} but \code{stringsAsFactors} to
+  \code{FALSE}.}
 
   \item{...}{Optional arguments passed between the
   methods.}
@@ -61,9 +62,9 @@
 \value{
   \code{aggregated} yields a numeric matrix of aggregated
   values (a.k.a. the curve parameters). If bootstrapping
-  was used, their CIs are included. The columns represent
-  the wells, the rows the estimated parameters and their
-  CIs.
+  was used, their \acronym{CI}s are included. The columns
+  represent the wells, the rows the estimated parameters
+  and their \acronym{CI}s.
 
   \code{aggr_settings} returns a named list if \code{join}
   is empty. Other values yield a matrix or data frame (or

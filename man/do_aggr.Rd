@@ -11,11 +11,12 @@
 
   \item{boot}{Integer scalar. Number of bootstrap
   replicates used to estimate 95-percent confidence
-  intervals (CIs) for the parameters. Set this to zero to
-  omit bootstrapping, resulting in \code{NA} entries for
-  the CIs. Note that under the default settings of the
-  matrix method for \code{as.pe}, bootstrapping is also
-  necessary to obtain the point estimate.}
+  intervals (\acronym{CI}s) for the parameters. Set this to
+  zero to omit bootstrapping, resulting in \code{NA}
+  entries for the \acronym{CI}s. Note that under the
+  default settings of the matrix method for \code{as.pe},
+  bootstrapping is also necessary to obtain the point
+  estimate.}
 
   \item{verbose}{Logical scalar. Print progress messages?}
 
@@ -23,12 +24,12 @@
   Setting this to a value > 1 requires that \code{mclapply}
   from the \pkg{parallel} package can be run with more than
   1 core, which is impossible under Windows. The
-  \code{cores} argument has no effect if \sQuote{opm-fast}
-  is chosen (see below).}
+  \code{cores} argument has no effect if \kbd{opm-fast} is
+  chosen (see below).}
 
-  \item{options}{List. For its use in \sQuote{grofit} mode,
-  see \code{grofit.control} in the \pkg{grofit} package.
-  The \code{boot} and \code{verbose} settings, as the most
+  \item{options}{List. For its use in \pkg{grofit} mode,
+  see \code{grofit.control} in that package. The
+  \code{boot} and \code{verbose} settings, as the most
   important ones, are added separately (see above). The
   verbose mode is not very useful in parallel processing.
   With \code{method} \dQuote{spline.fit}, options can be
@@ -39,7 +40,7 @@
   use. Currently only the following methods are supported:
   \describe{ \item{splines}{Fit various splines (smoothing
   splines and P-splines from \pkg{mgcv} and smoothing
-  splines via \code{smooth.spline}) to opm data.
+  splines via \code{smooth.spline}) to PM data.
   Recommended.} \item{grofit}{The \code{grofit} function in
   the eponymous package, with spline fitting as default.}
   \item{opm-fast}{The native, faster parameter estimation
@@ -64,17 +65,17 @@
   Ignored if \code{boot} is not positive.}
 
   \item{as.pe}{Character scalar determining what to output
-  as the point estimate. Either \sQuote{median},
-  \sQuote{mean} or \sQuote{pe}; the first two calculate the
-  point estimate from the bootstrapping replicates, the
-  third one use the point estimate from the raw data. If
-  \code{boot} is 0, \code{as.pe} is reset to \sQuote{pe},
-  if necessary, and a warning is issued.}
+  as the point estimate. Either \kbd{median}, \kbd{mean} or
+  \kbd{pe}; the first two calculate the point estimate from
+  the bootstrapping replicates, the third one use the point
+  estimate from the raw data. If \code{boot} is 0,
+  \code{as.pe} is reset to \kbd{pe}, if necessary, and a
+  warning is issued.}
 
   \item{ci.type}{Character scalar determining the way the
-  confidence intervals are calculated. Either
-  \sQuote{norm}, \sQuote{basic} or \sQuote{perc}; see
-  \code{boot.ci} from the \pkg{boot} package for details.}
+  confidence intervals are calculated. Either \kbd{norm},
+  \kbd{basic} or \kbd{perc}; see \code{boot.ci} from the
+  \pkg{boot} package for details.}
 
   \item{time.pos}{Character or integer scalar indicating
   the position of the column (or row, see next argument)
@@ -85,8 +86,8 @@
   default.}
 
   \item{raw}{Logical scalar. Return the raw bootstrapping
-  result without CI estimation and construction of the
-  usually resulting matrix?}
+  result without \acronym{CI} estimation and construction
+  of the usually resulting matrix?}
 
   \item{...}{Optional arguments passed between the methods
   or to \code{boot} from the eponymous package.}
@@ -101,10 +102,10 @@
   corresponding to the \code{method} argument.
 
   The matrix method returns a numeric matrix with three
-  rows (point estimate, lower and upper CI) and as many
-  columns as data columns (or rows) in \code{object}. If
-  \code{raw} is \code{TRUE}, it returns an object of the
-  class \sQuote{boot}.
+  rows (point estimate, lower and upper \acronym{CI}) and
+  as many columns as data columns (or rows) in
+  \code{object}. If \code{raw} is \code{TRUE}, it returns
+  an object of the class \sQuote{boot}.
 }
 \description{
   Aggregate the kinetic data using curve-parameter
@@ -141,9 +142,9 @@
   \code{aggr_settings(x)}.
 
   The matrix method quickly estimates the curve parameters
-  AUC (area under the curve) or A (maximum height). This is
-  normally not directly called by an \pkg{opm} user but via
-  the other \code{do_aggr} methods.
+  \acronym{AUC} (area under the curve) or A (maximum
+  height). This is not normally directly called by an
+  \pkg{opm} user but via the other \code{do_aggr} methods.
 
   The aggregated values can be queried for using
   \code{\link{has_aggr}} and received using

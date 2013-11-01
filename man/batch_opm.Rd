@@ -47,8 +47,8 @@
   the \pkg{grDevices} package and \code{mypdf} from the
   \pkg{pkgutils} package for possible values. The extension
   of the output files is created from the device name after
-  a few adaptations (such as converting \sQuote{postscript}
-  to \sQuote{ps}).}
+  a few adaptations (such as converting \kbd{postscript} to
+  \kbd{ps}).}
 
   \item{dev.args}{List. Passed as additional arguments to
   \code{device}.}
@@ -63,11 +63,11 @@
   renaming \acronym{CSV} entries or functions that can be
   applied to an entire data frame containing all
   \acronym{CSV} entries. Note that this argument has
-  nothing to do with \sQuote{csv} output.}
+  nothing to do with \kbd{csv} output.}
 
   \item{table.args}{Passed to \code{write.table} from the
-  \pkg{utils} package if \code{output} is set to
-  \sQuote{csv}. Do not confuse this with \code{csv.args}.}
+  \pkg{utils} package if \code{output} is set to \kbd{csv}.
+  Do not confuse this with \code{csv.args}.}
 
   \item{...}{Optional arguments passed to
   \code{\link{batch_process}} in addition to \code{verbose}
@@ -112,9 +112,9 @@
   \item{gen.iii}{Logical or character scalar. If
   \code{TRUE}, invoke \code{\link{gen_iii}} on each plate.
   This is automatically done with \acronym{CSV} input if
-  the plate type is given as \sQuote{OTH} (which is usually
-  the case for plates run in ID mode). If a character
-  scalar, it is used as the \code{to} argument of
+  the plate type is given as \acronym{OTH} (which is
+  usually the case for plates run in ID mode). If a
+  character scalar, it is used as the \code{to} argument of
   \code{\link{gen_iii}} to set other plate types unless it
   is empty.}
 
@@ -242,8 +242,8 @@
   likely to be misunderstood as \sQuote{NA} character
   scalars (if the \pkg{json} package or the \pkg{yaml}
   package prior to version 2.1.7 are used) or as
-  \sQuote{.na}, \sQuote{.na.real}, \sQuote{.na.logical} or
-  \sQuote{.na.character} character scalars (if more recent
+  \code{.na}, \code{.na.real}, \code{.na.logical} or
+  \code{.na.character} character scalars (if more recent
   versions of the \pkg{yaml} package are used). Input
   functions in other programming languages should conduct
   according conversions. \pkg{opm} translates these values

@@ -12,13 +12,13 @@
   only non-duplicated single-character strings. For
   instance, the default \code{split} argument \code{".-_"}
   yields \code{c(".", "-", "_")}.  \item If a vector of
-  only empty strings or \code{TRUE}, strings with
-  substrings representing fixed-width fields are assumed,
-  and splitting is done at whitespace-only columns.
-  Beforehand, equal-length strings are created by padding
-  with spaces at the right. After splitting in fixed-width
-  mode, whitespace characters are trimmed from both ends of
-  the resulting strings.  }}
+  only empty strings or \code{TRUE}, strings with parts
+  representing fixed-width fields are assumed, and
+  splitting is done at whitespace-only columns. Beforehand,
+  equal-length strings are created by padding with spaces
+  at the right. After splitting in fixed-width mode,
+  whitespace characters are trimmed from both ends of the
+  resulting strings.  }}
 
   \item{simplify}{Logical scalar indicating whether a
   resulting matrix with one column should be simplified to

@@ -297,7 +297,7 @@ setMethod("aggregated", OPMA, function(object, subset = NULL, ci = TRUE,
   if (is.null(software <- object@aggr_settings[[SOFTWARE]]))
     warning(sprintf("object has no '%s' entry", SOFTWARE))
   else if (software != opm_string())
-    warning(sprintf("unknown '%s' entry '%s': subsetting may not work",
+    warning(sprintf("unknown '%s' entry '%s': subset creation may not work",
       SOFTWARE, software))
 
   # generate subset

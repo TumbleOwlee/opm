@@ -27,7 +27,7 @@
 
   \item{strip.fmt}{List controlling the format of the
   description strip above each panel. For instance, the
-  background colour is set using the \sQuote{bg} key. For
+  background colour is set using the \kbd{bg} key. For
   further details, see \code{strip.custom} from the
   \pkg{lattice} package. \code{strip.fmt} is ignored if
   panel.headers is \code{FALSE} and currently always

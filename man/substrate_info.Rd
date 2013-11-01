@@ -24,7 +24,7 @@
   ID, optionally expanded to an \acronym{URL}.}
   \item{greek}{Substrate name after translation of relevant
   characters to Greek letters.} \item{html}{Like
-  \sQuote{greek}, but using \acronym{HTML} tags, and also
+  \kbd{greek}, but using \acronym{HTML} tags, and also
   converting other parts of compound names that require
   special formatting.} \item{kegg}{\acronym{KEGG} compound
   database ID, optionally expanded to an \acronym{URL}.}
@@ -47,10 +47,10 @@
   the available IDs, substrate information should be
   queried from the according web services and returned in
   customised objects. Note that this is unavailable for
-  most values of \code{what}. At the moment only
-  \sQuote{kegg} and \sQuote{drug} can be queried for if the
-  \pkg{KEGGREST} package is available. This would yield S3
-  objects of the class \sQuote{kegg_compounds}.}
+  most values of \code{what}. At the moment only \kbd{kegg}
+  and \kbd{drug} can be queried for if the \pkg{KEGGREST}
+  package is available. This would yield S3 objects of the
+  class \code{kegg_compounds}.}
 
   \item{...}{Optional other arguments passed between the
   methods.}

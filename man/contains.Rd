@@ -34,10 +34,10 @@
   One use is to test whether all names of a query list
   occur as names in a data list and optionally also whether
   they point to the same elements; this principle is
-  applied recursively to all sublists. This method is not
-  normally directly called by an \pkg{opm} user but might
-  be useful in other contexts (it is used by a number of
-  metadata query functions). Alternatively,
+  applied recursively to all contained lists. This method
+  is not normally directly called by an \pkg{opm} user but
+  might be useful in other contexts (it is used by a number
+  of metadata query functions). Alternatively,
   \code{\link{OPMX}} objects can be queried with other such
   objects.
 }

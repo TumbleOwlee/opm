@@ -1,7 +1,7 @@
 \name{html_args}
 \alias{html_args}
 \alias{safe_labels}
-\title{HTML formatting and output label generation}
+\title{\acronym{HTML} formatting and output label generation}
 \usage{
   html_args(character.states = c(`negative reaction` = "-", `weak reaction` = "w",
     `positive reaction` = "+"),
@@ -76,11 +76,11 @@
   Lists are converted recursively. List names will be
   converted to \sQuote{title} and \sQuote{class} attributes
   (if missing, names are inferred from the nesting level;
-  see \code{\link{opm_opt}}, entry \sQuote{html.class}).
+  see \code{\link{opm_opt}}, entry \code{html.class}).
   Names of other vectors, if any, are converted to
   \sQuote{title} and \sQuote{span} attributes. Character
   vectors are converted using \code{\link{safe_labels}}
-  unless they inherit from \sQuote{AsIs} (see \code{I} from
+  unless they inherit from \code{AsIs} (see \code{I} from
   the \pkg{base} package).} \item{insert}{As above, but
   inserted between the legend and the table.}
   \item{append}{As above, but inserted after the table.} }}
@@ -96,11 +96,11 @@
 
   \item{pad}{Logical scalar. Bring labels to the same
   number of characters by appending spaces? Has no effect
-  for \sQuote{phylip} and \sQuote{html} output format.}
+  for \acronym{PHYLIP} and \acronym{HTML} output format.}
 
   \item{comment}{Logical scalar. If \code{TRUE}, comments
   as used in the respective format will be produced.
-  \sQuote{phylip} and \sQuote{epf} do not accept comments
+  \acronym{PHYLIP} and \acronym{EPF} do not accept comments
   and will yield an error. If \code{enclose} is
   \code{TRUE}, the comment-enclosing characters are
   appended and prepended to the vector, otherwise to each
@@ -120,9 +120,9 @@
   These functions are not normally called directly by an
   \pkg{opm} user but by \code{\link{phylo_data}}; see there
   for their usual application. The \code{\link{phylo_data}}
-  methods for \sQuote{OPMD_Listing} and
-  \sQuote{OPMS_Listing} objects do not support all
-  \acronym{HTML} formatting options.
+  methods for \code{OPMD_Listing} and \code{OPMS_Listing}
+  objects do not support all \acronym{HTML} formatting
+  options.
 
   Label cleaning invokes either the replacement of
   disallowed characters or the enclosing of all labels in
