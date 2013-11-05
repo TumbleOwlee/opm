@@ -82,6 +82,7 @@
 \acrodef{DSMZ}{\German{Deutsche Sammlung von Mikroorganismen und Zellkulturen}}
 \acrodef{DSM}{\German{Deutsche Sammlung von Mikroorganismen}}
 \acrodef{HTML}{Hypertext Markup Language}
+\acrodef{ID}{Identifier}
 \acrodef{NADH}{reduced Nicotinamide Adenine Dinucleotide}
 \acrodef{PM}{Phenotype Microarray}
 \acrodef{RDBMS}{Relational Database Management System}
@@ -434,11 +435,11 @@ It has to be emphasised that metadata can include all kind of describing charact
 
 To this end, the \pkg{opm} user can integrate the metadata into \proglang{OPM} and \proglang{OPMS} objects using the function \code{include\_metadata} (among other functions for this task; see Figure~\ref{fig:overview}).
 Usually, the metadata are kept in a data frame which can conveniently be saved to, and generated directly from, a \ac{CSV} file.
-For an unambiguous match between the raw kinetic data in the \proglang{OPMS} object and the collected metadata, a unique identifier is needed.
+For an unambiguous match between the raw kinetic data in the \proglang{OPMS} object and the collected metadata, a unique \ac{ID} is needed.
 This is, by default, provided by the combination of \textit{Setup Time} and \textit{Position}, which should unequivocally identify certain plates.
 \textit{Setup Time} indicates the date and time at the precision of seconds of starting the batch read in the OmniLog\textregistered \ reader.
 \textit{Position} indicates the position of the plate in the OmniLog\textregistered \ reader.
-(For instance, \textit{10-A} indicates the plate sliding carriage number 10 in slot A of the reader, but for \pkg{opm} the meaning is irrelevant, as these entries only serves as identifiers.)
+(For instance, \textit{10-A} indicates the plate sliding carriage number 10 in slot A of the reader, but for \pkg{opm} the meaning is irrelevant, as these entries only serves as \acs{ID}.)
 Both \textit{Setup Time} and \textit{Position} are automatically recorded by the OmniLog\textregistered \ reader \textit{Data Collection} software and are exported by the OmniLog\textregistered \ \ac{PM} \textit{File Management/Kinetic Analysis} software into \ac{CSV} files together with the raw kinetic data.
 
 To facilitate the user-friendly compilation of metadata, \code{collect\_template} generates a data frame (and additionally, if requested, a \ac{CSV} file) in which each line represents a single \ac{PM} plate.
@@ -888,10 +889,10 @@ Regarding its use, see the documentation of \proglang{Rscript} for details (ente
 \subsection[Integration and manipulation of metadata]{Integration and manipulation of metadata}\label{application metadata}
 
 Several ways for linking metadata to \proglang{OPM} or \proglang{OPMS} objects are possible.
-The easiest one is probably the batch-inclusion after creating a template with plate identifiers associating it with metadata.
+The easiest one is probably the batch-inclusion after creating a template with plate \acs{ID} associating it with metadata.
 In the first step, either a data frame to be manipulated within \proglang{R} or a \ac{CSV} file to be modified with a suitable editor are created.
-The \pkg{opm} package supports metadata integration by creating a template for such a table from an \proglang{OPM} or \proglang{OPMS} objects that contains plate identifiers in the first columns; by default the keys \textit{Setup Time}, \textit{Position} and \textit{File}.
-These data must not be changed, ensuring that the package can later on link the metadata to the dedicated plates according to these identifiers.
+The \pkg{opm} package supports metadata integration by creating a template for such a table from an \proglang{OPM} or \proglang{OPMS} objects that contains plate \acs{ID} in the first columns; by default the keys \textit{Setup Time}, \textit{Position} and \textit{File}.
+These data must not be changed, ensuring that the package can later on link the metadata to the dedicated plates according to these \acs{ID}.
 
 In the \pkg{opm} manual and help pages, most functions relevant for metadata manipulation are contained in a family called ``metadata-functions'' with according cross-references.
 For the collection of a metadata template in a data frame to be manipulated in \proglang{R}, use this command:
@@ -906,9 +907,9 @@ collect_template(files, include = "*Example_?.CSV.xz",
 @
 This will result in a file \code{"example_metadata.CSV"} in the current working directory (whose name is accessible using \code{getwd}).
 If other metadata have previously been collected, by default an already existing file with the same name will be reused.
-The already defined columns will be respected, novel rows be added, old metadata will be kept and identifiers for novel files will be included and their so far empty metadata columns are set to missing data (NA).
+The already defined columns will be respected, novel rows be added, old metadata will be kept and \acs{ID} for novel files will be included and their so far empty metadata columns are set to missing data (NA).
 You can also provide the location of another previously created metadata file with the \code{collect\_template} argument \code{previous}.
-An ID for the OmniLog\textregistered \ instrument in use can also be added.
+An \ac{ID} for the OmniLog\textregistered \ instrument in use can also be added.
 This makes sense if plates from several such machines are analysed.
 A further option is to normalise the plate-position and setup-time entries; see the manual for details.
 
@@ -942,7 +943,7 @@ metadata(example.opm)
 @
 
 This returns the entire metadata entries as a list.
-By default only the added metadata are included in the object, but not the identifiers used for assigning data-frame rows to plates.
+By default only the added metadata are included in the object, but not the \acs{ID} used for assigning data-frame rows to plates.
 
 One might want to remove the file as it is not needed any more:
 <<label=tidy-metadata-file-up>>=

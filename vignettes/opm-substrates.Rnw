@@ -21,17 +21,20 @@
 % Acronyms
 %
 \usepackage{acronym}
+\acrodef{ASD}{Autism Spectrum Disorder}
 \acrodef{CAS}{Chemical Abstracts Service}
 \acrodef{ChEBI}{Chemical Entities of Biological Interest}
 \acrodef{CI}{Confidence Interval}
 \acrodef{DSMZ}{\German{Deutsche Sammlung von Mikroorganismen und Zellkulturen}}
 \acrodef{DSM}{\German{Deutsche Sammlung von Mikroorganismen}}
 \acrodef{EC}{Enzyme Commission}
+\acrodef{ID}{Identifier}
 \acrodef{KEGG}{Kyoto Encyclopedia of Genes and Genomes}
 \acrodef{MeSH}{Medical Subject Headings}
+\acrodef{RF}{Random Forest}
 \acrodef{PM}{Phenotype Microarray}
 \acrodef{PNG}{Portable Network Graphics}
-
+\acrodef{VIM}{Variable Importance Measure}
 
 %% Add Revision Control System (RCS) Markups
 \usepackage{ulem}      % use this for sout
@@ -171,7 +174,7 @@ In this vignette this is enforced by optionally detaching \pkg{opm} and loading 
 <<label=load-library>>=
 suppressPackageStartupMessages(library("pathview"))
 if ("package:opm" %in% search())
-  detach("package:opm")
+  detach("package:opm", unload = TRUE)
 library("opm")
 data(vaas_et_al, package = "opmdata")
 @
@@ -246,7 +249,7 @@ subst.info
 
 By default this yields \ac{CAS} numbers (\url{http://www.cas.org/content/chemical-substances/faqs}), but \ac{MeSH} names (useful for conducting PubMed queries; see \url{http://www.ncbi.nlm.nih.gov/mesh/}) \citep{Coletti01072001}, \ac{ChEBI} IDs \citep{Hastings01012013}, \ac{KEGG} compound IDs, \ac{KEGG} drug IDs \citep{Kanehisa01012010} and MetaCyc IDs \citep{Caspi01012012} have also been collected for the majority of the substrates.
 Using the ``browse'' argument, full URLs can be created and optionally also directly opened in the default web browser.
-Using the ``download'' argument, if \ac{KEGG} drug or compound IDs have been selected, these can be downloaded from the \ac{KEGG} server if the \pkg{KEGGREST} is available and converted into customised objects.
+Using the ``download'' argument, if \ac{KEGG} drug or compound IDs have been selected, these can be downloaded from the \ac{KEGG} server (if the \pkg{KEGGREST} package is available) and converted into customised objects.
 It is possible to nicely display all available information at once:
 
 <<label=substrate-all-info, results=hide>>=
@@ -304,6 +307,7 @@ See the main tutorial and the manual for details on this restriction.
 
 The results from an \code{opm\_mcp} procedure are treated with \code{annotated} as shown before with an \code{OPMX} object, but additional options are available.
 In the following example, first an \proglang{opm\_glht} object is generated from the \code{vaas\_4} exemplar object by performing a Dunnett-type multiple comparison of the selected 13 wells against well A05 as control group.
+The comparison applies to the default parameter given by \code{opm_opt("curve.param")}; see the manual for details.
 
 <<label=annotated-opm_glht-plot>>=
 x <- opm_mcp(vaas_4[, , 1:15], output = "mcp", model = ~ Well,
@@ -384,7 +388,7 @@ The prefixes have the following meanings:
 
 Only the first reference pathway map is drawn manually; all other maps are computationally generated. 
 The \code{ko} maps contain the manually defined ortholog groups (\code{ko} entries) for all proteins and functional RNA molecules that correspond to \ac{KEGG} pathway nodes, \proglang{BRITE} hierarchy nodes, and \ac{KEGG} module nodes.
-The \code{ko} entries are converted to gene identifiers if organism-specific pathways maps are generated.
+The \code{ko} entries are converted to gene \acs{ID} if organism-specific pathways maps are generated.
 A list of the existing maps and their corresponding numbers are available on the \ac{KEGG} homepage (see above).
 
 \code{pathview} allows only for using \ac{KEGG} orthology (the \code{ko} maps) or species-specific letter codes.
@@ -522,7 +526,7 @@ This is no wonder because the \ac{PM} plates are not arranged according to their
 It often makes sense to restrict the considered substrates beforehand if the pathway of interest is already known.
 This particularly saves running time in the calls to \code{opm\_mcp} and the \code{annotated} method for \proglang{opm\_glht} objects.
 
-When using the option \code{how = "value"}, \code{annotated} yields a numeric matrix with substrate names as row names and pathway identifiers as column names.
+When using the option \code{how = "value"}, \code{annotated} yields a numeric matrix with substrate names as row names and pathway \acs{ID} as column names.
 Whereas the main use of such a matrix is described in Section ~\ref{finding-pathways}, it can also be used simply to show the distribution of substrates over pathways.
 Ones and zeros indicate whether or not a certain substrate (row) is contained in a certain pathway (column). 
 \code{NA}s indicate that a substrate has no \ac{KEGG} ID, as for example well A01 containing the (pseudo-)substrate ``Negative Control''.
@@ -685,7 +689,7 @@ In the examples detailed above, a variety of such objects have already been gene
 Next, we show how to produce graphics from these objects instead of directly from \ac{KEGG}.
 
 <<label=pathview-plot-graphviz>>=
-coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko", 
+coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko", afactor = 1500,
   kegg.native = FALSE, out.suffix = "graphvizk12.ko", pathway.id = "00052",
   sign.pos = "bottomleft", key.pos = "bottomright")
 @
@@ -702,14 +706,16 @@ See the main text for a description of some of the limitations when creating gra
 }
 \end{figure}
 
+Although \code{pathview} offers quite a number of arguments specifically for \code{kegg.native=FALSE}, there are, unfortunately, only limited options for tuning the size of the nodes or the font sizes in this visualisation.
+The scaling of text and symbols can be tuned with the usual \code{cex} argument (for \code{kegg.native = FALSE} the default is \code{cex = 0.5}).
+The \code{text.width} argument can be used to specify the length for text wrapping. 
+In principle, the node size can be fine-tuned with \code{afactor}, however even the help page of the \code{pathview} function emphasises that ``its effect is subtler than expected''.
+Together with the automated rendering by the \code{graphviz} layout engine it might be difficult to obtain a visually satisfying map of the pathway of interest.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% END FROZEN PART
 %% DO NOT MODIFY ANYTHING ABOVE THIS LINE WITHOUT NEGOTIATING WITH MG
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-There are, unfortunately, only limited options for tuning the font sizes or the size of the symbols in the graphs.
-Regarding the colour arguments, \rcsmark{TODO}.
-The scaling \rcsmark{TODO}.
 
 
 % this part goes into the paragraph, where it is described, that there is no fixed order of the different described analysis steps:
@@ -738,6 +744,7 @@ Such results can be used as a starting point when searching for a causal explana
 They can also be used to simply determine the pathways to be used when drawing the \pkg{opm} results in a graph, as detailed in the previous sections.
 
 In the next coding example, we prepare a data matrix of differences between means and potential explanatory variables from \ac{KEGG}.
+Again, the comparison applies to the default parameter given by \code{opm_opt("curve.param")}; see the manual for details.
 
 <<label=e-coli-comp-full>>=
 coli.comp <- opm_mcp(coli.sub, output = "mcp",
@@ -763,6 +770,15 @@ coli.comp.rf <- randomForest(x = coli.anno[, -1], y = coli.anno[, 1],
 % Please check this.
 % If OK, explain some details of this analysis here but not too much.
 % Instead, include some references if possible.
+
+See \citep{Wouter2012} for a review of \ac{RF} properties that allow for maximising the biological insights that can be extracted from complex OMICS data.
+\citep{Boulesteix2012} emphasise the applications of \ac{RF} to computational biology with special attention to practical aspects such as parameter selection and major pitfalls and biases of \ac{RF} and its \acs{VIM}.
+
+% TODO LATER:
+%\item \citep{Boccuto2013} - analysis of metabolic profiles of lymphoblastoid cell lines from 137 patients with neurodevelopmental disorders with or without \acs{ASD} and 78 normal individuals, using BIOLOG Phenotype microarrays. Feature selection approaches identified Tryptophan-substrates  - cells from \ac{ASDs} patients are less capable in utilisation of Tryptophan-substrates
+%\item  
+
+
 
 We can now determine the substrate features that best predict the differences between the two \textit{E. coli} strains and depict these features within a ``Variable Importance Plot'' (Figure~\ref{fig:var-imp-plot}).
 
@@ -794,7 +810,7 @@ The pathway map IDs that are shown to have a strong influence are also related t
 For instance, the Galactose metabolism (``map00052'') is among the top-scoring substrate features.
 For a confirmation using \code{opm\_mcp}, see Figure~\ref{fig:e_coli_comp_ci}.
 
-\rcsmark{TODO}
+
 
 %TODO Should we confirm this result with opm_mcp?
 %
@@ -814,6 +830,12 @@ For a confirmation using \code{opm\_mcp}, see Figure~\ref{fig:e_coli_comp_ci}.
 % use package party for analysis of the data above
 % conduct analysis with randomForest and party using the A-values in dataframe (as it was done with the freese-data)
 % this would then be something like \subsection{finding substrates of importance}
+
+Note that the approach used above is suboptimal because mean differences between metadata-defined groups have entered  the model as dependent variable.
+This fits well to the visualisation approaches exemplified above but ignores the variance of the differences and lets the metainformation not directly enter the model because here metadata are only used to define the groups.
+The forthcoming version of this vignette will demonstrate feature selection from the curve parameters themselves.
+We will show how to easily generate matrices containing estimated both traditional \pkg{opm} metadata and novel \pkg{opm} substrate metainformation as (potential) explanatory variables.
+Moreover, we will make use of the \pkg{mboost} package for feature selection.
 
 
 \section[Acknowledgements]{Acknowledgements}
