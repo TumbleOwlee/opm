@@ -110,6 +110,14 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   x
 }, sealed = SEALED)
 
+setMethod("[", c(MOPMX, "character", "missing", "ANY"), function(x, i, j,
+    drop = FALSE) {
+  if (drop) # remove the class, return a list
+    return(x@.Data[match(i, names(x))])
+  x@.Data <- close_index_gaps(x@.Data[match(i, names(x))]) # keeps the class
+  x
+})
+
 setMethod("[", c(MOPMX, "ANY", "missing", "ANY"), function(x, i, j,
     drop = FALSE) {
   if (drop) # remove the class, return a list

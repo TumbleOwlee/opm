@@ -3,7 +3,8 @@
 \title{Convert to \acronym{YAML}}
 \arguments{
   \item{object}{Object of one of the classes belonging to
-  \code{\link{YAML_VIA_LIST}}.}
+  \code{\link{YAML_VIA_LIST}}, or \code{\link{MOPMX}}
+  object.}
 
   \item{sep}{Logical scalar. Prepend \acronym{YAML}
   document separator \sQuote{\verb{---}}?}
@@ -31,7 +32,8 @@
   fail-safe.}
 
   \item{...}{Optional other arguments passed to
-  \code{as.yaml} from the \pkg{yaml} package.}
+  \code{as.yaml} from the \pkg{yaml} package, or arguments
+  passed between the methods.}
 }
 \value{
   Character scalar (\acronym{YAML} string).
@@ -87,8 +89,10 @@ write(to_yaml(x), "out.yml")
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{to_yaml-methods}
+\alias{to_yaml,MOPMX-method}
 \alias{to_yaml,YAML_VIA_LIST-method}
 \usage{
+  \S4method{to_yaml}{MOPMX}(object, ...) 
   \S4method{to_yaml}{YAML_VIA_LIST}(object, sep = TRUE,
     line.sep = "\n", json = FALSE, listify = nodots, nodots = FALSE, ...) 
 }

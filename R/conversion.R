@@ -614,3 +614,7 @@ setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
   result
 }, sealed = SEALED)
 
+setMethod("to_yaml", MOPMX, function(object, ...) {
+  to_yaml(lapply(object, as, "list"), ...)
+})
+
