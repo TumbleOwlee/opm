@@ -1,3 +1,69 @@
+Changes in version 1.0-0
+-------------------------
+
+Significant user-visible changes:
+
+- replaced fast_estimate() by the matrix method of do_aggr(); removed deprecated
+  functions well_to_substrate() and batch_opm_to_yaml()
+
+- removed deprecated arguments of to_metadata() and do_aggr()
+
+- position(), setup_time() and filename() are deprecated; use csv_data()
+  instead
+
+- output of read_opm() and opms() in 'grp' mode has changed to MOPMX objects
+  (which inherit from lists, which were returned in previous versions)
+
+- the order of arguments of some of the methods of to_metadata(), discrete(),
+  phylo_data(), radial_plot() and level_plot() have slightly changed; the OPMD
+  listing() method gets a mandatory 'as.groups' argument
+
+- substrate naming is slightly different in some cases
+
+- additions to the stored discretisation settings, thus older YAML files will be
+  automatically converted (with a warning)
+
+
+New features:
+
+- new generic function annotated() with a variety of methods and options
+
+- opm_mcp() now handles non-syntactical names in metadata, computes specific
+  'Pairs...' contrast-types and more easily specifies the 'base' for the
+  'Dunnett' contrast type
+
+- new MOPMX class for holding plates with distinct plate types, with methods
+  for, e.g., do_aggr() and do_disc()
+
+- faster input of CSV and YAML files
+
+- new spline-fitting facilities (see set_spline_options())
+
+- new methods for length(), merge(), edit() (for editing metadata by hand),
+  infix operators, plate_type()
+
+- new arguments and according new features for heat_map(), ci_plot(), flatten(),
+  aggregated(), discretized(), opm_files(), aggr_settings(), disc_settings(),
+  collect_template(), csv_data(), well(), find_positions(), substrate_info(),
+  to_yaml(), opm_mcp()
+
+- new entries managed via opm_opt()
+
+- support for plate types FF, YT and AN2 added (thanks to Barry Bochner) and
+  many additions to the stored substrate information (thanks to the ChEBI
+  staff); better conversion of substrate names to HTML
+
+- new command-line options for 'run_opm.R'
+
+Other changes:
+
+- second vignette for explaining substrate-information processing, including
+  visualisation in KEGG graphs and feature selection
+
+- examples available via demo()
+
+- improved the documentation in the manual
+
 
 Changes in version 0.10-0
 -------------------------

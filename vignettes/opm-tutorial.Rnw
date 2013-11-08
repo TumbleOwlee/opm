@@ -1344,6 +1344,7 @@ xy_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=xy-plot-figure, fig=TRUE, echo=FALSE, width=18, height=12>>=
 print(xy_plot(vaas.1.6[, , 1:24], main = "E. coli vs. P. aeruginosa",
@@ -1379,6 +1380,7 @@ xy_plot(vaas.1.6[, , c("H11", "A01", "G11")],
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=xy-plot-partial-figure, fig=TRUE, echo=FALSE, width=9, height=6>>=
 print(xy_plot(vaas.1.6[, , c("H11", "A01", "G11")],
@@ -1439,6 +1441,7 @@ vaas.1.6.A <- heat_map(vaas.1.6, as.labels = "Strain",
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=heat-map-figure, fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
 heat_map(vaas.1.6, as.labels = "Strain", as.groups = "Species")
@@ -1473,6 +1476,7 @@ radial_plot(vaas_4[, , c(1:5, 10)], as.labels = list("Species", "Strain"),
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=radial-plot-figure, fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
 radial_plot(vaas_4[, , c(1:5, 10)], as.labels = list("Species", "Strain"),
@@ -1501,6 +1505,7 @@ ci_plot.legend <- ci_plot(vaas.1.6[, , c("A01", "A02", "A03")],
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=ci-plot-figure, fig=TRUE, echo=FALSE, results=hide, width=9, height=6>>=
 ci_plot(vaas.1.6[, , c("A01", "A02", "A03")],
@@ -1541,6 +1546,7 @@ ci_plot(extract(x, as.groups = TRUE,  norm.per = "none")[, c(1:7, 13)],
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=ci-plot-of-groups-figure, fig=TRUE, echo=FALSE, width=9, height=8>>=
 ci_plot(extract(x, as.groups = TRUE, norm.per = "none")[, c(1:7, 13)],
@@ -1584,6 +1590,7 @@ ci_plot(extract(x, as.groups = TRUE,  norm.per = "row",
 @
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=ci-plot-norm-well-A10-figure, fig=TRUE, echo=FALSE, width=9, height=8>>=
 ci_plot(extract(x, as.groups = TRUE, norm.per = "row",
@@ -1636,6 +1643,7 @@ xy_plot(vaas.G06, include = ~ Strain, neg.ctrl = FALSE, space = "right")
 @
 
 \begin{figure}
+\centering
 \scalebox{1.0}{
 <<label=plot-vaas-subset-figure, fig=TRUE, echo=FALSE, width=9, height=6>>=
 xy_plot(vaas.G06, include = ~ Strain, neg.ctrl = FALSE, space = "right")
@@ -1708,6 +1716,7 @@ par(old.mar) # reset to default plotting settings
 
 
 \begin{figure}
+\centering
 \scalebox{1.225}{
 <<label=plot-mcp-linfct-figure, fig=TRUE, echo=FALSE, width=8, height=3>>=
 library(multcomp)
@@ -1903,6 +1912,7 @@ summary(vaas4.mcp)$linfct
 As mentioned above, the outcome can be visualised using the \code{plot} method for \code{glht} objects (see Figure~\ref{fig:opm_mcp_CI_plotII}).
 
 \begin{figure}
+\centering
 \scalebox{0.9}{
 <<label=vaas4-mcp-figure, fig=TRUE, echo=FALSE, width=9, height=3>>=
 old.mar <- par(mar = c(3, 20, 3, 2)) # adapt plotting settings
@@ -1939,6 +1949,7 @@ vaas.G06.mcp <- opm_mcp(vaas.G06, model = ~ J(Strain, Experiment),
 The result is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-meansI}, visualised using \code{plot} as described above.
 
 \begin{figure}
+\centering
 \scalebox{0.9}{
 <<label=vaas-G06-mcp-figure, fig=TRUE, echo=FALSE, width=8, height=4>>=
 old.mar <- par(mar = c(3, 22, 3, 1)) # adapt plotting settings
@@ -1986,6 +1997,7 @@ vaas6.mcp <- opm_mcp(vaas.G06, model = ~ J(Strain, Experiment), m.type = "lm",
 The resulting visualisation of this entirely user-defined contrast matrix is shown in Figure~\ref{fig:opm_mcp_CI_plot_cell-meansII}.
 
 \begin{figure}
+\centering
 \scalebox{0.9}{
 <<label=mcp-G06-user-def-contrasts-figure, fig=TRUE, echo=FALSE, results=hide, width=8, height=3>>=
 old.mar <- par(mar = c(3, 12, 3, 2)) # adapt plotting settings

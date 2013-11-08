@@ -37,10 +37,10 @@ Description: Tools for analysing OmniLog(R) and MicroStation(TM)
     (estimating curve parameters), comparing and discretising PM
     data, creating phylogenetic formats and reports for taxonomic
     journals, drawing the PM analysis results in biochemical
-    pathway graphs, running multiple comparisons of means,
-    integrating metadata, using the YAML format for the storage of
-    data and metadata, and batch conversion of large numbers of
-    files.
+    pathway graphs optionally including genome annotations, running
+    multiple comparisons of means, integrating metadata, using the
+    YAML format for the storage of data and metadata, and batch
+    conversion of large numbers of files.
 License: GPL (>= 2)
 URL: http://opm.dsmz.de/
 MailingList: http://lists.r-forge.r-project.org/mailman/listinfo/opm-support

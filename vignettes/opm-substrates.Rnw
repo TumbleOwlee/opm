@@ -106,6 +106,7 @@ This is the substrate-information tutorial of \pkg{opm} in the version of \today
 The precomputed information on the known \ac{PM} substrates is explained, as well as the methods available to query this information.
 IDs for a variety of databases are stored within \pkg{opm} and can be used to conduct web queries to obtain comprehensive information on the substrates of interest.
 We show how these data can be used to visualise results from \ac{PM} experiments, including the outcome from advanced multiple-comparison statistics, within biochemical pathway maps.
+Visually comparing genome annotation and \ac{PM} results is easily possible in that manner.
 Moreover, methods are described to automatically detect the substrate features that potentially explain a given experimental outcome.
 This includes determining the relevant pathways to be used in the visualisations.
 More examples for the powerful feature-selection approaches available within \proglang{R} will be explained in future versions of this tutorial.
@@ -275,7 +276,7 @@ For details, see the description on the \ac{KEGG} website (\url{http://www.genom
 
 \subsection{Providing suitable input data}\label{annotated-input}
 
-% TODO LATER
+%TODO LATER
 % need a graphical overview of the workflow
 % maybe connected to the existing one in the main tutorial?
 
@@ -322,11 +323,10 @@ x <- opm_mcp(vaas_4[, , 1:15], output = "mcp", model = ~ Well,
 
 The resulting 95\% confidence intervals for the difference of means are plotted in Figure~\ref{fig:opm_mcp_CI_plotII}.
 
-\begin{center}
 \begin{figure}
 \centering
 \scalebox{0.8}{
-<<label=annotated-opm-glht-figure, fig=TRUE, echo=FALSE, width=8>>=
+<<label=annotated-opm-glht-figure, fig=TRUE, echo=FALSE, width=8, height=6>>=
 old.mar <- par(mar = c(3, 8, 3, 2)) # adapt plotting settings
 plot(x)
 par(old.mar) # reset plotting settings
@@ -340,7 +340,6 @@ The picture was obtained by running \code{opm\_mcp} and then the plotting functi
 See the main tutorial for details.
 }
 \end{figure}
-\end{center}
 
 Using the above generated \proglang{opm\_glht} object, the options modifying the output of \code{annotated} will be illustrated.
 Apparently only three comparisons exhibit a statistically significant difference, namely the comparisons A10 - A05, A11 - A05 and A12 - A05, all showing that the reactions in A05 are weaker than those in A10, A11 and A12, respectively.
@@ -461,7 +460,7 @@ Note particularly the substrates Raffinose, Stachyose and Sucrose (in the middle
  \centering
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.k12.ko}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.k12.ko}}
                 \caption{Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway.}
                 \label{fig:1a-pathview-native-sep-strains}
         \end{subfigure}
@@ -469,7 +468,7 @@ Note particularly the substrates Raffinose, Stachyose and Sucrose (in the middle
         \vspace{20pt}
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.type.ko}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.type.ko}}
                 \caption{Respiratory data (mean maximum height) of \textit{Escherichia coli} type strain \ac{DSM} 30083\textsuperscript{T} mapped on the \ac{KEGG} Galactose pathway.}
                 \label{fig:1b-pathview-native-sep-strains}
         \end{subfigure}
@@ -484,7 +483,7 @@ Note particularly the substrates Raffinose, Stachyose and Sucrose (in the middle
 Using the default settings, \code{pathview} yields a raster image in \ac{PNG} format, which is stored in the current working directory and shown in Figure~\ref{fig:pathview-native-sep-strains}.
 For demonstration purposes the pathway number ``00052'', which encodes for the Galactose metabolism pathway map, is chosen.
 Genes (boxes) are annotated with \ac{KEGG} ontology numbers (set by choosing \code{species = "ko"}), where available or, alternatively, with EC numbers. 
-Note that the \code{species} arguments offers the possibility to use species-specific genome information available in the \ac{KEGG} directory; see above for the letter codes.
+Note that the \code{species} arguments offers the possibility to use species-specific genome information available in the \ac{KEGG} directory; see above for the letter codes and below for an application example.
 The substrates (circles) in the maps get standard compound names, which are automatically retrieved from the ChEMBL database using the compound IDs. 
 
 The data for the two strains can be shown analogously using the categorical output of \code{annotated}, see Figure~\ref{fig:pathview-cat-sep-strains}.
@@ -509,7 +508,7 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
  \centering
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.k12.ko.bin}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.k12.ko.bin}}
                 \caption{Respiratory data (mean maximum height, discretised) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway.}
                 \label{fig:pathview-cat-sep-strains-1a}
         \end{subfigure}
@@ -517,7 +516,7 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
         \vspace{20pt}
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.type.ko.bin}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.type.ko.bin}}
                 \caption{Respiratory data (mean maximum height, discretised) of \textit{Escherichia coli} type strain \ac{DSM} 30083\textsuperscript{T} mapped on the \ac{KEGG} Galactose pathway.}
                 \label{fig:pathview-cat-sep-strains-1b}
         \end{subfigure}
@@ -527,6 +526,34 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
         The aggregated and discretised measurement data are represented by according colours and mapped on the corresponding substrates (circles) in the graph. 
         }
 \end{figure}
+
+By using the \code{species} argument it is possible to include the genome annotations available from \ac{KEGG} (see above for details).
+Since in \ac{KEGG} no genome for the \textit{E. coli} type strain is available, we will demonstrate the usage of this argument only for strain K12 (= \ac{DSM} 18039).
+We chose the annotation of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997, which corresponds to \code{species = "eco"} (other K12 variants are available in \ac{KEGG}).
+In the corresponding figure, genes (boxes) without annotation information in the chosen genomes remained white without any labelling.
+But when using \code{na.col}, entries without annotation information are highlighted with the colour of choice.
+
+ 
+<<label=pathview_e_coli_comp_map>>=
+coli.map.k12.eco <- opm_path(cpd.data = anno.k12, species = "eco", 
+  out.suffix = "k12.eco", pathway.id = "00052", na.col = "pink")
+@
+
+
+\begin{figure}
+ \centering
+\scalebox{1.225}{
+\includegraphics[type=png,ext=.png,read=.png,page=1]{eco00052.k12.eco}
+}
+\caption{\label{fig:e_coli_kegg_anno}
+Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway including information from the \ac{KEGG} annotation of the genome of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997.
+Genes without annotation information remain just white without any labelling.}
+\end{figure}
+
+With this type of visualisation users can detect metabolic steps for which no genes are annotated, but \ac{PM} data indicate metabolic activity.
+This can help improving genome annotation.
+In the chosen example, the failure of the strain to metabolize Galactose is in accordance with the lack of some genes in the genome annotation, causing gaps in the pathway for Galactose catabolism.
+
 
 \subsubsection{Finding substrates within pathways}\label{finding-substrates}
 
@@ -571,9 +598,9 @@ ci_plot(coli.sub[, , e.subs.pos],
   draw.legend = T, crr = 1.33)
 @
 
-\begin{center}
+
 \begin{figure}
- \centering
+\centering
 \scalebox{1.2}{
 <<label=e-coli-single-ci-figure, fig=TRUE, echo=FALSE, height=14, width=20>>=
 ci_plot(coli.sub[, , e.subs.pos], 
@@ -587,7 +614,6 @@ ci_plot(coli.sub[, , e.subs.pos],
 Point estimates and 95\% confidence intervals for the single maximum-height values of the two \textit{E. coli} strains for the subset of substrates represented in the Galactose pathway map.
 }
 \end{figure}
-\end{center}
 
 Straightforwardly, we compute a multiple comparison between only the 13 substrates included in the Galactose metabolism pathway map. 
 Our example compares the type strain with K12; each corresponding 95\% \ac{CI} for differences of means for the chosen substrates is shown in Figure~\ref{fig:e_coli_comp_ci}.
@@ -599,12 +625,11 @@ coli.comp <- opm_mcp(coli.sub[, , e.subs.pos],
 
 %TODO labels on the left of the last figure are truncated
 
-\begin{center}
 \begin{figure}
- \centering
+\centering
 \scalebox{1.1}{
-<<label=e-coli-comp-ci-figure, fig=TRUE, echo=FALSE, width=14, height=9>>=
-old.mar <- par(mar = c(3, 31, 3, 0.5)) # adapt plotting settings
+<<label=e-coli-comp-ci-figure, fig=TRUE, echo=FALSE, width=14, height=5.5>>=
+old.mar <- par(mar = c(3, 20, 3, 0.5)) # adapt plotting settings
 plot(coli.comp, xlim = c(-5, 290))
 abline(v = 150, col = "blue", lty = 5, lwd = 2)
 par(old.mar) # reset plotting settings
@@ -617,7 +642,6 @@ The blue dashed line indicates a minimal effect size of 150 as used in Figure~\r
 The default is 0, as used in Figure~\ref{fig:pathview-native-sig-differences-1a}.
 }
 \end{figure}
-\end{center}
 
 The annotation vector for the differences of means can be obtained by simply applying \code{annotated} to the \proglang{opm\_glht} object. 
 The direct mapping of these differences between the two strains on the Galactose pathway is shown in Figure~\ref{fig:pathview-native-differences}.
@@ -626,18 +650,19 @@ The direct mapping of these differences between the two strains on the Galactose
 coli.comp.map <- opm_path(cpd.data = annotated(coli.comp), species = "ko", 
   out.suffix = "coli.comp.ko", pathway.id = "00052")
 @
-\begin{center}
+
+
 \begin{figure}
  \centering
 \scalebox{1.225}{
-\includegraphics[width=10cm,type=png,ext=.png,read=.png,page=1]{ko00052.coli.comp.ko}
+\includegraphics[type=png,ext=.png,read=.png,page=1]{ko00052.coli.comp.ko}
 }
 \caption{\label{fig:pathview-native-differences}
 Respiration differences between \textit{E. coli} K12 and \ac{DSM} 30083\textsuperscript{T} regarding the maximum-height values mapped on the Galactose pathway.
 Compare also Figure~\ref{fig:e_coli_comp_ci}, which directly depicts the magnitude of the differences.
 }
 \end{figure}
-\end{center}
+
 In analogy to the last example, the function \code{annotated} can be used to produce categorical annotation vectors for the differences of means.
 Such vectors are very useful because they can specifically highlight the statistically significant differences, and particularly those that are significantly larger than a certain biologically relevant minimum effect size.
 Thus the full power of the functions from the \pkg{multcomp} package underlying \code{opm\_mcp} (see the main tutorial and the manual for details) is available when visualising \ac{PM} data in pathway graphs.
@@ -668,7 +693,7 @@ cat.coli.comp.150 <- opm_path(
  \centering
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.cat-coli-comp-0}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.cat-coli-comp-0}}
                 \caption{Using the default minimum effect size of 0.}
                 \label{fig:pathview-native-sig-differences-1a}
         \end{subfigure}
@@ -676,7 +701,7 @@ cat.coli.comp.150 <- opm_path(
         \vspace{20pt}
         \begin{subfigure}[b]{1.0\textwidth}
                 \centering
-                \fbox{\includegraphics[width=13cm,type=png,ext=.png,read=.png]{ko00052.cat-coli-comp-150}}
+                \fbox{\includegraphics[type=png,ext=.png,read=.png]{ko00052.cat-coli-comp-150}}
                 \caption{Using a minimum effect size of 150.}
                 \label{fig:pathview-native-sig-differences-1b}
         \end{subfigure}
@@ -688,6 +713,7 @@ For the direct mapping of the numeric differences see Figure~\ref{fig:pathview-n
 Compare also Figure~\ref{fig:e_coli_comp_ci}, which directly depicts the significance of the differences.
         }
 \end{figure}
+
 
 
 \subsubsection[Visualisation of pathway maps in Graphviz layout]{Visualisation of pathway maps in \proglang{Graphviz} layout}\label{pathview-denovo-layout}
@@ -706,11 +732,11 @@ coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko",
   pathway.id = "00052", sign.pos = "bottomleft", key.pos = "bottomright")
 @
 
-\begin{center}
+
 \begin{figure}
  \centering
 \scalebox{1.225}{
-\includegraphics[width=10cm,type=pdf,ext=.pdf,read=.pdf,page=1]{ko00052.graphvizk12.ko}
+\includegraphics[type=pdf,ext=.pdf,read=.pdf,page=1]{ko00052.graphvizk12.ko}
 }
 \caption{\label{fig:pathview-non-native}
 Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway and rendered by \pkg{pathview} using the \proglang{Graphviz} layout engine.
@@ -718,7 +744,7 @@ Compare Figure~\ref{fig:1a-pathview-native-sep-strains}, which shows the native 
 See the main text for a description of some of the limitations when creating graphics in this way.
 }
 \end{figure}
-\end{center}
+
 
 Although \code{pathview} offers quite a number of arguments specifically for \code{kegg.native=FALSE}, there are, unfortunately, only limited options for tuning the size of the nodes or the font sizes in this visualisation.
 The scaling of text and symbols can be tuned with the usual \code{cex} argument (for \code{kegg.native = FALSE} the default is \code{cex = 0.5}).
@@ -757,7 +783,7 @@ coli.comp.rf <- randomForest(x = coli.anno[, -1], y = coli.anno[, 1],
 See \citep{Wouter2012} for a review of \ac{RF} properties that allow for maximising the biological insights that can be extracted from complex OMICS data.
 \citep{Boulesteix2012} emphasise the applications of \ac{RF} to computational biology with special attention to practical aspects such as parameter selection and major pitfalls and biases of \ac{RF} and its \ac{VIM}.
 
-% TODO LATER:
+%TODO LATER:
 %\item \citep{Boccuto2013} - analysis of metabolic profiles of lymphoblastoid cell lines from 137 patients with neurodevelopmental disorders with or without \acs{ASD} and 78 normal individuals, using BIOLOG Phenotype microarrays. Feature selection approaches identified Tryptophan-substrates  - cells from \ac{ASDs} patients are less capable in utilisation of Tryptophan-substrates
 %\item  
 
@@ -768,11 +794,10 @@ We can now determine the substrate features that best predict the differences be
 varImpPlot(coli.comp.rf, main = "Difference Type Strain vs. K12")
 @
 
-\begin{center}
 \begin{figure}
  \centering
-\scalebox{1.25}{
-<<label=random-forest-plot, fig=TRUE, echo=FALSE, width=10, height=7.5>>=
+\scalebox{1.0}{
+<<label=random-forest-plot, fig=TRUE, echo=FALSE, width=10, height=5.9>>=
 varImpPlot(coli.comp.rf, main = "Difference Type Strain vs. K12")
 @
 }
@@ -784,7 +809,6 @@ That is, one of the strains performs stronger than the other one particularly re
 For a subset of the carbohydrates, those from the Galactose pathway (``map00052''), this can be confirmed in Figure~\ref{fig:e_coli_comp_ci}.
 }
 \end{figure}
-\end{center}
 
 The output can be interpreted a follows:
 
@@ -849,7 +873,6 @@ carb.test <- opm_mcp(coli.sub[, , c(carb.pos, noncarb.pos)], linfct = contr,
 The results of the two comparisons can be plotted as usual, see Figure~\ref{fig:carb-comp-test}. 
 According to the interpretation provided in the figure caption the analysis shows that one of the strains performs stronger than the other one particularly regarding carbohydrate utilisation.
 
-\begin{center}
 \begin{figure}
  \centering
 \scalebox{1.0}{
@@ -861,15 +884,12 @@ plot(carb.test, xlim = c(-190, 20))
 \caption{
 \label{fig:carb-comp-test}
 Point estimates and 95\% confidence intervals for the comparison of the two \textit{E. coli} strains pooled over substrates classified as ``Carbohydrates'' and ``non-Carbohydrates''.
-The difference between the two strains is much larger regarding the carbohydrate-substrates than regarding the remaining ones.
+The difference between the two strains is much larger regarding the carbohydrate substrates than regarding the remaining ones.
 }
 \end{figure}
-\end{center}
 
 
-
-
-% TODO LATER:
+%TODO LATER:
 % use package party for analysis of the data above
 % conduct analysis with randomForest and party using the A-values in dataframe (as it was done with the freese-data)
 % this would then be something like \subsection{finding substrates of importance}
