@@ -37,19 +37,21 @@
   significantly larger than the default cutoff.}
   \item{equal}{Return \code{TRUE} or \code{FALSE}
   indicating whether or not the coefficients are
-  insignificantly different from the default cutoff.}
-  \item{different}{Return \code{TRUE} or \code{FALSE}
-  indicating whether or not the coefficients are
-  significantly different from the default cutoff.} }
-  Alternatively, character scalars such as \sQuote{!75.0},
-  \sQuote{<100}, \sQuote{>150}, \sQuote{=85.0},
-  \sQuote{,3.0} or \sQuote{'11.5} can be provided, with the
-  first character translated to the corresponding meaning
-  in the list above (with \sQuote{,} for \sQuote{downwards}
-  and \sQuote{'} for \sQuote{upwards}) and the remaining
-  string coerced to the cutoff to be used. If a numeric
-  scalar is provided, it is used as cutoff in conjunction
-  with the \sQuote{different} mode described above.}
+  insignificantly different from the default cutoff.  Note
+  that \sQuote{insignificantly different} does not mean
+  \sQuote{significantly equal}!} \item{different}{Return
+  \code{TRUE} or \code{FALSE} indicating whether or not the
+  coefficients are significantly different from the default
+  cutoff.} } Alternatively, character scalars such as
+  \sQuote{!75.0}, \sQuote{<100}, \sQuote{>150},
+  \sQuote{=85.0}, \sQuote{,3.0} or \sQuote{'11.5} can be
+  provided, with the first character translated to the
+  corresponding meaning in the list above (with \sQuote{,}
+  for \sQuote{downwards} and \sQuote{'} for
+  \sQuote{upwards}) and the remaining string coerced to the
+  cutoff to be used. If a numeric scalar is provided, it is
+  used as cutoff in conjunction with the \sQuote{different}
+  mode described above.}
 
   \item{lmap}{Vector to be used for mapping the created
   logical values, if any.  See \code{\link{map_values}} and

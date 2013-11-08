@@ -30,6 +30,7 @@
 \acrodef{EC}{Enzyme Commission}
 \acrodef{ID}{Identifier}
 \acrodef{KEGG}{Kyoto Encyclopedia of Genes and Genomes}
+\acrodef{KO}{\acs{KEGG} Orthology}
 \acrodef{MeSH}{Medical Subject Headings}
 \acrodef{RF}{Random Forest}
 \acrodef{PM}{Phenotype Microarray}
@@ -107,6 +108,7 @@ IDs for a variety of databases are stored within \pkg{opm} and can be used to co
 We show how these data can be used to visualise results from \ac{PM} experiments, including the outcome from advanced multiple-comparison statistics, within biochemical pathway maps.
 Moreover, methods are described to automatically detect the substrate features that potentially explain a given experimental outcome.
 This includes determining the relevant pathways to be used in the visualisations.
+More examples for the powerful feature-selection approaches available within \proglang{R} will be explained in future versions of this tutorial.
 }
 
 \Keywords{Respiration Kinetics, pathways, \acs{CAS}, \acs{MeSH}, \acs{ChEBI}, MetaCyc, \acs{KEGG}, \pkg{pathview}}
@@ -165,7 +167,7 @@ options(useFancyQuotes = FALSE)
 library("methods")
 @
 
-For just downloading information from \ac{KEGG} (see Section~\ref{plate-information}), install the \proglang{Bioconductor} package \pkg{KEGGREST}.
+For just downloading information from \ac{KEGG} (see Section~\ref{plate-information}), install the \href{http://bioconductor.org/}{\proglang{Bioconductor}} package \pkg{KEGGREST}.
 It needs not be loaded into your \proglang{R} session.
 For also drawing \ac{PM} information into \ac{KEGG} pathway maps (see Section~\ref{vis-pathway}), install the \proglang{Bioconductor} package \pkg{pathview} and load it into your session. 
 Note that it is important to load \pkg{pathview} before \pkg{opm}, which is needed throughout this tutorial, since otherwise some methods are not visible and the package does not work properly.
@@ -286,13 +288,17 @@ head(x)
 @
 
 The resulting vector contains the numeric values (selected parameter estimates or \code{opm\_mcp} results, as explained below) as well as an annotation of the according substrates. 
-For substrates such as ``Positive Control'' or ``pH 5'' no \ac{KEGG} ID is available, which results in \code{NA} values in the vector.
+For substrates such as ``Positive Control'' or ``pH 5'' no \ac{KEGG} \ac{ID} is available, which results in \code{NA} values in the vector.
 Accordingly, those substrates cannot be marked within pathway maps (see section~\ref{pathview-group}). 
 The \code{what} argument, passed as eponymous argument to \code{substrate\_info}, selects the kind of information to be used for the annotation.
+With \code{annotated} used with \code{how = "value"} a numeric matrix including the substrate names as row names and first column indicating the mean of chosen computed values is provided.
+Further columns indicate the occurrence of a certain substrate in a pathway map or the affiliation to a certain class, e.g. ``Carbohydrates''. 
+This information is in analogy to the download argument of \code{substrate\_info} but with conversion to a numeric matrix.
+For usage of argument \code{how}, please refer to section~\ref{finding-pathways}.
 
 Although \code{annotated} works directly on \code{OPMX} objects containing aggregated data for single plates or bundles of plates, please note, that the output allows for only one value per substrate. 
 Thus, when applying \code{annotated} to a set of plates, make sure that only one experimental group is comprised, since the resulting values are averaged per well over all plates in the input object.
-% TODO LATER: once pathview supports time series, this section (and annotated) must be modified accordingly
+%TODO LATER: once pathview supports time series, this section (and annotated) must be modified accordingly
 Using the \code{output} argument, one can select the parameter of interest, for example area under the curve instead of maximum height:
 
 <<label=annotated-param>>=
@@ -318,6 +324,7 @@ The resulting 95\% confidence intervals for the difference of means are plotted 
 
 \begin{center}
 \begin{figure}
+\centering
 \scalebox{0.8}{
 <<label=annotated-opm-glht-figure, fig=TRUE, echo=FALSE, width=8>>=
 old.mar <- par(mar = c(3, 8, 3, 2)) # adapt plotting settings
@@ -342,8 +349,10 @@ Using the \code{output} argument, users are able to obtain various statistically
 The options \code{upwards} and \code{downwards} result in a classification into three categories (\code{FALSE}, \code{NA}, or \code{TRUE}).
 These indicate whether or not the cut-off (zero per default) is included in the confidence interval (\code{NA}) and thus a decision possible.
 If not, the category indicates the direction of the shift relative to the cut-off.
-The options \code{different}, \code{smaller}, \code{larger} and \code{equal} work similarly, but use only the two categories \code{TRUE} and \code{FALSE}.
-Short-cuts are available for all options, enabling the user to set the cut-off together with the kind of output.
+The options \code{different}, \code{smaller}, \code{larger} and \code{equal} work similarly, but use only the two categories \code{TRUE} and \code{FALSE}. 
+Please note that the underlying test seeks for differences and thus the results always have to be interpreted regarding the significance (and magnitude) of these differences; ``insignificantly different'' does not mean ``significantly equal''!
+
+Short-cuts are available for all \code{output}-options, enabling the user to set the cut-off together with the kind of output.
 See the manual for details.
 
 A comprehensive overview of the possible results for object \code{x} is shown in the following data frame:
@@ -373,14 +382,14 @@ The user only has to specify the pathway and provide the \pkg{opm} data.
 All other necessary steps (download of pathway graph data as XML file from \ac{KEGG}, parsing of this data file, integrating user-defined data into the pathway representation, and rendering of final output graphics) are automatically conducted by \code{pathview}.
 See the \pkg{pathview} vignette for technical details.
 
-In the case of \ac{KEGG}, a pathway map is described as ``a molecular interaction/reaction network diagram represented in terms of the \ac{KEGG} Orthology (KO) groups'' (see \url{http://www.genome.jp/kegg/kegg3a.html} for further details).
+In the case of \ac{KEGG}, a pathway map is described as ``a molecular interaction/reaction network diagram represented in terms of the \ac{KO} groups'' (see \url{http://www.genome.jp/kegg/kegg3a.html} for further details).
 \ac{KEGG} contains a collection of distinct types of pathway maps identified by a code containing between two and four letters as a prefix, followed by five digits.
 
 The prefixes have the following meanings:
 
 \begin{itemize}[leftmargin=2cm]
 \item[map -] Reference pathway
-\item[ko -] Reference pathway (KO)
+\item[ko -] Reference pathway (\ac{KO})
 \item[ec -] Reference pathway (\ac{EC})
 \item[rn -] Reference pathway (Reaction)
 \item[\textit{org} -] Organism-specific pathway map (\textit{org} is a wild-card for the organism-specific abbreviation composed of two to four letters)
@@ -529,7 +538,7 @@ This particularly saves running time in the calls to \code{opm\_mcp} and the \co
 When using the option \code{how = "value"}, \code{annotated} yields a numeric matrix with substrate names as row names and pathway \acs{ID} as column names.
 Whereas the main use of such a matrix is described in Section ~\ref{finding-pathways}, it can also be used simply to show the distribution of substrates over pathways.
 Ones and zeros indicate whether or not a certain substrate (row) is contained in a certain pathway (column). 
-\code{NA}s indicate that a substrate has no \ac{KEGG} ID, as for example well A01 containing the (pseudo-)substrate ``Negative Control''.
+\code{NA}s indicate that a substrate has no \ac{KEGG} \ac{ID}, as for example well A01 which harbours the (pseudo-)substrate ``Negative Control''.
 
 By summing up the columns and sorting the resulting vector, the user gets a ranking of the columns (pathways) indicating how many substrates are covered. 
 
@@ -564,6 +573,7 @@ ci_plot(coli.sub[, , e.subs.pos],
 
 \begin{center}
 \begin{figure}
+ \centering
 \scalebox{1.2}{
 <<label=e-coli-single-ci-figure, fig=TRUE, echo=FALSE, height=14, width=20>>=
 ci_plot(coli.sub[, , e.subs.pos], 
@@ -591,9 +601,10 @@ coli.comp <- opm_mcp(coli.sub[, , e.subs.pos],
 
 \begin{center}
 \begin{figure}
+ \centering
 \scalebox{1.1}{
-<<label=e-coli-comp-ci-figure, fig=TRUE, echo=FALSE, width=12>>=
-old.mar <- par(mar = c(3, 25, 3, 0.5)) # adapt plotting settings
+<<label=e-coli-comp-ci-figure, fig=TRUE, echo=FALSE, width=14, height=9>>=
+old.mar <- par(mar = c(3, 31, 3, 0.5)) # adapt plotting settings
 plot(coli.comp, xlim = c(-5, 290))
 abline(v = 150, col = "blue", lty = 5, lwd = 2)
 par(old.mar) # reset plotting settings
@@ -615,17 +626,18 @@ The direct mapping of these differences between the two strains on the Galactose
 coli.comp.map <- opm_path(cpd.data = annotated(coli.comp), species = "ko", 
   out.suffix = "coli.comp.ko", pathway.id = "00052")
 @
-
+\begin{center}
 \begin{figure}
+ \centering
 \scalebox{1.225}{
-\includegraphics[type=png,ext=.png,read=.png,page=1]{ko00052.coli.comp.ko}
+\includegraphics[width=10cm,type=png,ext=.png,read=.png,page=1]{ko00052.coli.comp.ko}
 }
 \caption{\label{fig:pathview-native-differences}
 Respiration differences between \textit{E. coli} K12 and \ac{DSM} 30083\textsuperscript{T} regarding the maximum-height values mapped on the Galactose pathway.
 Compare also Figure~\ref{fig:e_coli_comp_ci}, which directly depicts the magnitude of the differences.
 }
 \end{figure}
-
+\end{center}
 In analogy to the last example, the function \code{annotated} can be used to produce categorical annotation vectors for the differences of means.
 Such vectors are very useful because they can specifically highlight the statistically significant differences, and particularly those that are significantly larger than a certain biologically relevant minimum effect size.
 Thus the full power of the functions from the \pkg{multcomp} package underlying \code{opm\_mcp} (see the main tutorial and the manual for details) is available when visualising \ac{PM} data in pathway graphs.
@@ -689,15 +701,16 @@ In the examples detailed above, a variety of such objects have already been gene
 Next, we show how to produce graphics from these objects instead of directly from \ac{KEGG}.
 
 <<label=pathview-plot-graphviz>>=
-coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko", afactor = 1500,
-  kegg.native = FALSE, out.suffix = "graphvizk12.ko", pathway.id = "00052",
-  sign.pos = "bottomleft", key.pos = "bottomright")
+coli.graphvizmap.k12 <- opm_path(cpd.data = anno.k12, species = "ko", 
+  afactor = 1500, kegg.native = FALSE, out.suffix = "graphvizk12.ko", 
+  pathway.id = "00052", sign.pos = "bottomleft", key.pos = "bottomright")
 @
 
-
+\begin{center}
 \begin{figure}
+ \centering
 \scalebox{1.225}{
-\includegraphics[type=pdf,ext=.pdf,read=.pdf,page=1]{ko00052.graphvizk12.ko}
+\includegraphics[width=10cm,type=pdf,ext=.pdf,read=.pdf,page=1]{ko00052.graphvizk12.ko}
 }
 \caption{\label{fig:pathview-non-native}
 Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway and rendered by \pkg{pathview} using the \proglang{Graphviz} layout engine.
@@ -705,6 +718,7 @@ Compare Figure~\ref{fig:1a-pathview-native-sep-strains}, which shows the native 
 See the main text for a description of some of the limitations when creating graphics in this way.
 }
 \end{figure}
+\end{center}
 
 Although \code{pathview} offers quite a number of arguments specifically for \code{kegg.native=FALSE}, there are, unfortunately, only limited options for tuning the size of the nodes or the font sizes in this visualisation.
 The scaling of text and symbols can be tuned with the usual \code{cex} argument (for \code{kegg.native = FALSE} the default is \code{cex = 0.5}).
@@ -712,38 +726,16 @@ The \code{text.width} argument can be used to specify the length for text wrappi
 In principle, the node size can be fine-tuned with \code{afactor}, however even the help page of the \code{pathview} function emphasises that ``its effect is subtler than expected''.
 Together with the automated rendering by the \code{graphviz} layout engine it might be difficult to obtain a visually satisfying map of the pathway of interest.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% END FROZEN PART
-%% DO NOT MODIFY ANYTHING ABOVE THIS LINE WITHOUT NEGOTIATING WITH MG
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% this part goes into the paragraph, where it is described, that there is no fixed order of the different described analysis steps:
-% explain the different situation of available information for analysis
-% I. descriptive measurements:
-% 		i) nothing known or genome known, pathway unknown
-%		ii) only pathway known
-%		iii) both genome and pathway known
-% II. differential approach: comparison between two (or more strains)
-% 		i) nothing known or genome known, pathway unknown
-%		ii) only pathway known
-%		iii) one or both genome and relevant pathway known
-% 
-% explain the different resulting experimental questions
-% 	i) descriptive with following improvement of genome annotation)
-% 	ii) differential with exploratory character: just describe the difference between strains
-%	iii) differential with functional approach: knock-out experiments, investigations of cases where other experiments did not  result in satisfying answers (authismus-paper)
-% 
-
 
 \section{Finding the pathways of interest}\label{finding-pathways}
 
-In many cases, the pathways of interest are not known in advance.
-The information accessible \textit{via} \code{annotated} can be used in conjunction with suitable statistical procedures to automatically determine those features of the substrates that best correspond to a certain experimental outcome.
-Such results can be used as a starting point when searching for a causal explanation of the given \pkg{opm} results.
-They can also be used to simply determine the pathways to be used when drawing the \pkg{opm} results in a graph, as detailed in the previous sections.
+In many experimental approaches, the identification of the pathway(s) of interest is one of the main subjects of research.
 
-In the next coding example, we prepare a data matrix of differences between means and potential explanatory variables from \ac{KEGG}.
+The information accessible \textit{via} \code{annotated} can serve as input for suitable statistical procedures in order to assess and rank the observed metabolic capabilities (i.e. respiration on the substrates) with respect to their ability to predict a given response. 
+Beside the identification of pathways of interest to be used when drawing the \pkg{opm} results in a graph, as detailed in the previous section, such results can further be used as a starting point when searching for a causal explanation of the given \pkg{opm} results.
+
+In the next coding example, we prepare a data matrix with the differences between the two \textit{E. coli} strains (as computed in section ~\ref{pathview-group-diffs}) and add potential explanatory variables from \ac{KEGG}. 
+Please refer to the manual and Section~\ref{annotated-input} for an explanation of the usage of \code{annotated} with the argument \code{how = "values"}.
 Again, the comparison applies to the default parameter given by \code{opm_opt("curve.param")}; see the manual for details.
 
 <<label=e-coli-comp-full>>=
@@ -753,7 +745,7 @@ coli.anno <- annotated(coli.comp, how = "value")
 @
 
 The matrix has to be reduced to the non-\code{NA} rows, i.e. substrates that are not included in \ac{KEGG} have to be removed.
-It also needs to be converted to a data frame before the \pkg{randomForest} package \citep{Liaw2002} can be applied.
+The matrix also needs to be converted to a data frame before the \pkg{randomForest} package \citep{Liaw2002} can be applied.
 
 <<label=e-coli-comp-full>>=
 coli.anno <- as.data.frame(coli.anno[complete.cases(coli.anno), ])
@@ -762,68 +754,119 @@ coli.comp.rf <- randomForest(x = coli.anno[, -1], y = coli.anno[, 1],
   importance = TRUE, proximity = TRUE)
 @
 
-%TODO Lea: I've changed this to non-formula input to avoid make.names().
-% This is now the full Gen-III plate except for the NAs.
-% But this is now regression, not classification as originally intended.
-% E.g. there is no confusion matrix.
-% IMHO this is appropriate because we have a quantitative response.
-% Please check this.
-% If OK, explain some details of this analysis here but not too much.
-% Instead, include some references if possible.
-
 See \citep{Wouter2012} for a review of \ac{RF} properties that allow for maximising the biological insights that can be extracted from complex OMICS data.
-\citep{Boulesteix2012} emphasise the applications of \ac{RF} to computational biology with special attention to practical aspects such as parameter selection and major pitfalls and biases of \ac{RF} and its \acs{VIM}.
+\citep{Boulesteix2012} emphasise the applications of \ac{RF} to computational biology with special attention to practical aspects such as parameter selection and major pitfalls and biases of \ac{RF} and its \ac{VIM}.
 
 % TODO LATER:
 %\item \citep{Boccuto2013} - analysis of metabolic profiles of lymphoblastoid cell lines from 137 patients with neurodevelopmental disorders with or without \acs{ASD} and 78 normal individuals, using BIOLOG Phenotype microarrays. Feature selection approaches identified Tryptophan-substrates  - cells from \ac{ASDs} patients are less capable in utilisation of Tryptophan-substrates
 %\item  
 
-
-
 We can now determine the substrate features that best predict the differences between the two \textit{E. coli} strains and depict these features within a ``Variable Importance Plot'' (Figure~\ref{fig:var-imp-plot}).
 
+
 <<label=randomforest-figure, fig=FALSE, eval=FALSE>>=
-varImpPlot(coli.comp.rf, main = NULL)
+varImpPlot(coli.comp.rf, main = "Difference Type Strain vs. K12")
 @
 
 \begin{center}
 \begin{figure}
-\scalebox{1.1}{
-<<label=random-forest-plot, fig=TRUE, echo=FALSE, width=12>>=
-varImpPlot(coli.comp.rf, main = NULL)
+ \centering
+\scalebox{1.25}{
+<<label=random-forest-plot, fig=TRUE, echo=FALSE, width=10, height=7.5>>=
+varImpPlot(coli.comp.rf, main = "Difference Type Strain vs. K12")
 @
 }
 \caption{
 \label{fig:var-imp-plot}
 Variable importance plot for substrate features that potentially explain the performance differences between the two \textit{E. coli} strains.
 Apparently the category ``Carbohydrates'' has the highest importance for the model.
-That is, one of the strains performs stronger than the other particularly regarding carbohydrate utilisation.
+That is, one of the strains performs stronger than the other one particularly regarding carbohydrate utilisation.
 For a subset of the carbohydrates, those from the Galactose pathway (``map00052''), this can be confirmed in Figure~\ref{fig:e_coli_comp_ci}.
 }
 \end{figure}
 \end{center}
 
-The output can be interpreted a follows.
+The output can be interpreted a follows:
+
 Whether or not a substrate is a carbohydrate works best for predicting whether one of the strains performs differently than the other.
 The category ``Carbohydrates'' works even better than its subcategories such as ``Oligosaccharides''.
 The pathway map IDs that are shown to have a strong influence are also related to carbohydrate metabolism, of course.
 For instance, the Galactose metabolism (``map00052'') is among the top-scoring substrate features.
 For a confirmation using \code{opm\_mcp}, see Figure~\ref{fig:e_coli_comp_ci}.
 
+Note that the approach used here is suboptimal in a certain respect because mean differences between metadata-defined groups have entered the model as dependent variable.
+This fits well to the visualisation approaches exemplified above but ignores the variance of the differences and lets the metainformation not directly enter the model because here metadata are only used to define the groups.
+The forthcoming version of this vignette will demonstrate feature selection from the curve parameters themselves.
+We will show how to easily generate matrices containing estimated both traditional \pkg{opm} metadata and novel \pkg{opm} substrate metainformation as (potential) explanatory variables.
+Moreover, we will make use of the \pkg{mboost} package for feature selection.
+
+For now, we will augment the \ac{RF} approach with an \code{opm\_mcp} analysis for confirming whether the reactions on carbohydrate wells are indeed more strongly different between the two strains than those on other wells.
+First, the positions of the substrates either belonging to the category ``Carbohydrates'' or not to it are determined and afterwards stored in two vectors. 
+
+<<label=prep.mcp.dat>>=
+carb.pos <- rownames(coli.anno)[coli.anno$Carbohydrates == 1]
+noncarb.pos <- rownames(coli.anno)[coli.anno$Carbohydrates == 0]
+carb.pos <- find_positions(carb.pos, plate_type(coli.sub))
+noncarb.pos <- find_positions(noncarb.pos, plate_type(coli.sub))
+@
+
+We can now generate the contrast matrix needed for the computation of the multiple comparisons between the two strains 
+for precisely these two subsets of substrates.
+As recommended in the main tutorial, this should be done by first using \code{opm_mcp} to generate auxiliary contrast matrices, which here provide the dimensions and column names for the final contrast matrix.
+
+<<label=carb-comp-contr-mat>>=
+contr.carb <- opm_mcp(coli.sub[, , carb.pos], linfct = c(Dunnett = 1),
+  model = ~ J(Well + Strain), output = "contrast")[[1]]
+contr.noncarb <- opm_mcp(coli.sub[, , noncarb.pos], linfct = c(Dunnett = 1),
+  model = ~ J(Well + Strain), output = "contrast")[[1]]
+@  
+
+The final contrast matrix is set up by concatenating the necessary numeric vectors, setting labels for the comparisons and adding the column names.
+
+<<label=carb-comp-contr-finish>>=
+contr <- rbind(
+  "Carbohydrates/DSM18039 - Carbohydrates/DSM30083T" = c(
+    rep(c(2 / ncol(contr.carb), -2 / ncol(contr.carb)),
+      times = ncol(contr.carb) / 2), 
+    rep(0, times = ncol(contr.noncarb))
+  ),
+  "non-Carb./DSM18039 - non-Carb./DSM30083T" = c(
+    rep(0, times = ncol(contr.carb)),
+    rep(c(2 / ncol(contr.noncarb), -2 / ncol(contr.noncarb)), 
+      times = ncol(contr.noncarb) / 2)
+  )
+)
+colnames(contr) <- c(colnames(contr.carb), colnames(contr.noncarb))
+@
+
+This contrast matrix \code{contr} can now directly be fed into \code{opm\_mcp}.
+
+<<label=carb-comp-test>>=
+carb.test <- opm_mcp(coli.sub[, , c(carb.pos, noncarb.pos)], linfct = contr,
+  m.type = "lm", model = ~ J(Well + Strain))
+@
+
+The results of the two comparisons can be plotted as usual, see Figure~\ref{fig:carb-comp-test}. 
+According to the interpretation provided in the figure caption the analysis shows that one of the strains performs stronger than the other one particularly regarding carbohydrate utilisation.
+
+\begin{center}
+\begin{figure}
+ \centering
+\scalebox{1.0}{
+<<label=carb-comp-test, fig=TRUE, echo=FALSE, width=12, height=3>>=
+par(mar = c(3, 25, 4, 3))
+plot(carb.test, xlim = c(-190, 20))
+@
+}
+\caption{
+\label{fig:carb-comp-test}
+Point estimates and 95\% confidence intervals for the comparison of the two \textit{E. coli} strains pooled over substrates classified as ``Carbohydrates'' and ``non-Carbohydrates''.
+The difference between the two strains is much larger regarding the carbohydrate-substrates than regarding the remaining ones.
+}
+\end{figure}
+\end{center}
 
 
-%TODO Should we confirm this result with opm_mcp?
-%
-% we then maybe need better selection mechanisms from the matrix/data frame as output by annotated()
-% let me know if something looks complicated
-%
-% but we already have:
-%R> find_positions(rownames(coli.anno), plate_type(coli.sub))
-%
-% an opm_mcp example comparing the differences between the two strains regarding
-% carbohydrates vs. non-carbohydrates could be interesting to conclude this section
-%
-% in addition to the content, it would also provide examples for dealing with the output data
 
 
 % TODO LATER:
@@ -831,18 +874,60 @@ For a confirmation using \code{opm\_mcp}, see Figure~\ref{fig:e_coli_comp_ci}.
 % conduct analysis with randomForest and party using the A-values in dataframe (as it was done with the freese-data)
 % this would then be something like \subsection{finding substrates of importance}
 
-Note that the approach used above is suboptimal because mean differences between metadata-defined groups have entered  the model as dependent variable.
-This fits well to the visualisation approaches exemplified above but ignores the variance of the differences and lets the metainformation not directly enter the model because here metadata are only used to define the groups.
-The forthcoming version of this vignette will demonstrate feature selection from the curve parameters themselves.
-We will show how to easily generate matrices containing estimated both traditional \pkg{opm} metadata and novel \pkg{opm} substrate metainformation as (potential) explanatory variables.
-Moreover, we will make use of the \pkg{mboost} package for feature selection.
 
+%\code{opm_mcp} provides data frame of the selected data when used with argument \code{output = "data"}.
+%It contains basically the four columns ``Strain'', ``Parameter'', ``Well'' and ``Value''. 
+%
+%<<label=e-coli-single-values>>=
+%# note: object coli.sub was setup in the beginning of this vignette
+%coli.sub.dat <- opm_mcp(coli.sub, ~ Strain, output = "data", in.parens = FALSE)
+%coli.sub.anno <- annotated(coli.sub, how = "values")
+%coli.sub.dat[, colnames(coli.sub.anno)] <- coli.sub.anno[as.character(coli.sub.dat$Well), ]
+%sub.dat.free <- as.data.frame(coli.sub.dat[complete.cases(coli.sub.dat), ])
+%head(sub.dat.free)
+%@
+%
+%
+%The matrix for \textit{E. coli} strain K12 (object \code{anno.k12.mat}) was already produced in section~\ref{finding-substrates}. 
+%Thus, here we provide the matrix for strain \ac{DSM} 30083\textsuperscript{T} and the computed differences between them (as computed in section ~\ref{pathview-group-diffs}). 
+
+%% some code to be used later
+%<<label=e-coli-comp-full>>=
+%# provide the annotated vector for type DSM 30083T
+%anno.type.mat <- annotated(coli.type, how = "value")
+%# compute the differences between the two strains
+%coli.comp <- opm_mcp(coli.sub, output = "mcp",
+%  model = ~ J(Well + Strain), linfct = c(Pairs = 1))
+%@
+
+%
+%% some code to be used later
+%<<>>=
+%anno.k12.dat <- as.data.frame(anno.k12.mat[complete.cases(anno.k12.mat), ])
+%anno.type.dat <- as.data.frame(anno.type.mat[complete.cases(anno.type.mat), ])
+%@
+%
+%
+%% some code to be used later
+%<<>>=
+%coli.k12.rf <- randomForest(x = anno.k12.dat[, -1], y = anno.k12.dat[, 1],
+%  importance = TRUE, proximity = TRUE)
+%coli.type.rf <- randomForest(x = anno.type.dat[, -1], y = anno.type.dat[, 1],
+%  importance = TRUE, proximity = TRUE)
+%@
+%
+%% some code to be used later
+%<<>>=
+%varImpPlot(coli.k12.rf, main = "Strain K12")
+%varImpPlot(coli.type.rf, main = "Type Strain")
+%@
 
 \section[Acknowledgements]{Acknowledgements}
 We are grateful to Barry \Surname{Bochner} (BIOLOG Inc.) for providing substrate and plate information on \ac{PM} assays.
 The integration of missing OmniLog\textregistered \ substrates into \ac{ChEBI} by the \ac{ChEBI} staff is gratefully acknowledged.
 We thank \Surname{Weijun Luo} for providing hints regarding the use of the \pkg{pathview} package.
 
+\clearpage
 
 \bibliography{opm}
 
