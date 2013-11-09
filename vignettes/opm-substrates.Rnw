@@ -529,26 +529,29 @@ coli.map.type.bin <- opm_path(cpd.data = anno.type.bin, species = "ko",
 
 By using the \code{species} argument it is possible to include the genome annotations available from \ac{KEGG} (see above for details).
 Since in \ac{KEGG} no genome for the \textit{E. coli} type strain is available, we will demonstrate the usage of this argument only for strain K12 (= \ac{DSM} 18039).
-We chose the annotation of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997, which corresponds to \code{species = "eco"} (other K12 variants are available in \ac{KEGG}).
+One could choose the annotation of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997, which corresponds to \code{species = "eco"} (other K12 variants are available in \ac{KEGG}).
 In the corresponding figure, genes (boxes) without annotation information in the chosen genomes remained white without any labelling.
 But when using \code{na.col}, entries without annotation information are highlighted with the colour of choice.
 
  
-<<label=pathview_e_coli_comp_map>>=
+<<label=pathview_e_coli_comp_map, eval=FALSE>>=
 coli.map.k12.eco <- opm_path(cpd.data = anno.k12, species = "eco", 
   out.suffix = "k12.eco", pathway.id = "00052", na.col = "pink")
 @
 
 
-\begin{figure}
- \centering
-\scalebox{1.225}{
-\includegraphics[type=png,ext=.png,read=.png,page=1]{eco00052.k12.eco}
-}
-\caption{\label{fig:e_coli_kegg_anno}
-Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway including information from the \ac{KEGG} annotation of the genome of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997.
-Genes without annotation information remain just white without any labelling.}
-\end{figure}
+%\begin{figure}
+% \centering
+%\scalebox{1.225}{
+%\includegraphics[type=png,ext=.png,read=.png,page=1]{eco00052.k12.eco}
+%}
+%\caption{\label{fig:e_coli_kegg_anno}
+%Respiratory data (mean maximum height) of \textit{Escherichia coli} strain K12 mapped on the \ac{KEGG} Galactose pathway including information from the \ac{KEGG} annotation of the genome of strain \textit{E. coli} ``K-12 MG1655'' from the year 1997.
+%Genes without annotation information remain just white without any labelling.}
+%\end{figure}
+
+We do not run this code (and show the resulting figure) here because it involved installing a \proglang{Bioconductor} package that includes the \ac{KEGG} annotation for \code{species = "eco"}.
+This package would be selected and downloaded automatically, so this is rather convenient for the user, but we refrain from modifying user libraries within a vignette.
 
 With this type of visualisation users can detect metabolic steps for which no genes are annotated, but \ac{PM} data indicate metabolic activity.
 This can help improving genome annotation.
