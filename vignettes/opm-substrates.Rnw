@@ -555,7 +555,7 @@ This package would be selected and downloaded automatically, so this is rather c
 
 With this type of visualisation users can detect metabolic steps for which no genes are annotated, but \ac{PM} data indicate metabolic activity.
 This can help improving genome annotation.
-In the chosen example, the failure of the strain to metabolize Galactose is in accordance with the lack of some genes in the genome annotation, causing gaps in the pathway for Galactose catabolism.
+In the chosen example, the failure of the strain to metabolise Galactose is in accordance with the lack of some genes in the genome annotation, causing gaps in the pathway for Galactose catabolism.
 
 
 \subsubsection{Finding substrates within pathways}\label{finding-substrates}
