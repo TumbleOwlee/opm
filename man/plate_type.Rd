@@ -41,8 +41,8 @@
   generation-III plates, use \kbd{gen.iii}; for the
   EcoPlate\eqn{\textsuperscript{\texttrademark}}{(TM)}, use
   \kbd{eco}; the remaining allowed values are only
-  \kbd{sf.n2} and \kbd{sf.p2}, but matching is
-  case-insensitive.}
+  \kbd{sf.n2}, \kbd{sf.p2}, \kbd{an2}, \kbd{ff} and
+  \kbd{yt}, but matching is case-insensitive.}
 
   \item{...}{Optional arguments passed between the
   methods.}

@@ -21,7 +21,8 @@ CSV_NAMES <- c(FILE = "File", PLATE_TYPE = "Plate Type", POS = "Position",
 HOUR <- "Hour"
 
 SPECIAL_PLATES <- c("Gen III", "ECO", "SF-N2", "SF-P2", "AN2", "FF", "YT")
-names(SPECIAL_PLATES) <- c("gen.iii", "eco", "sf.n2", "sf.p2")
+names(SPECIAL_PLATES) <- c("gen.iii", "eco", "sf.n2", "sf.p2", "an2", "ff",
+  "yt")
 
 SP_PATTERN <- sub("^SF", "G", SPECIAL_PLATES, TRUE, TRUE)
 SP_PATTERN <- unique(c(SP_PATTERN, SPECIAL_PLATES))
