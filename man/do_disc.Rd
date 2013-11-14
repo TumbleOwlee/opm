@@ -85,7 +85,7 @@
   discrete values from the curve parameters stored in an
   \code{\link{OPMA}} or \code{\link{OPMS}} object. Here,
   only discretisation into positive, negative and ambiguous
-  reactions is supported, and only based on the
+  reactions is supported, and by default based on the
   \sQuote{maximum height} curve parameter (which is
   biologically reasonable though).
 }

@@ -618,7 +618,7 @@ setMethod("heat_map", "matrix", function(object,
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"), asqr = FALSE,
+    col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
     ...,
     use.fun = c("gplots", "stats")) {
 
@@ -692,7 +692,10 @@ setMethod("heat_map", "matrix", function(object,
   )
 
   if (typeof(object) == "logical")
-    storage.mode(object) <- "integer"
+    if (length(lmap))
+      object[] <- map_values(c(object), lmap)
+    else
+      storage.mode(object) <- "integer"
 
   if (is.na(L(asqr)) || asqr)
     object[] <- do_asqr(object, is.na(asqr))

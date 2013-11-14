@@ -22,7 +22,8 @@
   much like \code{as.groups}.}
 
   \item{subset}{Character vector. The parameter(s) to put
-  in the matrix. If it is
+  in the matrix. One of the values of
+  \code{\link{param_names}()}. Alternatively, if it is
   \code{\link{param_names}("disc.name")}, discretised data
   are returned, and \code{ci} is ignored..}
 

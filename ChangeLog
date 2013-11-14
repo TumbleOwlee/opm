@@ -1,5 +1,5 @@
 
-2013-11-11 (the 11th release on CRAN)
+2013-11-XX (the 11th release on CRAN)
 
 - replaced fast_estimate() by the matrix method of do_aggr(); if necessary, the
   old matrix method of do_aggr() can be easily replaced with stats::aggregate()
@@ -24,6 +24,8 @@
 - stored discretisation settings additionally indicate the discretised curve
   parameter; older YAML files will be converted (with a warning) by inserting
   opm_opt('curve.param')
+- heat_map() gets a 'lmap' argument and per default now uses another colouring
+  for NA values
 
 - read_single_opm() and the methods that depend on it are faster now
 - the OPMX methods of collect_template() get most arguments of its character

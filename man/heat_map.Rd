@@ -101,6 +101,12 @@
   transformation. This usually only makes sense for
   proportion data. If \code{NA}, percentages are assumed.}
 
+  \item{lmap}{Numeric scalar with at least three elements,
+  or empty. If empty, ignored. Otherwise used for mapping
+  logical values to numeric values. See
+  \code{\link{map_values}} for details. Ignored if the data
+  are not logical.}
+
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
@@ -182,7 +188,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"), asqr = FALSE,
+    col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
     ...,
     use.fun = c("gplots", "stats")) 
 }
