@@ -175,6 +175,8 @@ stopifnot(is.numeric(y), y > 0, identical(names(y), names(x)))
 
 ## 'opm_glht' method
 
+if (require("multcomp")) {
+
 # generation of 'opm_ghlt' test object
 y <- opm_mcp(vaas_4[, , 1:4], model = ~ J(Well, Species),
   m.type = "aov", linfct = c(Pairs.Well = 1), full = FALSE)
@@ -192,6 +194,8 @@ stopifnot(y.ann.eq > 0, identical(names(y.ann.eq), names(x)[1:4]))
 # substrate names after translation of relevant characters to Greek letters
 head(y.ann.eq <- annotated(y, output = "equal", what = "greek", lmap = 1:3))
 stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
+
+}
 }
 \seealso{
   Other multcomp-functions: \code{\link{opm_mcp}}

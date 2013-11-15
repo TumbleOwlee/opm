@@ -89,8 +89,6 @@
 isRfile <- function(x) grepl("\\\.R$", x, ignore.case = TRUE)
 (x <- opm_files("auxiliary"))
 stopifnot(!isRfile(x))
-(x <- opm_files("doc"))
-stopifnot(!all(isRfile(x)), any(isRfile(x)))
 (x <- opm_files("demo"))
 stopifnot(isRfile(x))
 (x <- opm_files("scripts"))

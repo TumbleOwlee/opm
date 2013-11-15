@@ -1,5 +1,5 @@
 
-2013-11-XX (the 11th release on CRAN)
+2013-11-18 (the 11th release on CRAN)
 
 - replaced fast_estimate() by the matrix method of do_aggr(); if necessary, the
   old matrix method of do_aggr() can be easily replaced with stats::aggregate()
@@ -69,6 +69,7 @@
 
 - streamlined the documentation (merged many entries) in the manual
 - substrate-information processing is now explained in a second vignette
+- the vignettes are now available only as PDF files
 - new examples in the example-code directory (now available via demo())
 
 

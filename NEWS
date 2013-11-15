@@ -23,6 +23,8 @@ Significant user-visible changes:
 - additions to the stored discretisation settings, thus older YAML files will be
   automatically converted (with a warning)
 
+- the vignettes are now available only as PDF files
+
 
 New features:
 
