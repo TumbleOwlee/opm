@@ -1,7 +1,7 @@
 \name{read_opm}
 \alias{read_opm}
 \alias{read_single_opm}
-\title{Read multiple PM files at once or read single PM file}
+\title{Read multiple \acronym{PM} files at once or read single \acronym{PM} file}
 \usage{
   read_opm(names,
     convert = c("try", "no", "yes", "sep", "grp"),

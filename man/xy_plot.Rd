@@ -132,8 +132,9 @@
   from the \pkg{lattice} package for details.
 }
 \description{
-  Customised plotting of a single or multiple PM plate(s),
-  using \code{xyplot} from the \pkg{lattice} package.
+  Customised plotting of a single \acronym{PM} plate or
+  multiple plates, using \code{xyplot} from the
+  \pkg{lattice} package.
 }
 \details{
   The optimal number of rows and columns is estimated from

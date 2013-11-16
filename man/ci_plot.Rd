@@ -94,11 +94,11 @@
 }
 \details{
   The default placement of the legend is currently not
-  necessarily very useful. When plotting entire PM plates,
-  the \sQuote{mar} parameter of \code{par} most likely
-  would need to be set to a lower value, but it is
-  recommended to plot only subsets of plates, i.e. selected
-  wells.
+  necessarily very useful. When plotting entire
+  \acronym{PM} plates, the \sQuote{mar} parameter of
+  \code{par} most likely would need to be set to a lower
+  value, but it is recommended to plot only subsets of
+  plates, i.e. selected wells.
 }
 \examples{
 x <- ci_plot(vaas_4[, , 1:3], as.labels = list("Species", "Strain"),

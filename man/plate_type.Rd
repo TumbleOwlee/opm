@@ -71,10 +71,11 @@
   additional options useful for creating plot titles.
 
   The character method normalises the names of
-  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} PM
-  plates to the internally used naming scheme. Unrecognised
-  names are returned unchanged.  This needs not normally be
-  called by the \pkg{opm} user but might be of interest.
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{PM} plates to the internally used naming scheme.
+  Unrecognised names are returned unchanged. This needs not
+  normally be called by the \pkg{opm} user but might be of
+  interest.
 
   Factors are treated by passing their levels through the
   character method.
@@ -83,8 +84,8 @@
   \code{\link{OPM}} object to \sQuote{Generation III} or
   another plate type. This is currently the only function
   to change plate names. It is intended for Generation-III
-  plates which were run like PM plates. Usually they will
-  be annotated as some PM plate by the
+  plates which were run like \acronym{PM} plates. Usually
+  they will be annotated as some \acronym{PM} plate by the
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   system. In contrast, input ID-mode plates are
   automatically detected (see
@@ -93,7 +94,8 @@
   The actual spelling of the plate type used might (in
   theory) differ between distinct versions of \pkg{opm} but
   is internally consistent. It is an error to set one of
-  the PM plate types or to assign an unknown plate type.
+  the \acronym{PM} plate types or to assign an unknown
+  plate type.
 }
 \examples{
 ## 'OPM' method

@@ -1,6 +1,6 @@
 \name{batch_opm}
 \alias{batch_opm}
-\title{Batch-convert PM data}
+\title{Batch-convert \acronym{PM} data}
 \usage{
   batch_opm(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL,

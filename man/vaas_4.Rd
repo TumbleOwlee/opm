@@ -16,19 +16,19 @@
   The \code{\link{OPMS}} object \code{vaas_4} contains
   measurements from four selected plates from the study by
   Vaas et al. (2012). Metadata have been added to fully
-  describe the conducted PM experiments: these plates are
-  the sixth technical replicate from the first biological
-  replicate for the four bacterial strains considered in
-  the study.
+  describe the conducted \acronym{PM} experiments: these
+  plates are the sixth technical replicate from the first
+  biological replicate for the four bacterial strains
+  considered in the study.
 
   The \code{\link{OPMD}} object \code{vaas_1} contains
   measurements from a single selected plate from the study
   by Vaas et al. (2012). Metadata have been added to fully
-  describe the conducted PM experiments: this plate is the
-  sixth technical replicate from the first biological
-  replicate for the strain \emph{Escherichia coli}
-  \acronym{DSM} 30083T (yes, the type strain of \emph{E.
-  coli}). This is a subset of \code{vaas_4}.
+  describe the conducted \acronym{PM} experiments: this
+  plate is the sixth technical replicate from the first
+  biological replicate for the strain \emph{Escherichia
+  coli} \acronym{DSM} 30083T (yes, the type strain of
+  \emph{E. coli}). This is a subset of \code{vaas_4}.
 
   The complete data set is available as \code{vaas_et_al}
   in the \pkg{opmdata} package.
@@ -46,11 +46,10 @@ data(vaas_1)
 }
 }
 \references{
-  Vaas, L. A. I., Sikorski, J., Michael, V., Goeker, M.,
-  Klenk H.-P. 2012 Visualization and curve parameter
-  estimation strategies for efficient exploration of
-  Phenotype Microarray kinetics. \emph{PLoS ONE}
-  \strong{7}, e34846.
+  Bochner, B.R., Savageau, M.A. 1977. Generalized indicator
+  plate for genetic, metabolic, and taxonomic studies with
+  microorganisms. \emph{ Applied and Environmental
+  Microbiology} \strong{33}, 434--444.
 
   Selezska, K., Kazmierczak, M., Muesken, M., Garbe, J.,
   Schobert, M., Haeussler, S., Wiehlmann, L., Rohde, C.,
@@ -60,12 +59,17 @@ data(vaas_1)
   \emph{Environmental Microbiology} \strong{14},
   1952--1967.
 
+  Vaas, L. A. I., Sikorski, J., Michael, V., Goeker, M.,
+  Klenk H.-P. 2012 Visualization and curve parameter
+  estimation strategies for efficient exploration of
+  Phenotype Microarray kinetics. \emph{PLoS ONE}
+  \strong{7}, e34846.
+
   \url{http://www.dsmz.de/catalogues/details/culture/DSM-1707.html}
 
   \url{http://www.dsmz.de/catalogues/details/culture/DSM-18039.html}
 
   \url{http://www.dsmz.de/catalogues/details/culture/DSM-30083.html}
 }
-\keyword{datasets}
 \keyword{datasets}
 

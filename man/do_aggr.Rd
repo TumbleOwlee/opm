@@ -40,7 +40,7 @@
   use. Currently only the following methods are supported:
   \describe{ \item{splines}{Fit various splines (smoothing
   splines and P-splines from \pkg{mgcv} and smoothing
-  splines via \code{smooth.spline}) to PM data.
+  splines via \code{smooth.spline}) to \acronym{PM} data.
   Recommended.} \item{grofit}{The \code{grofit} function in
   the eponymous package, with spline fitting as default.}
   \item{opm-fast}{The native, faster parameter estimation

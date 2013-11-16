@@ -144,12 +144,12 @@
   taxonomic journals such as \acronym{IJSEM}.
 }
 \details{
-  Exporting PM data in such formats allows one to either
-  infer trees from the data under the maximum-likelihood
-  and/or the maximum-parsimony criterion, or to reconstruct
-  the evolution of PM characters on given phylogenetic
-  trees, or to nicely display the data in \acronym{HTML}
-  format.
+  Exporting \acronym{PM} data in such formats allows one to
+  either infer trees from the data under the
+  maximum-likelihood and/or the maximum-parsimony
+  criterion, or to reconstruct the evolution of
+  \acronym{PM} characters on given phylogenetic trees, or
+  to nicely display the data in \acronym{HTML} format.
 
   For exporting NEXUS format, the matrix should normally be
   converted beforehand by applying \code{\link{discrete}}.

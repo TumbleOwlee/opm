@@ -49,11 +49,11 @@
   vector-like data structures (such as phenotype microarray
   measurements) can be much more compactly encoded.
 
-  Many PM data sets at once can be batch-converted into
-  \acronym{YAML} format using \code{\link{batch_opm}}. The
-  output format for the child classes is described in
-  detail there, as well as other aspects relevant in
-  practice.
+  Many \acronym{PM} data sets at once can be
+  batch-converted into \acronym{YAML} format using
+  \code{\link{batch_opm}}. The output format for the child
+  classes is described in detail there, as well as other
+  aspects relevant in practice.
 
   \acronym{JSON} is a subset of \acronym{YAML} and (in most
   cases) can also be parsed by a \acronym{YAML} parser. For

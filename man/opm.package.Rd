@@ -6,14 +6,13 @@
 \description{
   Package for analysing
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  phenotype microarray data. In addition to this manual,
-  tutorials (vignettes) are available together with the
-  package, as well as code examples accessible via
-  \code{demo}.
+  phenotype microarray (\acronym{PM}) data.
 }
 \details{
-  Here is a brief guideline for using this manual:
-  \describe{
+  Here is a brief guideline for using this manual. In
+  addition to this manual, tutorials (vignettes) are
+  available together with the package, as well as code
+  examples accessible via \code{demo}. \describe{
 
   \item{families}{All functions and methods belong to a
   family of functions and methods with similar purposes.
@@ -22,15 +21,18 @@
 
   \item{classes}{Users normally will create at least one
   object of the class \code{\link{OPM}} or derived classes.
-  All these classes store PM data; they differ in whether
-  they also contain aggregated values (\code{\link{OPMA}})
-  or aggregated and discretised values
+  All these classes store \acronym{PM} data; they differ in
+  whether they also contain aggregated values
+  (\code{\link{OPMA}}) or aggregated and discretised values
   (\code{\link{OPMD}}), and whether they contain more than
-  a single plate (\code{\link{OPMS}}). Example objects are
-  available via \code{\link{vaas_4}}.}
+  a single plate of the same plate type
+  (\code{\link{OPMS}}) or of potentially many different
+  plate types (\code{\link{MOPMX}}). Example objects are
+  available via \code{\link{vaas_1}} and
+  \code{\link{vaas_4}}.}
 
-  \item{input}{Most \pkg{opm} users will start with data
-  input using \code{\link{read_opm}}, which create the
+  \item{input}{Most \pkg{opm} users will start by inputting
+  data using \code{\link{read_opm}}, which create the
   appropriate objects.
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   phenotype microarray data are structured in
@@ -66,11 +68,12 @@
   many curves together. The former step can be conducted in
   parallel if \code{mclapply} from the \pkg{parallel}
   package can be run with more than 1 core (basically
-  anywhere except for Windows). There is also a fast
-  estimation method for the parameters \sQuote{area under
-  the curve} and \sQuote{maximum height}. See
-  \code{\link{do_aggr}} and the methods it refers to for
-  details.}
+  anywhere except for Windows). Moreover, the particularly
+  time-consuming bootstrapping can usually be turned off.
+  There is also a fast estimation method for the parameters
+  \sQuote{area under the curve} and \sQuote{maximum
+  height}. See \code{\link{do_aggr}} and the methods it
+  refers to for details.}
 
   \item{advanced plotting}{The \pkg{gplots} package is also
   not required for the installation of \pkg{opm} but can be
@@ -101,7 +104,8 @@ ls("package:opm")
   Bochner, B. R., Gadzinski, P., Panomitros, E. 2001
   Phenotype MicroArrays for high throughput phenotypic
   testing and assay of gene function. \emph{Genome
-  Research} \strong{11}, 1246--1255.
+  Research} \strong{11}, 1246--1255
+  (\url{http://dx.doi.org/10.1101/gr.186501}).
 
   Bochner, B. R. 2009 Global phenotypic characterization of
   bacteria. \emph{FEMS Microbiological Reviews}
@@ -113,7 +117,14 @@ ls("package:opm")
   Klenk H.-P. 2012 Visualization and curve parameter
   estimation strategies for efficient exploration of
   Phenotype Microarray kinetics. \emph{PLoS ONE}
-  \strong{7}, e34846.
+  \strong{7}, e34846
+  (\url{http://dx.doi.org/10.1371/journal.pone.0034846}).
+
+  Vaas, L. A. I., Sikorski, J., Hofner, B., Goeker, M.,
+  Klenk H.-P.  2013 opm: An R package for analysing
+  OmniLog(R) Phenotype MicroArray Data.
+  \emph{Bioinformatics} \strong{29}, 1823--1824
+  (\url{http://dx.doi.org/10.1093/bioinformatics/btt291}).
 
   \url{http://www.yaml.org/}
 
