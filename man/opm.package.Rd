@@ -83,6 +83,11 @@
   package are contained in the same method family.} }
 }
 \examples{
+\dontrun{ ## show the vignettes
+  vignette("opm-tutorial")
+  vignette("opm-substrates")
+}
+
 \dontrun{ ## demo of some I/O, plotting, text and table generation options
 
   # Beforehand, set 'my.csv.dir' to the name of a directory that contains

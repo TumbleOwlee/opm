@@ -511,7 +511,7 @@ setMethod("substrate_info", "character", function(object,
     # TODO: maybe extraction method for "mM" and "%" data also useful
     x <- ifelse(grepl(SUBSTRATE_PATTERN[["either"]], x, FALSE, TRUE),
       substr(x, 1L, nchar(x) - 1L), x)
-    m <- regexpr("(?<=\\s#)\\d$", x, FALSE, TRUE)
+    m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
   }
 
