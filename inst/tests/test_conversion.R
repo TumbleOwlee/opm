@@ -83,6 +83,10 @@ test_that("character-matrix objects can be merged", {
 })
 
 
+## split
+## UNTESTED
+
+
 ## plates
 test_that("the plates can be obtained as a list", {
   pl <- plates(OPMS.INPUT)

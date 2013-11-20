@@ -305,7 +305,8 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
   \code{\link{flatten}}, \code{\link{merge}},
   \code{\link{oapply}}, \code{\link{plates}},
   \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
-  \code{\link{to_yaml}}, \code{\link{unique}}
+  \code{\link{split}}, \code{\link{to_yaml}},
+  \code{\link{unique}}
 }
 \keyword{dplot}
 \keyword{htest}

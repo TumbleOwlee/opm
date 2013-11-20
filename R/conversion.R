@@ -65,6 +65,81 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
   new(CMAT, x)
 }, sealed = SEALED)
 
+setGeneric("split")
+
+setMethod("split", c(OPMX, "missing", "missing"), function(x, f, drop) {
+  split(x, drop = FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
+  extract_concentration <- function(x) {
+    m <- regexpr("(?<=#)\\d+$", x, FALSE, TRUE)
+    conc <- as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
+    regmatches(x, m) <- "1"
+    list(Concentration = conc, Standardized = structure(names(x), names = x))
+  }
+  regular_size <- function(x) {
+    counts <- tabulate(x$Concentration)
+    length(counts) > 1L || all(duplicated.default(counts)[-1L])
+  }
+  regular_composition <- function(x) {
+    for (i in seq_along(x)[-1L])
+      if (!setequal(names(x[[1L]]), names(x[[i]])))
+        return(FALSE)
+    TRUE
+  }
+  get_and_rename <- function(x, w1, w2, conc, drop, key) {
+    x <- rename_wells(x[, w1, drop = drop], w2)
+    x@metadata[[key]] <- conc
+    x
+  }
+  w <- extract_concentration(wells(x, TRUE, FALSE))
+  if (!regular_size(w) || !regular_composition(
+      w <- split.default(w$Standardized, w$Concentration))) {
+    warning("no regular concentration structure found")
+    return(x)
+  }
+  for (i in seq_along(w)[-1L])
+    w[[i]] <- w[[i]][names(w[[1L]])]
+  new(OPMS, plates = mapply(get_and_rename, conc = as.integer(names(w)),
+    w1 = w, SIMPLIFY = FALSE, USE.NAMES = FALSE, MoreArgs = list(x = x,
+      w2 = w[[1L]], drop = drop, key = get("series.key", OPM_OPTIONS))))
+}, sealed = SEALED)
+
+setMethod("split", c(OPMS, "missing", "ANY"), function(x, f, drop) {
+  x@plates <- lapply(x@plates, split, drop = drop)
+  x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
+  x
+}, sealed = FALSE)
+
+setMethod("split", c(OPMX, "ANY", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "factor", "ANY"), function(x, f, drop) {
+  object <- split.default(1L, f, FALSE) # to get the warnings/errors
+  object[[1L]] <- x[drop = drop]
+  new(MOPMX, object)
+}, sealed = SEALED)
+
+setMethod("split", c(OPMS, "factor", "ANY"), function(x, f, drop) {
+  new(MOPMX, lapply(split.default(x, f, FALSE), `[`, drop = drop))
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "ANY", "ANY"), function(x, f, drop) {
+  if (is.list(f <- metadata(x, f)))
+    f <- apply(list2matrix(list(metadata(x, f))), 1L, paste0, collapse = " ")
+  else
+    f <- paste0(f, collapse = " ")
+  split(x, as.factor(f), drop)
+}, sealed = SEALED)
+
+setMethod("split", c(OPMS, "ANY", "ANY"), function(x, f, drop) {
+  if (is.list(f <- metadata(x, f)))
+    f <- apply(list2matrix(f), 1L, paste0, collapse = " ")
+  split(x, as.factor(f), drop)
+}, sealed = SEALED)
+
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
 
 setMethod("plates", OPMS, function(object) {

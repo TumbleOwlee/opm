@@ -147,7 +147,8 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
   \code{\link{extract_columns}}, \code{\link{merge}},
   \code{\link{oapply}}, \code{\link{plates}},
   \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
-  \code{\link{to_yaml}}, \code{\link{unique}}
+  \code{\link{split}}, \code{\link{to_yaml}},
+  \code{\link{unique}}
 }
 \keyword{dplot}
 \keyword{manip}
