@@ -729,10 +729,11 @@ setMethod("radial_plot", "matrix", function(object, as.labels = NULL,
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
     x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
-    point.symbols = 15, point.col = line.col, poly.col = NA,
+    point.symbols = 15, point.col = opm_opt("colors"), poly.col = NA,
     main = paste0(as.labels, sep = sep), ...) {
   LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch)
   line.col <- try_select_colors(line.col)
+  point.col <- try_select_colors(point.col)
   changed.par <- NULL
   on.exit(if (!is.null(changed.par))
     par(changed.par))

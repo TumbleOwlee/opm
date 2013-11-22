@@ -167,12 +167,11 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
 \alias{merge,OPMS,missing-method}
 \alias{merge,OPMS,numeric-method}
 \alias{split-methods}
-\alias{split,OPM,ANY,ANY-method}
-\alias{split,OPM,factor,ANY-method}
-\alias{split,OPM,missing,ANY-method}
-\alias{split,OPMS,ANY,ANY-method}
-\alias{split,OPMS,factor,ANY-method}
-\alias{split,OPMS,missing,ANY-method}
+\alias{split,OPM,factor,logical-method}
+\alias{split,OPM,missing,logical-method}
+\alias{split,OPMS,factor,logical-method}
+\alias{split,OPMS,missing,logical-method}
+\alias{split,OPMX,ANY,logical-method}
 \alias{split,OPMX,ANY,missing-method}
 \alias{split,OPMX,missing,missing-method}
 \usage{
@@ -188,12 +187,11 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
   \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE,
     parse = TRUE) 
 
-  \S4method{split}{OPM,ANY,ANY}(x, f, drop) 
-  \S4method{split}{OPM,factor,ANY}(x, f, drop) 
-  \S4method{split}{OPM,missing,ANY}(x, f, drop) 
-  \S4method{split}{OPMS,ANY,ANY}(x, f, drop) 
-  \S4method{split}{OPMS,factor,ANY}(x, f, drop) 
-  \S4method{split}{OPMS,missing,ANY}(x, f, drop) 
+  \S4method{split}{OPM,factor,logical}(x, f, drop) 
+  \S4method{split}{OPM,missing,logical}(x, f, drop) 
+  \S4method{split}{OPMS,factor,logical}(x, f, drop) 
+  \S4method{split}{OPMS,missing,logical}(x, f, drop) 
+  \S4method{split}{OPMX,ANY,logical}(x, f, drop) 
   \S4method{split}{OPMX,ANY,missing}(x, f, drop) 
   \S4method{split}{OPMX,missing,missing}(x, f, drop) 
 }

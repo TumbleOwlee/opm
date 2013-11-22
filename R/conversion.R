@@ -71,9 +71,9 @@ setMethod("split", c(OPMX, "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
+setMethod("split", c(OPM, "missing", "logical"), function(x, f, drop) {
   extract_concentration <- function(x) {
-    m <- regexpr("(?<=#)\\d+$", x, FALSE, TRUE)
+    m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     conc <- as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
     regmatches(x, m) <- "1"
     list(Concentration = conc, Standardized = structure(names(x), names = x))
@@ -106,7 +106,7 @@ setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
       w2 = w[[1L]], drop = drop, key = get("series.key", OPM_OPTIONS))))
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "missing", "ANY"), function(x, f, drop) {
+setMethod("split", c(OPMS, "missing", "logical"), function(x, f, drop) {
   x@plates <- lapply(x@plates, split, drop = drop)
   x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
   x
@@ -116,28 +116,18 @@ setMethod("split", c(OPMX, "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "factor", "ANY"), function(x, f, drop) {
-  object <- split.default(1L, f, FALSE) # to get the warnings/errors
+setMethod("split", c(OPM, "factor", "logical"), function(x, f, drop) {
+  object <- split.default(0L, f, FALSE) # to get the warnings/errors
   object[[1L]] <- x[drop = drop]
   new(MOPMX, object)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "factor", "ANY"), function(x, f, drop) {
+setMethod("split", c(OPMS, "factor", "logical"), function(x, f, drop) {
   new(MOPMX, lapply(split.default(x, f, FALSE), `[`, drop = drop))
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "ANY", "ANY"), function(x, f, drop) {
-  if (is.list(f <- metadata(x, f)))
-    f <- apply(list2matrix(list(metadata(x, f))), 1L, paste0, collapse = " ")
-  else
-    f <- paste0(f, collapse = " ")
-  split(x, as.factor(f), drop)
-}, sealed = SEALED)
-
-setMethod("split", c(OPMS, "ANY", "ANY"), function(x, f, drop) {
-  if (is.list(f <- metadata(x, f)))
-    f <- apply(list2matrix(f), 1L, paste0, collapse = " ")
-  split(x, as.factor(f), drop)
+setMethod("split", c(OPMX, "ANY", "logical"), function(x, f, drop) {
+  split(x, as.factor(extract_columns(x, f, TRUE, " ", "ignore")), drop)
 }, sealed = SEALED)
 
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
@@ -443,6 +433,31 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 setGeneric("extract_columns",
   function(object, ...) standardGeneric("extract_columns"))
 
+setMethod("extract_columns", OPM, function(object, what, join = FALSE,
+    sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
+    exact = TRUE, strict = TRUE) {
+  what <- metadata_key(what, FALSE, NULL)
+  result <- metadata(object, what, exact, strict)
+  result <- if (is.list(result))
+    rapply(result, as.character)
+  else
+    as.character(result)
+  if (L(join)) {
+    result <- paste0(result, collapse = sep)
+  } else {
+    result <- as.list(result)
+    if (is.null(names(result)))
+      names(result) <- paste0(what, collapse = get("key.join", OPM_OPTIONS))
+    result <- as.data.frame(result, optional = TRUE, stringsAsFactors = factors)
+    if (ncol(result) > length(colnames(result)))
+      colnames(result) <- paste0(what, collapse = get("key.join", OPM_OPTIONS))
+    if (is.list(attr(what, "combine")))
+      result <- extract_columns(result, attr(what, "combine"),
+        factors = factors, direct = TRUE)
+  }
+  result
+}, sealed = SEALED)
+
 setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
@@ -519,49 +534,70 @@ setMethod("extract_columns", "data.frame", function(object, what,
 setGeneric("as.data.frame")
 
 setMethod("as.data.frame", OPM, function(x, row.names = NULL,
-    optional = FALSE, sep = "_", ...,
-    stringsAsFactors = default.stringsAsFactors()) {
-  result <- cbind(as.data.frame(as.list(x@csv_data[CSV_NAMES]), NULL, optional,
-    ..., stringsAsFactors = stringsAsFactors), Well = wells(x))
+    optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
+    include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
+  result <- as.data.frame(wells(x), NULL, optional, ...,
+    stringsAsFactors = stringsAsFactors)
+  colnames(result) <- RESERVED_NAMES[["well"]]
+  if (L(csv.data))
+    result <- cbind(as.data.frame(as.list(x@csv_data[CSV_NAMES]), NULL,
+      optional, ..., stringsAsFactors = stringsAsFactors), result)
+  if (is.logical(include)) {
+    if (L(include))
+      result <- cbind(result, to_metadata(x, stringsAsFactors, optional))
+  } else if (length(include)) {
+    result <- cbind(result, extract_columns(object = x, what = include,
+      factors = stringsAsFactors))
+  }
   rownames(result) <- row.names
   colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
   result
 }, sealed = SEALED)
 
 setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
-    optional = FALSE, sep = "_", ...,
-    stringsAsFactors = default.stringsAsFactors()) {
+    optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
+    include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   result <- as.data.frame(t(x@aggregated), NULL, optional, ...,
     stringsAsFactors = stringsAsFactors)
   colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
-  result <- cbind(callNextMethod(x, row.names, optional, sep, ...,
-    stringsAsFactors = stringsAsFactors), result)
-  settings <- x@aggr_settings[c(SOFTWARE, VERSION, METHOD)]
-  names(settings) <- paste("Aggr", names(settings), sep = sep)
-  cbind(result, as.data.frame(settings, NULL, optional, ...,
-    stringsAsFactors = stringsAsFactors))
+  result <- cbind(callNextMethod(x, row.names, optional, sep, csv.data,
+    settings, include, ..., stringsAsFactors = stringsAsFactors), result)
+  if (L(settings)) {
+    settings <- x@aggr_settings[c(SOFTWARE, VERSION, METHOD)]
+    names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
+    names(settings) <- paste("Aggr", names(settings), sep = sep)
+    result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
+      stringsAsFactors = stringsAsFactors))
+  }
+  result
 }, sealed = SEALED)
 
 setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
-    optional = FALSE, sep = "_", ...,
-    stringsAsFactors = default.stringsAsFactors()) {
-  result <- callNextMethod(x, row.names, optional, sep, ...,
-    stringsAsFactors = stringsAsFactors)
+    optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
+    include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
+  result <- callNextMethod(x, row.names, optional, sep, csv.data, settings,
+    include, ..., stringsAsFactors = stringsAsFactors)
   result$Discretized <- x@discretized
-  settings <- x@disc_settings[c(SOFTWARE, VERSION, METHOD)]
-  names(settings) <- paste("Disc", names(settings), sep = sep)
-  cbind(result, as.data.frame(settings, NULL, optional, ...,
-    stringsAsFactors = stringsAsFactors))
+  if (settings) {
+    settings <- x@disc_settings[c(SOFTWARE, VERSION, METHOD)]
+    names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
+    names(settings) <- paste("Disc", names(settings), sep = sep)
+    result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
+      stringsAsFactors = stringsAsFactors))
+  }
+  result
 }, sealed = SEALED)
 
 setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
-    optional = FALSE, sep = "_", ...,
-    stringsAsFactors = default.stringsAsFactors()) {
+    optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
+    include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   if (!length(row.names))
     row.names <- vector("list", length(x@plates))
-  do.call(rbind, mapply(as.data.frame, x@plates, row.names, SIMPLIFY = FALSE,
-    MoreArgs = list(optional = optional, sep = sep, ...,
-    stringsAsFactors = stringsAsFactors), USE.NAMES = FALSE))
+  do.call(rbind, mapply(as.data.frame, x = x@plates, row.names = row.names,
+    MoreArgs = list(optional = optional, sep = sep, csv.data = csv.data,
+      settings = settings, include = include, ...,
+      stringsAsFactors = stringsAsFactors),
+    SIMPLIFY = FALSE, USE.NAMES = FALSE))
 }, sealed = SEALED)
 
 setOldClass("kegg_compounds")

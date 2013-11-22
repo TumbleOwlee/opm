@@ -159,7 +159,7 @@ stopifnot(is.character(yy), names(yy) == rownames(x))
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
     x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
-    point.symbols = 15, point.col = line.col, poly.col = NA,
+    point.symbols = 15, point.col = opm_opt("colors"), poly.col = NA,
     main = paste0(as.labels, sep = sep), ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb
