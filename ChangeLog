@@ -5,6 +5,7 @@
 - as.data.frame() gets new arguments 'csv.data', 'settings', 'normalize' and
   'include'
 - new OPM method for extract_columns()
+- substrate_info() gets a 'peptide' mode
 
 
 ################################################################################
