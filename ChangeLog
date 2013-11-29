@@ -1,6 +1,7 @@
 2014-01-xx (the 12th release on CRAN)
 
 - radial_plot() [TODO Lea: explain what has been done]
+- new parallelplot() methods
 - as.data.frame() gets new arguments 'csv.data', 'settings', 'normalize' and
   'include'
 - new OPM method for extract_columns()

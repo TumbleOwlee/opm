@@ -550,7 +550,8 @@ setMethod("as.data.frame", OPM, function(x, row.names = NULL,
       factors = stringsAsFactors))
   }
   rownames(result) <- row.names
-  colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
+  if (length(sep))
+    colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
   result
 }, sealed = SEALED)
 
@@ -559,13 +560,18 @@ setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   result <- as.data.frame(t(x@aggregated), NULL, optional, ...,
     stringsAsFactors = stringsAsFactors)
-  colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
+  if (length(sep))
+    colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
   result <- cbind(callNextMethod(x, row.names, optional, sep, csv.data,
     settings, include, ..., stringsAsFactors = stringsAsFactors), result)
   if (L(settings)) {
     settings <- x@aggr_settings[c(SOFTWARE, VERSION, METHOD)]
-    names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
-    names(settings) <- paste("Aggr", names(settings), sep = sep)
+    if (length(sep)) {
+      names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
+      names(settings) <- paste("Aggr", names(settings), sep = sep)
+    } else
+      names(settings) <- paste("Aggr", names(settings),
+        sep = get("comb.key.join", OPM_OPTIONS))
     result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
       stringsAsFactors = stringsAsFactors))
   }
@@ -580,8 +586,12 @@ setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
   result$Discretized <- x@discretized
   if (settings) {
     settings <- x@disc_settings[c(SOFTWARE, VERSION, METHOD)]
-    names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
-    names(settings) <- paste("Disc", names(settings), sep = sep)
+    if (length(sep)) {
+      names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
+      names(settings) <- paste("Disc", names(settings), sep = sep)
+    } else
+      names(settings) <- paste("Disc", names(settings),
+        sep = get("comb.key.join", OPM_OPTIONS))
     result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
       stringsAsFactors = stringsAsFactors))
   }

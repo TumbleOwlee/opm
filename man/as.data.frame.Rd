@@ -18,7 +18,8 @@
   matrix methods of \code{as.data.frame}.}
 
   \item{sep}{Character scalar used as word separator in
-  column names.}
+  column names. Set this to \code{NULL} or an empty vector
+  to turn off character replacement in column names.}
 
   \item{csv.data}{Logical scalar indicating whether the
   \code{\link{csv_data}} entries that identify the plate
@@ -117,13 +118,18 @@
   \code{\link{OPMS}} objects that contain them), optionally
   the used aggregation settings, one column per entry,
   except for the \sQuote{options} entry (which is not a
-  scalar).  \item For \code{\link{OPMD}} objects (and
-  \code{\link{OPMS}} objects that contain them), always one
-  column with the discretised data.  \item For
-  \code{\link{OPMD}} objects (and \code{\link{OPMS}}
-  objects that contain them), optionally the used
-  discretisation settings, one column per entry, except for
-  the \sQuote{options} entry (which is not a scalar).  }
+  scalar). The column names are prefixed with \code{"Aggr"}
+  followed by \code{sep}. If \code{sep} is empty,
+  \code{\link{opm_opt}("comb.key.join")} is used.  \item
+  For \code{\link{OPMD}} objects (and \code{\link{OPMS}}
+  objects that contain them), always one column with the
+  discretised data.  \item For \code{\link{OPMD}} objects
+  (and \code{\link{OPMS}} objects that contain them),
+  optionally the used discretisation settings, one column
+  per entry, except for the \sQuote{options} entry (which
+  is not a scalar). The column names are prefixed with
+  \code{"Disc"} followed by \code{sep}. If \code{sep} is
+  empty, \code{\link{opm_opt}("comb.key.join")} is used.  }
 
   The limits of using \acronym{CSV} as output format
   already show up in this list, and in general we recommend
