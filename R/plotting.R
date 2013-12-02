@@ -800,6 +800,8 @@ setMethod("parallelplot", c(OPMX, "ANY"), function(x, data, groups = 1L,
 
   # Get the used column names from the 'data' argument
   final_dataframe_names <- function(x) {
+    if (is.null(x))
+      return(x)
     x <- metadata_key(x)
     combined <- attr(x, "combine") # a list mapping new name to old names
     x <- names(x)
