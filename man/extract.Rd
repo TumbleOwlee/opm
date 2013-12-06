@@ -342,6 +342,6 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
     exact = TRUE, strict = TRUE) 
   \S4method{extract_columns}{data.frame}(object, what,
     as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
-    factors = is.list(what), direct = inherits(what, "AsIs")) 
+    factors = is.list(what), direct = is.list(what) || inherits(what, "AsIs")) 
 }
 %% END INSERTION BY repair_S4_docu.rb

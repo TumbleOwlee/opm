@@ -83,8 +83,19 @@
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data.
 }
 \details{
-  The main applications of this function are ...
-  \strong{[Further details to be added by Lea Vaas]}.
+  The main application of this function is to include all
+  four estimated curve parameters into a single
+  comprehensive overview. This assists in addressing
+  questions such as \itemize{
+
+  \item Are there any consistent patterns of individual
+  curves that may be explained by specific class
+  membership? For instance, which curve parameter best
+  reflects the origin of the tested strains?
+
+  \item Are there any patterns of individual curves with
+  unexpected deviations? For instance, do differences
+  between experimental repetitions occur?  }
 }
 \examples{
 ## OPM objects

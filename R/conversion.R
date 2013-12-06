@@ -489,7 +489,7 @@ setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
 
 setMethod("extract_columns", "data.frame", function(object, what,
     as.labels = NULL, as.groups = NULL, sep = opm_opt("comb.value.join"),
-    factors = is.list(what), direct = inherits(what, "AsIs")) {
+    factors = is.list(what), direct = is.list(what) || inherits(what, "AsIs")) {
   join <- function(x, what, sep)
     do.call(paste, c(x[, what, drop = FALSE], list(sep = sep)))
   find_stuff <- function(x, what) {
