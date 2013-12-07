@@ -1,4 +1,4 @@
-2014-12-08 (the 12th release on CRAN)
+2013-12-08 (the 12th release on CRAN)
 
 - corrected the dependency on R to '>= 3.0.0' (as noted by the CRAN team)
 - use of the 'direct' argument of extract_columns() improved
