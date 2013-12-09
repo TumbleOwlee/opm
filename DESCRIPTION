@@ -30,7 +30,7 @@ Suggests:
     multcomp,
     KEGGREST,
     pathview,
-    mboostDevel
+    randomForest
 Description: Tools for analysing OmniLog(R) and MicroStation(TM)
     phenotype microarray (PM) data as produced by the devices
     distributed by BIOLOG Inc., including plotting, aggregating
