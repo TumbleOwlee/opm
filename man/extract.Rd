@@ -149,7 +149,11 @@
   named list of vectors used for indexing. In that case a
   data frame is returned that contains the columns from
   \code{object} together with new columns that result from
-  pasting the selected columns together.}
+  pasting the selected columns together. If \code{what} is
+  named, its names are used as the new column names.
+  Otherwise each name is created by joining the respective
+  value within \code{what} with the \code{"comb.key.join"}
+  entry of \code{\link{opm_opt}} as separator.}
 
   \item{join}{Logical scalar. Join each row together to
   yield a character vector? Otherwise it is just attempted
@@ -306,8 +310,9 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{flatten}}, \code{\link{merge}},
-  \code{\link{oapply}}, \code{\link{plates}},
-  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{oapply}}, \code{\link{opmx}},
+  \code{\link{plates}}, \code{\link{rep}},
+  \code{\link{rev}}, \code{\link{sort}},
   \code{\link{split}}, \code{\link{to_yaml}},
   \code{\link{unique}}
 }

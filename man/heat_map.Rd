@@ -107,6 +107,12 @@
   \code{\link{map_values}} for details. Ignored if the data
   are not logical.}
 
+  \item{abbrev}{Character scalar indicating whether row or
+  column shall be abbreviated before plotting. Note that
+  abbreviation is done by shortening words and ending them
+  with a dot, so there is no guarantee that a certain
+  maximum length will be obtained.}
+
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
@@ -190,6 +196,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
     else
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
+    abbrev = c("none", "row", "column", "both"),
     ...,
     use.fun = c("gplots", "stats")) 
 }

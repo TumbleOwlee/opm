@@ -5,7 +5,7 @@
 \title{Files, parameter names and colour sets used by the package}
 \usage{
   opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc",
-    "css", "omnilog", "single", "multiple"))
+    "css", "omnilog", "single", "multiple", "growth"))
 
   param_names(what = c("param.names", "disc.name", "reserved.md.names", "split.at"))
     
@@ -26,10 +26,10 @@
   pages nor into the vignette. Can directly be loaded via
   \code{demo}; see \code{demo(package = "opm")}.}
   \item{examples}{\strong{Deprecated} synonym of
-  \sQuote{demo}.} \item{multiple}{Not directly readable
-  (i.e., multiple-plate) test files.}
-  \item{omnilog}{Directly readable (i.e., single-plate)
-  test files from
+  \sQuote{demo}.} \item{growth}{Growth-measurement example
+  files.} \item{multiple}{Not directly readable (i.e.,
+  multiple-plate) test files.} \item{omnilog}{Directly
+  readable (i.e., single-plate) test files from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   runs.} \item{scripts}{\R script files for non-interactive
   uses of the \pkg{opm} package, particularly for the batch
@@ -86,6 +86,7 @@
   for testing before doing some serious plotting.
 }
 \examples{
+## example input files
 isRfile <- function(x) grepl("\\\.R$", x, ignore.case = TRUE)
 (x <- opm_files("auxiliary"))
 stopifnot(!isRfile(x))
@@ -95,6 +96,10 @@ stopifnot(isRfile(x))
 stopifnot(isRfile(x))
 (x <- opm_files("testdata"))
 stopifnot(!isRfile(x))
+for (name in c("growth", "single", "multiple", "omnilog")) {
+  print(y <- opm_files(name))
+  stopifnot(y \%in\% x) # i.e., a subset of the set of all input example files
+}
 
 # On UNIX systems you should be able to do this if Rscript and the optparse
 # package are properly installed:
@@ -123,6 +128,7 @@ stopifnot(is.character(x), length(x) > 0L, identical(x, rev(y)))
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}}, \code{\link{gen_iii}},
   \code{\link{listing}}, \code{\link{plate_type}},
+  \code{\link{register_plate}},
   \code{\link{substrate_info}}, \code{\link{wells}}
 }
 \keyword{color}

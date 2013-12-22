@@ -502,7 +502,8 @@ setMethod("extract_columns", "data.frame", function(object, what,
   if (direct) {
     if (is.list(what)) {
       if (is.null(names(what)))
-        stop("if 'what' is a list, it must have names")
+        names(what) <- vapply(what, paste0, "",
+          collapse = get("comb.key.join", OPM_OPTIONS))
       result <- object
       what <- what[!match(names(what), colnames(result), 0L)]
       if (factors)
@@ -708,7 +709,7 @@ setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
 
 setGeneric("to_yaml", function(object, ...) standardGeneric("to_yaml"))
 
-setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
+setMethod("to_yaml", "list", function(object, sep = TRUE,
     line.sep = "\n", json = FALSE, listify = nodots, nodots = FALSE, ...) {
   replace_dots <- function(x) {
     if (any(bad <- grepl(".", x, FALSE, FALSE, TRUE)))
@@ -720,7 +721,6 @@ setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
   else
     as.list(items)
   LL(sep, line.sep, json, listify, nodots)
-  object <- as(object, "list")
   if (listify)
     object <- rapply(object, to_map, "ANY", NULL, "replace")
   if (nodots)
@@ -735,7 +735,262 @@ setMethod("to_yaml", YAML_VIA_LIST, function(object, sep = TRUE,
   result
 }, sealed = SEALED)
 
+setMethod("to_yaml", YAML_VIA_LIST, function(object, ...) {
+  n <- names(object)
+  object <- as(object, "list")
+  if (is.null(names(object)) && length(object) == length(n))
+    names(object) <- n
+  to_yaml(object, ...)
+}, sealed = SEALED)
+
 setMethod("to_yaml", MOPMX, function(object, ...) {
   to_yaml(lapply(object, as, "list"), ...)
-})
+}, sealed = SEALED)
+
+setGeneric("opmx", function(object, ...) standardGeneric("opmx"))
+
+setMethod("opmx", "data.frame", function(object,
+    format = c("horizontal", "rectangular", "vertical"), plate.type = NULL,
+    position = NULL, well = NULL, prefix = "T_", sep = "<>", full.name = NULL,
+    setup.time = date(), filename = "", interval = NULL) {
+
+  # Create a matrix acceptable as 'measurements' entry.
+  #
+  convert_rectangular_matrix <- function(x, sep, interval) {
+    convert_time_point <- function(x) {
+      n <- as.integer(x[1L, -1L, drop = TRUE])
+      n <- vapply(x[-1L, 1L], sprintf, character(length(n)), fmt = "%s%02i", n)
+      x <- t(as.matrix(x[-1L, -1L]))
+      converted <- tryCatch({
+          storage.mode(x) <- "numeric"
+          TRUE
+        }, warning = function(w) FALSE)
+      if (converted)
+        structure(c(x), names = toupper(c(n)))
+      else
+        NULL
+    }
+    for (i in which(vapply(x, is.factor, NA)))
+      x[, i] <- as.character(x[, i])
+    pos <- logical(nrow(x))
+    for (i in seq_along(x))
+      if (any(pos <- x[, i] == sep)) {
+        x <- x[, c(i, setdiff(seq_along(x), i)), drop = FALSE]
+        break
+      }
+    if (!any(pos))
+      stop("'sep' neither found in some column nor in the row names")
+    x <- split.data.frame(x, sections(pos, TRUE))
+    x <- do.call(rbind, lapply(x, convert_time_point))
+    times <- as.double(seq_len(nrow(x)) - 1L)
+    if (length(interval) == 1L)
+      times <- interval * times
+    else if (length(interval) == nrow(x))
+      times <- must(as.double(interval))
+    else if (length(interval))
+      stop("length of 'interval' must be 0, 1, or nrow(x)")
+    x <- cbind(times, x)
+    colnames(x)[1L] <- HOUR
+    rownames(x) <- NULL
+    x
+  }
+
+  # Create a matrix acceptable as 'measurements' entry.
+  #
+  convert_vertical_matrix <- function(x, interval) {
+    select_columns <- function(x) {
+      n <- clean_coords(colnames(x))
+      if (any(ok <- grepl("^[A-H]\\d{2}$", n, FALSE, TRUE))) {
+        colnames(x)[ok] <- n[ok]
+      } else if (any(ok <- grepl("^\\d{3}$", n, FALSE, TRUE))) {
+        colnames(x)[ok] <- rownames(WELL_MAP)[as.integer(colnames(x)[ok])]
+      } else if (any(ok <- grepl("^V\\d{2}$", n, FALSE, TRUE))) {
+        colnames(x)[ok] <- rownames(WELL_MAP)[
+          as.integer(chartr("V", " ", colnames(x)[ok]))]
+      } else {
+        ok <- !logical(ncol(x))
+        if (!length(interval) && is.integer(attr(x, "row.names")))
+          ok[1L] <- FALSE # first column contains time points
+        colnames(x)[ok] <- rownames(WELL_MAP)[seq_along(which(ok))]
+      }
+      if (length(interval))
+        if (length(interval) == 1L)
+          hour <- interval * (seq_len(nrow(x)) - 1L)
+        else if (length(interval) == nrow(x))
+          hour <- must(as.double(interval))
+        else
+          stop("length of 'interval' must be 0, 1, or nrow(x)")
+      else if (any(!ok))
+        hour <- x[, !ok, drop = FALSE][, 1L]
+      else
+        hour <- rownames(x)
+      cbind(hour, x[, ok, drop = FALSE])
+    }
+    x <- as.matrix(select_columns(x))
+    must(storage.mode(x) <- "double")
+    rownames(x) <- NULL
+    colnames(x)[1L] <- HOUR
+    x
+  }
+
+  # At this stage, 'x' must be a matrix acceptable as 'measurements' entry.
+  #
+  create_opm_object <- function(x, position, plate.type, full.name, setup.time,
+      filename) {
+    L(plate.type, .msg = "plate type missing or non-unique")
+    L(position, .msg = "'position' missing or non-unique")
+    plate.type <- custom_plate_normalize_all(plate.type)
+    custom_plate_assert(plate.type, colnames(x)[-1L])
+    if (!is.na(full <- full.name[plate.type]))
+      custom_plate_set_full(plate.type, full)
+    y <- c(L(filename), plate.type, position, L(setup.time))
+    names(y) <- CSV_NAMES
+    new(OPM, measurements = x, csv_data = y, metadata = list())
+  }
+
+  # 'plate.type' and 'full.name' must already be normalized at this stage.
+  #
+  register_substrates <- function(wells, plate.type, full.name) {
+    wn <- unique.default(wells) # already sorted at this stage
+    if (all(grepl("^\\s*[A-Za-z]\\s*\\d+\\s*$", wn, FALSE, TRUE))) {
+      map <- structure(clean_coords(wn), names = wn)
+    } else if (custom_plate_exists(plate.type)) {
+      map <- custom_plate_get(plate.type)
+      if (any(bad <- !wn %in% map))
+        stop("plate type '", plate.type, "' already exists but lacks ",
+          "substrate '", wn[bad][1L], "'")
+      map <- structure(names(map), names = map)
+    } else {
+      map <- structure(rownames(WELL_MAP)[seq_along(wn)], names = wn)
+      custom_plate_set(plate.type, structure(names(map), names = map))
+    }
+    if (!is.na(full <- full.name[plate.type]))
+      custom_plate_set_full(plate.type, full)
+    map_values(wells, map)
+  }
+
+  # A mapping of the column names of 'x' must already have been conducted at
+  # this stage.
+  #
+  convert_horizontal_format <- function(x, prefix, full.name, setup.time,
+      filename) {
+    repair_csv_data <- function(x, full.name, setup.time, filename) {
+      map <- c(CSV_NAMES, RESERVED_NAMES[["well"]])
+      map <- structure(map, names = chartr(" ", ".", map))
+      names(x) <- map_values(names(x), map)
+      n <- CSV_NAMES[["PLATE_TYPE"]]
+      if (pos <- match(n, colnames(x), 0L))
+        x[, pos] <- custom_plate_normalize_all(x[, pos])
+      else
+        x[, n] <- L(names(full.name),
+          .msg = "plate type neither in 'object' nor (uniquely) in 'full.name'")
+      n <- CSV_NAMES[["SETUP"]]
+      if (!n %in% names(x))
+        x[, n] <- setup.time
+      n <- CSV_NAMES[["FILE"]]
+      if (!n %in% names(x))
+        x[, n] <- filename
+      x
+    }
+    csv_positions <- function(x) {
+      pos <- get("csv.selection", OPM_OPTIONS)
+      pos <- unique.default(c(pos, CSV_NAMES[["PLATE_TYPE"]]))
+      match(pos, colnames(x))
+    }
+    time_point_columns <- function(x, prefix) {
+      first <- substring(x, 1L, nchar(prefix))
+      x <- substring(x, nchar(prefix) + 1L, nchar(x))
+      x <- suppressWarnings(as.numeric(x))
+      x[first != prefix] <- NA_real_
+      if (all(is.na(x)))
+        stop("no columns with time points found -- wrong prefix?")
+      x
+    }
+    per_plate_type <- function(cd, tp, x, md, full.name) {
+      pos <- match(RESERVED_NAMES[["well"]], colnames(md))
+      colnames(x) <- register_substrates(md[, pos],
+        cd[1L, CSV_NAMES[["PLATE_TYPE"]]], full.name)
+      md <- md[, -pos, drop = FALSE]
+      indexes <- cd[, get("csv.keys", OPM_OPTIONS), drop = FALSE]
+      indexes <- apply(indexes, 1L, paste0, collapse = " ")
+      indexes <- split.default(seq_len(ncol(x)), indexes)
+      result <- vector("list", length(indexes))
+      for (i in seq_along(indexes)) {
+        val <- x[, idx <- indexes[[i]], drop = FALSE]
+        result[[i]] <- new("OPM", csv_data = cd[idx[1L], ],
+          metadata = lapply(md[idx, , drop = FALSE], unique.default),
+          measurements = cbind(tp, val[, order(colnames(val)), drop = FALSE]))
+      }
+      case(length(result), NULL, result[[1L]], new("OPMS", plates = result))
+    }
+    traverse_plate_types <- function(cd, tp, x, md, full.name) {
+      indexes <- split.default(seq_len(ncol(x)),
+        cd[, CSV_NAMES[["PLATE_TYPE"]]])
+      result <- vector("list", length(indexes))
+      for (i in seq_along(indexes)) {
+        idx <- indexes[[i]]
+        result[[i]] <- per_plate_type(cd[idx, , drop = FALSE], tp,
+          x[, idx, drop = FALSE], md[idx, , drop = FALSE], full.name)
+      }
+      result
+    }
+    x <- x[order(x[, RESERVED_NAMES[["well"]]]), , drop = FALSE]
+    x <- repair_csv_data(x, full.name, setup.time, filename)
+    pos <- csv_positions(x)
+    cd <- as.matrix(x[, pos, drop = FALSE])
+    x <- x[, -pos, drop = FALSE]
+    tp <- time_point_columns(names(x), prefix)
+    md <- x[, is.na(tp), drop = FALSE]
+    x <- t(as.matrix(x[, !is.na(tp), drop = FALSE]))
+    rownames(x) <- NULL
+    tp <- matrix(tp[!is.na(tp)], nrow(x), 1L, FALSE, list(NULL, HOUR))
+    result <- traverse_plate_types(cd, tp, x, md, full.name)
+    case(length(result), NULL, result[[1L]],
+      as(structure(result, names = names(indexes)), "MOPMX"))
+  }
+
+  # Only for the 'horizontal' format.
+  #
+  map_colnames <- function(x, plate.type, position, well) {
+    map <- list()
+    map[[CSV_NAMES[["PLATE_TYPE"]]]] <- plate.type
+    map[[RESERVED_NAMES[["well"]]]] <- well
+    if (length(map)) {
+      map <- structure(names(map), names = unlist(map, TRUE, FALSE))
+      names(x) <- map_values(names(x), map)
+    }
+    if (length(position)) {
+      map <- list(position)
+      names(map) <- pos <- CSV_NAMES[["POS"]]
+      x <- extract_columns(x, map)
+      x[, pos] <- as.integer(x[, pos])
+    }
+    x
+  }
+
+  prepare_full_name <- function(x) {
+    if (!length(x))
+      return(structure(character(), names = character()))
+    names(x) <- custom_plate_normalize_all(names(x))
+    x
+  }
+
+  for (i in which(vapply(object, is.factor, NA)))
+    object[, i] <- as.character(object[, i])
+
+  full.name <- prepare_full_name(full.name)
+
+  case(match.arg(format),
+
+    horizontal = convert_horizontal_format(map_colnames(object,
+      plate.type, position, well), prefix, full.name, setup.time, filename),
+
+    rectangular = create_opm_object(convert_rectangular_matrix(object, sep,
+      interval), position, plate.type, full.name, setup.time, filename),
+
+    vertical = create_opm_object(convert_vertical_matrix(object, interval),
+      position, plate.type, full.name, setup.time, filename)
+
+  )
+}, sealed = SEALED)
 

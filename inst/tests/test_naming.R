@@ -43,6 +43,58 @@ test_that("predefined color sets can be obtained", {
 ################################################################################
 
 
+## custom_plate_is
+## UNTESTED
+
+
+## custom_plate_proper
+## UNTESTED
+
+
+## custom_plate_prepend
+## UNTESTED
+
+
+## custom_plate_prepend_full
+## UNTESTED
+
+
+## custom_plate_normalize_proper
+## UNTESTED
+
+
+## custom_plate_normalize
+## UNTESTED
+
+
+## custom_plate_normalize_all
+## UNTESTED
+
+
+## custom_plate_exists
+## UNTESTED
+
+
+## custom_plate_get
+## UNTESTED
+
+
+## custom_plate_assert
+## UNTESTED
+
+
+## custom_plate_set
+## UNTESTED
+
+
+## custom_plate_set_full
+## UNTESTED
+
+
+## normalize_predefined_plate
+## UNTESTED
+
+
 ## plate_type
 test_that("plate types can be explicitely queried", {
   expect_equal(plate_type(OPM.1), "PM01")
@@ -64,12 +116,32 @@ test_that("plate names can be normalized", {
   exp <- c("<strange>", "ECO", "SF-N2", "SF-P2", "SF-N2", "SF-N2")
   got <- plate_type(x, subtype = TRUE)
   expect_equal(got, exp)
+  # with expansion
+  expect_warning(got <- plate_type(x, subtype = TRUE, full = TRUE))
+  expect_true(all(substring(got, 1L, nchar(exp)) == exp))
+  expect_true(all(nchar(got[-1L]) > nchar(exp[-1L])))
   # Lately added identification plates
   x <- c("<strange>", " an2", "fF", "yT ")
   exp <- c("<strange>", "AN2", "FF", "YT")
   got <- plate_type(x, subtype = TRUE)
   expect_equal(got, exp)
-  # The internally used names must already be normalized
+  # with expansion
+  expect_warning(got <- plate_type(x, subtype = TRUE, full = TRUE))
+  expect_true(all(substring(got, 1L, nchar(exp)) == exp))
+  expect_true(all(nchar(got[-1L]) > nchar(exp[-1L])))
+  # User-defined plates
+  x <- c("<strange>", "CusToM: ABC.DEF", "pm10b", "custom: my plate ")
+  exp <- c("<strange>", "CUSTOM:ABC-DEF", "PM10", "CUSTOM:MY-PLATE")
+  got <- plate_type(x)
+  expect_equal(got, exp)
+  # with expansion
+  expect_warning(got <- plate_type(x, subtype = FALSE, full = TRUE))
+  expect_true(all(substring(got, 1L, nchar(exp)) == exp))
+  expect_true(any(nchar(got[-1L]) > nchar(exp[-1L])))
+})
+
+## plate_type
+test_that("the internally used names are already normalized", {
   standard.names <- names(PLATE_MAP)
   expect_equal(plate_type(standard.names), standard.names)
   appended <- paste(standard.names, letters)
@@ -109,6 +181,28 @@ test_that("the plate type of OPMS objects can be changed", {
   expect_equal(class(x), class(OPMS.INPUT))
   expect_equal(dim(x), dim(OPMS.INPUT))
   expect_false(plate_type(x) == plate_type(OPMS.INPUT))
+})
+
+
+################################################################################
+
+
+## register_plate
+test_that("plate types can be registered", {
+  old <- plate_type()
+  register_plate(SIMPLE = 'simple plate')
+  expect_equal(old, plate_type())
+  norm <- custom_plate_prepend(custom_plate_normalize_proper('SIMPLE'))
+  exp <- paste(norm, "(simple plate)")
+  expect_equal(exp, plate_type("Custom:Simple", TRUE))
+  map <- c(A01 = "Glucose", B07 = "Fructose")
+  register_plate(SIMPLE = map)
+  expect_equal(c(old, norm), plate_type())
+  expect_equal(map, map_well_names(names(map), norm))
+  register_plate(SIMPLE = NULL)
+  expect_equal(old, plate_type())
+  register_plate(SIMPLE = 'simple plate', SIMPLE = NULL)
+  expect_equal(old, plate_type())
 })
 
 
@@ -188,13 +282,14 @@ test_that("substrate names can be translated", {
 
   plate.1 <- "PM01"
   exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
-  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE)
+  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE, rm.num = TRUE)
 
   plates.2 <- c(plate.1, "PM02")
   exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
   exp.2 <- cbind(exp.1, exp.2)
   colnames(exp.2) <- plates.2
-  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
+  class(exp.2) <- "well_coords_map"
+  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE, rm.num = TRUE)
   expect_equal(got, exp.2)
 
   # Partial matching is allowed
@@ -202,7 +297,8 @@ test_that("substrate names can be translated", {
   exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
   exp.2 <- cbind(exp.1, exp.2)
   colnames(exp.2) <- c(plates.2[1L], "PM02")
-  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE)
+  class(exp.2) <- "well_coords_map"
+  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE, rm.num = TRUE)
   expect_equal(got, exp.2)
 
 })

@@ -1,3 +1,20 @@
+
+
+2014-01-XX (the 13th release on CRAN)
+
+- new vignette on analysing growth-curve (and user-defined PM) data
+- wells() does not allow for partial matching of plate names any more
+- new register_plate() and opmx() methods
+- radial_plot() gets a 'group.col' argument
+- wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
+  class 'well_coords_map', which gets its own listing() method
+- heat_map() gets an 'abbrev' argument
+- xy_plot() gets a 'rcr' argument
+
+
+################################################################################
+
+
 2013-12-08 (the 12th release on CRAN)
 
 - corrected the dependency on R to '>= 3.0.0' (as noted by the CRAN team)

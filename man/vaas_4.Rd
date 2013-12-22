@@ -47,11 +47,11 @@
 \examples{
 \dontrun{
 
-# Calling this yielded a variable vaas_4 containing the data. The opm
+# Calling this yielded a variable 'vaas_4' containing the data. The opm
 # package must be loaded beforehand using library().
 data(vaas_4)
 
-# Calling this yielded a variable vaas_1 containing the data. The opm
+# Calling this yielded a variable 'vaas_1' containing the data. The opm
 # package must be loaded beforehand using library().
 data(vaas_1)
 }
@@ -82,6 +82,5 @@ data(vaas_1)
 
   \url{http://www.dsmz.de/catalogues/details/culture/DSM-30083.html}
 }
-\keyword{datasets}
 \keyword{datasets}
 

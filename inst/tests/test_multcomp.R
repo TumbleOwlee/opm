@@ -375,23 +375,6 @@ test_that("subset of wells with directly defined contrast matrix", {
 })
 
 ## opm_mcp
-test_that("linfct as predefined object", {
-  # TODO Lea: what precisely does this test that isn't tested elsewhere?
-  # that linfct is stored in an object is trivial
-  # see above
-  a <- multcomp::mcp(Well = "Dunnett")
-  rem <- -ncol(EXPL.DF):-(ncol(EXPL.DF) - 91L)
-  x <- opm_mcp(EXPL.DF[, rem],
-    model = Value ~ Well, m.type = "lm", linfct = a)
-  expect_is(x, "glht")
-  expect_equal(x$type, "Dunnett")
-  expect_true(is.list(x))
-  expect_equal(length(x), 9)
-  expect_equal(length(coef(x)), 3)
-})
-
-
-## opm_mcp
 test_that("linfct as predefined matrix-object", {
   x <- EXPL.DF[, -ncol(EXPL.DF):-(ncol(EXPL.DF) - 91L)]
   contr <- opm_mcp(x, model = ~ Well, output = "contrast")

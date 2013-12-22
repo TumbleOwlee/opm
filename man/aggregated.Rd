@@ -56,8 +56,8 @@
   set to \code{TRUE} but \code{stringsAsFactors} to
   \code{FALSE}.}
 
-  \item{...}{Optional arguments passed between the
-  methods.}
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{wells}}.}
 }
 \value{
   \code{aggregated} yields a numeric matrix of aggregated

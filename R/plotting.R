@@ -200,7 +200,10 @@ setGeneric("improved_max",
 
 setMethod("improved_max", "numeric", function(object, by = 10) {
   LL(by)
-  ceiling(max(object) / by) * by + by # => error unless 'by' is numeric
+  m <- max(object)
+  while (by >= m)
+    by <- by / 10
+  ceiling(m / by) * by + by # => error unless 'by' is numeric
 }, sealed = SEALED)
 
 setMethod("improved_max", OPMX, function(object, theor.max = TRUE, by = 10) {
@@ -291,13 +294,13 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
     neg.ctrl = "A01", base.col = "grey10", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
     theor.max = TRUE, draw.grid = TRUE,
-    strip.fmt = list(), striptext.fmt = list(),
+    strip.fmt = list(), striptext.fmt = list(), rcr = 0.75,
     ...) {
 
   ## BEGIN must be synchronized with xy_plot,OPMS
 
   # Setup
-  layout <- best_layout(dim(x)[2L])
+  layout <- best_layout(dim(x)[2L], rcr)
   y.max <- improved_max(x, theor.max)
   main <- main_title(x, main)
   neg.ctrl <- negative_control(x, neg.ctrl)
@@ -341,13 +344,13 @@ setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
     theor.max = TRUE, draw.grid = TRUE, space = "top",
     strip.fmt = list(), striptext.fmt = list(),
-    legend.fmt = list(), legend.sep = " ", draw.legend = TRUE,
+    legend.fmt = list(), legend.sep = " ", draw.legend = TRUE, rcr = 0.75,
     ...) {
 
   ## BEGIN must be synchronized with xy_plot,OPM
 
   # Setup
-  layout <- best_layout(dim(x)[3L])
+  layout <- best_layout(dim(x)[3L], rcr)
   y.max <- improved_max(x, theor.max)
   main <- main_title(x, main)
   neg.ctrl <- negative_control(x, neg.ctrl)
@@ -414,7 +417,8 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
     col = opm_opt("colors"), lwd = 1, neg.ctrl = NULL, base.col = "black",
     base.lwd = lwd, main = groups, xlab = elem(f, 3L:2L), ylab = elem(f, 2L),
     draw.grid = TRUE, space = "top", strip.fmt = list(), striptext.fmt = list(),
-    legend.fmt = list(), legend.sep = " ", draw.legend = TRUE, ...) {
+    legend.fmt = list(), legend.sep = " ", draw.legend = TRUE, rcr = 0.75,
+    ...) {
 
   elem <- function(x, i) {
     pos <- 1L
@@ -431,7 +435,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
 
   # Layout
   xvar <- as.factor(x[, elem(f, 3L:3L)])
-  layout <- best_layout(length(levels(xvar)))
+  layout <- best_layout(length(levels(xvar)), rcr)
 
   # Put grouping variable together
   pos <- match(groups, names(x))
@@ -619,8 +623,16 @@ setMethod("heat_map", "matrix", function(object,
     else
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
+    abbrev = c("none", "row", "column", "both"),
     ...,
     use.fun = c("gplots", "stats")) {
+
+  shorten <- function(x, n1 = 0L, n2 = 3L) {
+    x <- gsub(sprintf("^\\b([A-Z][a-z]{%i})[a-z]{2,}\\b(?!\\.)", n1),
+      "\\1.", x, FALSE, TRUE)
+    gsub(sprintf("\\b([a-z]{%i})[a-z]{2,}\\b(?!\\.)", n2),
+      "\\1.", x, FALSE, TRUE)
+  }
 
   get_fun <- function(infun, usefun) {
     if (is.character(infun))
@@ -664,6 +676,16 @@ setMethod("heat_map", "matrix", function(object,
     }
     asin(sqrt(x))
   }
+
+  case(match.arg(abbrev),
+    none = NULL,
+    row = rownames(object) <- shorten(rownames(object)),
+    column = colnames(object) <- shorten(colnames(object)),
+    both = {
+      rownames(object) <- shorten(rownames(object))
+      colnames(object) <- shorten(colnames(object))
+    }
+  )
 
   clustfun <- get_fun(hclustfun, hclust)
   dfun <- get_fun(distfun, dist)
@@ -729,45 +751,53 @@ setMethod("radial_plot", "matrix", function(object, as.labels = NULL,
     radlab = FALSE, show.centroid = TRUE, show.grid.labels = 1, lwd = 3,
     mar = c(2, 2, 2, 2), line.col = opm_opt("colors"), draw.legend = TRUE,
     x = "bottom", y = NULL, xpd = TRUE, pch = 15, legend.args = list(),
-    point.symbols = 15, point.col = opm_opt("colors"), poly.col = NA,
-    main = paste0(as.labels, sep = sep), ...) {
+    group.col = FALSE, point.symbols = 15, point.col = opm_opt("colors"),
+    poly.col = NA, main = paste0(as.labels, sep = sep), ...) {
 
   # insert a ready-made colour vector for line.col
-  #adapt_colors <- function(x, colors) {
-  #  x <- as.factor(x)
-  #  if (length(colors) < length(levels(x)))
-  #    stop("not enough colours provided")
-  #  colors[x]
-  #}
+  adapt_colors <- function(x, colors) {
+    if (length(colors) < length(levels(f <- as.factor(x))))
+      stop("not enough colours provided")
+    structure(colors[f], names = x)
+  }
 
-  LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch)
+  LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch, group.col)
   line.col <- try_select_colors(line.col)
   point.col <- try_select_colors(point.col)
   changed.par <- NULL
   on.exit(if (!is.null(changed.par))
     par(changed.par))
 
-  # check if line.col has the same length as object[, subset, drop = FALSE]
-  #  if (length(line.col) < nsets)
-  #    nsets <- length(object[, subset, drop = FALSE])
+  if (group.col && !is.null(rn <- rownames(object))) {
+    line.col <- adapt_colors(rn, line.col)
+    point.col <- adapt_colors(rn, point.col)
+  } else {
+    line.col <- adapt_colors(seq_len(nrow(object)), line.col)
+    point.col <- adapt_colors(seq_len(nrow(object)), point.col)
+  }
+
   changed.par <- radial.plot(lengths = object[, subset, drop = FALSE],
     labels = colnames(object), rp.type = rp.type, radlab = radlab,
     show.centroid = show.centroid, lwd = lwd, mar = mar,
     show.grid.labels = show.grid.labels, line.col = line.col,
     point.symbols = point.symbols, point.col = point.col, poly.col = poly.col,
     main = main, ...)
-  if (!is.null(rn <- rownames(object))) {
+  if (is.null(rn <- rownames(object))) {
+    line.col <- NULL
+  } else {
+    if (group.col) {
+      line.col <- line.col[!duplicated.default(line.col)]
+      rn <- names(line.col)
+    } else {
+      names(line.col) <- rn
+    }
     if (draw.legend) {
       legend.args <- insert(as.list(legend.args), x = x, y = y, col = line.col,
         legend = rn, pch = pch, .force = TRUE)
       do.call(legend, legend.args)
     }
-    result <- suppressWarnings(cbind(rn, line.col))
-    result <- result[seq_len(nrow(object)), , drop = FALSE]
-    result <- structure(result[, 2L], names = as.vector(result[, 1L]))
-  } else
-    result <- NULL
-  invisible(result)
+  }
+  invisible(line.col)
 }, sealed = SEALED)
 
 setMethod("radial_plot", "data.frame", function(object, as.labels,

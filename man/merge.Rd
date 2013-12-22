@@ -97,6 +97,13 @@
   per pseudo-plate must be made uniform.  This is done by
   enforcing well names and well ordering of the first
   replicate in all forthcoming replicates.
+
+  After a successful splitting, the numeric suffixes in the
+  full well names make no sense any more, as each plate
+  contains a constant set of such suffixes. The
+  \code{no.num} argument of \code{\link{wells}} and the
+  dependent methods can be used to remove the suffixes
+  before displaying the full well names.
 }
 \examples{
 ## merge: OPM methods
@@ -151,8 +158,8 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},
   \code{\link{flatten}}, \code{\link{oapply}},
-  \code{\link{plates}}, \code{\link{rep}},
-  \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{opmx}}, \code{\link{plates}},
+  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
   \code{\link{to_yaml}}, \code{\link{unique}}
 }
 \keyword{manip}

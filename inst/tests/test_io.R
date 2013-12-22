@@ -215,13 +215,11 @@ test_that("read_opm can read three partially incompatible files", {
 test_that("explode_dir finds the files it should find", {
   files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
     wildcard = FALSE)
-  # TODO: might be safer to apply normalizePath() here, too
   expect_true(all(grepl(TEST.DIR, files, fixed = TRUE)))
   expect_equal(length(files), 9L)
   expect_equal(names(files), NULL)
   files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
     exclude = "old", wildcard = FALSE)
-  # TODO: might be safer to apply normalizePath() here, too
   expect_true(all(grepl(TEST.DIR, files, fixed = TRUE)))
   expect_equal(length(files), 5L)
   expect_equal(names(files), NULL)

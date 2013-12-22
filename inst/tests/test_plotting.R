@@ -137,11 +137,15 @@ test_that("best ranges can be determined", {
 ## improved_max
 test_that("the improved maximum can be calculated", {
   for (i in 1:100) {
-    nums <- rand_range(10L)
-    im <- improved_max(nums)
+    m <- max(nums <- rand_range(10L))
     im.5 <- improved_max(nums, 5)
+    im.10 <- improved_max(nums, 10)
     im.20 <- improved_max(nums, 20)
-    expect_true(im.20 > im && im > im.5 && im.5 > max(nums))
+    if (m > 20)
+      expect_true(im.20 > im.10)
+    if (m > 10)
+      expect_true(im.10 > im.5)
+    expect_true(im.5 > m)
   }
 })
 

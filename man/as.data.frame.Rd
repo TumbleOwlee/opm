@@ -167,8 +167,9 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
 
   Other conversion-functions: \code{\link{extract}},
   \code{\link{extract_columns}}, \code{\link{merge}},
-  \code{\link{oapply}}, \code{\link{plates}},
-  \code{\link{rep}}, \code{\link{rev}}, \code{\link{sort}},
+  \code{\link{oapply}}, \code{\link{opmx}},
+  \code{\link{plates}}, \code{\link{rep}},
+  \code{\link{rev}}, \code{\link{sort}},
   \code{\link{split}}, \code{\link{to_yaml}},
   \code{\link{unique}}
 }

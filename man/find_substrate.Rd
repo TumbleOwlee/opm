@@ -120,6 +120,7 @@ stopifnot(length(x[[1]]) > length(x[[2]]))
   Other naming-functions: \code{\link{gen_iii}},
   \code{\link{listing}}, \code{\link{opm_files}},
   \code{\link{param_names}}, \code{\link{plate_type}},
+  \code{\link{register_plate}},
   \code{\link{select_colors}},
   \code{\link{substrate_info}}, \code{\link{wells}}
 }

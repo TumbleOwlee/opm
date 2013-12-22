@@ -19,8 +19,8 @@
   eponymous argument of \code{\link{aggr_settings}}; see
   there for details.}
 
-  \item{...}{Optional arguments passed between the
-  methods.}
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{wells}}.}
 }
 \value{
   Logical vector or matrix in the case of

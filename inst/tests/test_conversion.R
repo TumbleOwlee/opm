@@ -110,7 +110,7 @@ test_that("example data can be flattened", {
   expect_is(flat, "data.frame")
   expect_equal(colnames(flat), base.colnames)
   w <- wells(SMALL, full = TRUE)
-  expect_equal(as.character(unique(flat$Well)), w)
+  expect_equivalent(as.character(unique.default(flat$Well)), w)
   exp.len <- Reduce(`*`, dim(SMALL))
   expect_equal(exp.len, nrow(flat))
 })
@@ -439,7 +439,7 @@ test_that("aggregated parameters can be extracted as matrix", {
   mat <- extract(THIN.AGG, as.labels = list("organism", "run"), sep = "||")
   expect_is(mat, "matrix")
   expect_equal(dim(mat), c(2L, 96L))
-  expect_equal(colnames(mat), wells(THIN.AGG, full = TRUE))
+  expect_equivalent(colnames(mat), wells(THIN.AGG, full = TRUE))
   expect_equal(NULL, attr(mat, "row.groups"))
   expect_equal(rn, rownames(mat))
 
@@ -447,7 +447,7 @@ test_that("aggregated parameters can be extracted as matrix", {
     subset = "lambda", as.groups = list("run", "organism"), sep = "||")
   expect_is(mat, "matrix")
   expect_equal(dim(mat), c(2L, 96L))
-  expect_equal(colnames(mat), wells(THIN.AGG, full = TRUE))
+  expect_equivalent(colnames(mat), wells(THIN.AGG, full = TRUE))
   expect_equal(as.factor(gn), attr(mat, "row.groups"))
   expect_equal(rn, rownames(mat))
 
@@ -477,7 +477,7 @@ test_that("aggregated parameters can be extracted as matrix with CIs", {
   expect_is(mat, "matrix")
   expect_is(mat[1L], "numeric")
   expect_equal(dim(mat), c(6L, 96L))
-  expect_equal(colnames(mat), wells(THIN.AGG, full = TRUE))
+  expect_equivalent(colnames(mat), wells(THIN.AGG, full = TRUE))
   expect_equal(grepl(rn[1L], rownames(mat), fixed = TRUE), c(T, T, T, F, F, F))
   expect_equal(grepl(rn[2L], rownames(mat), fixed = TRUE), c(F, F, F, T, T, T))
   expect_equal(NULL, attr(mat, "row.groups"))
@@ -487,7 +487,7 @@ test_that("aggregated parameters can be extracted as matrix with CIs", {
   expect_is(mat, "matrix")
   expect_is(mat[1L], "numeric")
   expect_equal(dim(mat), c(6L, 96L))
-  expect_equal(colnames(mat), wells(THIN.AGG, full = TRUE))
+  expect_equivalent(colnames(mat), wells(THIN.AGG, full = TRUE))
   expect_equal(grepl(rn[1L], rownames(mat), fixed = TRUE), c(T, T, T, F, F, F))
   expect_equal(grepl(rn[2L], rownames(mat), fixed = TRUE), c(F, F, F, T, T, T))
   expect_equal(rep(as.factor(metadata(THIN.AGG, "organism")), each = 3L),
@@ -503,7 +503,7 @@ test_that("aggregated parameters can be extracted as dataframe", {
     subset = "lambda", dataframe = TRUE, sep = "***")
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(2L, 99L))
-  expect_equal(colnames(mat), c("organism", "run",
+  expect_equivalent(colnames(mat), c("organism", "run",
     RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE)))
   expect_true(all(vapply(mat[, 1L:3L], is.factor, NA)))
@@ -517,7 +517,7 @@ test_that("aggregated parameters can be extracted as dataframe", {
     as.groups = list("run", "organism"))
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(2L, 101L))
-  expect_equal(colnames(mat), c("organism", "run",
+  expect_equivalent(colnames(mat), c("organism", "run",
     RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE), "run", "organism"))
   expect_true(all(vapply(mat[, 1L:3L], is.factor, NA)))
@@ -539,7 +539,7 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
     subset = "lambda", dataframe = TRUE, sep = "***", ci = TRUE)
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(6L, 99L))
-  expect_equal(colnames(mat), c("organism", "run",
+  expect_equivalent(colnames(mat), c("organism", "run",
     RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE)))
   expect_true(all(vapply(mat[, 1L:3L], is.factor, NA)))
@@ -564,7 +564,7 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
     as.groups = ~ run - organism)
   expect_is(mat, "data.frame")
   expect_equal(dim(mat), c(6L, 101L))
-  expect_equal(colnames(mat), c("organism", "run",
+  expect_equivalent(colnames(mat), c("organism", "run",
     RESERVED_NAMES[["parameter"]],
     wells(THIN.AGG, full = TRUE), "run", "organism"))
   expect_true(all(vapply(mat[, 1L:3L], is.factor, NA)))
@@ -582,7 +582,9 @@ test_that("aggregated parameters can be extracted as dataframe with CIs", {
     subset = "lambda", dataframe = TRUE, sep = "***", ci = TRUE,
     as.groups = ~ J(run - organism))
   expect_equal(dim(mat2), c(6L, 102L))
-  expect_equivalent(mat, mat2[, -102L]) # TODO: unclear why different
+  # the following subsetting itself causes differences in column names
+  expect_equivalent(mat, mat2[, -102L])
+  expect_equal(colnames(mat), colnames(mat2)[-102L])
 
 })
 
@@ -794,6 +796,13 @@ test_that("OPMS example data can be converted to YAML", {
     expect_equal(length(THIN.AGG), length(pos))
   }
 })
+
+
+################################################################################
+
+
+## opmx
+## UNTESTED
 
 
 ################################################################################

@@ -159,8 +159,9 @@ stopifnot(is.null(rep(vaas_4, 0)))
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},
   \code{\link{flatten}}, \code{\link{merge}},
-  \code{\link{oapply}}, \code{\link{plates}},
-  \code{\link{split}}, \code{\link{to_yaml}}
+  \code{\link{oapply}}, \code{\link{opmx}},
+  \code{\link{plates}}, \code{\link{split}},
+  \code{\link{to_yaml}}
 }
 \keyword{manip}
 
