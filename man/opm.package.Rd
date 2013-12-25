@@ -94,6 +94,7 @@
 \dontrun{ ## show the vignettes
   vignette("opm-tutorial")
   vignette("opm-substrates")
+  vignette("opm-growth-curves")
 }
 
 \dontrun{ ## demo of some I/O, plotting, text and table generation options

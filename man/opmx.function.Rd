@@ -38,9 +38,12 @@
   yielding \sQuote{position} indicators.  These will be
   used to uniquely identify each plate. The columns to be
   joined will be kept, too; usually they will end up in the
-  \code{\link{metadata}}. An empty \code{position} argument
-  is (but then an accordingly named column must already be
-  present).
+  \code{\link{metadata}}. In this case, the resulting
+  \sQuote{position} indicators are newly generated rather
+  than literally taken from the input, but yield the same
+  grouping. An empty \code{position} argument is possible,
+  but then an accordingly named column must already be
+  present, whose content is used literally.
 
   The \code{position} argument is mandatory for the
   \sQuote{rectangular} and \sQuote{vertical} formats. It
@@ -49,7 +52,13 @@
   others into an \code{\link{OPMS}} object. (By default the
   setup time is additionally considered but the default for
   the \code{setup.time} argument is just the time of the
-  call to \code{opmx}.)}
+  call to \code{opmx}.)
+
+  For plate position values to be used literally, integers
+  between 0 and 99 (inclusively) followed by a single
+  letters are recommended, because this allows \pkg{opm} to
+  normalise this entry. See the eponymous argument of
+  \code{\link{csv_data}}.}
 
   \item{plate.type}{Character scalar. In
   \sQuote{horizontal} mode, the name of the column
@@ -228,7 +237,7 @@ well.map <- paste("Substrate", 1:8)
 names(well.map) <- paste0("A", 1:8)
 
 # Registering the plate type beforehand is mandatory here because the
-# file does not contain the real substrate names.
+# input data frame does not contain the real substrate names.
 register_plate(XYZ = well.map)
 wells(plate = "CUSTOM:XYZ")[1:10]
 

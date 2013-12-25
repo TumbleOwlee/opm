@@ -952,6 +952,10 @@ setMethod("opmx", "data.frame", function(object,
   # Only for the 'horizontal' format.
   #
   map_colnames <- function(x, plate.type, position, well) {
+    to_positions <- function(x) {
+      x <- paste(as.integer(x), rep(c("A", "B"), each = 100L)[seq_along(x)])
+      clean_plate_positions(x)
+    }
     map <- list()
     map[[CSV_NAMES[["PLATE_TYPE"]]]] <- plate.type
     map[[RESERVED_NAMES[["well"]]]] <- well
@@ -963,7 +967,7 @@ setMethod("opmx", "data.frame", function(object,
       map <- list(position)
       names(map) <- pos <- CSV_NAMES[["POS"]]
       x <- extract_columns(x, map)
-      x[, pos] <- as.integer(x[, pos])
+      x[, pos] <- to_positions(x[, pos])
     }
     x
   }
