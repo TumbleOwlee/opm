@@ -181,6 +181,8 @@ setMethod("csv_data", OPM, function(object,
     keys = character(), strict = TRUE,
     what = c("select", "filename", "setup_time", "position", "other"),
     normalize = FALSE) {
+  no_backslash <- function(x) gsub("\\",
+    "/", x, FALSE, FALSE, TRUE)
   LL(strict, normalize)
   result <- case(match.arg(what),
       select = NULL,
@@ -193,7 +195,10 @@ setMethod("csv_data", OPM, function(object,
           clean_plate_positions(object@csv_data[[CSV_NAMES[["POS"]]]])
         else
           object@csv_data[[CSV_NAMES[["POS"]]]],
-      other = object@csv_data[!names(object@csv_data) %in% CSV_NAMES]
+      other = if (normalize)
+          no_backslash(object@csv_data[!names(object@csv_data) %in% CSV_NAMES])
+        else
+          object@csv_data[!names(object@csv_data) %in% CSV_NAMES]
     )
   if (length(result))
     return(result)
@@ -213,6 +218,8 @@ setMethod("csv_data", OPM, function(object,
       result[pos[1L]] <- as.character(parse_time(result[pos[1L]]))
     if (pos[2L])
       result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
+    pos <- setdiff(seq_along(result), pos)
+    result[pos] <- no_backslash(result[pos])
   }
   result
 }, sealed = SEALED)

@@ -31,7 +31,9 @@
   normalised. This should always work for the plate
   positions, but for the setup times it depends on the
   values for the \code{\link{opm_opt}} keys \code{time.fmt}
-  and \code{time.zone} (see also \code{\link{merge}}).}
+  and \code{time.zone} (see also \code{\link{merge}}). For
+  other entries, normalisation means replacing backslashes
+  by slashes.}
 
   \item{...}{Optional arguments passed between the
   methods.}

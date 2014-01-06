@@ -3,13 +3,15 @@
 2014-01-XX (the 13th release on CRAN)
 
 - new vignette on analysing growth-curve (and user-defined PM) data
-- wells() does not allow for partial matching of plate names any more
-- new register_plate() and opmx() methods
+- new register_plate() and opmx() methods for managing user-defined data
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets an 'abbrev' argument
 - xy_plot() gets a 'rcr' argument
+- the 'normalize' argument of csv_data() now also triggers the replacement of
+  backslashes with slashes
+- wells() does not allow for partial matching of plate names any more
 
 
 ################################################################################
