@@ -349,6 +349,7 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \alias{map_values,NULL,character-method}
 \alias{map_values,NULL,function-method}
 \alias{map_values,NULL,missing-method}
+\alias{map_values,character,NULL-method}
 \alias{map_values,character,character-method}
 \alias{map_values,character,function-method}
 \alias{map_values,character,missing-method}
@@ -391,6 +392,7 @@ stopifnot(y == c("a", "b"), names(y) == y)
   \S4method{map_values}{NULL,character}(object, mapping) 
   \S4method{map_values}{NULL,function}(object, mapping, ...) 
   \S4method{map_values}{NULL,missing}(object, mapping) 
+  \S4method{map_values}{character,NULL}(object, mapping) 
   \S4method{map_values}{character,character}(object, mapping) 
   \S4method{map_values}{character,function}(object, mapping,
     ...) 

@@ -916,6 +916,10 @@ setMethod("map_values", c("character", "missing"), function(object) {
   structure(object, names = object)
 }, sealed = SEALED)
 
+setMethod("map_values", c("character", "NULL"), function(object, mapping) {
+  object
+}, sealed = SEALED)
+
 setMethod("map_values", c("factor", "function"), function(object, mapping,
     ...) {
   levels(object) <- map_values(levels(object), mapping, ...)
