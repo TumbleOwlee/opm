@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Substrate information in opm}
+%\VignetteIndexEntry{Growth curves in opm}
 %% need no \usepackage{Sweave.sty}
 \documentclass{article}
 \begin{document}
