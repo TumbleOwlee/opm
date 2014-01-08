@@ -702,31 +702,6 @@ setMethod("tidy", "list", function(object, ...) {
   lapply(X = object, FUN = tidy, ...)
 }, sealed = SEALED)
 
-kubrick <- function(movie = character()) {
-  data <- c(
-    `Paths Of Glory` = paste(
-      "You see, George, those men know that I would never let them down."),
-    Spartacus = "I am Spartacus!",
-    Lolita = "The wedding was a quiet affair.",
-    `Dr. Strangelove` = paste(
-      "Gentlemen, you can't fight in here! This is the War Room!"),
-    `2001: A Space Odyssey` = "My God, it's full of stars.",
-    `A Clockwork Orange` = paste("It's a sin! Using Ludwig van like that.",
-      "He did no harm to anyone. Beethoven just wrote music."),
-    `Barry Lyndon` = paste(
-      "I'm under arrest? Captain Potzdorf, sir! I'm a British officer."),
-    `The Shining` = "All work and no play makes Jack a dull boy.",
-    `Full Metal Jacket` = "Sir, yes, sir!",
-    `Eyes Wide Shut` = "If you men only knew..."
-  )
-  idx <- if (length(movie))
-      as.character(movie)
-    else
-      as.integer(runif(1L, max = length(data))) + 1L
-  message(msg <- data[[idx, exact = FALSE]])
-  invisible(msg)
-}
-
 setAs(from = "ANY", to = "factor", function(from) as.factor(from))
 setAs(from = "ANY", to = "ordered", function(from) as.ordered(from))
 

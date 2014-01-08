@@ -152,8 +152,8 @@ stopifnot(digits == 4)
   base::options base::getOption
 
   Other auxiliary-functions: \code{\link{contains}},
-  \code{\link{kubrick}}, \code{\link{map_names}},
-  \code{\link{map_values}}, \code{\link{separate}}
+  \code{\link{map_names}}, \code{\link{map_values}},
+  \code{\link{separate}}
 }
 \keyword{utilities}
 

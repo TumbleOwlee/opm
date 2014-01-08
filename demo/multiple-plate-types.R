@@ -1,4 +1,4 @@
-### Analysing Phenotype MicroArray data: converting CSV files
+## Analysing Phenotype MicroArray data: converting CSV files
 
 # This is example R code for using opm in a standardized setting to create
 # files describing Phenotype MicroArray results run in PM mode, with special
@@ -15,7 +15,7 @@
 #
 # For advanced users, we recommend to use batch_opm() instead for most of the
 # steps conducted below.
-
+#
 # Author: Markus Goeker
 
 
@@ -37,7 +37,7 @@ replicate <- "Replicate"
 organism <- "Strain Number"
 
 
-### DATA INPUT:
+## Data input:
 
 # We assume that only the CSV files within the working directory should be input
 # and that the data read should be grouped by plate type. This code fails if
@@ -92,7 +92,7 @@ if (!organism %in% names(md)) {
 metadata(x) <- md[, c(organism, replicate)]
 
 
-### COMPUTING SECTION: AGGREGATION AND DISCRETIZATION
+## Computing section: aggregation and discretisation
 
 # That's the time-consuming step here. Specify at most as many cores as you
 # really have on your machine, and keep in mind that parallelization does not
@@ -123,7 +123,7 @@ x <- do_disc(x, cutoff = FALSE)
 head(disc_settings(x, join = "json"), 1)
 
 
-### OUTPUT SECTION:
+## Output section
 
 # Copy the CSS file that comes with opm to the current working directory and set
 # it as default for HTML tables.

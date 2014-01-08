@@ -1,4 +1,4 @@
-### Analysing Phenotype MicroArray data: drawing PCA biplots
+## Analysing Phenotype MicroArray data: drawing PCA biplots
 
 # Using BiodiversityR and opm to generate PCA biplots of estimated parameters.
 # An advantage of such plots is that the overall differences between the
@@ -8,7 +8,7 @@
 # question, this might be more interesting than drawing heat maps. Some
 # BiodiversityR functions do not always seem to work as intended, see the
 # comments below.
-
+#
 # Author: Markus Goeker, with assistance by Pia Wuest (DSMZ)
 
 
@@ -25,18 +25,29 @@ library(opm)
 #' opm::extract. It uses methods from the vegan and BiodiversityR packages.
 #'
 #' @param x Matrix as exported by opm::extract.
+#'
 #' @param group Logical scalar. Assign symbols by group? This causes secondary
 #'   symbols to be plotted over the primary symbols (which should best be
 #'   invisible in that case).
+#'
 #' @param circle Logical scalar. Draw equlibrium circle?
+#'
 #' @param text.col Used for drawing descriptor names.
+#'
 #' @param points.col Used for drawing the primary object symbols.
+#'
 #' @param arrow.col Used for drawing descriptor arrows.
+#'
 #' @param legend.x Passed to graphics::legend in non-interactive use.
+#'
 #' @param legend.y Likewise.
+#'
 #' @param lwd Used for the secondary object symbols.
+#'
 #' @param cex Used for drawing descriptor names.
+#'
 #' @param scaling Passed to stats::biplot.
+#'
 #' @param ... Optional arguments passed to stats::biplot.
 #'
 #' @return Object of class "pca", returned invisibly.

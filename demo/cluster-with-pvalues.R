@@ -1,10 +1,10 @@
-### Analysing Phenotype MicroArray data: clustering with p-values
+## Analysing Phenotype MicroArray data: clustering with p-values
 
 # Using pvclust and opm to calculate clusterings with branch support values.
 # Assessing the uncertainty of clustering results should be done for all
 # serious interpretations of such clusterings. This is one approach to
 # assessing uncertainty; see the pvclust documentation for details.
-
+#
 # Author: Markus Goeker
 
 
@@ -42,6 +42,6 @@ x.pvc <- pvclust(x, method.dist = "euclidean")
 
 plot(x.pvc, hang = -1)
 pvrect(x.pvc, pv = "bp")
-# for real analyses, omit 'pv = "bp"'
+# For real analyses, omit 'pv = "bp"'.
 
 

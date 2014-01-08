@@ -321,8 +321,7 @@ stopifnot(y == c("a", "b"), names(y) == y)
   base::class base::storage.mode base::as.vector
 
   Other auxiliary-functions: \code{\link{contains}},
-  \code{\link{kubrick}}, \code{\link{opm_opt}},
-  \code{\link{separate}}
+  \code{\link{opm_opt}}, \code{\link{separate}}
 }
 \keyword{list}
 \keyword{manip}
