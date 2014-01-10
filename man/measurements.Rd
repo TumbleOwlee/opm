@@ -110,14 +110,14 @@ stopifnot(length(x) == 4, x == 95.75)
 \seealso{
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{dim}},
-  \code{\link{disc_settings}}, \code{\link{discretized}},
-  \code{\link{duplicated}}, \code{\link{filename}},
-  \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{max}}, \code{\link{minmax}},
-  \code{\link{position}}, \code{\link{seq}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{thin_out}}
+  \code{\link{contains}}, \code{\link{csv_data}},
+  \code{\link{dim}}, \code{\link{disc_settings}},
+  \code{\link{discretized}}, \code{\link{duplicated}},
+  \code{\link{filename}}, \code{\link{has_aggr}},
+  \code{\link{has_disc}}, \code{\link{max}},
+  \code{\link{minmax}}, \code{\link{position}},
+  \code{\link{seq}}, \code{\link{setup_time}},
+  \code{\link{subset}}, \code{\link{thin_out}}
 }
 \keyword{attribute}
 

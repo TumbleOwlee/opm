@@ -151,9 +151,7 @@ stopifnot(digits == 4)
 \seealso{
   base::options base::getOption
 
-  Other auxiliary-functions: \code{\link{contains}},
-  \code{\link{map_names}}, \code{\link{map_values}},
-  \code{\link{separate}}
+  Other auxiliary-functions: \code{\link{separate}}
 }
 \keyword{utilities}
 

@@ -1,5 +1,6 @@
 \name{duplicated}
 \alias{anyDuplicated}
+\alias{contains}
 \alias{duplicated}
 \title{Determine duplicated plates}
 \arguments{
@@ -21,7 +22,16 @@
   and the resulting metadata subsets are compared.}
 
   \item{...}{Optional arguments passed to \code{duplicated}
-  from the \pkg{base} package.}
+  from the \pkg{base} package. For \code{contains},
+  optional arguments passed to \code{identical} from the
+  \pkg{base} package, allowing for fine-control of
+  identity.}
+
+  \item{object}{\code{\link{OPMX}} object.}
+
+  \item{other}{For the \code{\link{OPMX}} method of
+  \code{contains}, an \code{\link{OPMX}} object used as
+  query.}
 }
 \value{
   Logical vector in the case of \code{duplicated}, integer
@@ -35,7 +45,15 @@
   \code{\link{OPMA}} objects are contained within an
   \code{\link{OPMS}} object. For reasons of consistency,
   the \code{\link{OPM}} methods always returns \code{FALSE}
-  or \code{0}.
+  or \code{0}. Alternatively, query \code{\link{OPMX}}
+  objects with other such objects.
+}
+\details{
+  The \code{\link{OPMS}} and \code{\link{OPM}} methods of
+  \code{contains} test, for instance, whether an
+  \code{\link{OPM}} object is contained in an
+  \code{\link{OPMS}} object. The test may also be vice
+  versa but then trivially fails.
 }
 \examples{
 # 'OPM' methods
@@ -63,9 +81,16 @@ stopifnot(identical(anyDuplicated(vaas_4, what = list("Species")), 2L))
 # => species duplicated
 x <- vaas_4[c(1, 1)] # complete plate duplicated
 stopifnot(identical(anyDuplicated(x), 2L))
+
+## contains: 'OPMS'/'OPM' methods
+stopifnot(contains(vaas_4, vaas_4[3])) # single one contained
+stopifnot(contains(vaas_4, vaas_4)) # all contained
+stopifnot(!contains(vaas_4[3], vaas_4)) # OPMS cannot be contained in OPM
+stopifnot(contains(vaas_4[3], vaas_4[3])) # identical OPM objects
+stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 }
 \seealso{
-  base::duplicated base::anyDuplicated
+  base::duplicated base::anyDuplicated base::identical
 
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{csv_data}},
@@ -86,6 +111,11 @@ stopifnot(identical(anyDuplicated(x), 2L))
 \alias{anyDuplicated,OPM,ANY-method}
 \alias{anyDuplicated,OPMS,ANY-method}
 \alias{anyDuplicated,OPMS,missing-method}
+\alias{contains-methods}
+\alias{contains,OPM,OPM-method}
+\alias{contains,OPM,OPMS-method}
+\alias{contains,OPMS,OPM-method}
+\alias{contains,OPMS,OPMS-method}
 \alias{duplicated-methods}
 \alias{duplicated,OPM,ANY-method}
 \alias{duplicated,OPMS,ANY-method}
@@ -94,6 +124,11 @@ stopifnot(identical(anyDuplicated(x), 2L))
   \S4method{anyDuplicated}{OPM,ANY}(x, incomparables, ...) 
   \S4method{anyDuplicated}{OPMS,ANY}(x, incomparables, ...) 
   \S4method{anyDuplicated}{OPMS,missing}(x, incomparables, ...) 
+
+  \S4method{contains}{OPM,OPM}(object, other, ...) 
+  \S4method{contains}{OPM,OPMS}(object, other, ...) 
+  \S4method{contains}{OPMS,OPM}(object, other, ...) 
+  \S4method{contains}{OPMS,OPMS}(object, other, ...) 
 
   \S4method{duplicated}{OPM,ANY}(x, incomparables, ...) 
   \S4method{duplicated}{OPMS,ANY}(x, incomparables,

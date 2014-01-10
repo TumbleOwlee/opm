@@ -64,14 +64,15 @@ stopifnot(identical(x, y))
 
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{csv_data}}, \code{\link{disc_settings}},
-  \code{\link{discretized}}, \code{\link{duplicated}},
-  \code{\link{filename}}, \code{\link{has_aggr}},
-  \code{\link{has_disc}}, \code{\link{hours}},
-  \code{\link{max}}, \code{\link{measurements}},
-  \code{\link{minmax}}, \code{\link{position}},
-  \code{\link{setup_time}}, \code{\link{subset}},
-  \code{\link{thin_out}}, \code{\link{well}}
+  \code{\link{contains}}, \code{\link{csv_data}},
+  \code{\link{disc_settings}}, \code{\link{discretized}},
+  \code{\link{duplicated}}, \code{\link{filename}},
+  \code{\link{has_aggr}}, \code{\link{has_disc}},
+  \code{\link{hours}}, \code{\link{max}},
+  \code{\link{measurements}}, \code{\link{minmax}},
+  \code{\link{position}}, \code{\link{setup_time}},
+  \code{\link{subset}}, \code{\link{thin_out}},
+  \code{\link{well}}
 }
 \keyword{attribute}
 

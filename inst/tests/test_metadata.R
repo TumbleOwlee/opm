@@ -30,6 +30,9 @@ test_that("metadata can be included and CSV keys removed", {
 })
 
 
+## map_values
+## UNTESTED
+
 ## edit
 ## UNTESTED
 

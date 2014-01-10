@@ -5,7 +5,7 @@
 \title{Files, parameter names and colour sets used by the package}
 \usage{
   opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc",
-    "css", "omnilog", "single", "multiple", "growth"))
+    "css", "sql", "omnilog", "single", "multiple", "growth"))
 
   param_names(what = c("param.names", "disc.name", "reserved.md.names", "split.at"))
     
@@ -37,8 +37,10 @@
   arguments or with the \sQuote{-h} switch, the scripts
   output usage information.} \item{single}{Directly
   readable (i.e., single-plate) test files.}
-  \item{testdata}{Files as output by the devices such as
-  the OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \item{sql}{\acronym{SQL} files for working with
+  relational databases.} \item{testdata}{Files as output by
+  the devices such as the
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   instrument.  Included here as examples for data input
   (and metadata management).} } and the following kinds of
   parameter names: \describe{ \item{param.names}{Names of

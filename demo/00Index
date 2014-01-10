@@ -1,4 +1,8 @@
-multiple-plate-types    Apply opm to all CSV files in the working directory to generate HTML, YAML and PDF output
+MongoDB-IO    Use opm and RMongo to insert Phenotype MicroArray data into MongoDB, query and delete them
+MySQL-IO    Database I/O using RMySQL
+PostgreSQL-IO    Database I/O using RPostgreSQL_IO
+RODBC-IO    Database I/O using RODBC
+SQLite-IO    Database I/O using RSQLite
 cluster-with-pvalues    Use opm and pvclust to calculate clusterings with branch support values
 custom-PCA    Use opm and BiodiversityR/vegan to draw PCA biplots of Phenotype MicroArray data
-MongoDB-IO    Use opm and RMongo to insert Phenotype MicroArray data into MongoDB, query and delete them
+multiple-plate-types    Apply opm to all CSV files in the working directory to generate HTML, YAML and PDF output

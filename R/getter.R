@@ -514,6 +514,33 @@ setMethod("anyDuplicated", c(OPMS, "ANY"), function(x, incomparables, ...) {
   case(length(dups), 0L, dups[1L])
 }, sealed = SEALED)
 
+setGeneric("contains")
+
+setMethod("contains", c(OPMS, OPM), function(object, other, ...) {
+  for (plate in object@plates)
+    if (identical(x = plate, y = other, ...))
+      return(TRUE)
+  FALSE
+}, sealed = SEALED)
+
+setMethod("contains", c(OPMS, OPMS), function(object, other, ...) {
+  single_contained <- function(x) {
+    for (plate in object@plates)
+      if (identical(x = plate, y = x, ...))
+        return(TRUE)
+    FALSE
+  }
+  vapply(other@plates, single_contained, NA)
+}, sealed = SEALED)
+
+setMethod("contains", c(OPM, OPMS), function(object, other, ...) {
+  FALSE
+}, sealed = SEALED)
+
+setMethod("contains", c(OPM, OPM), function(object, other, ...) {
+  identical(x = object, y = other, ...)
+}, sealed = SEALED)
+
 lapply(c(
     #+
     aggregated,

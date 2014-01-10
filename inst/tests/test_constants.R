@@ -115,6 +115,12 @@ test_that("the internally used reserved metadata names are OK", {
 })
 
 
+## MEASUREMENT_COLUMN_MAP
+test_that("measurement column map is consitent with reserved metadata names", {
+  expect_true(all(names(MEASUREMENT_COLUMN_MAP) %in% RESERVED_NAMES))
+})
+
+
 ## SOFTWARE
 ## UNTESTED
 

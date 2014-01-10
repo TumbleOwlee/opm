@@ -378,6 +378,24 @@ setMethod("map_metadata", c(MOPMX, "ANY"), function(object, mapping, ...) {
   object
 }, sealed = SEALED)
 
+setGeneric("map_values")
+
+setMethod("map_values", c("list", "formula"), function(object, mapping,
+    coerce = parent.frame()) {
+  if (length(mapping) > 2L) {
+    right <- eval(mapping[[3L]], object, coerce)
+    left <- metadata_key.formula(mapping[-3L], FALSE, envir = coerce)
+    if (is.list(left)) {
+      right <- rep(right, length.out = length(left))
+      for (i in seq_along(left))
+        object[[left[[i]]]] <- right[[i]]
+    } else
+      object[[left]] <- right
+    object
+  } else
+    eval(mapping[[2L]], object, coerce)
+}, sealed = SEALED)
+
 setGeneric("edit")
 
 setMethod("edit", OPMX, function(name, ...) {

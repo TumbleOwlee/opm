@@ -65,8 +65,9 @@
   base::expression stats::formula
 
   Other classes: \code{\link{MOPMX}}, \code{\link{OPM}},
-  \code{\link{OPMA}}, \code{\link{OPMD}},
-  \code{\link{OPMS}}
+  \code{\link{OPMA}}, \code{\link{OPMA_DB}},
+  \code{\link{OPMD}}, \code{\link{OPMD_DB}},
+  \code{\link{OPMS}}, \code{\link{OPM_DB}}
 }
 \keyword{classes}
 \keyword{methods}

@@ -37,6 +37,8 @@ DISC_PARAM <- "disc"
 RESERVED_NAMES <- c("Plate", "Well", "Time", "Value", "Parameter")
 names(RESERVED_NAMES) <- tolower(RESERVED_NAMES)
 
+MEASUREMENT_COLUMN_MAP <- c(Well = "well_id", Time = "time", Value = "value")
+
 SOFTWARE <- "software"
 VERSION <- "version"
 UNKNOWN_VERSION <- "0.0.0"

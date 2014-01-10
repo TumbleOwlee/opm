@@ -2,8 +2,14 @@
 
 2014-01-XX (the 13th release on CRAN)
 
+- list method of contains() moved to pkgutils
+- all map_names() and map_values() methods moved to pkgutils
 - new vignette on analysing growth-curve (and user-defined PM) data
 - new register_plate() and opmx() methods for managing user-defined data
+- new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
+  opm_dbcheck() for database I/O, and according new classes 'OPM_DB', 'OPMA_DB'
+  and 'OPMD_DB'
+. new demos for database I/O
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method

@@ -177,8 +177,8 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \seealso{
   Other metadata-functions: \code{\link{edit}},
   \code{\link{include_metadata}},
-  \code{\link{map_metadata}}, \code{\link{metadata}},
-  \code{\link{metadata_chars}}
+  \code{\link{map_metadata}}, \code{\link{map_values}},
+  \code{\link{metadata}}, \code{\link{metadata_chars}}
 }
 \keyword{manip}
 

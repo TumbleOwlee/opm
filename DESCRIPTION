@@ -15,17 +15,18 @@ Imports:
     hwriter,
     plotrix,
     Ckmeans.1d.dp,
-    pkgutils (>= 0.5-0),
+    pkgutils (>= 0.6.0),
     yaml (>= 2.1.7),
     splines,
     mgcv,
     grofit (>= 1.1),
     rjson (>= 0.2.12),
-    nlme
+    nlme,
+    DBI
 Suggests:
     optparse,
     gplots,
-    opmdata (>= 0.4-0),
+    opmdata (>= 0.4.0),
     testthat,
     multcomp,
     KEGGREST,
@@ -41,7 +42,8 @@ Description: Tools for analysing OmniLog(R) and MicroStation(TM)
     biochemical pathway graphs optionally including genome
     annotations, running multiple comparisons of means, integrating
     metadata, using the YAML format for the storage of data and
-    metadata, and batch conversion of large numbers of files.
+    metadata, batch conversion of large numbers of files, and
+    database I/O.
 License: GPL (>= 2)
 URL: http://opm.dsmz.de/
 MailingList: http://lists.r-forge.r-project.org/mailman/listinfo/opm-support
@@ -69,5 +71,6 @@ Collate:
     'testing.R'
     'multcomp.R'
     'splinefit.R'
+    'dbio.R'
 LazyData: yes
 LazyDataCompression: bzip2

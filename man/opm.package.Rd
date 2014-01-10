@@ -88,7 +88,15 @@
   used to draw more advanced heat maps. See
   \code{\link{heat_map}} and its accompanying methods for
   details. The other customised plotting functions of the
-  package are contained in the same method family.} }
+  package are contained in the same method family.}
+
+  \item{database I/O}{Working with relational and other
+  databases is easily possible with \pkg{opm} provided that
+  such databases exist, are correctly set up and accessible
+  by the user. \acronym{SQL} code for setting up the
+  suggested (extensible) scheme for a relational database
+  comes with the package. See \code{\link{opm_dbput}} for
+  details.} }
 }
 \examples{
 \dontrun{ ## show the vignettes

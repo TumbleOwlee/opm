@@ -1,5 +1,6 @@
 opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
-    "examples", "doc", "css", "omnilog", "single", "multiple", "growth")) {
+    "examples", "doc", "css", "sql", "omnilog", "single", "multiple",
+    "growth")) {
   switch(match.arg(what),
     css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
       TRUE, TRUE, TRUE),
@@ -15,6 +16,8 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
       pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
     single = grep("Multiple\\.csv(\\.[^.]+)?$", pkg_files(opm_string(),
       "testdata"), TRUE, TRUE, TRUE, FALSE, FALSE, TRUE),
+    sql = grep("\\.sql$", pkg_files(opm_string(), "auxiliary"),
+      TRUE, TRUE, TRUE),
     pkg_files(opm_string(), what)
   )
 }

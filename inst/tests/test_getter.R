@@ -361,6 +361,9 @@ test_that("OPMS example data can be thinned out", {
 ## anyDuplicated
 ## UNTESTED
 
+## contains
+## UNTESTED
+
 
 ################################################################################
 
