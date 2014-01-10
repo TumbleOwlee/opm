@@ -106,9 +106,9 @@ mustbe <- function(a, b) stopifnot(identical(a, b))
 # all plates have that entry: selection identical to original object
 mustbe(vaas_4, vaas_4["Species" \%k\% vaas_4, ])
 mustbe(vaas_4, subset(vaas_4, list(Species = "Escherichia coli"),
-  values  = FALSE)) # equivalent
+  values = FALSE)) # equivalent
 mustbe(vaas_4, subset(vaas_4, ~ Species == "Escherichia coli",
-  values  = FALSE)) # also equivalent
+  values = FALSE)) # also equivalent
 
 # two plates also have that value: yielding OPMS object with only two plates
 mustbe(vaas_4[1:2], vaas_4[list(Species = "Escherichia coli") \%q\% vaas_4, ])

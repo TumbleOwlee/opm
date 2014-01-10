@@ -140,9 +140,8 @@ stopifnot(has_aggr(vaas_1), !has_aggr(x))
 \seealso{
   methods::Methods methods::new
 
-  Other classes: \code{\link{FOE}}, \code{\link{MOA}},
-  \code{\link{OPMX}}, \code{\link{WMD}},
-  \code{\link{YAML_VIA_LIST}}
+  Other classes: \code{\link{FOE}}, \code{\link{OPMX}},
+  \code{\link{WMD}}, \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{methods}

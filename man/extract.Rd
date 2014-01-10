@@ -245,22 +245,22 @@ stopifnot(is.matrix(x), identical(dim(x), c(4L, 96L)), is.logical(x))
   dataframe = TRUE))[, 1:3]
 
 # no normalisation, but grouping for 'Species'
-y <- extract(x, as.groups = "Species",  norm.per = "none")
+y <- extract(x, as.groups = "Species", norm.per = "none")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 350, y = 1)
 
 # normalisation by plate means
-y <- extract(x, as.groups = "Species",  norm.per = "row")
+y <- extract(x, as.groups = "Species", norm.per = "row")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 130, y = 1)
 
 # normalisation by well means
-y <- extract(x, as.groups = "Species",  norm.per = "column")
+y <- extract(x, as.groups = "Species", norm.per = "column")
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 20, y = 1)
 
 # normalisation by subtraction of the well means of well A10 only
-y <- extract(x, as.groups = "Species",  norm.per = "row", norm.by = 10,
+y <- extract(x, as.groups = "Species", norm.per = "row", norm.by = 10,
   subtract = TRUE)
 # plotting using ci_plot()
 ci_plot(y[, c(1:6, 12)], legend.field = NULL, x = 0, y = 0)

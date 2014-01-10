@@ -6,10 +6,6 @@ setClass(WMD,
 
 NULL
 
-setClassUnion(MOA, c("matrix", "array"))
-
-NULL
-
 setClassUnion(FOE, c("formula", "expression"))
 
 setClass(OPM,

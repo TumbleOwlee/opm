@@ -150,7 +150,7 @@ setMethod("is_constant", "list", function(x, na.rm = TRUE) {
   all(duplicated.default(x)[-1L])
 }, sealed = SEALED)
 
-setMethod("is_constant", MOA, function(x, margin = 1L, na.rm = TRUE) {
+setMethod("is_constant", "array", function(x, margin = 1L, na.rm = TRUE) {
   if (!margin)
     return(is_constant(as.vector(x), na.rm = na.rm))
   apply(X = x, MARGIN = margin, FUN = is_constant, na.rm = na.rm)
@@ -632,10 +632,11 @@ list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {
   }
 }
 
+single_tag <- function(x, ...) {
+  listing(list(...), c("<", x), ">", style = " %s=\"%s\"", collapse = "")
+}
+
 html_head <- function(title, css, meta) {
-  single_tag <- function(x, ...) {
-    listing(list(...), c("<", x), ">", style = " %s=\"%s\"", collapse = "")
-  }
   html_comment <- function(x) {
     safe_labels(x, "html", comment = TRUE, enclose = FALSE)
   }
@@ -840,7 +841,7 @@ setMethod("map_values", c("data.frame", "missing"), function(object,
   map_values(result)
 }, sealed = SEALED)
 
-setMethod("map_values", c(MOA, "character"), function(object, mapping,
+setMethod("map_values", c("array", "character"), function(object, mapping,
     coerce = TRUE) {
   if (isTRUE(coerce)) {
     storage.mode(object) <- map_values(storage.mode(object), mapping)
@@ -855,7 +856,7 @@ setMethod("map_values", c(MOA, "character"), function(object, mapping,
   }
 }, sealed = SEALED)
 
-setMethod("map_values", c(MOA, "missing"), function(object, coerce = TRUE) {
+setMethod("map_values", c("array", "missing"), function(object, coerce = TRUE) {
   if (isTRUE(coerce))
     result <- storage.mode(object)
   else {
@@ -867,7 +868,7 @@ setMethod("map_values", c(MOA, "missing"), function(object, coerce = TRUE) {
   map_values(result)
 }, sealed = SEALED)
 
-setMethod("map_values", c(MOA, "function"), function(object, mapping, ...) {
+setMethod("map_values", c("array", "function"), function(object, mapping, ...) {
   result <- mapping(as.vector(object), ...)
   mostattributes(result) <- c(attributes(result), attributes(object))
   result
@@ -997,17 +998,17 @@ setMethod("map_names", c("data.frame", "missing"), function(object) {
   map_values(dimnames(object))
 }, sealed = SEALED)
 
-setMethod("map_names", c(MOA, "function"), function(object, mapping, ...) {
+setMethod("map_names", c("array", "function"), function(object, mapping, ...) {
   dimnames(object) <- map_values(dimnames(object), mapping, ...)
   object
 }, sealed = SEALED)
 
-setMethod("map_names", c(MOA, "character"), function(object, mapping) {
+setMethod("map_names", c("array", "character"), function(object, mapping) {
   dimnames(object) <- map_values(dimnames(object), mapping)
   object
 }, sealed = SEALED)
 
-setMethod("map_names", c(MOA, "missing"), function(object) {
+setMethod("map_names", c("array", "missing"), function(object) {
   map_values(dimnames(object))
 }, sealed = SEALED)
 

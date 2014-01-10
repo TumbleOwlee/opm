@@ -106,8 +106,9 @@
   demo("multiple-plate-types", package = "opm")
 }
 
-demo(package = "opm")
 # the other demos require additional libraries to be installed
+if (interactive())
+  demo(package = "opm")
 
 # list all classes, methods and functions exported by the package
 ls("package:opm")

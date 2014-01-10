@@ -174,7 +174,7 @@ x <- data.frame(
 # the wells are obviously within 'Substrate', and each combination of
 # 'Treatment' and 'Strain' is apparently one group of measurements
 # (interpreted as 'plate').
-y <- opmx(x, well = "Substrate",  position = c("Treatment", "Strain"),
+y <- opmx(x, well = "Substrate", position = c("Treatment", "Strain"),
   full.name = c(sugars = "Fake sugar test plate"))
 
 # This yields a single OPMX object as there is only one plate type.

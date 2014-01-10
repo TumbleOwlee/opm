@@ -8,18 +8,17 @@
   they are preserved. \code{NULL} can also be given and
   yields \code{NULL} or an empty named character vector (if
   \code{mapping} is missing). \code{object} may also belong
-  to the virtual class \code{\link{MOA}}, comprising
-  matrices and arrays.
+  to the class \code{array}, comprising matrices and
+  arrays.
 
   When mapping names, \code{object} can be any \R object.
   The default method applies the mapping to the
   \sQuote{names} attribute. The behaviour is special for
   lists, which are traversed recursively to also consider
-  contained lists with names. Data frames and
-  \code{\link{MOA}} objects (that is, including matrices
-  and arrays) are also treated specially because the
-  \code{dimnames} attribute, not the \sQuote{names}
-  attribute is considered.}
+  contained lists with names. Data frames and array objects
+  (that is, including matrices and arrays) are also treated
+  specially because the \code{dimnames} attribute, not the
+  \sQuote{names} attribute is considered.}
 
   \item{mapping}{When mapping values, a character vector,
   function, formula, expression, \code{NULL} or missing.
@@ -34,21 +33,20 @@
   mapping vectors specific for \code{object}. If
   \code{mapping} is missing, the \code{coerce} argument
   must be named.  \code{mapping} changes its usage if
-  \code{coerce} is \code{TRUE}.  \item For
-  \code{\link{MOA}} objects, if \code{mapping} was a
-  function, it would be applied to \code{object} after
-  conversion with \code{as.vector}, and it would be
-  attempted to add the original attributes (particularly
-  important are \sQuote{dim} and \code{dimnames} back to
-  the result.  \item For \code{\link{MOA}} objects, if
-  \code{mapping} is the usual character vector, it then is
-  used for mapping the \code{storage.mode}, not the
-  \code{class} of \code{object}.  \item \code{mapping} can
-  also be a formula, it is then used to compute on lists.
-  The see examples below.  \item If \code{mapping} is an
-  expression, all sub-expressions will be evaluated in
-  \code{object} represented as an environment, which after
-  conversion back to a list, is returned.  \item If
+  \code{coerce} is \code{TRUE}.  \item For array objects,
+  if \code{mapping} was a function, it would be applied to
+  \code{object} after conversion with \code{as.vector}, and
+  it would be attempted to add the original attributes
+  (particularly important are \sQuote{dim} and
+  \code{dimnames} back to the result.  \item For array
+  objects, if \code{mapping} is the usual character vector,
+  it then is used for mapping the \code{storage.mode}, not
+  the \code{class} of \code{object}.  \item \code{mapping}
+  can also be a formula, it is then used to compute on
+  lists. The see examples below.  \item If \code{mapping}
+  is an expression, all sub-expressions will be evaluated
+  in \code{object} represented as an environment, which
+  after conversion back to a list, is returned.  \item If
   \code{mapping} is \code{NULL} and \code{object} is a
   list, all contained objects of zero length are removed
   recursively.  }
@@ -332,9 +330,9 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \alias{map_names,ANY,character-method}
 \alias{map_names,ANY,function-method}
 \alias{map_names,ANY,missing-method}
-\alias{map_names,MOA,character-method}
-\alias{map_names,MOA,function-method}
-\alias{map_names,MOA,missing-method}
+\alias{map_names,array,character-method}
+\alias{map_names,array,function-method}
+\alias{map_names,array,missing-method}
 \alias{map_names,data.frame,character-method}
 \alias{map_names,data.frame,function-method}
 \alias{map_names,data.frame,missing-method}
@@ -342,12 +340,12 @@ stopifnot(y == c("a", "b"), names(y) == y)
 \alias{map_names,list,function-method}
 \alias{map_names,list,missing-method}
 \alias{map_values-methods}
-\alias{map_values,MOA,character-method}
-\alias{map_values,MOA,function-method}
-\alias{map_values,MOA,missing-method}
 \alias{map_values,NULL,character-method}
 \alias{map_values,NULL,function-method}
 \alias{map_values,NULL,missing-method}
+\alias{map_values,array,character-method}
+\alias{map_values,array,function-method}
+\alias{map_values,array,missing-method}
 \alias{map_values,character,NULL-method}
 \alias{map_values,character,character-method}
 \alias{map_values,character,function-method}
@@ -373,9 +371,9 @@ stopifnot(y == c("a", "b"), names(y) == y)
   \S4method{map_names}{ANY,character}(object, mapping) 
   \S4method{map_names}{ANY,function}(object, mapping, ...) 
   \S4method{map_names}{ANY,missing}(object) 
-  \S4method{map_names}{MOA,character}(object, mapping) 
-  \S4method{map_names}{MOA,function}(object, mapping, ...) 
-  \S4method{map_names}{MOA,missing}(object) 
+  \S4method{map_names}{array,character}(object, mapping) 
+  \S4method{map_names}{array,function}(object, mapping, ...) 
+  \S4method{map_names}{array,missing}(object) 
   \S4method{map_names}{data.frame,character}(object, mapping) 
   \S4method{map_names}{data.frame,function}(object, mapping,
     ...) 
@@ -384,13 +382,13 @@ stopifnot(y == c("a", "b"), names(y) == y)
   \S4method{map_names}{list,function}(object, mapping, ...) 
   \S4method{map_names}{list,missing}(object) 
 
-  \S4method{map_values}{MOA,character}(object, mapping,
-    coerce = TRUE) 
-  \S4method{map_values}{MOA,function}(object, mapping, ...) 
-  \S4method{map_values}{MOA,missing}(object, coerce = TRUE) 
   \S4method{map_values}{NULL,character}(object, mapping) 
   \S4method{map_values}{NULL,function}(object, mapping, ...) 
   \S4method{map_values}{NULL,missing}(object, mapping) 
+  \S4method{map_values}{array,character}(object, mapping,
+    coerce = TRUE) 
+  \S4method{map_values}{array,function}(object, mapping, ...) 
+  \S4method{map_values}{array,missing}(object, coerce = TRUE) 
   \S4method{map_values}{character,NULL}(object, mapping) 
   \S4method{map_values}{character,character}(object, mapping) 
   \S4method{map_values}{character,function}(object, mapping,

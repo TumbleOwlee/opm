@@ -140,7 +140,7 @@ setMethod("ranging", "numeric", function(object, extended = !zscores,
   must(result * fac)
 }, sealed = SEALED)
 
-setMethod("ranging", MOA, function(object, ...) {
+setMethod("ranging", "array", function(object, ...) {
   map_values(object = object, mapping = ranging, ...)
 }, sealed = SEALED)
 

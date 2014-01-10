@@ -49,9 +49,6 @@ expect_length <- function(actual, expected) {
 ## FOE
 ## UNTESTED
 
-## MOA
-## UNTESTED
-
 ## CMAT
 ## UNTESTED
 

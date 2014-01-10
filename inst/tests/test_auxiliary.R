@@ -456,6 +456,10 @@ test_that("HTML can be recursively generated", {
 })
 
 
+## single_tag
+## UNTESTED
+
+
 ## html_head
 ## UNTESTED
 

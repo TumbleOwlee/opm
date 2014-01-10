@@ -69,7 +69,7 @@ stopifnot(is.matrix(x), is.numeric(x))
 stopifnot(dim(x) == c(384, 97))
 head(x <- measurements(vaas_1, "B03"))
 stopifnot(is.matrix(x), is.numeric(x), dim(x) == c(384, 2))
-head(y <- measurements(vaas_1, ~B03)) # => same result with formula
+head(y <- measurements(vaas_1, ~ B03)) # => same result with formula
 stopifnot(identical(y, x))
 
 head(x <- well(vaas_1, "B04")) # => numeric vector
