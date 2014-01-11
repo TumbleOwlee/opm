@@ -4,6 +4,12 @@ setClass(WMD,
   sealed = SEALED
 )
 
+setClass(WMDS,
+  slots = c(plates = "list"),
+  contains = "VIRTUAL",
+  sealed = SEALED
+)
+
 NULL
 
 setClassUnion(FOE, c("formula", "expression"))
@@ -54,7 +60,7 @@ setClass(OPMD,
 )
 
 setClass(OPMS,
-  slots = c(plates = "list"),
+  contains = WMDS,
   validity = function(object) {
     if (length(errs <- opms_problems(object@plates)))
       errs

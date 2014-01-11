@@ -101,7 +101,7 @@ stopifnot(fkeys_valid(y), fkeys(y) == fkeys(x), !length(y))
   \code{\link{OPM}}, \code{\link{OPMA}},
   \code{\link{OPMD}}, \code{\link{OPMS}},
   \code{\link{OPMX}}, \code{\link{WMD}},
-  \code{\link{YAML_VIA_LIST}}
+  \code{\link{WMDS}}, \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{database}

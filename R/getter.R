@@ -549,7 +549,6 @@ lapply(c(
     has_disc,
     hours,
     measurements,
-    metadata,
     filename, # deprecated
     position, # deprecated
     setup_time, # deprecated
@@ -557,7 +556,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, OPMS, function(object, ...) {
-    simplify_conditionally(lapply(object@plates, FUN = func_, ...))
+    simplify_conditionally(lapply(X = object@plates, FUN = func_, ...))
   }, sealed = SEALED)
 })
 
@@ -708,7 +707,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("list", OPMS), function(x, table) {
+  setMethod(func_, c("list", WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -721,7 +720,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(WMD, OPMS), function(x, table) {
+  setMethod(func_, c(WMD, WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -734,7 +733,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("character", OPMS), function(x, table) {
+  setMethod(func_, c("character", WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -747,7 +746,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("factor", OPMS), function(x, table) {
+  setMethod(func_, c("factor", WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -760,7 +759,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("formula", OPMS), function(x, table) {
+  setMethod(func_, c("formula", WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -773,7 +772,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("expression", OPMS), function(x, table) {
+  setMethod(func_, c("expression", WMDS), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -799,7 +798,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(OPMS, "ANY"), function(x, table) {
+  setMethod(func_, c(WMDS, "ANY"), function(x, table) {
     func_(table, x)
   }, sealed = SEALED)
 })

@@ -488,7 +488,7 @@ setMethod("to_metadata", WMD, function(object, stringsAsFactors = FALSE,
   x
 }, sealed = SEALED)
 
-setMethod("to_metadata", OPMS, function(object, stringsAsFactors = FALSE,
+setMethod("to_metadata", WMDS, function(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
   x <- collect(x = metadata(object), what = "values",
     optional = optional, stringsAsFactors = stringsAsFactors,

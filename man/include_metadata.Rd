@@ -6,8 +6,9 @@
 \title{Add or map metadata or edit them by hand}
 \arguments{
   \item{object}{\code{\link{OPM}} (\code{\link{WMD}}),
-  \code{\link{OPMS}} or \code{\link{MOPMX}} object. For
-  \code{map_values}, a list.}
+  \code{\link{OPMS}} (\code{\link{WMDS}}) or
+  \code{\link{MOPMX}} object. For \code{map_values}, a
+  list.}
 
   \item{name}{Like \code{object}, but for the \code{edit}
   method.}
@@ -78,14 +79,14 @@
   package for details.}
 
   \item{...}{Optional arguments passed to \code{mapping} if
-  it is a function, and from the \code{\link{OPMS}} method
+  it is a function, and from the \code{\link{WMDS}} method
   to the \code{\link{WMD}} method, or from
   \code{include_metadata} to \code{\link{to_metadata}}, or
   as additional arguments to \code{edit} from the
   \pkg{utils} package.}
 }
 \value{
-  Novel \code{\link{WMD}} or \code{\link{OPMS}} object with
+  Novel \code{\link{WMD}} or \code{\link{WMDS}} object with
   modified metadata.
 }
 \description{
@@ -98,9 +99,9 @@
   editing the metadata by hand.
 }
 \details{
-  The \code{\link{OPMS}} method applies the inclusion and
+  The \code{\link{WMDS}} method applies the inclusion and
   mapping routines to all plates in turn and returns an
-  \code{\link{OPMS}} object with accordingly modified
+  \code{\link{WMDS}} object with accordingly modified
   metadata.
 
   Calling \code{edit} will only work if
@@ -161,7 +162,7 @@ stopifnot(identical(copy, # same result with expression
 (x <- metadata(map_metadata(vaas_1)))
 stopifnot(identical(x, metadata(vaas_1))) # nothing to modify in that case
 
-# OPMS method
+# WMDS method
 
 # using a function
 copy <- map_metadata(vaas_4, identity)
@@ -233,12 +234,12 @@ stopifnot(identical(z, y))
 \alias{map_metadata-methods}
 \alias{map_metadata,MOPMX,ANY-method}
 \alias{map_metadata,MOPMX,missing-method}
-\alias{map_metadata,OPMS,ANY-method}
-\alias{map_metadata,OPMS,missing-method}
 \alias{map_metadata,WMD,FOE-method}
 \alias{map_metadata,WMD,character-method}
 \alias{map_metadata,WMD,function-method}
 \alias{map_metadata,WMD,missing-method}
+\alias{map_metadata,WMDS,ANY-method}
+\alias{map_metadata,WMDS,missing-method}
 \alias{map_values-methods}
 \alias{map_values,list,formula-method}
 \usage{
@@ -253,9 +254,6 @@ stopifnot(identical(z, y))
   \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 
   \S4method{map_metadata}{MOPMX,missing}(object, mapping,
     values = TRUE, classes = "factor") 
-  \S4method{map_metadata}{OPMS,ANY}(object, mapping, ...) 
-  \S4method{map_metadata}{OPMS,missing}(object, mapping,
-    values = TRUE, classes = "factor") 
   \S4method{map_metadata}{WMD,FOE}(object, mapping,
     values = parent.frame(), classes = NULL) 
   \S4method{map_metadata}{WMD,character}(object, mapping,
@@ -263,6 +261,9 @@ stopifnot(identical(z, y))
   \S4method{map_metadata}{WMD,function}(object, mapping,
     values = TRUE, classes = "ANY", ...) 
   \S4method{map_metadata}{WMD,missing}(object, mapping,
+    values = TRUE, classes = "factor") 
+  \S4method{map_metadata}{WMDS,ANY}(object, mapping, ...) 
+  \S4method{map_metadata}{WMDS,missing}(object, mapping,
     values = TRUE, classes = "factor") 
 
   \S4method{map_values}{list,formula}(object, mapping,

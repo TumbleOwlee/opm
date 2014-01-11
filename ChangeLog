@@ -10,6 +10,7 @@
   opm_dbcheck() for database I/O, and according new classes 'OPM_DB', 'OPMA_DB'
   and 'OPMD_DB'
 . new demos for database I/O
+- new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method

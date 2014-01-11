@@ -102,12 +102,14 @@
   and/or replicates, but \strong{must} correspond to the
   same plate type and \strong{must} contain the same wells.
 
-  As a rule, \acronym{OPMS} has the same methods as the
-  \acronym{OPM} class, but adapted to a collection of more
-  than one \acronym{OPM} object. Also, \acronym{OPMS} can
-  hold \acronym{OPMD} and \acronym{OPMA} as well as
-  \acronym{OPM} objects, even though this is not indicated
-  for all its methods in this manual.
+  \acronym{OPMS} inherits from \code{\link{WMDS}} and,
+  hence, has all its methods. As a rule, \acronym{OPMS} has
+  the same methods as the \acronym{OPM} class, but adapted
+  to a collection of more than one \acronym{OPM} object.
+  Also, \acronym{OPMS} can hold \acronym{OPMD} and
+  \acronym{OPMA} as well as \acronym{OPM} objects, even
+  though this is not indicated for all its methods in this
+  manual.
 
   \acronym{MOPMX} is an object for holding \acronym{OPMX}
   objects with potentially multiple plate types. Regarding
@@ -143,7 +145,7 @@ stopifnot(has_aggr(vaas_1), !has_aggr(x))
   Other classes: \code{\link{FOE}}, \code{\link{OPMA_DB}},
   \code{\link{OPMD_DB}}, \code{\link{OPMX}},
   \code{\link{OPM_DB}}, \code{\link{WMD}},
-  \code{\link{YAML_VIA_LIST}}
+  \code{\link{WMDS}}, \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{methods}

@@ -1,7 +1,7 @@
 opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
     "examples", "doc", "css", "sql", "omnilog", "single", "multiple",
     "growth")) {
-  switch(match.arg(what),
+  switch(what <- match.arg(what),
     css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
       TRUE, TRUE, TRUE),
     examples = {

@@ -6,13 +6,15 @@
 \alias{OPMX-class}
 \alias{WMD}
 \alias{WMD-class}
+\alias{WMDS}
+\alias{WMDS-class}
 \alias{YAML_VIA_LIST}
 \alias{YAML_VIA_LIST-class}
 \title{Virtual classes of the \pkg{opm} package}
 \description{
   Classes that are virtual and thus are not directly dealt
-  with by an \pkg{opm} user: \acronym{WMD}, \acronym{FOE},
-  \acronym{OPMX} and \code{YAML_VIA_LIST}.
+  with by an \pkg{opm} user: \acronym{WMD}, \acronym{WMDS},
+  \acronym{FOE}, \acronym{OPMX} and \code{YAML_VIA_LIST}.
 }
 \details{
   \acronym{WMD} is an acronym for \sQuote{with metadata}.
@@ -39,6 +41,12 @@
   \acronym{CSV} files. Metadata might already be present in
   \acronym{YAML} files created by the \pkg{opm} package,
   however.
+
+  \acronym{WMDS} is virtual class containing a collection
+  of \acronym{WMD} objects (the name \acronym{WMDS} is just
+  the plural of \acronym{WMD}). It shares many methods with
+  \acronym{WMD} but they often return a collection of the
+  return values of the according \acronym{WMD} method.
 
   \acronym{FOE} is an acronym for \sQuote{formula or
   expression}. This is a virtual class facilitating the

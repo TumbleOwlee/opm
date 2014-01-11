@@ -2,6 +2,7 @@ NOT_YET <- "not yet implemented"
 BUG_MSG <- "a bug -- this should not happen"
 
 WMD <- "WMD"
+WMDS <- "WMDS"
 OPM <- "OPM"
 OPMA <- "OPMA"
 OPMD <- "OPMD"
