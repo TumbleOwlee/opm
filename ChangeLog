@@ -11,11 +11,12 @@
   and 'OPMD_DB'
 . new demos for database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
+- virtual classes are now appropriately exported
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets an 'abbrev' argument
-- xy_plot() gets a 'rcr' argument
+- xy_plot() gets an 'rcr' argument
 - the 'normalize' argument of csv_data() now also triggers the replacement of
   backslashes with slashes
 - wells() does not allow for partial matching of plate names any more

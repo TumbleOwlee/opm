@@ -123,6 +123,13 @@
   the examples below.
 }
 \examples{
+## overview on the classes
+showClass("OPM")
+showClass("OPMA")
+showClass("OPMD")
+showClass("OPMS")
+showClass("MOPMX")
+
 ## OPMX conversions with as()
 showMethods("coerce", classes = c("OPM", "OPMA", "OPMD"))
 data(vaas_1)

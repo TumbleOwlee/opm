@@ -68,6 +68,13 @@
   its subset, \acronym{JSON}). It can currently be used by
   any class that can be coerced to a list.
 }
+\examples{
+showClass("WMD")
+showClass("WMDS")
+showClass("OPMX")
+showClass("FOE")
+showClass("YAML_VIA_LIST")
+}
 \seealso{
   methods::Methods base::matrix base::array
   base::expression stats::formula

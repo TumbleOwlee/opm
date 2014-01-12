@@ -61,6 +61,11 @@
 \examples{
 library(pkgutils)
 
+## overview on the classes
+showClass("OPM_DB")
+showClass("OPMA_DB")
+showClass("OPMD_DB")
+
 ## show all conversions with as()
 showMethods("coerce", classes = c("OPM_DB", "OPMA_DB", "OPMD_DB"))
 
