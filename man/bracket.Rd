@@ -156,8 +156,12 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 \alias{bracket-methods}
 \alias{bracket,MOPMX,ANY,missing,ANY-method}
 \alias{[,MOPMX,ANY,missing,ANY-method}
+\alias{bracket,MOPMX,ANY,missing,missing-method}
+\alias{[,MOPMX,ANY,missing,missing-method}
 \alias{bracket,MOPMX,character,missing,ANY-method}
 \alias{[,MOPMX,character,missing,ANY-method}
+\alias{bracket,MOPMX,character,missing,missing-method}
+\alias{[,MOPMX,character,missing,missing-method}
 \alias{bracket,OPM,ANY,ANY,ANY-method}
 \alias{[,OPM,ANY,ANY,ANY-method}
 \alias{bracket,OPMA,ANY,ANY,ANY-method}
@@ -167,10 +171,12 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 \alias{bracket,OPMS,ANY,ANY,ANY-method}
 \alias{[,OPMS,ANY,ANY,ANY-method}
 \usage{
-  \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, j,
-    drop = FALSE) 
+  \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, j, drop) 
+  \S4method{[}{MOPMX,ANY,missing,missing}(x, i, j, drop) 
   \S4method{[}{MOPMX,character,missing,ANY}(x, i, j,
-    drop = FALSE) 
+    drop) 
+  \S4method{[}{MOPMX,character,missing,missing}(x, i, j,
+    drop) 
   \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 
   \S4method{[}{OPMA,ANY,ANY,ANY}(x, i, j, ...,
