@@ -2,6 +2,8 @@
 
 2014-01-XX (the 13th release on CRAN)
 
+- fixed bug in 'MOPMX' bracket method (non-confoming objects were not removed
+  when using an out-of-range index)
 - list method of contains() moved to pkgutils
 - all map_names() and map_values() methods moved to pkgutils
 - new vignette on analysing growth-curve (and user-defined PM) data

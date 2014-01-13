@@ -326,8 +326,8 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \alias{extract,OPMS-method}
 \alias{extract,data.frame-method}
 \alias{extract_columns-methods}
-\alias{extract_columns,OPM-method}
-\alias{extract_columns,OPMS-method}
+\alias{extract_columns,WMD-method}
+\alias{extract_columns,WMDS-method}
 \alias{extract_columns,data.frame-method}
 \usage{
   \S4method{extract}{OPMS}(object, as.labels,
@@ -339,10 +339,10 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
     direct = inherits(norm.by, "AsIs"), dups = c("warn", "error", "ignore"),
     split.at = param_names("split.at")) 
 
-  \S4method{extract_columns}{OPM}(object, what, join = FALSE,
+  \S4method{extract_columns}{WMD}(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) 
-  \S4method{extract_columns}{OPMS}(object, what, join = FALSE,
+  \S4method{extract_columns}{WMDS}(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) 
   \S4method{extract_columns}{data.frame}(object, what,

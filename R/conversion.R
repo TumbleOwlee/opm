@@ -433,7 +433,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 setGeneric("extract_columns",
   function(object, ...) standardGeneric("extract_columns"))
 
-setMethod("extract_columns", OPM, function(object, what, join = FALSE,
+setMethod("extract_columns", WMD, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
@@ -458,7 +458,7 @@ setMethod("extract_columns", OPM, function(object, what, join = FALSE,
   result
 }, sealed = SEALED)
 
-setMethod("extract_columns", OPMS, function(object, what, join = FALSE,
+setMethod("extract_columns", WMDS, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
