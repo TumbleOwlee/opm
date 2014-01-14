@@ -167,21 +167,21 @@ setMethod("dim", OPMS, function(x) {
   c(length(x@plates), dim(x@plates[[1L]]))
 }, sealed = SEALED)
 
-setMethod("length", OPM, function(x) {
+setMethod("length", WMD, function(x) {
   1L
 }, sealed = SEALED)
 
-setMethod("length", OPMS, function(x) {
+setMethod("length", WMDS, function(x) {
   length(x@plates)
 }, sealed = SEALED)
 
 setGeneric("seq")
 
-setMethod("seq", OPM, function(...) {
+setMethod("seq", WMD, function(...) {
   stop("one cannot loop over an object of class ", class(..1))
 }, sealed = SEALED)
 
-setMethod("seq", OPMS, function(...) {
+setMethod("seq", WMDS, function(...) {
   seq_along(..1@plates)
 }, sealed = SEALED)
 

@@ -87,8 +87,8 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 \alias{oapply,OPM-method}
 \alias{oapply,OPMS-method}
 \alias{plates-methods}
-\alias{plates,OPM-method}
-\alias{plates,OPMS-method}
+\alias{plates,WMD-method}
+\alias{plates,WMDS-method}
 \alias{plates,list-method}
 \usage{
   \S4method{oapply}{MOPMX}(object, fun, ...,
@@ -98,8 +98,8 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
   \S4method{oapply}{OPMS}(object, fun, ...,
     simplify = TRUE) 
 
-  \S4method{plates}{OPM}(object) 
-  \S4method{plates}{OPMS}(object) 
+  \S4method{plates}{WMD}(object) 
+  \S4method{plates}{WMDS}(object) 
   \S4method{plates}{list}(object) 
 }
 %% END INSERTION BY repair_S4_docu.rb

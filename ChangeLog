@@ -22,6 +22,8 @@
 - the 'normalize' argument of csv_data() now also triggers the replacement of
   backslashes with slashes
 - wells() does not allow for partial matching of plate names any more
+- many OPMS are now WMDS methods, allowing for more re-use in other packages;
+  similarly, more OPM methods are now WMD methods
 
 
 ################################################################################

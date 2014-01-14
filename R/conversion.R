@@ -132,11 +132,11 @@ setMethod("split", c(OPMX, "ANY", "logical"), function(x, f, drop) {
 
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
 
-setMethod("plates", OPMS, function(object) {
+setMethod("plates", WMDS, function(object) {
   object@plates
 }, sealed = SEALED)
 
-setMethod("plates", OPM, function(object) {
+setMethod("plates", WMD, function(object) {
   list(object)
 }, sealed = SEALED)
 

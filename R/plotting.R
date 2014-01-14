@@ -49,15 +49,17 @@ setMethod("summary", MOPMX, function(object, ...) {
 
 setMethod("show", OPMX, function(object) {
   print(summary(object))
+  invisible(NULL)
 }, sealed = SEALED)
 
 setMethod("show", MOPMX, function(object) {
   print(summary(object))
+  invisible(NULL)
 }, sealed = SEALED)
 
 setMethod("show", CMAT, function(object) {
   if (typeof(object) == "list") {
-    object[] <- lapply(object, paste, collapse = "/")
+    object[] <- lapply(object, paste0, collapse = "/")
     storage.mode(object) <- "character"
   }
   callNextMethod()

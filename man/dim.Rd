@@ -82,19 +82,19 @@ stopifnot(identical(x, y))
 \alias{dim,OPM-method}
 \alias{dim,OPMS-method}
 \alias{length-methods}
-\alias{length,OPM-method}
-\alias{length,OPMS-method}
+\alias{length,WMD-method}
+\alias{length,WMDS-method}
 \alias{seq-methods}
-\alias{seq,OPM-method}
-\alias{seq,OPMS-method}
+\alias{seq,WMD-method}
+\alias{seq,WMDS-method}
 \usage{
   \S4method{dim}{OPM}(x) 
   \S4method{dim}{OPMS}(x) 
 
-  \S4method{length}{OPM}(x) 
-  \S4method{length}{OPMS}(x) 
+  \S4method{length}{WMD}(x) 
+  \S4method{length}{WMDS}(x) 
 
-  \S4method{seq}{OPM}(...) 
-  \S4method{seq}{OPMS}(...) 
+  \S4method{seq}{WMD}(...) 
+  \S4method{seq}{WMDS}(...) 
 }
 %% END INSERTION BY repair_S4_docu.rb
