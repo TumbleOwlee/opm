@@ -105,7 +105,8 @@ setClass(CMAT,
       if (any(vapply(object, length, 0L) < 1L))
         errs <- c(errs, "empty list elements contained")
     }
-    if (!all(mode %in% c("character", "integer", "double", "logical")))
+    mode <- setdiff(mode, c("character", "integer", "double", "logical"))
+    if (length(mode))
       errs <- c(errs, sprintf("unsupported storage mode: '%s'", mode))
     if (length(errs))
       errs

@@ -4,8 +4,8 @@ html_args <- function(
     multiple.sep = "/", organisms.start = "Organisms: ",
     states.start = "Symbols: ", legend.dot = TRUE,
     legend.sep.1 = ", ", legend.sep.2 = "; ",
-    table.summary = "character matrix", greek.letters = TRUE,
-    css.file = opm_opt("css.file"), ...) {
+    table.summary = "character matrix", no.html = TRUE,
+    greek.letters = TRUE, css.file = opm_opt("css.file"), ...) {
   args <- as.list(match.call())[-1L]
   defaults <- formals()[setdiff(names(formals()), c(names(args), "..."))]
   lapply(c(defaults, args), eval)
@@ -76,7 +76,7 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
 
   # HTML helper methods.
   #
-  unhtml <- function(x) safe_labels(x, format = "html")
+  unhtml <- function(x) safe_labels(x, "html")
   span_class <- function(x, klass, title = klass) {
     hmakeTag("span", unhtml(x), class = klass, title = title)
   }
@@ -379,7 +379,8 @@ setMethod("format", CMAT, function(x, how, enclose, digits, indent,
         stop("missing character labels (column names)")
       if (length(variability <- attr(x, "variability")) != ncol(x))
         stop(BUG_MSG)
-      colnames(x) <- unhtml(colnames(x))
+      if (L(html.args$no.html))
+        colnames(x) <- unhtml(colnames(x))
       if (L(html.args$greek.letters))
         colnames(x) <- substrate_info(colnames(x), "html")
       colnames(x) <- div_class(colnames(x), variability)

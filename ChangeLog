@@ -20,6 +20,7 @@
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets an 'abbrev' argument
+- html_args() gets a 'no.html' argument
 - xy_plot() gets an 'rcr' argument
 - the 'normalize' argument of csv_data() now also triggers the replacement of
   backslashes with slashes

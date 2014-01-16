@@ -8,7 +8,7 @@
     multiple.sep = "/", organisms.start = "Organisms: ",
     states.start = "Symbols: ", legend.dot = TRUE,
     legend.sep.1 = ", ", legend.sep.2 = "; ",
-    table.summary = "character matrix",
+    table.summary = "character matrix", no.html = TRUE,
     greek.letters = TRUE, css.file = opm_opt("css.file"),
     ...)
 
@@ -48,10 +48,16 @@
   \sQuote{summary} attribute of the resulting \code{HTML}
   table.}
 
+  \item{no.html}{Logical scalar indicating whether
+  substrate names should be cleaned from characters that
+  might interfere with \code{HTML} code. Setting this to
+  \code{FALSE} might yield invalid \code{HTML}.}
+
   \item{greek.letters}{Logical scalar indicating whether or
   not letters between \sQuote{a} and \sQuote{e} within
   substrate names should be converted to the corresponding
-  Greek letters.}
+  Greek letters. This is done after the cleaning step, if
+  any.}
 
   \item{css.file}{Character vector indicating the name of
   one to several \acronym{CSS} files to link. Empty strings
