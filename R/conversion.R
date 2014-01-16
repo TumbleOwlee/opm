@@ -270,29 +270,13 @@ setMethod("extract", OPMS, function(object, as.labels,
       exact = exact, strict = strict)
   }
   create_groups <- function(x, join, ci) {
-    numeric_groups <- function(how) {
-      if (L(how))
-        rep.int(1L, length(object))
-      else
-        seq_len(length(object))
-    }
+    result <- do_extract(x, join)
     if (join) {
-      result <- if (is.logical(x))
-        numeric_groups(x)
-      else
-        do_extract(x, join = TRUE)
       result <- as.factor(result)
       if (ci)
         result <- rep(result, each = 3L)
-    } else {
-      if (is.logical(x)) {
-        result <- as.data.frame(numeric_groups(x))
-        rownames(result) <- get("group.name", OPM_OPTIONS)
-      } else
-        result <- do_extract(x, join = FALSE)
-      if (ci)
-        result <- result[rep(seq_len(nrow(result)), each = 3L), , drop = FALSE]
-    }
+    } else if (ci)
+      result <- result[rep(seq_len(nrow(result)), each = 3L), , drop = FALSE]
     result
   }
 
@@ -437,6 +421,14 @@ setMethod("extract_columns", WMD, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
+  if (is.logical(what)) {
+    result <- 1L
+    if (!L(join)) {
+      result <- as.data.frame(result)
+      colnames(result) <- get("group.name", OPM_OPTIONS)
+    }
+    return(result)
+  }
   result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
     rapply(result, as.character)
@@ -462,6 +454,17 @@ setMethod("extract_columns", WMDS, function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
+  if (is.logical(what)) {
+    result <- if (L(what))
+        rep.int(1L, length(object))
+      else
+        seq_len(length(object))
+    if (!L(join)) {
+      result <- as.data.frame(result)
+      colnames(result) <- get("group.name", OPM_OPTIONS)
+    }
+    return(result)
+  }
   result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
     lapply(result, rapply, f = as.character)

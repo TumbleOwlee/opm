@@ -2,6 +2,8 @@
 
 2014-01-XX (the 13th release on CRAN)
 
+- fixed bug in extract() that affected logical 'what' arguments; now the
+  special treatmen of logical vectors is already done by extract_columns()
 - fixed bug in 'MOPMX' bracket method (non-confoming objects were not removed
   when using an out-of-range index)
 - list method of contains() moved to pkgutils

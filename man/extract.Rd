@@ -277,6 +277,10 @@ stopifnot(identical(x, y)) # same result using a formula
 (y <- extract_columns(vaas_4, what = ~ J(Species + Strain)))
 stopifnot(is.data.frame(y), dim(y) == c(4, 3)) # additional column created
 stopifnot(identical(x, y[, -3]))
+(x <- extract_columns(vaas_4, what = TRUE)) # use logical scalar
+stopifnot(is.data.frame(x), dim(x) == c(4, 1))
+(y <- extract_columns(vaas_4, what = FALSE))
+stopifnot(is.data.frame(y), dim(y) == c(4, 1), !all(y[, 1] == x[, 1]))
 
 # Create a character vector
 (x <- extract_columns(vaas_4, what = list("Species", "Strain"), join = TRUE))

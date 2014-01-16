@@ -15,7 +15,7 @@
   numeric \code{y} argument causes \code{merge} to just
   return \code{x} because there is nothing to merge. But
   \code{y} can be an \code{\link{OPM}} object in that case,
-  which, if compatible, will be merge with \code{x}.}
+  which, if compatible, will be merged with \code{x}.}
 
   \item{sort.first}{Logical scalar. Sort the plates
   according to their setup times before merging?}
