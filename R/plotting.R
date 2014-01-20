@@ -68,14 +68,14 @@ setMethod("show", CMAT, function(object) {
 NULL
 
 print.OPMD_Listing <- function(x, ...) {
-  cat(formatDL(x = x, ...), sep = "\n")
+  cat(formatDL(x = names(x), y = x, ...), sep = "\n")
   invisible(x)
 }
 
 print.OPMS_Listing <- function(x, ...) {
   for (name in rownames(x)) {
     cat(name, gsub(".", "-", name, FALSE, TRUE), sep = "\n")
-    cat(formatDL(x[name, ], ...), sep = "\n")
+    cat(formatDL(x = colnames(x), y = x[name, ], ...), sep = "\n")
     cat("\n")
   }
   invisible(x)

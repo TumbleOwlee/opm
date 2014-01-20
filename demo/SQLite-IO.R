@@ -1,7 +1,7 @@
-#' # Analysing Phenotype MicroArray data: database I/O with SQLite
+#' # Analysing phenotype microarray data: database I/O with `SQLite`
 #'
-#' This is example R code for using opm to store PM data in an SQLite database
-#' and retrieving them again.
+#' This is example R code for using **opm** to store PM data in an `SQLite`
+#' database and retrieving them again.
 #'
 #' This code can be used to check whether a database either found in an R or
 #' environment variable or identical to the default value (see below) is
@@ -9,10 +9,10 @@
 #' user-defined selection of metadata.
 #'
 #' **Note**: The database file must be accessible with the current user as user
-#' and without a password, and the tables must have been set up using the SQL
+#' and without a password, and the tables must have been set up using the `SQL`
 #' that comes with **opm**.
 #'
-#' Author: Markus Goeker
+#' Author: *Markus Goeker*
 
 
 library(opm)
@@ -47,9 +47,7 @@ if (all(result == "ok")) {
     stringsAsFactors = FALSE)
   result2 <- opm_dbcheck(conn, md)
 
-  # removal of metadata columns (impossible with SQLite 3.7.9)
-  #dbGetQuery(conn,
-  #  "ALTER TABLE plates DROP COLUMN strain, DROP COLUMN replicate;")
+  # note: removal of metadata columns is impossible with `SQLite` 3.7.9
 
 }
 

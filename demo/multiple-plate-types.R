@@ -1,7 +1,7 @@
-#' # Analysing Phenotype MicroArray data: converting CSV files
+#' # Analysing phenotype microarray data: converting CSV files
 
-#' This is example R code for using **opm** in a standardized setting to create
-#' files describing Phenotype MicroArray results run in PM mode, with special
+#' This is example R code for using **opm** in a standardised setting to create
+#' files describing phenotype microarray results run in PM mode, with special
 #' emphasis on the kind of information needed in microbial taxonomy.
 #'
 #' It reads all CSV files within the working directory and produces YAML, HTML
@@ -10,13 +10,13 @@
 #' it would need only minimal adaptations for real-world use after modifying
 #' a copy of it within an R text editor.
 #'
-#' But note that collect_template() and include_metadata() offer a much more
+#' But note that `collect_template` and `include_metadata` offer a much more
 #' flexible mechanism for including metadata.
 #'
-#' For advanced users, we recommend to use batch_opm() instead for most of the
+#' For advanced users, we recommend to use `batch_opm` instead for most of the
 #' steps conducted below.
 #'
-#' Author: Markus Goeker
+#' Author: *Markus Goeker*
 
 
 library(opm)
@@ -41,7 +41,7 @@ organism <- "Strain Number"
 
 #' We assume that only the CSV files within the working directory should be
 #' input and that the data read should be grouped by plate type. This code fails
-#' if unreadable CSV files are there (the 'include' and/or 'exclude' argument
+#' if unreadable CSV files are there (the `include` and/or `exclude` argument
 #' would be needed).
 #'
 x <- read_opm(getwd(), convert = "grp", include = list("csv"))
@@ -55,7 +55,7 @@ x # shows a summary of the contained elements
 
 
 #' This needs to be adapted to the way CSV data have been recorded. Remember
-#' that collect_template() and include_metadata() offer a much more flexible
+#' that `collect_template` and `include_metadata` offer a much more flexible
 #' mechanism for including metadata.
 
 
@@ -85,9 +85,9 @@ if (!organism %in% names(md)) {
 }
 
 #' Adding metadata is easiest via a data frame whose order of rows is the same
-#' than the order of OPM objects within the OPMS object and the order of OPMX
-#' objects within a MOPMX object. We get such a data frame from the CSV data, of
-#' course.
+#' than the order of `OPM` objects within the `OPMS` object and the order of
+#' `OPMX` objects within a `MOPMX` object. We get such a data frame from the CSV
+#' data, of course.
 #'
 metadata(x) <- md[, c(organism, replicate)]
 
@@ -95,7 +95,7 @@ metadata(x) <- md[, c(organism, replicate)]
 #' ## Computing section: aggregation and discretisation
 
 #' That's the time-consuming step here. Specify at most as many cores as you
-#' really have on your machine, and keep in mind that parallelization does not
+#' really have on your machine, and keep in mind that parallelisation does not
 #' work under Windows (for reasons caused by R itself).
 #'
 if (grepl("windows", Sys.info()[["sysname"]], TRUE, TRUE)) {
@@ -112,21 +112,21 @@ x <- do_aggr(x, boot = 0, cores = nc, method = "splines",
 head(aggr_settings(x, join = "json"), 1)
 
 
-#' This discretization is using exact k-means partitioning, without estimation
+#' This discretisation is using exact k-means partitioning, without estimation
 #' of an intermediary state. This is OK if > 1 replicates are there and one
 #' can calculate ambiguity in another manner (see below).
 #'
 x <- do_disc(x, cutoff = FALSE)
 
-#' Let's have a look at the upper part of the discretization settings.
+#' Let's have a look at the upper part of the discretisation settings.
 #'
 head(disc_settings(x, join = "json"), 1)
 
 
 #' ## Output section
 
-#' Copy the CSS file that comes with opm to the current working directory and
-#' set it as default for HTML tables.
+#' Copy the `CSS` file that comes with **opm** to the current working directory
+#' and set it as default for HTML tables.
 #'
 opm_opt(css.file = "opm_styles.css")
 file.copy(opm_files("css")[[1]], opm_opt("css.file"), overwrite = TRUE)
@@ -136,29 +136,29 @@ file.copy(opm_files("css")[[1]], opm_opt("css.file"), overwrite = TRUE)
 #'   * YAML file
 #'   * HTML file with text
 #'   * HTML file with table
-#'   * PDF file with XY plot
+#'   * PDF file with x-y-plot
 #'
 for (name in names(x)) {
 
-  # Write YAML file. As it contains aggregated and discretized data and
+  # Write YAML file. As it contains aggregated and discretised data and
   # settings, too, full reproducibility is guaranteed.
   #
   write(to_yaml(x[[name]]), sprintf("Data_%s.yml", name))
 
-  # Write textual description of discretized results to a file, grouped per
+  # Write textual description of discretised results to a file, grouped per
   # strain.
   #
   write(phylo_data(listing(x[[name]], as.groups = organism, html = TRUE)),
     sprintf("Description_%s.html", name))
 
-  # Write HTML table describing the discretized results. This cannot be done
+  # Write HTML table describing the discretised results. This cannot be done
   # unless there are several replicates.
   #
   if (length(x[[name]]) > 1)
     write(phylo_data(x[[name]], format = "html", as.labels = organism),
       sprintf("Table_%s.html", name))
 
-  # Draw XY plot into PDF file.
+  # Draw x-y-plot into PDF file.
   #
   pkgutils::mypdf(sprintf("Plot_%s.pdf", name))
   print(xy_plot(x[[name]], include = list(organism, replicate)))

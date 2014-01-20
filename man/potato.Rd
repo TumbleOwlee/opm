@@ -35,9 +35,6 @@ data(potato)
 }
 }
 \references{
-  Sandford, S. A. 1995. Apples and Oranges -- A Comparison.
-  \emph{Annals of Improbable Research} \strong{1} (3).
-
   Vaas, L. A. I., Marheine, M., Sikorski, J., Goeker, M.,
   Schumacher, H.-M. 2013 Impacts of pr-10a overexpression
   at the molecular and the phenotypic level.
@@ -50,6 +47,9 @@ data(potato)
   PR-10a leads to increased salt and osmotic tolerance in
   potato cell cultures. \emph{Journal of Biotechnology}
   \strong{150}: 277--287.
+
+  Sandford, S. A. 1995. Apples and Oranges -- A Comparison.
+  \emph{Annals of Improbable Research} \strong{1} (3).
 }
 \keyword{datasets}
 \keyword{datasets}

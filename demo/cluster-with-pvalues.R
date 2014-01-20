@@ -1,11 +1,11 @@
-#' # Analysing Phenotype MicroArray data: clustering with p-values
+#' # Analysing phenotype microarray data: clustering with p-values
 #'
-#' Using **pvclust** and **opm** to calculate clusterings with branch support
+#' Using **pvclust** and **opm** to calculate a clustering with branch support
 #' values. Assessing the uncertainty of clustering results should be done for
-#' all serious interpretations of such clusterings. This is one approach to
-#' assessing uncertainty; see the **pvclust** documentation for details.
+#' all their serious interpretations. This is one approach to assessing
+#' uncertainty; see the **pvclust** documentation for details.
 #'
-#' Author: Markus Goeker
+#' Author: *Markus Goeker*
 
 
 library(pvclust)
@@ -14,8 +14,8 @@ library(opm)
 
 #' ## Generating the data matrix to be clustered
 
-#' The matrix must be transposed: pvclust expects the objects to be clustered
-#' in the columns. See pvclust::pvclust and base::t for details. If you need
+#' The matrix must be transposed: `pvclust` expects the objects to be clustered
+#' in the columns. See `pvclust::pvclust` and `base::t` for details. If you need
 #' more space for the clustering, generate shorter labels from the metadata.
 
 x <- t(extract(vaas_4, list("Species", "Strain")))
@@ -35,13 +35,13 @@ x.pvc <- pvclust(x, method.dist = "euclidean")
 
 #' ## Plotting the clustering:
 
-#' The two kinds of support values are visible on the branches. We see that
-#' *E. coli* is comparatively well differentiated from *P. aeruginosa*, but only
-#' if standard bootstrapping is considered. Calling pvclust::pvrect highlights
+#' The two kinds of support values are visible on the branches. We see that *E.
+#' coli* is comparatively well differentiated from *P. aeruginosa*, but only if
+#' standard bootstrapping is considered. Calling `pvclust::pvrect` highlights
 #' clusters with high support.
 
 plot(x.pvc, hang = -1)
 pvrect(x.pvc, pv = "bp")
-#' For real analyses, omit 'pv = "bp"'.
+#' For real analyses, omit `pv = "bp"`.
 
 

@@ -1,18 +1,18 @@
-#' # Analysing Phenotype MicroArray data: database I/O with MySQL
+#' # Analysing phenotype microarray data: database I/O with `MySQL`
 #'
-#' This is example R code for using opm to store PM data in a MySQL database
-#' and retrieving them again.
+#' This is example R code for using **opm** to store PM data in a `MySQL`
+#' database and retrieving them again.
 #'
 #' This code can be used to check whether a database either found in an R or
 #' environment variable or identical to the default value (see below) is
 #' correctly set up for this purpose. The code also shows how to include a
 #' user-defined selection of metadata.
 #'
-#' **Note**: The database must be accessible with 'localhost' as server, the
+#' **Note**: The database must be accessible with `localhost` as server, the
 #' current user as user and without a password, and the tables must have been
-#' set up using the SQL that comes with **opm**.
+#' set up using the `SQL` that comes with **opm**.
 #'
-#' Author: Markus Goeker
+#' Author: *Markus Goeker*
 
 
 library(opm)

@@ -727,7 +727,7 @@ setMethod("substrate_info", "character", function(object,
     m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     # The following code is currently not in use because the only plate to
     # which it is applicable (PM09) does not show regularity anyway. Conversion
-    # to integer would also be problematic because conctrations such as 5.5 or
+    # to integer would also be problematic because contractions such as 5.5 or
     # 6.5 are present.
     #if (all(m < 0L)) {
     #  x <- ifelse(in.parens, substr(x, 6L, nchar(x)), x)

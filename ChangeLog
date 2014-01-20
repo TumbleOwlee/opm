@@ -22,6 +22,8 @@
 - heat_map() gets an 'abbrev' argument
 - html_args() gets a 'no.html' argument
 - xy_plot() gets an 'rcr' argument
+- in the OPMS method of `[`(), if the i argument is a suitable query for %q%,
+  it is passed through this method
 - the 'normalize' argument of csv_data() now also triggers the replacement of
   backslashes with slashes
 - wells() does not allow for partial matching of plate names any more

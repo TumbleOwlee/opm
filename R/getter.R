@@ -84,11 +84,9 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   if (missing(i) || identical(i, TRUE))
     y <- x@plates
   else {
-    y <- x@plates[i]
-    if (any(bad <- vapply(y, is.null, NA))) {
-      warning("plate indexes partially out of range")
-      y <- y[!bad]
-    }
+    if (!is.logical(i) && !is.numeric(i))
+      i <- i %q% x
+    y <- close_index_gaps(x@plates[i])
     if (!length(y))
       return(NULL)
   }

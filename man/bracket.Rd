@@ -8,8 +8,11 @@
   \item{i}{Vector or missing. For the \code{\link{OPM}} and
   \code{\link{OPMA}} method, the indexes of one to several
   time points. For the \code{\link{OPMS}} method, the
-  indexes of one to several plates. It is an error to
-  select plates that are not present.}
+  indexes of one to several plates. A warning is issued if
+  indexing goes beyond the range. If \code{i} is neither a
+  numeric nor a logical vector, the \code{\link{OPMS}}
+  method passes it through \code{\link{infix.q}} to yield a
+  logical vector for indexing.}
 
   \item{j}{Vector or missing. \itemize{ \item For the
   \code{\link{OPM}} and \code{\link{OPMA}} method, the
@@ -113,8 +116,11 @@ stopifnot(!has_aggr(copy), !identical(copy, vaas_1))
 ## OPMS method
 
 # Create OPMS object with fewer plates (the first two ones)
-x <- vaas_4[1:2]
+(x <- vaas_4[1:2])
 stopifnot(is(x, "OPMS"), dim(x) == c(2, 384, 96))
+# we can select the same objects with a formula (which is passed through
+# the infix-q operator)
+stopifnot(identical(vaas_4[~ Species == "Escherichia coli"], x))
 
 # If only a single plate is selected, this is reduced to OPM(A)
 x <- vaas_4[3]
