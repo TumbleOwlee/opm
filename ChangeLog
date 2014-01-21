@@ -20,7 +20,7 @@
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets an 'abbrev' argument
-- html_args() gets a 'no.html' argument
+- html_args() gets 'no.html' and 'embed.css' arguments
 - xy_plot() gets an 'rcr' argument
 - in the OPMS method of `[`(), if the i argument is a suitable query for %q%,
   it is passed through this method

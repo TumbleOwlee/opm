@@ -123,7 +123,7 @@
   \sQuote{rectangular} format. If the length corresponds to
   the number of measurements per well in \code{object}, it
   is interpreted directly as the time points. This is
-  useful of the intervals are non-unique. Ignored if empty,
+  useful if the intervals are non-unique. Ignored if empty,
   causing \code{0, 1, 2, ...} to be used as time points.
   (This is often acceptable as it only causes a different
   scaling; it is not acceptable if the time points were not

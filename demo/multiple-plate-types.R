@@ -125,11 +125,16 @@ head(disc_settings(x, join = "json"), 1)
 
 #' ## Output section
 
-#' Copy the `CSS` file that comes with **opm** to the current working directory
-#' and set it as default for HTML tables.
+
+#' Set the `CSS` file that comes with **opm** as default for HTML tables.
 #'
-opm_opt(css.file = "opm_styles.css")
-file.copy(opm_files("css")[[1]], opm_opt("css.file"), overwrite = TRUE)
+opm_opt(css.file = opm_files("css"))
+
+#' An alternative would be to copy it to the current working directory as
+#' follows (and use the copy):
+#' `file.copy(opm_files("css")[[1]], opm_opt("css.file"), overwrite = TRUE)`
+#' `opm_opt(css.file = "opm_styles.css")`
+
 
 #' For each plate type, create each of the following files:
 #'
@@ -146,16 +151,18 @@ for (name in names(x)) {
   write(to_yaml(x[[name]]), sprintf("Data_%s.yml", name))
 
   # Write textual description of discretised results to a file, grouped per
-  # strain.
+  # strain. Embed the content of the `CSS` file.
   #
-  write(phylo_data(listing(x[[name]], as.groups = organism, html = TRUE)),
+  write(phylo_data(listing(x[[name]], as.groups = organism, html = TRUE),
+      html.args = html_args(embed.css = TRUE)),
     sprintf("Description_%s.html", name))
 
   # Write HTML table describing the discretised results. This cannot be done
-  # unless there are several replicates.
+  # unless there are several replicates. Embed the content of the `CSS` file.
   #
   if (length(x[[name]]) > 1)
-    write(phylo_data(x[[name]], format = "html", as.labels = organism),
+    write(phylo_data(x[[name]], format = "html", as.labels = organism,
+      html.args = html_args(embed.css = TRUE)),
       sprintf("Table_%s.html", name))
 
   # Draw x-y-plot into PDF file.

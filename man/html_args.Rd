@@ -10,7 +10,7 @@
     legend.sep.1 = ", ", legend.sep.2 = "; ",
     table.summary = "character matrix", no.html = TRUE,
     greek.letters = TRUE, css.file = opm_opt("css.file"),
-    ...)
+    embed.css = FALSE, ...)
 
   safe_labels(x, format, enclose = TRUE, pad = FALSE,
     comment = FALSE)
@@ -60,14 +60,18 @@
   any.}
 
   \item{css.file}{Character vector indicating the name of
-  one to several \acronym{CSS} files to link. Empty strings
-  and empty vectors are ignored.  It is no error if the
+  one to several \acronym{CSS} files to link or embed.
+  Empty strings and empty vectors are ignored. If
+  \code{embed.css} is \code{FALSE} it is no error if the
   file does not exist, but the page will then probably not
   be displayed as intended.
 
   Under Windows it is recommended to convert a file name
-  \code{f} beforehand using \code{normalizePath(f, winslash
-  = "/")}.}
+  \code{f} using \code{normalizePath(f, winslash = "/")}
+  before linking it.}
+
+  \item{embed.css}{Logical scalar indicating whether or not
+  \acronym{CSS} files shall be embedded, not linked.}
 
   \item{...}{Optional other arguments available for
   inserting user-defined \acronym{HTML} content. Currently
