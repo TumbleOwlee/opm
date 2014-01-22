@@ -93,3 +93,6 @@ stopifnot(is.data.frame(empty), dim(empty) == 0)
 
 dbDisconnect(conn)
 
+
+detach("package:RMongo", unload = TRUE)
+

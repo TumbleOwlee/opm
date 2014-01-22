@@ -4,8 +4,8 @@
 \alias{well}
 \title{Stored measurements}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{i}{Optional character or numeric vector with
   name(s) or position(s) of well(s). Wells are originally

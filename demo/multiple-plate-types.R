@@ -67,17 +67,17 @@ md <- to_metadata(csv_data(x))
 #'
 if (!replicate %in% names(md)) {
   message("NOTE: inserting replicate IDs")
-  md[, replicate] <- 1:nrow(md)
+  md[, replicate] <- seq_len(nrow(md))
 } else if (any(bad <- is.na(md[, replicate]))) {
   message("NOTE: inserting replicate IDs")
-  md[bad, replicate] <- (1:nrow(md))[bad] # might yield non-unique IDs
+  md[bad, replicate] <- seq_len(nrow(md))[bad] # might yield non-unique IDs
   md[, replicate] <- make.unique(md[, replicate]) # now enforce unique IDs
 }
 
 #' Insert a dummy organism entry if none is there, with a warning.
 #'
 if (!organism %in% names(md)) {
-  md[, organism] <- "Unkown organism"
+  md[, organism] <- rep_len("Unkown organism", nrow(md))
   warning("inserting dummy organism name", immediate. = TRUE)
 } else if (any(bad <- is.na(md[, organism]))) {
   md[bad, organism] <- "Unkown organism"

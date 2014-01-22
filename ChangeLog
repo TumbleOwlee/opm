@@ -6,6 +6,8 @@
   special treatmen of logical vectors is already done by extract_columns()
 - fixed bug in 'MOPMX' bracket method (non-confoming objects were not removed
   when using an out-of-range index)
+- read_opm() now behaves more consistently in the case of zero-plate or
+  single-plate input
 - list method of contains() moved to pkgutils
 - all map_names() and map_values() methods moved to pkgutils
 - new vignette on analysing growth-curve (and user-defined PM) data

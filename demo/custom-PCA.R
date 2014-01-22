@@ -80,3 +80,9 @@ x <- opm::extract(vaas_4, as.labels = list("Strain"),
   as.groups = list("Species"))
 x.pca <- custom_pca(x)
 
+
+detach("package:BiodiversityR", unload = TRUE)
+detach("package:vegan", unload = TRUE)
+
+
+

@@ -104,7 +104,7 @@ print.MOPMX_Summary <- function(x, ...) {
   NextMethod()
   cat("", sprintf(
     "=> MOPMX object with %i element(s), details are shown above.", nrow(x)),
-    " Access the elements with [[ or $ to apply certain methods.",
+    " Access the elements with [[ or $ to apply specific methods.",
     sep = "\n")
   invisible(x)
 }

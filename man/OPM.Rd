@@ -152,7 +152,8 @@ stopifnot(has_aggr(vaas_1), !has_aggr(x))
   Other classes: \code{\link{FOE}}, \code{\link{OPMA_DB}},
   \code{\link{OPMD_DB}}, \code{\link{OPMX}},
   \code{\link{OPM_DB}}, \code{\link{WMD}},
-  \code{\link{WMDS}}, \code{\link{YAML_VIA_LIST}}
+  \code{\link{WMDS}}, \code{\link{WMDX}},
+  \code{\link{YAML_VIA_LIST}}
 }
 \keyword{classes}
 \keyword{methods}

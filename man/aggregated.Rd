@@ -3,8 +3,8 @@
 \alias{aggregated}
 \title{Get aggregated data}
 \arguments{
-  \item{object}{\code{\link{OPMA}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPMA}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{subset}{Character vector. If not \code{NULL},
   restrict to this or these parameter(s). See

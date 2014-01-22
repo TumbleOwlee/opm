@@ -321,8 +321,21 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     stop("'gen.iii' must either be logical or character scalar")
   )
   case(length(result),
-    switch(convert, no = result, NULL),
-    switch(convert, no = result, result[[1L]]),
+    case(convert,
+      no =,
+      grp = new(MOPMX),
+      sep = list(),
+      yes =,
+      try = NULL
+    ),
+    case(convert,
+      no = new(MOPMX, result),
+      grp = new(MOPMX, structure(result, names = plate_type(result[[1L]]))),
+      sep = structure(list(new(MOPMX, result)),
+        names = plate_type(result[[1L]])),
+      yes =,
+      try = result[[1L]]
+    ),
     case(convert,
       no = new(MOPMX, result),
       yes = new(OPMS, plates = result),

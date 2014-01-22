@@ -3,7 +3,8 @@
 \alias{plus}
 \title{Combination and addition of plates}
 \arguments{
-  \item{x}{\code{\link{OPMX}} object.}
+  \item{x}{\code{\link{OPMX}} or \code{\link{MOPMX}}
+  object.}
 
   \item{...}{Other \R objects.}
 
@@ -17,10 +18,13 @@
   or list.}
 }
 \value{
-  \code{c} creates an \code{\link{OPMS}} object if
-  possible, otherwise a list, or an \code{\link{OPM}}
-  object (if \code{\dots} is not given and \code{x} is such
-  an object).
+  The \code{\link{OPMX}} method of \code{c} creates an
+  \code{\link{OPMS}} object if possible, otherwise a list,
+  or an \code{\link{OPM}} object (if \code{\dots} is not
+  given and \code{x} is such an object). Similarly, the
+  \code{\link{MOPMX}} method of \code{c} creates a
+  \code{\link{MOPMX}} object is possible and a list
+  otherwise.
 
   If successful, \code{+} yields an \code{\link{OPMS}}
   object that contains the plates from both \code{e1} and

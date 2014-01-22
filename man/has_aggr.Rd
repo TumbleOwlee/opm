@@ -3,8 +3,8 @@
 \alias{has_disc}
 \title{Are aggregated or discretised data present?}
 \arguments{
-  \item{object}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{...}{Optional arguments passed between the
   methods.}

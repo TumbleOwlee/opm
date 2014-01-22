@@ -3,6 +3,7 @@ BUG_MSG <- "a bug -- this should not happen"
 
 WMD <- "WMD"
 WMDS <- "WMDS"
+WMDX <- "WMDX"
 OPM <- "OPM"
 OPMA <- "OPMA"
 OPMD <- "OPMD"

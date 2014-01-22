@@ -30,10 +30,13 @@ if (exists("OPM_MYSQL_DB")) {
 print(dbname)
 conn <- dbConnect("MySQL", dbname = dbname)
 
-# check without metadata
+#' ### Check without metadata
+
 result <- opm_dbcheck(conn)
 
 print(opm_dbnext(2L, conn))
+
+#' ### Check with metadata
 
 if (all(result == "ok")) {
 
@@ -52,10 +55,17 @@ if (all(result == "ok")) {
 
 }
 
+
+#' ### Tidying up
+
+
 dbDisconnect(conn)
 
 print(result)
 stopifnot(result == "ok")
 print(result2)
 stopifnot(result2 == "ok")
+
+
+detach("package:RMySQL", unload = TRUE)
 

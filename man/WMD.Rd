@@ -8,6 +8,8 @@
 \alias{WMD-class}
 \alias{WMDS}
 \alias{WMDS-class}
+\alias{WMDX}
+\alias{WMDX-class}
 \alias{YAML_VIA_LIST}
 \alias{YAML_VIA_LIST-class}
 \title{Virtual classes of the \pkg{opm} package}
@@ -47,6 +49,9 @@
   the plural of \acronym{WMD}). It shares many methods with
   \acronym{WMD} but they often return a collection of the
   return values of the according \acronym{WMD} method.
+
+  \acronym{WMDX} is the class union of \acronym{WMD} and
+  \acronym{WMDS}.
 
   \acronym{FOE} is an acronym for \sQuote{formula or
   expression}. This is a virtual class facilitating the

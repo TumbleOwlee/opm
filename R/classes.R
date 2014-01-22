@@ -12,6 +12,10 @@ setClass(WMDS,
 
 NULL
 
+setClassUnion(WMDX, c(WMD, WMDS))
+
+NULL
+
 setClassUnion(FOE, c("formula", "expression"))
 
 setClass(OPM,

@@ -31,10 +31,18 @@ if (exists("OPM_SQLITE_DB")) {
 print(dbname)
 conn <- dbConnect("SQLite", dbname = dbname)
 
-# check without metadata
+#' Next comes an `SQLite`-specific command necessary to enable the deletion
+#' mechanism. Must be called each time the database is opened:
+#'
+dbGetQuery(conn, "PRAGMA foreign_keys = ON;")
+
+#' ### Check without metadata
+
 result <- opm_dbcheck(conn)
 
 print(opm_dbnext(2L, conn))
+
+#' ### Check with metadata
 
 if (all(result == "ok")) {
 
@@ -51,10 +59,17 @@ if (all(result == "ok")) {
 
 }
 
+
+#' ### Tidying up
+
+
 dbDisconnect(conn)
 
 print(result)
 stopifnot(result == "ok")
 print(result2)
 stopifnot(result2 == "ok")
+
+
+detach("package:RSQLite")
 

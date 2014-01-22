@@ -185,10 +185,13 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
       metadata(x) <- metadata
     else
       stop("'metadata' must be empty or a data frame")
-  result <- c(insert = NA, receive = NA, clear = NA, compare = NA)
+  result <- c(last1 = NA, insert = NA, receive = NA, clear = NA, compare = NA,
+    last2 = NA, samelast = NA)
   storage.mode(result) <- "character"
   step <- 0L
   tryCatch({
+    last1 <- opm_dbnext(2L, conn)
+    result[[step <- step + 1L]] <- "ok"
     ids <- opm_dbput(x, conn)
     result[[step <- step + 1L]] <- "ok"
     y <- opm_dbget(ids, conn)
@@ -198,6 +201,10 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     cmp <- sapply(seq_along(x), function(i) slots_equal(y[i], x[i]))
     if (!is.logical(cmp))
       stop(paste0(cmp, collapse = " / "))
+    result[[step <- step + 1L]] <- "ok"
+    last2 <- opm_dbnext(2L, conn)
+    result[[step <- step + 1L]] <- "ok"
+    stopifnot(last1 == last2)
     result[[step <- step + 1L]] <- "ok"
   }, error = function(e) result[[step + 1L]] <<- conditionMessage(e))
   result

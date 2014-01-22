@@ -10,12 +10,12 @@
   \sQuote{Details}. \code{x} and \code{table} can swap
   their places.}
 
-  \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
+  \item{table}{\code{\link{WMD}} or \code{\link{WMDS}}
   object. \code{x} and \code{table} can swap their places.}
 }
 \value{
   Logical vector of the length of the \code{\link{WMD}} or
-  \code{\link{OPMS}} object.
+  \code{\link{WMDS}} object.
 }
 \description{
   Search for the presence of metadata keys, either using a

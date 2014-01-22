@@ -226,11 +226,12 @@ stopifnot(identical(z, y))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{edit-methods}
-\alias{edit,OPMX-method}
+\alias{edit,WMDX-method}
 \alias{include_metadata-methods}
 \alias{include_metadata,MOPMX-method}
 \alias{include_metadata,OPM-method}
-\alias{include_metadata,OPMS-method}
+\alias{include_metadata,WMD-method}
+\alias{include_metadata,WMDS-method}
 \alias{map_metadata-methods}
 \alias{map_metadata,MOPMX,ANY-method}
 \alias{map_metadata,MOPMX,missing-method}
@@ -243,13 +244,14 @@ stopifnot(identical(z, y))
 \alias{map_values-methods}
 \alias{map_values,list,formula-method}
 \usage{
-  \S4method{edit}{OPMX}(name, ...) 
+  \S4method{edit}{WMDX}(name, ...) 
 
   \S4method{include_metadata}{MOPMX}(object, ...) 
   \S4method{include_metadata}{OPM}(object, md,
-    keys = opm_opt("csv.keys"), replace = FALSE, skip.failure = FALSE,
-    remove.keys = TRUE, ...) 
-  \S4method{include_metadata}{OPMS}(object, ...) 
+    keys = opm_opt("csv.keys"), ...) 
+  \S4method{include_metadata}{WMD}(object, md, keys, replace = FALSE,
+    skip.failure = FALSE, remove.keys = TRUE, ...) 
+  \S4method{include_metadata}{WMDS}(object, ...) 
 
   \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 
   \S4method{map_metadata}{MOPMX,missing}(object, mapping,

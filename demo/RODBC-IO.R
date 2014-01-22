@@ -32,10 +32,14 @@ conn <- odbcConnect(dsn)
 
 #' Insertions via **RODBC** in this manner are slow. Creating subsets speeds
 #' things up.
+#'
 result <- opm_dbcheck(conn, time.points = 1:5, wells = 12:14)
 
-# check without metadata
+#' ### Check without metadata
+
 print(opm_dbnext(2L, conn))
+
+#' ### Check with metadata
 
 if (all(result == "ok")) {
 
@@ -54,6 +58,10 @@ if (all(result == "ok")) {
 
 }
 
+
+#' ### Tidying up
+
+
 odbcClose(conn)
 
 print(result)
@@ -61,3 +69,5 @@ stopifnot(result == "ok")
 print(result2)
 stopifnot(result2 == "ok")
 
+
+detach("package:RODBC")

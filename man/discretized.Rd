@@ -3,8 +3,8 @@
 \alias{discretized}
 \title{Get discretised data}
 \arguments{
-  \item{object}{\code{\link{OPMD}} or \code{\link{OPMS}}
-  object.}
+  \item{object}{\code{\link{OPMD}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{full}{Logical scalar passed to \code{\link{wells}}.
   This and the following arguments affect the names of the

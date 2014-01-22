@@ -92,6 +92,11 @@
   plates from \code{vaas_4} have already been inserted. If
   errors occur, it is up to the user to clean up the data
   base (as far as necessary).
+
+  Note that the deletion mechanism is based on \code{ON
+  DELETE CASCADE}. To enable this in \code{SQLite},
+  \code{PRAGMA foreign_keys = ON;} has to be called each
+  time a database is opened.
 }
 \examples{
 # The SQL files for generating the expected database tables. Tables can

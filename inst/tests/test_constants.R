@@ -28,6 +28,9 @@ expect_length <- function(actual, expected) {
 ## WMDS
 ## UNTESTED
 
+## WMDX
+## UNTESTED
+
 ## OPM
 ## UNTESTED
 

@@ -102,6 +102,8 @@ sub_indexes <- function(x) {
 }
 
 simplify_conditionally <- function(x) {
+  if (!length(x))
+    return(NULL)
   if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
     return(x)
   if (length(n <- unique.default(vapply(x, length, 0L))) > 1L)

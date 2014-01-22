@@ -45,3 +45,6 @@ pvrect(x.pvc, pv = "bp")
 #' For real analyses, omit `pv = "bp"`.
 
 
+detach("package:pvclust", unload = TRUE)
+
+

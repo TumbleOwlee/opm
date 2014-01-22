@@ -10,12 +10,12 @@
   \sQuote{Details}. \code{x} and \code{table} can swap
   their places.}
 
-  \item{table}{\code{\link{WMD}} or \code{\link{OPMS}}
+  \item{table}{\code{\link{WMD}} or \code{\link{WMDS}}
   object. \code{x} and \code{table} can swap their places.}
 }
 \value{
   Logical vector of the length of the \code{\link{WMD}} or
-  \code{\link{OPMS}} object.
+  \code{\link{WMDS}} object.
 }
 \description{
   Search for the presence of metadata values for given
@@ -60,7 +60,7 @@
   \code{table} and returns the result. For the
   \code{\link{WMD}} method, it is up to the user to ensure
   that the result is a logical scalar, but the method would
-  succeed anyway. The \code{\link{OPMS}} method yields an
+  succeed anyway. The \code{\link{WMDS}} method yields an
   error unless each plate yields a logical scalar. Symbols
   that are not found within the metadata are looked up in
   the enclosing environment (\code{infix.q}) or only in the
