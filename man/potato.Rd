@@ -12,8 +12,10 @@
     are five replicates per combination of \sQuote{Genotype} and
     \sQuote{Treatment}.}
   \item{Time}{Integer vector containing the measurement times in days.}
-  \item{FM}{Integer vector containing the fresh-mass measurements in grams.}
-  \item{DM}{Integer vector containing the dry-mass measurements in grams.}
+  \item{FM}{Integer vector containing the fresh-mass measurements in
+  milligramme.}
+  \item{DM}{Integer vector containing the dry-mass measurements in
+  milligramme.}
 }}
 \description{
   Example data set for analysing growth curves with
