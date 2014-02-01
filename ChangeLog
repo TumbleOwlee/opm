@@ -15,7 +15,8 @@
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
   opm_dbcheck() for database I/O, and according new classes 'OPM_DB', 'OPMA_DB'
   and 'OPMD_DB'
-. new demos for database I/O
+- new demos on answering various research questions with the package
+- new demos on database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
 - virtual classes are now appropriately exported
 - radial_plot() gets a 'group.col' argument
