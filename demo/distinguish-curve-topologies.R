@@ -11,7 +11,7 @@
 #' different?
 #'
 #' In order to assess this, we make use of bootstrapped curve parameters, which
-#' allow to determine a 95 % confidence interval
+#' allow us to determine a 95 % confidence interval.
 #'
 #' The data set `wittmann_et_al` contains Generation-III data for numerous
 #' strains of the bacterial species *Achromobacter xylosoxidans* (see the
@@ -59,7 +59,7 @@ xy_plot(wittmann_small[, , "G07"],
 #' ### Show aggregated data for strain `LMG` 7051, well `G07 (D-Malic Acid)`
 #' * the aggregated data contain 95% confidence intervals from bootstrapping
 #' * enter `?do_aggr` to learn how to bootstrap during curve parameter
-#' aggregation
+#'   aggregation
 
 aggregated(subset(wittmann_small[, , "G07"], list(strain = "LMG 7051")),
   full = TRUE)
@@ -72,9 +72,9 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 
 #' ### Conclusions:
 #' * strains `CCUG` 41513 and `CCUG` 2203 can not be distinguished by their
-#' maximum height (A)
+#'   maximum height (A)
 #' * similarly, also strains `LMG` 7051 and `CCUG` 48135 can not be
-#' distinguished by A
+#'   distinguished by A
 #' * however, both pairs of strains differ significantly in their A value
 #'
 #' ### Plot confidence interval for the area under the curve (`AUC`)
@@ -86,7 +86,7 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 #' ### Conclusions:
 #' * all strains show different `AUC` values
 #'
-#' ### Plot confidence interval for the steepness of the slope value (mu)
+#' ### Plot confidence interval for the steepness of the slope (mu)
 #+ Figure4, fig.width = 5, fig.height = 3.5
 
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
@@ -95,7 +95,7 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 #' ### Conclusions:
 #' * all strains show different mu values
 #'
-#' ### Plot confidence interval for the lag phase value (lambda)
+#' ### Plot confidence interval for the lag phase (lambda)
 #+ Figure5, fig.width = 5, fig.height = 3.5
 
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",

@@ -8,7 +8,7 @@
 #' This example demonstrates how to identify substrates that yield a positive
 #' reaction in the bacterial strain *Escherichia coli* `DSM` 18039.
 #'
-#' Author: *Johannes Sikorski* and *Markus Goeker*
+#' Author: *Johannes Sikorski*
 #'
 #'
 #' ### Load R packages and data

@@ -1,5 +1,5 @@
 #' # Comparison of organisms: Does phenotypic similarity match phylogenetic
-#' similarity?
+#' # similarity?
 #'
 #' Assume you have run Phenotype Microarray experiments for several organisms,
 #' e.g. bacterial strains. Assume further that you have numerous metadata for
@@ -23,6 +23,7 @@
 
 library(opm)
 library(opmdata)
+library(pvclust)
 data(wittmann_et_al)
 
 #' For demonstration purposes, some plates are removed from the data set
@@ -46,7 +47,7 @@ heat_map(wittmann_small,
   as.groups = "MLSTcluster",
   cexRow = 1.5,
   use.fun = "gplots",
-  main = "Heatmap on `AUC` data",
+  main = "Heatmap on AUC data",
   subset = "AUC",
   xlab = "Well substrates on Generation-III Biolog plate",
   ylab = "strains, replicates, and their MLST cluster affiliation")
@@ -65,20 +66,17 @@ heat_map(wittmann_small,
 #' `demo("cluster-with-pvalues")` for details).
 
 x <- t(extract(wittmann_small, list("strain", "replicate", "MLSTcluster")))
-library(pvclust)
 x.pvc <- pvclust(x, method.dist = "euclidean", method.hclust = "ward",
   nboot = 100)
 
 #+  fig.width = 15, fig.height = 7
 
 plot(x.pvc, hang = -1)
-pvrect(x.pvc, pv = "bp")
+pvrect(x.pvc, max.only = FALSE)
 
 #' ### Result:
-#' * Note that there is no bootstrap support for the phenotypic similarity
-#'   cluster observed.
-#' * only the two replicates of strain `CCUG` 48135 yield significantly high
-#'   bootstrap support
+#' According to the `AU` p-values there is significant support for some of the
+#' observed phenotypic similarity clusters (highlighted with rectangles).
 #'
 #' ### Is there any significant difference in overall `AUC` values across
 #' ### strains of the phylogenetic clades?
