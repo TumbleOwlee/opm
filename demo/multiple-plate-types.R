@@ -57,8 +57,7 @@ x # shows a summary of the contained elements
 #' This needs to be adapted to the way CSV data have been recorded. Remember
 #' that `collect_template` and `include_metadata` offer a much more flexible
 #' mechanism for including metadata.
-
-
+#'
 #' Create data frame without converting strings to factors.
 #'
 md <- to_metadata(csv_data(x))

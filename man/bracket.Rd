@@ -12,7 +12,9 @@
   indexing goes beyond the range. If \code{i} is neither a
   numeric nor a logical vector, the \code{\link{OPMS}}
   method passes it through \code{\link{infix.q}} to yield a
-  logical vector for indexing.}
+  logical vector for indexing. If \code{i} is a formula,
+  its left side can be used to choose another infix
+  operator as \code{\link{infix.q}}.}
 
   \item{j}{Vector or missing. \itemize{ \item For the
   \code{\link{OPM}} and \code{\link{OPMA}} method, the
@@ -121,6 +123,8 @@ stopifnot(is(x, "OPMS"), dim(x) == c(2, 384, 96))
 # we can select the same objects with a formula (which is passed through
 # the infix-q operator)
 stopifnot(identical(vaas_4[~ Species == "Escherichia coli"], x))
+# we can select another infix operator with the left side of the formula
+stopifnot(identical(vaas_4[k ~ Species], vaas_4))
 
 # If only a single plate is selected, this is reduced to OPM(A)
 x <- vaas_4[3]

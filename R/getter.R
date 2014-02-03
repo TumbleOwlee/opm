@@ -85,7 +85,10 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     y <- x@plates
   else {
     if (!is.logical(i) && !is.numeric(i))
-      i <- i %q% x
+      if (inherits(i, "formula") && length(i) > 2L)
+        i <- do.call(sprintf("%%%s%%", all.vars(i[[2L]])), list(x, i))
+      else
+        i <- i %q% x
     y <- close_index_gaps(x@plates[i])
     if (!length(y))
       return(NULL)
