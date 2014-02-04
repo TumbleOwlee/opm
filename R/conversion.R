@@ -260,6 +260,33 @@ setMethod("rep", OPMS, function(x, ...) {
 
 setGeneric("extract", function(object, ...) standardGeneric("extract"))
 
+setMethod("extract", MOPMX, function(object, as.labels,
+    subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
+    dataframe = FALSE, as.groups = NULL, ...) {
+
+  convert_row_groups <- function(x) {
+    result <- unlist(lapply(x, rownames), FALSE, FALSE)
+    result <- sort.int(unique.default(result))
+    result <- structure(character(length(result)), names = result)
+    for (mat in x) # last one wins, as in collect()
+      result[rownames(mat)] <- as.character(attr(mat, "row.groups"))
+    as.factor(unname(result))
+  }
+
+  x <- lapply(X = object, FUN = extract, as.labels = as.labels,
+    subset = subset, ci = ci, trim = trim, dataframe = dataframe,
+    as.groups = as.groups, ...)
+
+  if (!dataframe)
+    return(structure(collect(x, "datasets"), row.groups = if (length(as.groups))
+        convert_row_groups(x)
+      else
+        NULL))
+
+  stop(NOT_YET)
+
+}, sealed = SEALED)
+
 setMethod("extract", OPMS, function(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, sep = " ", dups = "warn",

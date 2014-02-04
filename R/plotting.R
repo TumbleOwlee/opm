@@ -746,6 +746,15 @@ setMethod("heat_map", OPMS, function(object, as.labels,
   invisible(heat_map(do.call(extract, extract.args), ...))
 }, sealed = SEALED)
 
+setMethod("heat_map", MOPMX, function(object, as.labels,
+    subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
+    extract.args = list(), ...) {
+  extract.args <- insert(as.list(extract.args), list(object = object,
+    as.labels = as.labels, as.groups = as.groups, subset = subset,
+    dataframe = FALSE, ci = FALSE, sep = sep), .force = TRUE)
+  invisible(heat_map(do.call(extract, extract.args), ...))
+}, sealed = SEALED)
+
 setGeneric("radial_plot", function(object, ...) standardGeneric("radial_plot"))
 
 setMethod("radial_plot", "matrix", function(object, as.labels = NULL,

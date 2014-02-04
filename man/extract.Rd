@@ -3,12 +3,13 @@
 \alias{extract_columns}
 \title{Extract aggregated values and/or metadata}
 \arguments{
-  \item{object}{\code{\link{OPMS}} object or data frame,
-  for \code{extract} with one column named as indicated by
+  \item{object}{\code{\link{OPMS}} object,
+  \code{\link{MOPMX}} object or data frame, for
+  \code{extract} with one column named as indicated by
   \code{split.at} (default given by
   \code{\link{param_names}("split.at")}), columns with
   factor variables before that column and columns with
-  numeric vectors after that column.  For
+  numeric vectors after that column. For
   \code{extract_columns} optionally an \code{\link{OPM}}
   object.}
 
@@ -202,6 +203,15 @@
   form a character vector or new data-frame columns),
   partially more useful (extract columns with data of a
   specified class).
+
+  Not all \code{\link{MOPMX}} objects are suitable for
+  \code{extract}. The call will be successful if only
+  \code{\link{OPMS}} objects are contained but might result
+  in \code{NA} values within the resulting matrix (if
+  \code{dataframe} is \code{FALSE}) unless the set of row
+  names created using \code{as.labels} is equal between the
+  distinct elements of \code{object}.  In the case of
+  duplicates, the last one wins.
 }
 \examples{
 ## 'OPMS' method
@@ -327,6 +337,7 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{extract-methods}
+\alias{extract,MOPMX-method}
 \alias{extract,OPMS-method}
 \alias{extract,data.frame-method}
 \alias{extract_columns-methods}
@@ -334,6 +345,9 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \alias{extract_columns,WMDS-method}
 \alias{extract_columns,data.frame-method}
 \usage{
+  \S4method{extract}{MOPMX}(object, as.labels,
+    subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
+    dataframe = FALSE, as.groups = NULL, ...) 
   \S4method{extract}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, sep = " ", dups = "warn",

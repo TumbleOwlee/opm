@@ -2,12 +2,14 @@
 \alias{heat_map}
 \title{Heat map}
 \arguments{
-  \item{object}{Matrix, data frame or \code{\link{OPMS}}
-  object. The matrix method is mainly designed for
-  curve-parameter matrices as created by
+  \item{object}{Matrix, data frame or \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object. The matrix method is mainly
+  designed for curve-parameter matrices as created by
   \code{\link{extract}} but can be used with any numeric
   matrix. If a data frame, it must contain at least one
-  column with numeric data.}
+  column with numeric data. Not all \code{\link{MOPMX}}
+  objects are suitable for this function; see the remarks
+  under \code{\link{extract}}.}
 
   \item{as.labels}{Character, numeric or logical vector
   indicating the positions of the columns to be joined and
@@ -174,10 +176,14 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{heat_map-methods}
+\alias{heat_map,MOPMX-method}
 \alias{heat_map,OPMS-method}
 \alias{heat_map,data.frame-method}
 \alias{heat_map,matrix-method}
 \usage{
+  \S4method{heat_map}{MOPMX}(object, as.labels,
+    subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
+    extract.args = list(), ...) 
   \S4method{heat_map}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
     extract.args = list(), ...) 
