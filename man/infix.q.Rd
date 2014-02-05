@@ -10,12 +10,14 @@
   \sQuote{Details}. \code{x} and \code{table} can swap
   their places.}
 
-  \item{table}{\code{\link{WMD}} or \code{\link{WMDS}}
-  object. \code{x} and \code{table} can swap their places.}
+  \item{table}{\code{\link{WMD}}, \code{\link{WMDS}} or
+  \code{\link{MOPMX}} object. \code{x} and \code{table} can
+  swap their places.}
 }
 \value{
   Logical vector of the length of the \code{\link{WMD}} or
-  \code{\link{WMDS}} object.
+  \code{\link{WMDS}} object. For \code{\link{MOPMX}}
+  objects, a list of such vectors.
 }
 \description{
   Search for the presence of metadata values for given
@@ -155,6 +157,10 @@ rm(missing.name) # tidy up
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{infix.largeq-methods}
+\alias{infix.largeq,ANY,MOPMX-method}
+\alias{\%Q\%,ANY,MOPMX-method}
+\alias{infix.largeq,MOPMX,ANY-method}
+\alias{\%Q\%,MOPMX,ANY-method}
 \alias{infix.largeq,WMD,ANY-method}
 \alias{\%Q\%,WMD,ANY-method}
 \alias{infix.largeq,WMD,WMD-method}
@@ -184,6 +190,10 @@ rm(missing.name) # tidy up
 \alias{infix.largeq,list,WMDS-method}
 \alias{\%Q\%,list,WMDS-method}
 \alias{infix.q-methods}
+\alias{infix.q,ANY,MOPMX-method}
+\alias{\%q\%,ANY,MOPMX-method}
+\alias{infix.q,MOPMX,ANY-method}
+\alias{\%q\%,MOPMX,ANY-method}
 \alias{infix.q,WMD,ANY-method}
 \alias{\%q\%,WMD,ANY-method}
 \alias{infix.q,WMD,WMD-method}
@@ -213,6 +223,8 @@ rm(missing.name) # tidy up
 \alias{infix.q,list,WMDS-method}
 \alias{\%q\%,list,WMDS-method}
 \usage{
+  \S4method{\%Q\%}{ANY,MOPMX}(x, table) 
+  \S4method{\%Q\%}{MOPMX,ANY}(x, table) 
   \S4method{\%Q\%}{WMD,ANY}(x, table) 
   \S4method{\%Q\%}{WMD,WMD}(x, table) 
   \S4method{\%Q\%}{WMD,WMDS}(x, table) 
@@ -228,6 +240,8 @@ rm(missing.name) # tidy up
   \S4method{\%Q\%}{list,WMD}(x, table) 
   \S4method{\%Q\%}{list,WMDS}(x, table) 
 
+  \S4method{\%q\%}{ANY,MOPMX}(x, table) 
+  \S4method{\%q\%}{MOPMX,ANY}(x, table) 
   \S4method{\%q\%}{WMD,ANY}(x, table) 
   \S4method{\%q\%}{WMD,WMD}(x, table) 
   \S4method{\%q\%}{WMD,WMDS}(x, table) 

@@ -146,6 +146,8 @@ test_that("rows can be picked", {
 ## create_formula
 ## UNTESTED
 
+## formula2infix
+## UNTESTED
 
 ## metadata_key
 test_that("we can convert formulas to formulas for use as metadata keys", {

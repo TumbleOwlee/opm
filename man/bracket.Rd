@@ -7,14 +7,24 @@
 
   \item{i}{Vector or missing. For the \code{\link{OPM}} and
   \code{\link{OPMA}} method, the indexes of one to several
-  time points. For the \code{\link{OPMS}} method, the
-  indexes of one to several plates. A warning is issued if
-  indexing goes beyond the range. If \code{i} is neither a
-  numeric nor a logical vector, the \code{\link{OPMS}}
-  method passes it through \code{\link{infix.q}} to yield a
-  logical vector for indexing. If \code{i} is a formula,
-  its left side can be used to choose another infix
-  operator as \code{\link{infix.q}}.}
+  time points.
+
+  For the \code{\link{OPMS}} method, the indexes of one to
+  several plates. A warning is issued if indexing goes
+  beyond the range. If \code{i} is neither a numeric nor a
+  logical vector, the \code{\link{OPMS}} method passes it
+  through \code{\link{infix.q}} to yield a logical vector
+  for indexing. If \code{i} is a formula, its left side can
+  be used to choose another infix operator as
+  \code{\link{infix.q}}.
+
+  For the \code{\link{MOPMX}} method, either missing or a
+  vector or a formula or expression. The latter work like
+  for \code{\link{OPMS}} objects and yield a list of
+  logical vectors (one per element of \code{x}) Such a list
+  is then further used for selecting subset within the
+  elements of \code{x}.  A list can also be provided
+  directly.}
 
   \item{j}{Vector or missing. \itemize{ \item For the
   \code{\link{OPM}} and \code{\link{OPMA}} method, the
@@ -155,6 +165,14 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
   stopifnot(dim(x) == c(384, 96))
 }
 # see also oapply() for a more elegant approach
+
+## MOPMX method
+(x <- new("MOPMX", list(vaas_1, vaas_4))) # create MOPMX object
+stopifnot(is(x, "MOPMX"), length(x) == 2)
+(y <- x[~ Species != "Escherichia coli"])
+stopifnot(is(y, "MOPMX"), length(y) == 1)
+(y <- x[list(1, 3:4)]) # only 2nd element reduced
+stopifnot(is(y, "MOPMX"), length(y) == 2, !identical(x, y))
 }
 \seealso{
   base::`[` base::`[[`
@@ -172,6 +190,22 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
 \alias{[,MOPMX,character,missing,ANY-method}
 \alias{bracket,MOPMX,character,missing,missing-method}
 \alias{[,MOPMX,character,missing,missing-method}
+\alias{bracket,MOPMX,expression,missing,ANY-method}
+\alias{[,MOPMX,expression,missing,ANY-method}
+\alias{bracket,MOPMX,expression,missing,missing-method}
+\alias{[,MOPMX,expression,missing,missing-method}
+\alias{bracket,MOPMX,formula,missing,ANY-method}
+\alias{[,MOPMX,formula,missing,ANY-method}
+\alias{bracket,MOPMX,formula,missing,missing-method}
+\alias{[,MOPMX,formula,missing,missing-method}
+\alias{bracket,MOPMX,list,missing,ANY-method}
+\alias{[,MOPMX,list,missing,ANY-method}
+\alias{bracket,MOPMX,list,missing,missing-method}
+\alias{[,MOPMX,list,missing,missing-method}
+\alias{bracket,MOPMX,missing,missing,ANY-method}
+\alias{[,MOPMX,missing,missing,ANY-method}
+\alias{bracket,MOPMX,missing,missing,missing-method}
+\alias{[,MOPMX,missing,missing,missing-method}
 \alias{bracket,OPM,ANY,ANY,ANY-method}
 \alias{[,OPM,ANY,ANY,ANY-method}
 \alias{bracket,OPMA,ANY,ANY,ANY-method}
@@ -186,6 +220,21 @@ for (i in seq(vaas_4)) { # OR: for (i in 1:length(vaas_4))
   \S4method{[}{MOPMX,character,missing,ANY}(x, i, j,
     drop) 
   \S4method{[}{MOPMX,character,missing,missing}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,expression,missing,ANY}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,expression,missing,missing}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,formula,missing,ANY}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,formula,missing,missing}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,list,missing,ANY}(x, i, j, drop) 
+  \S4method{[}{MOPMX,list,missing,missing}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,missing,missing,ANY}(x, i, j,
+    drop) 
+  \S4method{[}{MOPMX,missing,missing,missing}(x, i, j,
     drop) 
   \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
     drop = FALSE) 

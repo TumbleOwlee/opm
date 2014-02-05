@@ -81,12 +81,12 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
     drop = FALSE) {
   if (!missing(...))
     stop("incorrect number of dimensions")
-  if (missing(i) || identical(i, TRUE))
+  if (missing(i) || identical(i, TRUE)) {
     y <- x@plates
-  else {
+  } else {
     if (!is.logical(i) && !is.numeric(i))
-      if (inherits(i, "formula") && length(i) > 2L)
-        i <- do.call(sprintf("%%%s%%", all.vars(i[[2L]])), list(x, i))
+      if (inherits(i, "formula"))
+        i <- do.call(formula2infix(i), list(i, x))
       else
         i <- i %q% x
     y <- close_index_gaps(x@plates[i])
@@ -111,11 +111,24 @@ setMethod("[", c(OPMS, "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   x
 }, sealed = SEALED)
 
+setMethod("[", c(MOPMX, "missing", "missing", "missing"), function(x, i, j,
+    drop) {
+  x
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "missing", "missing", "ANY"), function(x, i, j,
+    drop) {
+  if (drop)
+    x@.Data
+  else
+    x
+}, sealed = SEALED)
+
 setMethod("[", c(MOPMX, "character", "missing", "missing"), function(x, i, j,
     drop) {
   x@.Data <- close_index_gaps(x@.Data[match(i, names(x))])
   x
-})
+}, sealed = SEALED)
 
 setMethod("[", c(MOPMX, "character", "missing", "ANY"), function(x, i, j,
     drop) {
@@ -123,19 +136,67 @@ setMethod("[", c(MOPMX, "character", "missing", "ANY"), function(x, i, j,
     return(x@.Data[match(i, names(x))])
   x@.Data <- close_index_gaps(x@.Data[match(i, names(x))]) # keeps the class
   x
-})
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "expression", "missing", "missing"), function(x, i, j,
+    drop) {
+  x[i %q% x]
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "expression", "missing", "ANY"), function(x, i, j,
+    drop) {
+  x[i %q% x, drop = drop]
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "formula", "missing", "missing"), function(x, i, j,
+    drop) {
+  x[do.call(formula2infix(i), list(i, x))]
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "formula", "missing", "ANY"), function(x, i, j,
+    drop) {
+  x[do.call(formula2infix(i), list(i, x)), drop = drop]
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "list", "missing", "missing"), function(x, i, j,
+    drop) {
+  x@.Data <- close_index_gaps(mapply(function(x, i)
+    if (is(x, "OPM"))
+      if (i)
+        x
+      else
+        NULL
+    else
+      x[i], x = x@.Data, i = i, SIMPLIFY = FALSE, USE.NAMES = TRUE))
+  x
+}, sealed = SEALED)
+
+setMethod("[", c(MOPMX, "list", "missing", "ANY"), function(x, i, j, drop) {
+  x@.Data <- mapply(function(x, i)
+    if (is(x, "OPM"))
+      if (i)
+        x
+      else
+        NULL
+    else
+      x[i], x = x@.Data, i = i, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+  if (drop)
+    return(x@.Data)
+  x@.Data <- close_index_gaps(x@.Data)
+  x
+}, sealed = SEALED)
 
 setMethod("[", c(MOPMX, "ANY", "missing", "missing"), function(x, i, j, drop) {
   x@.Data <- close_index_gaps(x@.Data[i])
   x
-})
+}, sealed = SEALED)
 
 setMethod("[", c(MOPMX, "ANY", "missing", "ANY"), function(x, i, j, drop) {
   if (drop) # remove the class, return a list
     return(x@.Data[i])
   x@.Data <- close_index_gaps(x@.Data[i]) # keeps the class
   x
-})
+}, sealed = SEALED)
 
 setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
   if (missing(...))
@@ -145,19 +206,19 @@ setMethod("max", OPM, function(x, ..., na.rm = FALSE) {
 }, sealed = SEALED)
 
 setMethod("max", OPMS, function(x, ..., na.rm = FALSE) {
-  max(vapply(x@plates, FUN = max, 1, ..., na.rm = na.rm),
+  max(vapply(X = x@plates, FUN = max, FUN.VALUE = 1, ..., na.rm = na.rm),
     na.rm = na.rm)
 }, sealed = SEALED)
 
 setGeneric("minmax", function(x, ...) standardGeneric("minmax"))
 
 setMethod("minmax", OPM, function(x, ..., na.rm = FALSE) {
-  min(apply(x@measurements[, -1L, drop = FALSE][, ..., drop = FALSE], 2L,
-    FUN = max, na.rm = na.rm))
+  min(apply(x@measurements[, -1L, drop = FALSE][, ..., drop = FALSE],
+    2L, FUN = max, na.rm = na.rm))
 }, sealed = SEALED)
 
 setMethod("minmax", OPMS, function(x, ..., na.rm = FALSE) {
-  min(vapply(x@plates, FUN = minmax, 1, ..., na.rm = na.rm))
+  min(vapply(X = x@plates, FUN = minmax, FUN.VALUE = 1, ..., na.rm = na.rm))
 }, sealed = SEALED)
 
 setMethod("dim", OPM, function(x) {
@@ -816,6 +877,32 @@ lapply(c(
   ), FUN = function(func_) {
   setMethod(func_, c(WMDS, "ANY"), function(x, table) {
     func_(table, x)
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c(MOPMX, "ANY"), function(x, table) {
+    func_(table, x)
+  }, sealed = SEALED)
+})
+
+lapply(c(
+    #+
+    `%k%`,
+    `%K%`,
+    `%q%`,
+    `%Q%`
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, c("ANY", MOPMX), function(x, table) {
+    lapply(table@.Data, func_, x = x)
   }, sealed = SEALED)
 })
 

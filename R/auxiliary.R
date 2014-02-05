@@ -400,6 +400,13 @@ create_formula <- function(fmt, ..., .env = parent.frame()) {
   formula(do.call(sprintf, unlist(x, FALSE, FALSE)), .env)
 }
 
+formula2infix <- function(f) {
+  if (length(f) > 2L)
+    sprintf("%%%s%%", all.vars(f[[2L]]))
+  else
+    "%q%"
+}
+
 setGeneric("parse_time",
   function(object, format, ...) standardGeneric("parse_time"))
 

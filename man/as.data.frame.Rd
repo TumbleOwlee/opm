@@ -49,7 +49,7 @@
   \code{\link{metadata}}. See there for details.
 
   For \code{as.data.frame}, if empty or \code{FALSE},
-  ignored. If \code{TRUE}, all metadata are including using
+  ignored. If \code{TRUE}, all metadata are included using
   \code{\link{to_metadata}}. If otherwise and non-empty,
   metadata selected using \code{\link{extract_columns}} are
   included.}
