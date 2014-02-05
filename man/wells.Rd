@@ -232,6 +232,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \alias{listing,well_coords_map-method}
 \alias{wells-methods}
 \alias{wells,ANY-method}
+\alias{wells,MOPMX-method}
 \alias{wells,OPM-method}
 \alias{wells,OPMS-method}
 \alias{wells,missing-method}
@@ -249,6 +250,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,
     plate = "PM01", simplify = FALSE) 
+  \S4method{wells}{MOPMX}(object, ...) 
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,

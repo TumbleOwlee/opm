@@ -6,6 +6,10 @@
   special treatmen of logical vectors is already done by extract_columns()
 - fixed bug in 'MOPMX' bracket method (non-confoming objects were not removed
   when using an out-of-range index)
+- fixed bug in 'MOPMX' object creation (empty input yielded an error for
+  group = TRUE)
+- fixed bug in flatten() (column names were converted to syntactical names even
+  when they should not)
 - read_opm() now behaves more consistently in the case of zero-plate or
   single-plate input
 - list method of contains() moved to pkgutils
@@ -15,7 +19,8 @@
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
   opm_dbcheck() for database I/O, and according new classes 'OPM_DB', 'OPMA_DB'
   and 'OPMD_DB'
-- new MOPMX methods: for extract(), heat_map() etc.
+- new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
+  as.data.frame(), find_positions(), substrate_info(), wells() etc.
 - new demos on answering various research questions with the package
 - new demos on database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out

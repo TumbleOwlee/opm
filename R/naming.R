@@ -888,3 +888,15 @@ lapply(c(
   }, sealed = SEALED)
 })
 
+lapply(c(
+    #+
+    find_positions,
+    substrate_info,
+    wells
+    #-
+  ), FUN = function(func_) {
+  setMethod(func_, MOPMX, function(object, ...) {
+    apply(object@.Data, FUN = func_, ...)
+  }, sealed = SEALED)
+})
+

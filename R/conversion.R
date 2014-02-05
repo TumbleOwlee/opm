@@ -12,8 +12,7 @@ setMethod("merge", c(OPM, "numeric"), function(x, y, sort.first = TRUE,
 
 setMethod("merge", c(OPM, OPM), function(x, y, sort.first = TRUE,
     parse = TRUE) {
-  x <- new(OPMS, plates = list(x, y))
-  merge(x = x, y = 0.25, sort.first = sort.first, parse = parse)
+  merge(new(OPMS, plates = list(x, y)), 0.25, sort.first, parse)
 }, sealed = SEALED)
 
 setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
@@ -38,29 +37,34 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
 
 setMethod("merge", c(OPMS, "missing"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
-  merge(x, 0.25, sort.first = sort.first, parse = parse)
+  merge(x, 0.25, sort.first, parse)
+}, sealed = SEALED)
+
+setMethod("merge", c(CMAT, "logical"), function(x, y) {
+  y <- if (L(y))
+      as.factor(rownames(x))
+    else
+      as.factor(seq_len(nrow(x)))
+  merge(x, y)
 }, sealed = SEALED)
 
 setMethod("merge", c(CMAT, "ANY"), function(x, y) {
-  if (is.logical(y))
-    if (L(y))
-      groups <- as.factor(rownames(x))
-    else
-      groups <- as.factor(seq_len(nrow(x)))
-  else
-    groups <- as.factor(y)
-  if (length(groups) != nrow(x)) # this also covers NULL row names
-    stop("length of 'groups' not equal to number of rows")
-  if (any(is.na(groups)))
-    stop("'groups' must not contain NA values")
-  if (length(levels(groups)) == length(groups))
+  merge(x, as.factor(y))
+}, sealed = SEALED)
+
+setMethod("merge", c(CMAT, "factor"), function(x, y) {
+  if (length(y) != nrow(x)) # this also covers NULL row names
+    stop("length of 'y' not equal to number of rows")
+  if (any(is.na(y)))
+    stop("'y' must not contain NA values")
+  if (length(levels(y)) == length(y))
     return(x)
   cn <- colnames(x) # later put back, avoiding correction of duplicate names
-  x <- aggregate(as.data.frame(x, stringsAsFactors = FALSE), by = list(groups),
+  x <- aggregate(as.data.frame(x, stringsAsFactors = FALSE), by = list(y),
     FUN = c, recursive = TRUE, simplify = FALSE)
   x <- as.matrix(x[, -1L, drop = FALSE])
   x[] <- lapply(x, sort.int, na.last = TRUE)
-  rownames(x) <- levels(groups)
+  rownames(x) <- levels(y)
   colnames(x) <- cn
   new(CMAT, x)
 }, sealed = SEALED)
@@ -142,6 +146,10 @@ setMethod("plates", WMD, function(object) {
 
 setMethod("plates", "list", function(object) {
   to_opm_list.list(object, TRUE, TRUE, FALSE)
+}, sealed = SEALED)
+
+setMethod("plates", MOPMX, function(object) {
+  unlist(lapply(object@.Data, plates), FALSE)
 }, sealed = SEALED)
 
 setGeneric("oapply", function(object, fun, ...) standardGeneric("oapply"))
@@ -235,6 +243,14 @@ setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
   x[!duplicated(x = x, incomparables = incomparables, ...)]
 }, sealed = SEALED)
 
+setMethod("unique", c(MOPMX, "missing"), function(x, incomparables, ...) {
+  unique(x = x, incomparables = FALSE, ...)
+}, sealed = SEALED)
+
+setMethod("unique", c(MOPMX, "ANY"), function(x, incomparables, ...) {
+  x[!duplicated(x = x, incomparables = incomparables, ...)]
+}, sealed = SEALED)
+
 setGeneric("rev")
 
 setMethod("rev", OPM, function(x) {
@@ -264,13 +280,30 @@ setMethod("extract", MOPMX, function(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, ...) {
 
-  convert_row_groups <- function(x) {
+  convert_row_groups <- function(x) { # for generated matrices only
     result <- unlist(lapply(x, rownames), FALSE, FALSE)
     result <- sort.int(unique.default(result))
     result <- structure(character(length(result)), names = result)
     for (mat in x) # last one wins, as in collect()
       result[rownames(mat)] <- as.character(attr(mat, "row.groups"))
     as.factor(unname(result))
+  }
+
+  protected <- function(x) x[seq_len(match(RESERVED_NAMES[["parameter"]], x))]
+
+  prepare_dataframe <- function(x, name.cols) {
+    if (length(name.cols))
+      rownames(x) <- make.unique(extract_columns(x, name.cols, direct = TRUE))
+    if (any(dup <- duplicated.default(colnames(x))))
+      x <- x[, !dup, drop = FALSE]
+    for (i in which(vapply(x, is.factor, NA)))
+      x[, i] <- as.character(x[, i])
+    x
+  }
+
+  group_columns <- function(x, other) { # for generated data frames only
+    x <- metadata_key(x)
+    setdiff(c(unlist(x, FALSE, FALSE), names(attr(x, "combine"))), other)
   }
 
   x <- lapply(X = object, FUN = extract, as.labels = as.labels,
@@ -283,7 +316,15 @@ setMethod("extract", MOPMX, function(object, as.labels,
       else
         NULL))
 
-  stop(NOT_YET)
+  pc <- protected(colnames(x[[1L]]))
+  grp.col <- group_columns(as.groups, pc)
+  x <- lapply(x, prepare_dataframe, pc[-length(pc)])
+  x <- collect(x, "datasets", dataframe = TRUE, stringsAsFactors = FALSE)
+  for (i in which(vapply(x, is.character, NA)))
+    x[, i] <- as.factor(x[, i])
+  x <- x[, c(pc, setdiff(colnames(x), c(pc, grp.col)), grp.col), drop = FALSE]
+  rownames(x) <- NULL
+  x
 
 }, sealed = SEALED)
 
@@ -571,14 +612,17 @@ setMethod("as.data.frame", OPM, function(x, row.names = NULL,
     stringsAsFactors = stringsAsFactors)
   colnames(result) <- RESERVED_NAMES[["well"]]
   if (L(csv.data))
-    result <- cbind(as.data.frame(as.list(x@csv_data[CSV_NAMES]), NULL,
-      optional, ..., stringsAsFactors = stringsAsFactors), result)
+    result <- data.frame(as.data.frame(as.list(x@csv_data[CSV_NAMES]), NULL,
+      optional, ..., stringsAsFactors = stringsAsFactors), result,
+      check.names = FALSE, stringsAsFactors = FALSE)
   if (is.logical(include)) {
     if (L(include))
-      result <- cbind(result, to_metadata(x, stringsAsFactors, optional))
+      result <- data.frame(result, to_metadata(x, stringsAsFactors, optional),
+        check.names = FALSE, stringsAsFactors = FALSE)
   } else if (length(include)) {
-    result <- cbind(result, extract_columns(object = x, what = include,
-      factors = stringsAsFactors))
+    result <- data.frame(result, extract_columns(object = x, what = include,
+      factors = stringsAsFactors), check.names = FALSE,
+      stringsAsFactors = FALSE)
   }
   rownames(result) <- row.names
   if (length(sep))
@@ -593,18 +637,21 @@ setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
     stringsAsFactors = stringsAsFactors)
   if (length(sep))
     colnames(result) <- gsub("\\W+", sep, colnames(result), FALSE, TRUE)
-  result <- cbind(callNextMethod(x, row.names, optional, sep, csv.data,
-    settings, include, ..., stringsAsFactors = stringsAsFactors), result)
+  result <- data.frame(callNextMethod(x, row.names, optional, sep, csv.data,
+    settings, include, ..., stringsAsFactors = stringsAsFactors), result,
+    check.names = FALSE, stringsAsFactors = FALSE)
   if (L(settings)) {
     settings <- x@aggr_settings[c(SOFTWARE, VERSION, METHOD)]
     if (length(sep)) {
       names(settings) <- gsub("\\W+", sep, names(settings), FALSE, TRUE)
       names(settings) <- paste("Aggr", names(settings), sep = sep)
-    } else
+    } else {
       names(settings) <- paste("Aggr", names(settings),
         sep = get("comb.key.join", OPM_OPTIONS))
-    result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
-      stringsAsFactors = stringsAsFactors))
+    }
+    result <- data.frame(result, as.data.frame(settings, NULL, optional, ...,
+      stringsAsFactors = stringsAsFactors), check.names = FALSE,
+      stringsAsFactors = FALSE)
   }
   result
 }, sealed = SEALED)
@@ -623,8 +670,9 @@ setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
     } else
       names(settings) <- paste("Disc", names(settings),
         sep = get("comb.key.join", OPM_OPTIONS))
-    result <- cbind(result, as.data.frame(settings, NULL, optional, ...,
-      stringsAsFactors = stringsAsFactors))
+    result <- data.frame(result, as.data.frame(settings, NULL, optional, ...,
+      stringsAsFactors = stringsAsFactors), check.names = FALSE,
+      stringsAsFactors = FALSE)
   }
   result
 }, sealed = SEALED)
@@ -635,6 +683,18 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
   if (!length(row.names))
     row.names <- vector("list", length(x@plates))
   do.call(rbind, mapply(as.data.frame, x = x@plates, row.names = row.names,
+    MoreArgs = list(optional = optional, sep = sep, csv.data = csv.data,
+      settings = settings, include = include, ...,
+      stringsAsFactors = stringsAsFactors),
+    SIMPLIFY = FALSE, USE.NAMES = FALSE))
+}, sealed = SEALED)
+
+setMethod("as.data.frame", MOPMX, function(x, row.names = NULL,
+    optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
+    include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
+  if (!length(row.names))
+    row.names <- vector("list", length(x@.Data))
+  do.call(rbind, mapply(as.data.frame, x = x@.Data, row.names = row.names,
     MoreArgs = list(optional = optional, sep = sep, csv.data = csv.data,
       settings = settings, include = include, ...,
       stringsAsFactors = stringsAsFactors),
@@ -691,7 +751,7 @@ setMethod("as.data.frame", "kegg_compound", function(x, row.names = NULL,
 
 setGeneric("flatten")
 
-setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
+setMethod("flatten", OPM, function(object, include = NULL, fixed = list(),
     factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
     numbers = FALSE, ...) {
 
@@ -717,12 +777,13 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = NULL,
   colnames(result) <- RESERVED_NAMES[colnames(result)]
 
   if (length(fixed)) # Include fixed stuff
-    result <- cbind(as.data.frame(as.list(fixed), stringsAsFactors = factors),
-      result)
+    result <- data.frame(as.list(fixed), result, check.names = FALSE,
+      stringsAsFactors = factors)
 
   if (length(include)) # Pick metadata and include them in the data frame
-    result <- cbind(as.data.frame(metadata(object, include,
-      exact = exact, strict = strict), stringsAsFactors = factors), result)
+    result <- data.frame(metadata(object, include, exact = exact,
+      strict = strict), result, stringsAsFactors = factors,
+      check.names = FALSE)
 
   result
 
@@ -735,6 +796,25 @@ setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
   nums <- lapply(nums, c, fixed, recursive = FALSE)
   do.call(rbind, mapply(flatten, object = object@plates, fixed = nums,
     MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
+}, sealed = SEALED)
+
+setMethod("flatten", MOPMX, function(object, include = NULL, fixed = list(),
+    factors = FALSE, ...) {
+  pt <- vapply(object@.Data, plate_type, "")
+  pt <- lapply(as.list(pt), `names<-`, value = CSV_NAMES[["PLATE_TYPE"]])
+  pt <- lapply(pt, c, fixed, recursive = FALSE)
+  x <- mapply(flatten, object = object@.Data, fixed = pt,
+    MoreArgs = list(include = include, factors = factors, ...),
+    SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  nr <- vapply(x, ncol, 0L)
+  if (any(bad <- nr < max(nr))) {
+    pn <- RESERVED_NAMES[["plate"]]
+    pn <- structure(list(paste(pn, 1L)), names = pn)
+    for (i in seq_along(which(bad)))
+      x[[i]] <- data.frame(x[[i]], pn, stringsAsFactors = factors,
+        check.names = FALSE)
+  }
+  do.call(rbind, x)
 }, sealed = SEALED)
 
 setGeneric("to_yaml", function(object, ...) standardGeneric("to_yaml"))

@@ -168,6 +168,8 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
 \docType{methods}
 \alias{merge-methods}
 \alias{merge,CMAT,ANY-method}
+\alias{merge,CMAT,factor-method}
+\alias{merge,CMAT,logical-method}
 \alias{merge,OPM,OPM-method}
 \alias{merge,OPM,missing-method}
 \alias{merge,OPM,numeric-method}
@@ -183,6 +185,8 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
 \alias{split,OPMX,missing,missing-method}
 \usage{
   \S4method{merge}{CMAT,ANY}(x, y) 
+  \S4method{merge}{CMAT,factor}(x, y) 
+  \S4method{merge}{CMAT,logical}(x, y) 
   \S4method{merge}{OPM,OPM}(x, y, sort.first = TRUE,
     parse = TRUE) 
   \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE,

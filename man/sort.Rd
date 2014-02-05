@@ -178,6 +178,8 @@ stopifnot(is.null(rep(vaas_4, 0)))
 \alias{sort,OPMS,logical-method}
 \alias{sort,OPMX,missing-method}
 \alias{unique-methods}
+\alias{unique,MOPMX,ANY-method}
+\alias{unique,MOPMX,missing-method}
 \alias{unique,OPM,ANY-method}
 \alias{unique,OPMS,ANY-method}
 \alias{unique,OPMS,missing-method}
@@ -193,6 +195,8 @@ stopifnot(is.null(rep(vaas_4, 0)))
     parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) 
   \S4method{sort}{OPMX,missing}(x, decreasing, ...) 
 
+  \S4method{unique}{MOPMX,ANY}(x, incomparables, ...) 
+  \S4method{unique}{MOPMX,missing}(x, incomparables, ...) 
   \S4method{unique}{OPM,ANY}(x, incomparables, ...) 
   \S4method{unique}{OPMS,ANY}(x, incomparables, ...) 
   \S4method{unique}{OPMS,missing}(x, incomparables, ...) 

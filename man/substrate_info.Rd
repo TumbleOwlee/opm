@@ -4,7 +4,8 @@
 \arguments{
   \item{object}{Query character vector, factor or list, S3
   object of class \sQuote{substrate_match},
-  \code{\link{OPM}} or \code{\link{OPMS}} object.}
+  \code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{what}{Character scalar indicating which kind of
   information to output.  \describe{ \item{all}{Create
@@ -74,6 +75,10 @@
   opened. For suitable values of \code{what}, setting
   \code{download} to \code{TRUE} yielded special objects as
   described above.
+
+  The \code{\link{MOPMX}} method yield a list with one
+  element of one of the kinds described above per element
+  of \code{object}.
 }
 \description{
   Return information on substrates such as their
@@ -203,6 +208,7 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{substrate_info-methods}
+\alias{substrate_info,MOPMX-method}
 \alias{substrate_info,OPM-method}
 \alias{substrate_info,OPMS-method}
 \alias{substrate_info,character-method}
@@ -210,6 +216,7 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
 \alias{substrate_info,list-method}
 \alias{substrate_info,substrate_match-method}
 \usage{
+  \S4method{substrate_info}{MOPMX}(object, ...) 
   \S4method{substrate_info}{OPM}(object, ...) 
   \S4method{substrate_info}{OPMS}(object, ...) 
   \S4method{substrate_info}{character}(object,

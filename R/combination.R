@@ -39,7 +39,10 @@ to_opm_list.list <- function(object, precomputed = TRUE, skip = FALSE,
   else
     c(convert_recursively(object), recursive = TRUE)
   if (group)
-    result <- split(result, vapply(result, plate_type, ""))
+    result <- if (is.null(result))
+        list()
+      else
+        result <- split.default(result, vapply(result, plate_type, ""))
   result
 }
 

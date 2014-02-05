@@ -402,6 +402,12 @@ setMethod("edit", WMDX, function(name, ...) {
   map_metadata(name)
 }, sealed = SEALED)
 
+setMethod("edit", MOPMX, function(name, ...) {
+  for (i in seq_along(name))
+    name[[i]] <- edit(name[[i]], ...)
+  name
+}, sealed = SEALED)
+
 setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
 
 setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,

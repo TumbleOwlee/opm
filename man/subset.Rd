@@ -192,6 +192,7 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
 \alias{subset-methods}
 \alias{subset,OPMS-method}
 \alias{thin_out-methods}
+\alias{thin_out,MOPMX-method}
 \alias{thin_out,OPM-method}
 \alias{thin_out,OPMS-method}
 \usage{
@@ -201,6 +202,7 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
     negative = c("ignore", "any", "all"),
     use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T")) 
 
+  \S4method{thin_out}{MOPMX}(object, ...) 
   \S4method{thin_out}{OPM}(object, factor, drop = FALSE) 
   \S4method{thin_out}{OPMS}(object, ...) 
 }

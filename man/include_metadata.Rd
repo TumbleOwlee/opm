@@ -113,6 +113,8 @@
   missing in some elements of \code{name} should not
   present a problem, however. Values that remained
   \code{NA} would be removed before returning the result.
+  The \code{\link{MOPMX}} method works by calling each
+  element in turn (allowing for independent editing).
 }
 \examples{
 ## include_metadata()
@@ -226,6 +228,7 @@ stopifnot(identical(z, y))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{edit-methods}
+\alias{edit,MOPMX-method}
 \alias{edit,WMDX-method}
 \alias{include_metadata-methods}
 \alias{include_metadata,MOPMX-method}
@@ -244,6 +247,7 @@ stopifnot(identical(z, y))
 \alias{map_values-methods}
 \alias{map_values,list,formula-method}
 \usage{
+  \S4method{edit}{MOPMX}(name, ...) 
   \S4method{edit}{WMDX}(name, ...) 
 
   \S4method{include_metadata}{MOPMX}(object, ...) 

@@ -185,5 +185,18 @@ test_that("opms() can be used to put plates together", {
 })
 
 
+## opms
+test_that("opms() is robust with zero input", {
+  for (precomputed in c(TRUE, FALSE))
+    for (skip in c(TRUE, FALSE)) {
+      x <- opms(precomputed = precomputed, skip = skip, group = FALSE)
+      expect_is(x, "NULL")
+      x <- opms(precomputed = precomputed, skip = skip, group = TRUE)
+      expect_is(x, "MOPMX")
+      expect_equal(length(x), 0L)
+    }
+})
+
+
 ################################################################################
 

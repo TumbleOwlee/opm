@@ -206,12 +206,27 @@
 
   Not all \code{\link{MOPMX}} objects are suitable for
   \code{extract}. The call will be successful if only
-  \code{\link{OPMS}} objects are contained but might result
-  in \code{NA} values within the resulting matrix (if
-  \code{dataframe} is \code{FALSE}) unless the set of row
-  names created using \code{as.labels} is equal between the
-  distinct elements of \code{object}.  In the case of
-  duplicates, the last one wins.
+  \code{\link{OPMS}} objects are contained, i.e.
+  \code{\link{OPM}} objects are forbidden. But even if
+  successful it might result in \code{NA} values within the
+  resulting matrix or data frame.  This may cause methods
+  that call \code{extract} to fail. \code{NA} values will
+  not occur if the set of row names created using
+  \code{as.labels} is equal between the distinct elements
+  of \code{object}. The also holds if \code{dataframe} is
+  \code{TRUE}, even though in that case row names are only
+  temporarily created.
+
+  Duplicate combinations of row and columns names currently
+  cause the \code{\link{MOPMX}} methods to skip all of them
+  except the last one. This should mainly effect substrates
+  that occur in plates of distinct plate types. Row names
+  and names of substrate columns will be reordered
+  (sorted).  The created \sQuote{row.groups} attribute, if
+  any, will be adapted accordingly. If \code{dataframe} is
+  \code{TRUE}, the placement of the columns created by
+  \code{as.groups} will also be as usual, but duplicates,
+  if any, will be removed.
 }
 \examples{
 ## 'OPMS' method
