@@ -45,7 +45,6 @@
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets new 'abbrev' and 'log1' arguments
 - duplicated() gets 'exact' and 'strict' arguments
-- duplicated() gets 'exact' and 'strict' arguments
 - html_args() gets 'no.html' and 'embed.css' arguments
 - xy_plot() gets an 'rcr' argument
 - in the OPMS method of `[`(), if the i argument is a suitable query for %q%,
