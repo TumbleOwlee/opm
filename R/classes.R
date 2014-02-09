@@ -262,7 +262,7 @@ setMethod("opmd_problems", "matrix", function(object, disc, param) {
     if (get("strict.OPMD", OPM_OPTIONS))
       errs <- c(errs, text)
     else
-      warning(text)
+      warning(text, call. = FALSE)
   }
   errs
 }, sealed = SEALED)

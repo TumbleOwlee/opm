@@ -247,7 +247,7 @@ setMethod("negative_control", OPMX, function(object, neg.ctrl) {
     result <- vapply(neg.ctrl, function(x)
       tryCatch(minmax(object, neg.ctrl), error = function(e) {
         warning("cannot get negative control from selected position ",
-        "(deleted?); error was: ", conditionMessage(e))
+        "(deleted?); error was: ", conditionMessage(e), call. = FALSE)
         -1
       }), numeric(1L))
     result[result >= 0]

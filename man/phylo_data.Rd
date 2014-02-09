@@ -102,9 +102,6 @@
   \code{\link{OPMS}} metadata entries. See
   \code{\link{extract}}.}
 
-  \item{what}{Character scalar. See \code{\link{extract}}.
-  Deprecated; use \code{subset} instead.}
-
   \item{sep}{Character scalar. See \code{\link{extract}}.}
 
   \item{subset}{Character scalar. For the
@@ -376,7 +373,7 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
   \S4method{phylo_data}{OPMS_Listing}(object,
     html.args = html_args(), run.tidy = FALSE) 
   \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
-    subset = what, sep = " ", what = "numeric", ...) 
+    subset = "numeric", sep = " ", ...) 
   \S4method{phylo_data}{matrix}(object,
     format = opm_opt("phylo.fmt"), outfile = "", enclose = TRUE, indent = 3L,
     paup.block = FALSE, delete = c("none", "uninf", "constant", "ambig"),

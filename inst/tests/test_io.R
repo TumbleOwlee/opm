@@ -431,6 +431,15 @@ test_that("templates can be collected with added columns", {
 })
 
 
+## collect_template
+test_that("templates can be collected from MOPMX objects", {
+  got <- collect_template(MOPMX.1)
+  expect_equal(nrow(got), length(plates(MOPMX.1)))
+  got.2 <- collect_template(MOPMX.1, add.cols = letters[1:2])
+  expect_equal(ncol(got.2), ncol(got) + 2L)
+})
+
+
 ################################################################################
 #
 # Batch conversion functions

@@ -29,12 +29,10 @@ stopifnot(has_aggr(vaas_4), has_disc(vaas_4)) # OPMS methods
   \code{\link{contains}}, \code{\link{csv_data}},
   \code{\link{dim}}, \code{\link{disc_settings}},
   \code{\link{discretized}}, \code{\link{duplicated}},
-  \code{\link{filename}}, \code{\link{hours}},
-  \code{\link{max}}, \code{\link{measurements}},
-  \code{\link{minmax}}, \code{\link{position}},
-  \code{\link{seq}}, \code{\link{setup_time}},
-  \code{\link{subset}}, \code{\link{thin_out}},
-  \code{\link{well}}
+  \code{\link{hours}}, \code{\link{max}},
+  \code{\link{measurements}}, \code{\link{minmax}},
+  \code{\link{seq}}, \code{\link{subset}},
+  \code{\link{thin_out}}, \code{\link{well}}
 }
 \keyword{attribute}
 

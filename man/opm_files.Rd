@@ -4,8 +4,8 @@
 \alias{select_colors}
 \title{Files, parameter names and colour sets used by the package}
 \usage{
-  opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "examples", "doc",
-    "css", "sql", "omnilog", "single", "multiple", "growth"))
+  opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "doc", "css", "sql",
+    "omnilog", "single", "multiple", "growth"))
 
   param_names(what = c("param.names", "disc.name", "reserved.md.names", "split.at"))
     
@@ -25,9 +25,8 @@
   the \pkg{opm} package that neither fitted into these help
   pages nor into the vignette. Can directly be loaded via
   \code{demo}; see \code{demo(package = "opm")}.}
-  \item{examples}{\strong{Deprecated} synonym of
-  \sQuote{demo}.} \item{growth}{Growth-measurement example
-  files.} \item{multiple}{Not directly readable (i.e.,
+  \item{growth}{Growth-measurement example files.}
+  \item{multiple}{Not directly readable (i.e.,
   multiple-plate) test files.} \item{omnilog}{Directly
   readable (i.e., single-plate) test files from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}

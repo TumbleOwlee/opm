@@ -1,6 +1,6 @@
 
 
-2014-01-XX (the 13th release on CRAN)
+2014-02-XX (the 13th release on CRAN)
 
 - fixed bug in extract() that affected logical 'what' arguments; now the
   special treatmen of logical vectors is already done by extract_columns()
@@ -12,8 +12,17 @@
   when they should not)
 - read_opm() now behaves more consistently in the case of zero-plate or
   single-plate input
+- virtual classes are now appropriately exported
+
 - list method of contains() moved to pkgutils
 - all map_names() and map_values() methods moved to pkgutils
+- removed deprecated functions filename(), position() and setup_time()
+- removed deprecated 'what' argument of phylo_data()
+- removed deprecated 'examples' argument of opm_files() 
+- wells() does not allow for partial matching of plate names any more
+- the 'normalize' argument of csv_data() now also triggers the replacement of
+  backslashes with slashes
+
 - new vignette on analysing growth-curve (and user-defined PM) data
 - new register_plate() and opmx() methods for managing user-defined data
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
@@ -21,23 +30,22 @@
   and 'OPMD_DB'
 - new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
   as.data.frame(), find_positions(), substrate_info(), wells(), infix operators,
-  bracket operator
+  bracket operator, duplicated(), anyDuplicated(), sort(), `+`(), contains(),
+  split()
+- new subset() methods for OPM and MOPMX methods
 - new demos on answering various research questions with the package
 - new demos on database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
-- virtual classes are now appropriately exported
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
   class 'well_coords_map', which gets its own listing() method
 - heat_map() gets an 'abbrev' argument
+- duplicated() gets 'exact' and 'strict' arguments
 - html_args() gets 'no.html' and 'embed.css' arguments
 - xy_plot() gets an 'rcr' argument
 - in the OPMS method of `[`(), if the i argument is a suitable query for %q%,
   it is passed through this method; other infix operators can be selected if
   i is a formula
-- the 'normalize' argument of csv_data() now also triggers the replacement of
-  backslashes with slashes
-- wells() does not allow for partial matching of plate names any more
 - many OPMS are now WMDS methods, allowing for more re-use in other packages;
   similarly, more OPM methods are now WMD methods
 

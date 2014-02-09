@@ -40,12 +40,26 @@ setMethod("merge", c(OPMS, "missing"), function(x, y, sort.first = TRUE,
   merge(x, 0.25, sort.first, parse)
 }, sealed = SEALED)
 
+setMethod("merge", c(MOPMX, "missing"), function(x, y) {
+  combine <- function(x) if (length(x) > 1L)
+      new(OPMS, plates = x)
+    else
+      x[[1L]]
+  if (!anyDuplicated.default(pt <- plate_type(x)))
+    return(x)
+  x@.Data <- lapply(split.default(x@.Data, as.factor(pt)), combine)
+  x
+}, sealed = SEALED)
+
+setMethod("merge", c(MOPMX, "ANY"), function(x, y) {
+  merge(x + y)
+}, sealed = SEALED)
+
 setMethod("merge", c(CMAT, "logical"), function(x, y) {
-  y <- if (L(y))
+  merge(x, if (L(y))
       as.factor(rownames(x))
     else
-      as.factor(seq_len(nrow(x)))
-  merge(x, y)
+      as.factor(seq_len(nrow(x))))
 }, sealed = SEALED)
 
 setMethod("merge", c(CMAT, "ANY"), function(x, y) {
@@ -71,11 +85,15 @@ setMethod("merge", c(CMAT, "factor"), function(x, y) {
 
 setGeneric("split")
 
-setMethod("split", c(OPMX, "missing", "missing"), function(x, f, drop) {
+setMethod("split", c(OPM, "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "missing", "logical"), function(x, f, drop) {
+setMethod("split", c(OPMS, "missing", "missing"), function(x, f, drop) {
+  split(x, drop = FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
   extract_concentration <- function(x) {
     m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     conc <- as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
@@ -110,28 +128,72 @@ setMethod("split", c(OPM, "missing", "logical"), function(x, f, drop) {
       w2 = w[[1L]], drop = drop, key = get("series.key", OPM_OPTIONS))))
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "missing", "logical"), function(x, f, drop) {
+setMethod("split", c(OPMS, "missing", "ANY"), function(x, f, drop) {
   x@plates <- lapply(x@plates, split, drop = drop)
   x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
   x
 }, sealed = FALSE)
 
-setMethod("split", c(OPMX, "ANY", "missing"), function(x, f, drop) {
+setMethod("split", c(OPM, "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "factor", "logical"), function(x, f, drop) {
+setMethod("split", c(OPMS, "ANY", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "factor", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPM, "factor", "ANY"), function(x, f, drop) {
   object <- split.default(0L, f, FALSE) # to get the warnings/errors
   object[[1L]] <- x[drop = drop]
   new(MOPMX, object)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "factor", "logical"), function(x, f, drop) {
+setMethod("split", c(OPMS, "factor", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(OPMS, "factor", "ANY"), function(x, f, drop) {
   new(MOPMX, lapply(split.default(x, f, FALSE), `[`, drop = drop))
 }, sealed = SEALED)
 
-setMethod("split", c(OPMX, "ANY", "logical"), function(x, f, drop) {
+setMethod("split", c(OPMX, "ANY", "ANY"), function(x, f, drop) {
   split(x, as.factor(extract_columns(x, f, TRUE, " ", "ignore")), drop)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "factor", "missing"), function(x, f, drop) {
+  split.default(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "factor", "ANY"), function(x, f, drop) {
+  split.default(x, f, drop)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "list", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "list", "ANY"), function(x, f, drop) {
+  if (!all(vapply(f, is.factor, NA)))
+    f <- metadata2factorlist(x, f)
+  x <- mapply(split, x = x, f = f, MoreArgs = list(drop = drop),
+    SIMPLIFY = FALSE)
+  f <- sort.int(unique.default(unlist(lapply(f, levels), FALSE, FALSE)))
+  result <- structure(vector("list", length(f)), names = f)
+  for (level in f)
+    result[[level]] <- lapply(x, `[[`, i = level)
+  lapply(lapply(result, close_index_gaps), as, MOPMX)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "ANY", "missing"), function(x, f, drop) {
+  split(x, f, FALSE)
+}, sealed = SEALED)
+
+setMethod("split", c(MOPMX, "ANY", "ANY"), function(x, f, drop) {
+  split(x, metadata2factorlist(x, f), drop)
 }, sealed = SEALED)
 
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
@@ -170,8 +232,8 @@ setMethod("oapply", OPMS, function(object, fun, ...,
 
 setMethod("oapply", MOPMX, function(object, fun, ...,
     simplify = TRUE) {
-  result <- sapply(X = object@.Data, FUN = fun, ..., simplify = simplify,
-    USE.NAMES = TRUE)
+  result <- sapply(X = object, FUN = fun, ..., simplify = simplify,
+    USE.NAMES = TRUE) # using object@.Data would lose the names
   if (simplify && is.list(result))
     tryCatch(new(class(object), result[!vapply(result, is.null, NA)]),
       error = function(e) result)
@@ -194,15 +256,19 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 
 setGeneric("sort")
 
-setMethod("sort", c(OPMX, "missing"), function(x, decreasing, ...) {
-  sort(x = x, decreasing = FALSE, ...)
-}, sealed = SEALED)
-
-setMethod("sort", c(OPM, "logical"), function(x, decreasing, ...) {
+setMethod("sort", c(OPM, "missing"), function(x, decreasing, ...) {
   x
 }, sealed = SEALED)
 
-setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
+setMethod("sort", c(OPM, "ANY"), function(x, decreasing, ...) {
+  x
+}, sealed = SEALED)
+
+setMethod("sort", c(OPMS, "missing"), function(x, decreasing, ...) {
+  sort(x = x, decreasing = FALSE, ...)
+}, sealed = SEALED)
+
+setMethod("sort", c(OPMS, "ANY"), function(x, decreasing, by = "setup_time",
     parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) {
   if (is.list(by)) {
     keys <- lapply(X = by, FUN = metadata, object = x, exact = exact,
@@ -210,7 +276,7 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
     if (!strict)
       if (!length(keys <- keys[!vapply(keys, is.null, NA)]))
         return(x)
-  } else if (is.character(by)) {
+  } else if (is.character(by))
     case(length(by),
       stop("if a character scalar, 'by' must not be empty"),
       {
@@ -221,7 +287,7 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
       },
       keys <- lapply(X = by, FUN = csv_data, object = x)
     )
-  } else
+  else
     stop("'by' must be a list or a character vector")
   keys <- insert(keys, decreasing = decreasing, na.last = na.last,
     .force = TRUE)
@@ -229,9 +295,34 @@ setMethod("sort", c(OPMS, "logical"), function(x, decreasing, by = "setup_time",
   x
 }, sealed = SEALED)
 
+setMethod("sort", c(MOPMX, "missing"), function(x, decreasing, ...) {
+  sort(x = x, decreasing = FALSE, ...)
+}, sealed = SEALED)
+
+setMethod("sort", c(MOPMX, "ANY"), function(x, decreasing,
+    by = c("plate.type", "length"), exact = TRUE, strict = TRUE,
+    na.last = TRUE, ...) {
+  if (length(x) < 2L)
+    return(x)
+  selection <- tryCatch(match.arg(by), error = function(e) "other")
+  case(selection,
+    length = criterion <- vapply(x, length, 0L),
+    plate.type = criterion <- plate_type(x),
+    other = {
+      m <- metadata(object = x, key = by, exact = exact, strict = strict)
+      criterion <- sapply(m, max, na.rm = TRUE, USE.NAMES = FALSE)
+    }
+  )
+  x[sort.list(x = criterion, decreasing = decreasing, na.last = na.last, ...)]
+}, sealed = SEALED)
+
 setGeneric("unique")
 
 setMethod("unique", c(OPM, "ANY"), function(x, incomparables, ...) {
+  x
+}, sealed = SEALED)
+
+setMethod("unique", c(OPM, "missing"), function(x, incomparables, ...) {
   x
 }, sealed = SEALED)
 

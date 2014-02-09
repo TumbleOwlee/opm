@@ -49,6 +49,59 @@ setMethod("pick_from", "data.frame", function(object, selection) {
   object[matches, , drop = FALSE]
 }, sealed = SEALED)
 
+setGeneric("common_times", function(x) standardGeneric("common_times"))
+
+setMethod("common_times", OPM, function(x) {
+  x
+}, sealed = SEALED)
+
+setMethod("common_times", OPMS, function(x) {
+  tp <- hours(x, what = "all")
+  if (is.matrix(tp))
+    tp <- lapply(seq_len(nrow(tp)), function(i) tp[i, ])
+  if (length(maxs <- unique.default(vapply(tp, max, 1))) < 2L)
+    return(x)
+  min.max <- min(maxs)
+  tp <- lapply(tp, function(x) which(x <= min.max))
+  x[, tp]
+}, sealed = SEALED)
+
+setGeneric("select_by_disc", function(x, ...) standardGeneric("select_by_disc"))
+
+setMethod("select_by_disc", OPMD, function(x, invert.1, invert.2, comb.fun) {
+  y <- discretized(x)
+  if (invert.1)
+    y <- !y
+  y[is.na(y)] <- FALSE
+  if (invert.2)
+    y <- !y
+  x[, y]
+}, sealed = SEALED)
+
+setMethod("select_by_disc", OPMS, function(x, invert.1, invert.2, comb.fun) {
+  y <- discretized(x)
+  if (invert.1)
+    y <- !y
+  y[is.na(y)] <- FALSE
+  y <- apply(y, 2L, comb.fun)
+  if (invert.2)
+    y <- !y
+  x[, , y]
+}, sealed = SEALED)
+
+setGeneric("do_select", function(x, query) standardGeneric("do_select"))
+
+setMethod("do_select", OPM, function(x, query) {
+  if (query)
+    x
+  else
+    NULL
+}, sealed = SEALED)
+
+setMethod("do_select", OPMS, function(x, query) {
+  x[query]
+}, sealed = SEALED)
+
 reduce_to_mode <- function(x, cutoff, use.na) UseMethod("reduce_to_mode")
 
 reduce_to_mode.default <- function(x, cutoff, use.na = TRUE) {
@@ -116,7 +169,7 @@ simplify_conditionally <- function(x) {
 
 close_index_gaps <- function(x) {
   if (any(bad <- vapply(x, is.null, NA))) {
-    warning("closing gaps in indexes")
+    warning("closing gaps in indexes", call. = FALSE)
     return(x[!bad])
   }
   x
@@ -126,6 +179,17 @@ fix_names <- function(x, y) {
   if (any(bad <- !nzchar(x)[i <- seq_along(y)] & nzchar(y)))
     x[i][bad] <- y[bad]
   x
+}
+
+metadata2factorlist <- function(x, f) {
+  replace_null <- function(x) {
+    x[vapply(x, is.null, NA)] <- NA
+    x
+  }
+  f <- metadata(x, f)
+  f[simple] <- lapply(f[simple <- vapply(x, is, NA, OPM)], list)
+  f <- lapply(lapply(f, replace_null), lapply, replace_null)
+  lapply(lapply(f, vapply, paste0, "", collapse = " "), as.factor)
 }
 
 is_uniform <- function(x, na.rm = FALSE) {
@@ -405,6 +469,27 @@ formula2infix <- function(f) {
     sprintf("%%%s%%", all.vars(f[[2L]]))
   else
     "%q%"
+}
+
+reassign_args_using <- function(use) {
+  case(use,
+    i =, I = NULL,
+    k =, K = assign("values", FALSE, parent.frame()),
+    n = assign("negative", "any", parent.frame()),
+    N = assign("negative", "all", parent.frame()),
+    p = assign("positive", "any", parent.frame()),
+    P = assign("positive", "all", parent.frame()),
+    q = {
+      assign("values", TRUE, parent.frame())
+      assign("exact", FALSE, parent.frame())
+    },
+    Q = {
+      assign("values", TRUE, parent.frame())
+      assign("exact", TRUE, parent.frame())
+    },
+    t =, T = assign("time", TRUE, parent.frame())
+  )
+  invisible(NULL)
 }
 
 setGeneric("parse_time",

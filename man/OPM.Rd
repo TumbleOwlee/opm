@@ -14,7 +14,7 @@
 \description{
   Classes whose members can be generated and manipulated by
   an \pkg{opm} user: \acronym{OPM}, \acronym{OPMA},
-  \acronym{OPMD} and \acronym{OPMS}.
+  \acronym{OPMD}, \acronym{OPMS} and \acronym{MOPMX}.
 }
 \details{
   \acronym{OPM} is an acronym for

@@ -149,6 +149,13 @@ test_that("the internally used names are already normalized", {
   expect_equal(names(PLATE_MAP), colnames(WELL_MAP))
 })
 
+## plate_type
+test_that("plate types from MOPMX objects can be queried", {
+  got <- plate_type(MOPMX.1)
+  expect_is(got, "character")
+  expect_equal(length(got), length(MOPMX.1))
+})
+
 
 ################################################################################
 
@@ -181,6 +188,14 @@ test_that("the plate type of OPMS objects can be changed", {
   expect_equal(class(x), class(OPMS.INPUT))
   expect_equal(dim(x), dim(OPMS.INPUT))
   expect_false(plate_type(x) == plate_type(OPMS.INPUT))
+})
+
+## gen_iii
+test_that("the plate type of MOPMX objects can be changed", {
+  got <- gen_iii(MOPMX.1, to <- c("ff", "sf.n2"))
+  expect_equal(plate_type(got), plate_type(to))
+  got <- gen_iii(MOPMX.1)
+  expect_equal(plate_type(got), rep(plate_type("gen.iii"), length(MOPMX.1)))
 })
 
 
@@ -303,6 +318,15 @@ test_that("substrate names can be translated", {
 
 })
 
+## wells
+test_that("information on the wells in a MOPMX object can be received", {
+  w.got <- wells(MOPMX.1)
+  expect_is(w.got, "list")
+  expect_equal(length(w.got), length(MOPMX.1))
+  expect_true(all(vapply(w.got, is.character, NA)))
+})
+
+
 
 ## listing
 ## UNTESTED
@@ -379,6 +403,14 @@ test_that("positions within PM plates can be found", {
 })
 
 
+## find_positions
+test_that("positions within plates in MOPMX objects can be found", {
+  got <- find_positions(MOPMX.1)
+  expect_is(got, "list")
+  expect_equal(length(got), length(MOPMX.1))
+})
+
+
 ################################################################################
 
 
@@ -432,6 +464,15 @@ test_that("URLs can be returned", {
     got[got == "NA"] <- NA_character_
     expect_equal(urls, got)
   }
+})
+
+
+## substrate_info
+test_that("substrate_info() works with MOPMX objects", {
+  got <- substrate_info(MOPMX.1)
+  expect_is(got, "list")
+  expect_equal(length(got), length(MOPMX.1))
+  expect_equal(got[[1]], substrate_info(MOPMX.1[[1]]))
 })
 
 

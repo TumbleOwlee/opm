@@ -11,11 +11,13 @@
   \item{recursive}{Logical scalar. See \code{c} from the
   \pkg{base} package.}
 
-  \item{e1}{\code{\link{OPM}} or \code{\link{OPMS}}
-  object.}
+  \item{e1}{\code{\link{OPMX}} object. If \code{e2} is a
+  \code{\link{MOPMX}} object, anything that can be
+  converted with \code{as} to that class.}
 
-  \item{e2}{\code{\link{OPM}} or \code{\link{OPMS}} object,
-  or list.}
+  \item{e2}{\code{\link{OPMX}} object, or list. If
+  \code{e1} is a \code{\link{MOPMX}} object, anything that
+  can be converted with \code{as} to that class.}
 }
 \value{
   The \code{\link{OPMX}} method of \code{c} creates an
@@ -32,8 +34,8 @@
   combined.
 }
 \description{
-  Combine a \code{\link{OPM}} or \code{\link{OPMS}} object
-  with other objects.
+  Combine a \code{\link{OPMX}} or \code{\link{MOPMX}}
+  object with other objects.
 }
 \examples{
 # Adding nothing
@@ -89,12 +91,22 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{plus-methods}
+\alias{plus,ANY,MOPMX-method}
+\alias{+,ANY,MOPMX-method}
+\alias{plus,MOPMX,ANY-method}
+\alias{+,MOPMX,ANY-method}
+\alias{plus,MOPMX,OPMX-method}
+\alias{+,MOPMX,OPMX-method}
+\alias{plus,OPM,MOPMX-method}
+\alias{+,OPM,MOPMX-method}
 \alias{plus,OPM,OPM-method}
 \alias{+,OPM,OPM-method}
 \alias{plus,OPM,OPMS-method}
 \alias{+,OPM,OPMS-method}
 \alias{plus,OPM,list-method}
 \alias{+,OPM,list-method}
+\alias{plus,OPMS,MOPMX-method}
+\alias{+,OPMS,MOPMX-method}
 \alias{plus,OPMS,OPM-method}
 \alias{+,OPMS,OPM-method}
 \alias{plus,OPMS,OPMS-method}
@@ -105,9 +117,14 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \alias{c,MOPMX-method}
 \alias{c,OPMX-method}
 \usage{
+  \S4method{+}{ANY,MOPMX}(e1, e2) 
+  \S4method{+}{MOPMX,ANY}(e1, e2) 
+  \S4method{+}{MOPMX,OPMX}(e1, e2) 
+  \S4method{+}{OPM,MOPMX}(e1, e2) 
   \S4method{+}{OPM,OPM}(e1, e2) 
   \S4method{+}{OPM,OPMS}(e1, e2) 
   \S4method{+}{OPM,list}(e1, e2) 
+  \S4method{+}{OPMS,MOPMX}(e1, e2) 
   \S4method{+}{OPMS,OPM}(e1, e2) 
   \S4method{+}{OPMS,OPMS}(e1, e2) 
   \S4method{+}{OPMS,list}(e1, e2) 

@@ -1,13 +1,8 @@
 opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
-    "examples", "doc", "css", "sql", "omnilog", "single", "multiple",
-    "growth")) {
+    "doc", "css", "sql", "omnilog", "single", "multiple", "growth")) {
   switch(what <- match.arg(what),
     css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
       TRUE, TRUE, TRUE),
-    examples = {
-      warning("'examples' is deprecated, use 'demo'")
-      pkg_files(opm_string(), "demo")
-    },
     growth = grep("\\.asc(\\.[^.]+)?$",
       pkg_files(opm_string(), "testdata"), TRUE, TRUE, TRUE),
     multiple = grep("Multiple\\.csv(\\.[^.]+)?$",
@@ -162,6 +157,12 @@ setMethod("plate_type", OPM, function(object, ..., normalize = FALSE,
     normalize = normalize, subtype = subtype)
 }, sealed = SEALED)
 
+setMethod("plate_type", MOPMX, function(object, ..., normalize = FALSE,
+    subtype = FALSE) {
+  vapply(X = object@.Data, FUN = plate_type, FUN.VALUE = "", ...,
+    normalize = normalize, subtype = subtype)
+}, sealed = SEALED)
+
 setMethod("plate_type", "character", function(object, full = FALSE,
     in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
     brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,
@@ -255,7 +256,8 @@ setMethod("gen_iii", OPMS, function(object, ...) {
 }, sealed = SEALED)
 
 setMethod("gen_iii", MOPMX, function(object, ...) {
-  object@.Data <- lapply(X = object@.Data, FUN = gen_iii, ...)
+  object@.Data <- mapply(FUN = gen_iii, object = object@.Data, ...,
+    MoreArgs = NULL, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   object
 }, sealed = SEALED)
 
@@ -896,7 +898,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, MOPMX, function(object, ...) {
-    apply(object@.Data, FUN = func_, ...)
+    lapply(object@.Data, FUN = func_, ...)
   }, sealed = SEALED)
 })
 

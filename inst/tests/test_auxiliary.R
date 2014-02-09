@@ -30,6 +30,21 @@ test_that("we can memoize queries", {
 ################################################################################
 
 
+## common_times
+## UNTESTED
+
+
+## select_by_disc
+## UNTESTED
+
+
+## do_select
+## UNTESTED
+
+
+################################################################################
+
+
 ## reduce_to_mode
 ## UNTESTED
 
@@ -43,6 +58,10 @@ test_that("we can memoize queries", {
 
 
 ## fix_names
+## UNTESTED
+
+
+## metadata2factorlist
 ## UNTESTED
 
 
@@ -258,6 +277,10 @@ test_that("some edge cases are correctly handled by metadata_key()", {
   x <- ~ list(list(), list())
   expect_equal(x, metadata_key(x, TRUE))
 })
+
+
+## reassign_args_using
+## UNTESTED
 
 
 ## parse_time

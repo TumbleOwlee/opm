@@ -54,7 +54,11 @@
   EcoPlate\eqn{\textsuperscript{\texttrademark}}{(TM)}, use
   \kbd{eco}; the remaining allowed values are only
   \kbd{sf.n2}, \kbd{sf.p2}, \kbd{an2}, \kbd{ff} and
-  \kbd{yt}, but matching is case-insensitive.}
+  \kbd{yt}, but matching is case-insensitive.
+
+  A character vector of length greater than one can be
+  passed to the \code{\link{MOPMX}} method, which recycles
+  its \code{to} argument.}
 
   \item{...}{Optional arguments passed between the methods.
   For \code{register_plate}, named arguments to be used if
@@ -270,7 +274,8 @@ stopifnot(!"CUSTOM:MYPLATE" \%in\% plate_type(TRUE))
   \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
   \S4method{gen_iii}{OPMS}(object, ...) 
 
-  \S4method{plate_type}{MOPMX}(object, ...) 
+  \S4method{plate_type}{MOPMX}(object, ..., normalize = FALSE,
+    subtype = FALSE) 
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
     subtype = FALSE) 
   \S4method{plate_type}{OPMS}(object, ...) 

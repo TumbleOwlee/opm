@@ -191,6 +191,11 @@ setMethod("+", c(OPM, OPMS), function(e1, e2) {
   e2
 }, sealed = SEALED)
 
+setMethod("+", c(OPM, MOPMX), function(e1, e2) {
+  e2@.Data <- c(list(e1), e2@.Data)
+  e2
+}, sealed = SEALED)
+
 setMethod("+", c(OPM, "list"), function(e1, e2) {
   new(OPMS, plates = c(list(e1), e2))
 }, sealed = SEALED)
@@ -207,8 +212,28 @@ setMethod("+", c(OPMS, OPM), function(e1, e2) {
   e1
 }, sealed = SEALED)
 
+setMethod("+", c(OPMS, MOPMX), function(e1, e2) {
+  e2@.Data <- c(list(e1), e2@.Data)
+  e2
+}, sealed = SEALED)
+
 setMethod("+", c(OPMS, "list"), function(e1, e2) {
   new(OPMS, plates = c(e1@plates, e2)) # unnaming also needed
+}, sealed = SEALED)
+
+setMethod("+", c(MOPMX, OPMX), function(e1, e2) {
+  e1@.Data <- c(e1@.Data, list(e2))
+  e1
+}, sealed = SEALED)
+
+setMethod("+", c(MOPMX, "ANY"), function(e1, e2) {
+  e1@.Data <- c(e1@.Data, as(e2, class(e1))@.Data)
+  e1
+}, sealed = SEALED)
+
+setMethod("+", c("ANY", MOPMX), function(e1, e2) {
+  e2@.Data <- c(as(e1, class(e2))@.Data, e2@.Data)
+  e2
 }, sealed = SEALED)
 
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
