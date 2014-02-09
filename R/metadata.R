@@ -41,7 +41,7 @@ setMethod("metadata<-", c(WMD, "character", "data.frame"), function(object, key,
     stop("need data frame with one row")
   if (any(found <- key %in% colnames(value))) {
     j <- key[found <- which(found)[1L]]
-    key <- key[seq_len(found)]
+    key <- key[seq_len(found)] # keys before the 1st => nested indexing
   } else
     j <- TRUE
   object@metadata[[key]] <- value[1L, j, drop = TRUE]
@@ -90,7 +90,7 @@ setMethod("metadata<-", c(WMD, "numeric", WMDS), function(object, key, value) {
 
 setMethod("metadata<-", c(WMD, "list", "list"), function(object, key, value) {
   if (is.null(names(key)))
-    names(key) <- unlist(key)
+    names(key) <- unlist(key, TRUE, FALSE)
   if (is.null(names(value)))
     names(value) <- names(key)
   for (k in names(key))
@@ -184,7 +184,7 @@ setMethod("metadata<-", c(WMDS, "ANY", "data.frame"), function(object, key,
     value) {
   LL(object, .wanted = nrow(value))
   for (i in seq_along(object@plates))
-    metadata(object@plates[[i]], key) <- value[i, , drop = TRUE]
+    metadata(object@plates[[i]], key) <- value[i, , drop = FALSE]
   object
 }, sealed = SEALED)
 
@@ -432,8 +432,8 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
 }, sealed = SEALED)
 
 setMethod("metadata", WMDS, function(object, ...) {
-    simplify_conditionally(lapply(X = object@plates, FUN = metadata, ...))
-  }, sealed = SEALED)
+  simplify_conditionally(lapply(X = object@plates, FUN = metadata, ...))
+}, sealed = SEALED)
 
 setGeneric("metadata_chars",
   function(object, ...) standardGeneric("metadata_chars"))

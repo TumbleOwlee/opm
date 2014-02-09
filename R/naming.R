@@ -295,14 +295,21 @@ setMethod("register_plate", "list", function(object, ...) {
     structure(c(t(x)), names = c(n))
   }
   prepare_well_map <- function(x) {
-    if (is.data.frame(x)) {
+    if (inherits(x, "well_coords_map")) {
+      case(ncol(x), stop("'well_coords_map' object has zero columns"),
+        x <- x[, 1L], {
+          warning("discarding additional columns in 'well_coords_map' object")
+          x <- x[, 1L]
+        })
+    } else if (is.data.frame(x)) {
       for (i in which(vapply(x, is.factor, NA)))
         x[, i] <- as.character(x[, i])
       x <- convert_rectangular_coords(as.matrix(x))
-    } else if (is.matrix(x))
+    } else if (is.matrix(x)) {
       x <- convert_rectangular_coords(x)
-    else
+    } else {
       names(x) <- clean_coords(names(x))
+    }
     storage.mode(x) <- "character"
     if (dup <- anyDuplicated(names(x)))
       stop("duplicate well coordinate provided: ", names(x)[dup])

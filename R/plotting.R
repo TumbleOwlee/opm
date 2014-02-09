@@ -624,7 +624,7 @@ setMethod("heat_map", "matrix", function(object,
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
+    col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
     abbrev = c("none", "row", "column", "both"),
     ...,
     use.fun = c("gplots", "stats")) {
@@ -721,8 +721,13 @@ setMethod("heat_map", "matrix", function(object,
     else
       storage.mode(object) <- "integer"
 
-  if (is.na(L(asqr)) || asqr)
+  LL(asqr, log1)
+  if (is.na(asqr) || asqr) {
+    if (log1)
+      stop("log and asrq tranformation cannot both be chosen")
     object[] <- do_asqr(object, is.na(asqr))
+  } else if (log1)
+    object[] <- log1p(object)
 
   result <- do.call(heatmap_fun, c(list(x = object), arg.list))
   result$colColMap <- col.side.colors

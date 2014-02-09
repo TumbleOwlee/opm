@@ -85,10 +85,11 @@ stopifnot(
 stopifnot(inherits(y, "try-error")) # does not work because only 1 plate
 
 ## conversions back and forth, OPMS as starting point
-(x <- as(vaas_4, "OPMD_DB"))
+(small <- vaas_4[, , 11:15])
+(x <- as(small, "OPMD_DB"))
 (y <- as(x, "OPMS"))
 stopifnot(sapply(1:length(y), # same values
-  function(i) dim(y[i]) == dim(vaas_4[i])))
+  function(i) dim(y[i]) == dim(small[i])))
 (y <- try(as(x, "OPMD"), silent = TRUE)) # does not work because > 1 plate
 stopifnot(inherits(y, "try-error"))
 (y <- as(x, "list")) # one can always go through a list

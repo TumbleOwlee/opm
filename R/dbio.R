@@ -96,7 +96,7 @@ setGeneric("opm_dbnext",
   function(object, conn, ...) standardGeneric("opm_dbnext"))
 
 setMethod("opm_dbnext", c("OPM", "ANY"), function(object, conn, ...) {
-  opm_dbnext(as(object, paste0(class(object), "_DB")), conn, ...)
+  opm_dbnext(has_disc(object) + has_aggr(object), conn, ...)
 })
 
 setMethod("opm_dbnext", c("OPMS", "ANY"), function(object, conn, ...) {

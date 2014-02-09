@@ -171,7 +171,7 @@ setMethod("$<-", c(MOPMX, "NULL"), function(x, name, value) {
 setMethod("c", OPMX, function(x, ..., recursive = FALSE) {
   if (missing(..1))
     return(x)
-  try_opms.list(list(x, ...))
+  try_opms.list(c(list(x), ..., recursive = recursive))
 }, sealed = SEALED)
 
 setMethod("c", MOPMX, function(x, ..., recursive = FALSE) {

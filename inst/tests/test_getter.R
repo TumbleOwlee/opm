@@ -49,6 +49,7 @@ test_that("the content of the wells can be obtained from MOPMX objects", {
   expect_true(any(vapply(w.got, is.list, NA)))
 })
 
+
 ## hours
 test_that("hours can be explicitely queried", {
   expect_equal(hours(OPM.1), 95.75) # see also the examples
@@ -234,8 +235,28 @@ test_that("plate positions can be explicitely queried", {
 })
 
 
+## csv_data
+test_that("CSV data of MOPMX objects can be accessed", {
+  got <- csv_data(MOPMX.1)
+  expect_is(got, "matrix")
+  expect_equal(nrow(got), length(plates(MOPMX.1)))
+  got.2 <- csv_data(MOPMX.1, normalize = TRUE)
+  expect_equal(dim(got.2), dim(got))
+  expect_false(all(got == got.2))
+  got <- csv_data(MOPMX.1, what = "position")
+  expect_is(got, "character")
+  expect_equal(length(got), length(plates(MOPMX.1)))
+  got.2 <- csv_data(MOPMX.1, what = "position", normalize = TRUE)
+  expect_equal(got, got.2) # positions were already normalised
+})
+
+
+
+################################################################################
+
+
 ## has_aggr
-test_that("aggregated values can be obtained", {
+test_that("information on presense of aggregated values can be obtained", {
   expect_false(has_aggr(OPM.1))
   ha.got <- has_aggr(OPMS.INPUT)
   expect_is(ha.got, "logical")
@@ -244,11 +265,20 @@ test_that("aggregated values can be obtained", {
   expect_true(all(has_aggr(THIN.AGG)))
   expect_false(has_aggr(SMALL))
   expect_true(has_aggr(SMALL.AGG))
+  got <- has_aggr(MOPMX.1)
+  expect_is(got, "list")
+  expect_equal(length(got), length(MOPMX.1))
+  expect_false(any(vapply(got, any, NA)))
 })
 
 
 ## has_disc
-## UNTESTED
+test_that("information on presense of discretised values can be obtained", {
+  got <- has_disc(MOPMX.1)
+  expect_is(got, "list")
+  expect_equal(length(got), length(MOPMX.1))
+  expect_false(any(vapply(got, any, NA)))
+})
 
 
 ################################################################################
@@ -283,6 +313,13 @@ test_that("aggregated data in OPMS objects can be queried", {
   expect_true(all(vapply(ag.got, is.matrix, NA)))
 })
 
+## aggregated
+test_that("aggregated data in MOPMX objects can be queried", {
+  expect_error(aggregated(MOPMX.1))
+  got <- aggregated(new(MOPMX))
+  expect_equal(length(got), 0L)
+})
+
 
 ## aggr_settings
 test_that("aggregation settings can be queried", {
@@ -296,16 +333,31 @@ test_that("aggregation settings can be queried", {
   expect_true(all(vapply(settings, length, integer(1L)) == 4L))
 })
 
+## aggr_settings
+test_that("aggregation settings in MOPMX objects can be queried", {
+  expect_error(aggr_settings(MOPMX.1))
+  got <- aggr_settings(new(MOPMX))
+  expect_equal(length(got), 0L)
+})
+
 
 ################################################################################
 
 
 ## discretized
-## UNTESTED
+test_that("discretised data in MOPMX objects can be queried", {
+  expect_error(discretized(MOPMX.1))
+  got <- discretized(new(MOPMX))
+  expect_equal(length(got), 0L)
+})
 
 
 ## disc_settings
-## UNTESTED
+test_that("discretisation settings in MOPMX objects can be queried", {
+  expect_error(disc_settings(MOPMX.1))
+  got <- disc_settings(new(MOPMX))
+  expect_equal(length(got), 0L)
+})
 
 
 ################################################################################

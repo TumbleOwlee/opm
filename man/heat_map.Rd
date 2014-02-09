@@ -101,7 +101,13 @@
   \item{asqr}{Logical scalar indicating whether the data
   should be treated with the arcsine-square root
   transformation. This usually only makes sense for
-  proportion data. If \code{NA}, percentages are assumed.}
+  proportion data and cannot be used in conjunction with
+  the \code{log1} argument set to \code{TRUE}. If
+  \code{NA}, percentages are assumed.}
+
+  \item{log1}{Logical scalar indicating whether
+  \code{log1p} should be used for transforming the data
+  prior to plotting.}
 
   \item{lmap}{Numeric scalar with at least three elements,
   or empty. If empty, ignored. Otherwise used for mapping
@@ -201,7 +207,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
       borders[length(borders)] * cexRow * max(nchar(rownames(object))))
     else
       c(5, 5),
-    col = opm_opt("heatmap.colors"), asqr = FALSE, lmap = 1L:3L,
+    col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
     abbrev = c("none", "row", "column", "both"),
     ...,
     use.fun = c("gplots", "stats")) 

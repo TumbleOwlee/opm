@@ -198,6 +198,18 @@ test_that("OPMS objects including metadata can be flattened", {
 })
 
 
+## flatten
+test_that("MOPMX objects can be flattened", {
+  got <- flatten(MOPMX.1)
+  expect_true(setequal(got[, CSV_NAMES[["PLATE_TYPE"]]], plate_type(MOPMX.1)))
+  expect_equal(length(unique.default(got[, RESERVED_NAMES[["plate"]]])),
+    max(vapply(MOPMX.1, length, 0L)))
+  got <- interaction(got[,
+    c(RESERVED_NAMES[["plate"]], CSV_NAMES[["PLATE_TYPE"]])], drop = TRUE)
+  expect_equal(length(levels(got)), length(plates(MOPMX.1)))
+})
+
+
 ## flattened_to_factor
 ## UNTESTED
 

@@ -98,6 +98,13 @@ test_that("the OPM/OPMA example data can be converted to a list and back", {
 
 })
 
+## as
+test_that("some conversion are forbidden", {
+  expect_error(as(OPM.1, "OPMA"))
+  expect_error(as(OPM.1, "OPMD"))
+  expect_error(as(THIN.AGG, "OPMD"))
+})
+
 
 ################################################################################
 
