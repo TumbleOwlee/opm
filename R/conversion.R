@@ -1154,8 +1154,11 @@ setMethod("opmx", "data.frame", function(object,
   #
   map_colnames <- function(x, plate.type, position, well) {
     to_positions <- function(x) {
-      x <- paste(as.integer(x), rep(c("A", "B"), each = 100L)[seq_along(x)])
-      clean_plate_positions(x)
+      if (is.factor(x) || is.double(x))
+        x <- as.integer(x)
+      else if (!is.integer(x))
+        x <- as.integer(as.factor(x))
+      clean_plate_positions(paste(x, "A"))
     }
     map <- list()
     map[[CSV_NAMES[["PLATE_TYPE"]]]] <- plate.type
