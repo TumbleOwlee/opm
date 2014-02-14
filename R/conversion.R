@@ -1133,6 +1133,7 @@ setMethod("opmx", "data.frame", function(object,
         result[[i]] <- per_plate_type(cd[idx, , drop = FALSE], tp,
           x[, idx, drop = FALSE], md[idx, , drop = FALSE], full.name)
       }
+      names(result) <- names(indexes)
       result
     }
     x <- x[order(x[, RESERVED_NAMES[["well"]]]), , drop = FALSE]
@@ -1146,8 +1147,7 @@ setMethod("opmx", "data.frame", function(object,
     rownames(x) <- NULL
     tp <- matrix(tp[!is.na(tp)], nrow(x), 1L, FALSE, list(NULL, HOUR))
     result <- traverse_plate_types(cd, tp, x, md, full.name)
-    case(length(result), NULL, result[[1L]],
-      as(structure(result, names = names(indexes)), "MOPMX"))
+    case(length(result), NULL, result[[1L]], as(result, "MOPMX"))
   }
 
   # Only for the 'horizontal' format.
@@ -1168,9 +1168,11 @@ setMethod("opmx", "data.frame", function(object,
       names(x) <- map_values(names(x), map)
     }
     if (length(position)) {
-      map <- list(position)
-      names(map) <- pos <- CSV_NAMES[["POS"]]
-      x <- extract_columns(x, map)
+      if (length(map))
+        position <- map_values(position, map)
+      wanted <- list(position)
+      names(wanted) <- pos <- CSV_NAMES[["POS"]]
+      x <- extract_columns(x, wanted)
       x[, pos] <- to_positions(x[, pos])
     }
     x
