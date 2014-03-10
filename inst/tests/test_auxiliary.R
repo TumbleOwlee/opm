@@ -87,6 +87,14 @@ test_that("uniformity can be checked", {
 })
 
 
+## reassign_duplicates
+test_that("calculation are not done for duplicates again", {
+  x <- c("d", "a", "b", "a", "d")
+  got <- reassign_duplicates(x, function(x) paste0(x, x))
+  expect_equal(got, paste0(x, x))
+})
+
+
 ## is_constant
 test_that("constantness can be checked", {
 
@@ -696,6 +704,10 @@ test_that("character-matrix objects can be updated by deletion", {
 })
 
 
+## remove_concentration
+## UNTESTED
 
 
+## get_partial_match
+## UNTESTED
 

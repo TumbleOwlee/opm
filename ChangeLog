@@ -26,6 +26,8 @@
 - wells() does not allow for partial matching of plate names any more
 - the 'normalize' argument of csv_data() now also triggers the replacement of
   backslashes with slashes
+- the 'paren.sep' argument of wells() and other functions now only allows for
+  one to several whitespace characters or the at sign '@'
 
 - new vignette on analysing growth-curve (and user-defined PM) data
 - new register_plate() and opmx() methods for managing user-defined data
@@ -35,14 +37,16 @@
 - new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
   as.data.frame(), find_positions(), substrate_info(), wells(), infix operators,
   bracket operator, duplicated(), anyDuplicated(), sort(), `+`(), contains(),
-  split()
+  split(), to_metadata()
 - new subset() methods for OPM and MOPMX methods
 - new demos on answering various research questions with the package
 - new demos on database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
 - radial_plot() gets a 'group.col' argument
 - wells() gets 'rm.num' and 'simplify' arguments; returned matrices are now of
-  class 'well_coords_map', which gets its own listing() method
+  class 'well_coords_map', which gets its own listing() method; 'paren.sep'
+  gets a special value '@' that causes the plate name to be appended to the
+  well coordinate
 - heat_map() gets new 'abbrev' and 'log1' arguments
 - duplicated() gets 'exact' and 'strict' arguments
 - html_args() gets 'no.html' and 'embed.css' arguments

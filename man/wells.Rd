@@ -37,7 +37,16 @@
   and removing vowels first.}
 
   \item{paren.sep}{Character scalar. What to insert before
-  the opening parenthesis (or bracket).}
+  the opening parenthesis (or bracket). Currently only zero
+  to many whitespace characters are allowed. The ability to
+  insert a line break is the main purpose of this argument.
+  Using the \sQuote{at sign} as value is the only
+  alternative and also special, as it causes the plate name
+  itself to be appended to the well coordinate (after an
+  \sQuote{at sign}, without parentheses or brackets). So
+  mapping is not actually done in that case but the
+  resulting names are understood by certain other \pkg{opm}
+  methods which can conduct the mapping at a later stage.}
 
   \item{downcase}{Logical scalar indicating whether full
   names should be (carefully) converted to lower case. This

@@ -439,6 +439,8 @@ clean_plate_positions <- function(x) {
 map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     paren.sep = " ", downcase = FALSE, rm.num = FALSE,
     max = opm_opt("max.chars"), ...) {
+  if ((L(paren.sep) == "@"))
+    return(sprintf("%s@%s", wells, plate))
   if (custom_plate_is(plate)) {
     if (custom_plate_exists(plate))
       res <- custom_plate_get(plate)[wells]
@@ -455,7 +457,7 @@ map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
     return(trim_string(str = wells, max = max, ...))
   }
   if (rm.num)
-    res <- sub("\\s*#\\s*\\d+\\s*$", "", res, FALSE, TRUE)
+    res <- remove_concentration(res)
   if (downcase)
     res <- substrate_info(res, "downcase")
   if (in.parens)
@@ -463,6 +465,32 @@ map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
       paren.sep = paren.sep, max = max, ...)
   else
     trim_string(str = res, max = max, ...)
+}
+
+well_to_substrate <- function(x, plate) {
+  get_name <- function(x, plate) wells(x, TRUE, FALSE, plate = plate)[, 1L]
+  if (length(plate)) {
+    if (all(grepl(SUBSTRATE_PATTERN[["any"]], x, FALSE, TRUE)))
+      get_name(substr(x, 1L, 3L), plate)
+    else
+      x # assume plain substrate names without wells as prefix
+  } else if (all(grepl("^[A-Z][0-9]{2}@", x, FALSE, TRUE))) {
+    plate <- as.factor(substr(x, 5L, nchar(x)))
+    pos <- split.default(seq_along(x), plate)
+    x <- split.default(substr(x, 1L, 3L), plate)
+    x <- mapply(get_name, x, names(x), SIMPLIFY = FALSE)
+    result <- character(length(plate))
+    for (i in seq_along(x))
+      result[pos[[i]]] <- x[[i]]
+    result
+  } else {
+    for (p in SUBSTRATE_PATTERN[c("paren", "bracket")]) {
+      m <- regexpr(p, x, FALSE, TRUE)
+      if (all(attr(m, "match.length") > 0L))
+        return(get_partial_match(1L, m, x))
+    }
+    x
+  }
 }
 
 to_sentence <- function(x, ...) UseMethod("to_sentence")
@@ -677,8 +705,8 @@ setGeneric("substrate_info",
 
 setMethod("substrate_info", "character", function(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "concentration", "html", "peptide", "all"), browse = 0L,
-    download = FALSE, ...) {
+      "greek", "concentration", "html", "peptide", "peptide2", "all"),
+    browse = 0L, download = FALSE, ...) {
 
   find_substrate_id <- function(x) {
     result <- WELL_MAP[, , "substrate_id"][match(x, WELL_MAP[, , "name"])]
@@ -734,10 +762,10 @@ setMethod("substrate_info", "character", function(object,
     in.parens <- grepl(SUBSTRATE_PATTERN[["either"]], x, FALSE, TRUE)
     x <- ifelse(in.parens, substr(x, 1L, nchar(x) - 1L), x)
     m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
-    # The following code is currently not in use because the only plate to
-    # which it is applicable (PM09) does not show regularity anyway. Conversion
-    # to integer would also be problematic because contractions such as 5.5 or
-    # 6.5 are present.
+    ## The following code is currently not in use because the only plate to
+    ## which it is applicable (PM09) does not show regularity anyway. Conversion
+    ## to integer would also be problematic because contractions such as 5.5 or
+    ## 6.5 are present.
     #if (all(m < 0L)) {
     #  x <- ifelse(in.parens, substr(x, 6L, nchar(x)), x)
     #  m <- regexpr("^(?:\\d+(?:\\.\\d+)?)(?=%|mM)", x, FALSE, TRUE)
@@ -745,13 +773,29 @@ setMethod("substrate_info", "character", function(object,
     as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
   }
 
-  parse_peptide <- function(x) {
-    parse <- function(x) strsplit(gsub("(?<=\\b[A-Za-z])-", "_", x, FALSE,
-      TRUE), "-", TRUE)
+  parse_peptide <- function(x, remove.L) {
+    recognize_full_names <- function(x) {
+      #x <- map_values(x, c(`4-Hydroxy-L-Proline [trans]` = "L-Hydroxyproline"))
+      m <- regexpr("^(?:[A-Za-z],)*[A-Za-z]-", x, FALSE, TRUE)
+      result <- AMINO_ACIDS[substr(x, m + attr(m, "match.length"), nchar(x))]
+      ok <- !is.na(result)
+      prefix <- m > 0L & ok
+      m <- substr(x, m, m + attr(m, "match.length") - 1L)
+      result[prefix] <- paste0(m[prefix], result[prefix])
+      result <- as.list(result)
+      result[!ok] <- list(character())
+      result
+    }
     result <- structure(vector("list", length(x)), names = x)
-    pat <- sprintf("^%s(-%s)*$", pat <- "([A-Za-z]-)?[A-Z][a-z][a-z]", pat)
-    result[ok] <- parse(x[ok <- grepl(pat, x, FALSE, TRUE)])
-    result[!ok] <- list(character())
+    x <- remove_concentration(x)
+    pat <- "(([A-Za-z],)*[A-Za-z]-)?[A-Z][a-z]{2}"
+    pat <- sprintf("^%s(-%s)*$", pat, pat)
+    ok <- grepl(pat, x, FALSE, TRUE)
+    result[ok] <- strsplit(x[ok], "(?<!\\b\\w)-", FALSE, TRUE)
+    result[!ok] <- recognize_full_names(x[!ok])
+    if (remove.L)
+      result <- lapply(result, sub, pattern = "^L-", replacement = "",
+        ignore.case = FALSE, perl = TRUE)
     result
   }
 
@@ -774,7 +818,8 @@ setMethod("substrate_info", "character", function(object,
     downcase = safe_downcase(object),
     greek = expand_greek_letters(object),
     html = compound_name_to_html(object),
-    peptide = parse_peptide(object)
+    peptide = parse_peptide(object, TRUE),
+    peptide2 = parse_peptide(object, FALSE)
   )
   browse <- must(as.integer(L(browse)))
   if (browse != 0L) {

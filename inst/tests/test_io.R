@@ -320,6 +320,15 @@ test_that("to_metadata converts OPMS objects in the right way", {
     c("list", "integer", "character")))
 })
 
+## to_metadata
+test_that("to_metadata converts MOPMX objects in the right way", {
+  metadata(MOPMX.1[[1]]) <- list(run = 17)
+  got <- to_metadata(MOPMX.1)
+  expect_is(got, "data.frame")
+  expect_equal(nrow(got), sum(vapply(MOPMX.1, length, 0L)))
+  expect_equal(ncol(got), 2L)
+})
+
 
 ################################################################################
 #

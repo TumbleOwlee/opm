@@ -244,6 +244,7 @@ stopifnot(identical(copy, vaas_4))
 \alias{collect_template,character-method}
 \alias{to_metadata-methods}
 \alias{to_metadata,ANY-method}
+\alias{to_metadata,MOPMX-method}
 \alias{to_metadata,WMD-method}
 \alias{to_metadata,WMDS-method}
 \alias{to_metadata,character-method}
@@ -266,6 +267,8 @@ stopifnot(identical(copy, vaas_4))
     instrument = NULL, include = list(), ..., demo = FALSE) 
 
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
+  \S4method{to_metadata}{MOPMX}(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
   \S4method{to_metadata}{WMD}(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) 

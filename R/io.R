@@ -511,6 +511,21 @@ setMethod("to_metadata", WMDS, function(object, stringsAsFactors = FALSE,
   x
 }, sealed = SEALED)
 
+setMethod("to_metadata", MOPMX, function(object, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
+  make_rownames <- function(x, n) {
+    rownames(x) <- paste(n, rownames(x), sep = ".")
+    x
+  }
+  x <- lapply(X = object, FUN = to_metadata, stringsAsFactors = FALSE,
+    optional = TRUE, sep = "\t", strip.white = FALSE, ...)
+  if (is.null(names(x)))
+    names(x) <- seq_along(x)
+  x <- mapply(make_rownames, x, names(x), SIMPLIFY = FALSE)
+  collect(x = x, what = "datasets", optional = optional, dataframe = TRUE,
+    stringsAsFactors = stringsAsFactors, keep.unnamed = NA, ...)
+}, sealed = SEALED)
+
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
     gen.iii = opm_opt("gen.iii"), device = "mypdf", dev.args = NULL,

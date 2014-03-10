@@ -274,6 +274,16 @@ test_that("well indices given as formula can be mapped", {
 ## UNTESTED
 
 
+## well_to_substrate
+test_that("full substrate names can be back-translated using '@' annotation", {
+  x <- c("A01@PM03", "B12@PM-M08", "A02@PM03", "C07@SF-N2")
+  got <- well_to_substrate(x, NULL)
+  expect_is(got, "character")
+  expect_equal(length(got), length(x))
+  expect_true(all(got != x))
+})
+
+
 ## to_sentence
 ## UNTESTED
 
@@ -296,26 +306,22 @@ test_that("information on the contained wells can be received", {
 test_that("substrate names can be translated", {
 
   plate.1 <- "PM01"
-  exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
-  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE, rm.num = TRUE)
-
   plates.2 <- c(plate.1, "PM02")
+  exp.1 <- c(A01 = "Negative Control", A02 = "L-Arabinose")
   exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
   exp.2 <- cbind(exp.1, exp.2)
   colnames(exp.2) <- plates.2
   class(exp.2) <- "well_coords_map"
+
+  got <- wells(c("A01", "A02"), plate = plate.1, full = TRUE, rm.num = TRUE)
+
   got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE, rm.num = TRUE)
   expect_equal(got, exp.2)
 
-  # Partial matching is allowed
-  plates.2 <- c(plate.1, "PM02")
-  exp.2 <- c(A01 = "Negative Control", A02 = "Chondroitin Sulfate C")
-  exp.2 <- cbind(exp.1, exp.2)
-  colnames(exp.2) <- c(plates.2[1L], "PM02")
-  class(exp.2) <- "well_coords_map"
-  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE, rm.num = TRUE)
-  expect_equal(got, exp.2)
-
+  got <- wells(c("A01", "A02"), plate = plates.2, full = TRUE, rm.num = TRUE,
+    paren.sep = "@")
+  wanted <- paste(rownames(got), rep(colnames(got), each = 2), sep = "@")
+  expect_true(all(wanted == got))
 })
 
 ## wells
@@ -474,6 +480,24 @@ test_that("substrate_info() works with MOPMX objects", {
   expect_equal(length(got), length(MOPMX.1))
   expect_equal(got[[1]], substrate_info(MOPMX.1[[1]]))
 })
+
+
+## substrate_info
+test_that("substrate_info() can extract amino acids from peptides", {
+  x <- c("Ser-D-Val", "D-Fructose", "D-Serine #2", "Cyanide", "L-Arginine",
+    "Glycine")
+  got <- substrate_info(x, "peptide")
+  expect_is(got, "list")
+  expect_equal(names(got), x)
+  n <- vapply(got, length, 0L)
+  expect_equivalent(n, c(2L, 0L, 1L, 0L, 1L, 1L))
+  x <- "D,L-Diamino-Pimelic Acid"
+  got <- substrate_info(x, "peptide")
+  expect_is(got, "list")
+  expect_equal(names(got), x)
+  expect_equal(got[[1L]], "D,L-Dpm")
+})
+
 
 
 ################################################################################

@@ -219,6 +219,28 @@ test_that("Pairs-like tests are converted by annotated() to binary data", {
 })
 
 
+## annotated
+test_that("annotated() yields amino-acid vectors, matrices and data frames", {
+  x <- annotated(EXPL.OPMS, "peptide")
+  expect_is(x, "numeric")
+  got <- names(x)
+  expect_true(any(is.na(got)))
+  expect_false(all(is.na(got)))
+  x <- annotated(EXPL.OPMS, "peptide", how = "values")
+  expect_is(x, "matrix")
+  expect_is(comment(x), "character")
+  x <- x[, -1L, drop = FALSE]
+  expect_true(all(x %in% c(0, 1)))
+  expect_false(all(x == 1))
+  expect_true(all(colSums(x) > 0L))
+  x <- annotated(EXPL.OPMS, "peptide", how = "data.frame")
+  expect_is(x, "data.frame")
+  expect_is(comment(x), "character")
+  klasses <- vapply(x, class, "")
+  expect_true(setequal(klasses, c("numeric", "factor")))
+})
+
+
 ## opm_mcp
 test_that("opm_mcp generates contrast matrices", {
   got <- opm_mcp(EXPL.DF[, 1:7], model = list("run", "Well"),
@@ -425,11 +447,6 @@ test_that("'Pairs' contrast type can be combined with non-syntactic names", {
 ## UNTESTED
 
 
-################################################################################
-
-
-## annotated
-## UNTESTED
 
 
 

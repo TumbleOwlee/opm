@@ -85,6 +85,21 @@ setClass(MOPMX,
   }, sealed = SEALED
 )
 
+setClass(OPM_MCP,
+  contains = "data.frame",
+  validity = function(object) {
+    errs <- NULL
+    for (name in RESERVED_NAMES[c("well", "value")])
+      if (!name %in% colnames(object))
+        errs <- c(errs, sprintf("missing column named '%s'", name))
+    if (length(errs))
+      errs
+    else
+      TRUE
+  },
+  sealed = SEALED
+)
+
 NULL
 
 setClassUnion(OPMX, c(OPM, OPMS))

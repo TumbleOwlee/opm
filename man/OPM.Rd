@@ -10,6 +10,8 @@
 \alias{OPMD-class}
 \alias{OPMS}
 \alias{OPMS-class}
+\alias{OPM_MCP}
+\alias{OPM_MCP-class}
 \title{Real classes of the \pkg{opm} package}
 \description{
   Classes whose members can be generated and manipulated by
@@ -121,6 +123,10 @@
   lists. \acronym{MOPMX} objects can be created with
   \code{new} or \code{as} and then further manipulated; see
   the examples below.
+
+  \acronym{OPM_MCP} is a data-frame based class useful as
+  intermediate result of \code{\link{opm_mcp}}. See there
+  and its \code{\link{annotated}} method for usages.
 }
 \examples{
 ## overview on the classes

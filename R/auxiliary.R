@@ -32,7 +32,8 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
   result <- vector("list", length(x))
   ok <- !is.na(x) & nzchar(x)
   result[!ok] <- rep.int(list(default), sum(!ok))
-  result[ok] <- do_get(x[ok], MEMOIZED, prefix, default, getfun, single, ...)
+  result[ok] <- reassign_duplicates(x[ok], do_get, MEMOIZED, prefix,
+    default, getfun, single, ...)
   names(result) <- x
   result
 }
@@ -198,6 +199,12 @@ is_uniform <- function(x, na.rm = FALSE) {
   if (length(x) < 2L || all((dup <- duplicated(x))[-1L]))
     return(TRUE)
   x[!dup]
+}
+
+reassign_duplicates <- function(x, FUN, ...) {
+  if (!any(dup <- duplicated.default(x)))
+    return(FUN(x, ...))
+  FUN(x[!dup], ...)[match(x, x)]
 }
 
 setGeneric("is_constant", function(x, ...) standardGeneric("is_constant"))
@@ -689,6 +696,8 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
 add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
     clean = TRUE, brackets = FALSE, word.wise = FALSE, paren.sep = " ") {
   max <- max - nchar(str.1) - 3L
+  if (!grepl("^\\s*$", paren.sep))
+    stop("'paren.sep' must only contain whitespace characters")
   str.2 <- trim_string(str.2, max, append = append, clean = clean,
     word.wise = word.wise)
   if (brackets) {
@@ -700,7 +709,16 @@ add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
     str.2 <- chartr("()", "[]", str.2)
     remove <- " \\(\\)$"
   }
-  sub(remove, "", sprintf(template, str.1, paren.sep, str.2))
+  sub(remove, "", sprintf(template, str.1, paren.sep, str.2), FALSE, TRUE)
+}
+
+remove_concentration <- function(x) {
+  sub("\\s*#\\s*\\d+\\s*$", "", x, FALSE, TRUE)
+}
+
+get_partial_match <- function(i, m, string) {
+  start <- attr(m, "capture.start")[, i]
+  substr(string, start, start + attr(m, "capture.length")[, i] - 1L)
 }
 
 list2html <- function(x, level = 1L, fmt = opm_opt("html.class"), fac = 2L) {

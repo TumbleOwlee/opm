@@ -49,6 +49,9 @@ expect_length <- function(actual, expected) {
 ## MOPMX
 ## UNTESTED
 
+## OPM_MCP
+## UNTESTED
+
 ## YAML_VIA_LIST
 ## UNTESTED
 
@@ -220,7 +223,7 @@ test_that("phylogeny formats are defined", {
 test_that("SUBSTRATE_PATTERN matches what it should match", {
   m <- function(s, p) grepl(p, s, FALSE, TRUE)
   e <- function(x) as.logical(unlist(strsplit(x, "", TRUE), FALSE, FALSE))
-  x <- c("B07 (Substrate(s))", "A02@[My [other] substrate]", "F11", "foo")
+  x <- c("B07\t\n(Substrate(s))", "A02 \r[My [other] substrate]", "F11", "foo")
   got <- m(x, SUBSTRATE_PATTERN["paren"])
   expect_equal(got, e("TFFF"))
   got <- m(x, SUBSTRATE_PATTERN["bracket"])
@@ -231,6 +234,16 @@ test_that("SUBSTRATE_PATTERN matches what it should match", {
   expect_equal(got, e("TTTF"))
   got <- m(x, SUBSTRATE_PATTERN["plain"])
   expect_equal(got, e("FFTF"))
+})
+
+
+## AMINO_ACIDS
+test_that("amino-acid spelling is consistent", {
+  aa <- names(AMINO_ACIDS)[1:20] # proteinogenic ones must come first
+  gly <- "Glycine"
+  expect_true(gly %in% aa)
+  expect_true(gly %in% WELL_MAP)
+  expect_true(all(paste0("L-", setdiff(aa, gly)) %in% WELL_MAP))
 })
 
 
