@@ -89,7 +89,7 @@ test_that("uniformity can be checked", {
 
 ## reassign_duplicates
 test_that("calculation are not done for duplicates again", {
-  x <- c("d", "a", "b", "a", "d")
+  x <- c("d", "a", "a", "b", "b", "a", "d")
   got <- reassign_duplicates(x, function(x) paste0(x, x))
   expect_equal(got, paste0(x, x))
 })

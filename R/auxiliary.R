@@ -32,8 +32,9 @@ get_and_remember <- function(x, prefix, default, getfun, single = FALSE, ...) {
   result <- vector("list", length(x))
   ok <- !is.na(x) & nzchar(x)
   result[!ok] <- rep.int(list(default), sum(!ok))
-  result[ok] <- reassign_duplicates(x[ok], do_get, MEMOIZED, prefix,
-    default, getfun, single, ...)
+  result[ok] <- do_get(x[ok], MEMOIZED, prefix, default, getfun, single, ...)
+  #result[ok] <- reassign_duplicates(x[ok], do_get, MEMOIZED, prefix,
+  #  default, getfun, single, ...)
   names(result) <- x
   result
 }
@@ -202,9 +203,10 @@ is_uniform <- function(x, na.rm = FALSE) {
 }
 
 reassign_duplicates <- function(x, FUN, ...) {
+  # this requires non-NA values (and non-empty values in the case of strings)
   if (!any(dup <- duplicated.default(x)))
     return(FUN(x, ...))
-  FUN(x[!dup], ...)[match(x, x)]
+  FUN(x[!dup], ...)[match(x, x[!dup])]
 }
 
 setGeneric("is_constant", function(x, ...) standardGeneric("is_constant"))

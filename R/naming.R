@@ -775,8 +775,7 @@ setMethod("substrate_info", "character", function(object,
 
   parse_peptide <- function(x, remove.L) {
     recognize_full_names <- function(x) {
-      #x <- map_values(x, c(`4-Hydroxy-L-Proline [trans]` = "L-Hydroxyproline"))
-      m <- regexpr("^(?:[A-Za-z],)*[A-Za-z]-", x, FALSE, TRUE)
+      m <- regexpr("^(?:[A-Za-z][,-])*[A-Za-z]-", x, FALSE, TRUE)
       result <- AMINO_ACIDS[substr(x, m + attr(m, "match.length"), nchar(x))]
       ok <- !is.na(result)
       prefix <- m > 0L & ok
@@ -788,7 +787,7 @@ setMethod("substrate_info", "character", function(object,
     }
     result <- structure(vector("list", length(x)), names = x)
     x <- remove_concentration(x)
-    pat <- "(([A-Za-z],)*[A-Za-z]-)?[A-Z][a-z]{2}"
+    pat <- "(([A-Za-z][,-])*[A-Za-z]-)?[A-Z][a-z]{2}"
     pat <- sprintf("^%s(-%s)*$", pat, pat)
     ok <- grepl(pat, x, FALSE, TRUE)
     result[ok] <- strsplit(x[ok], "(?<!\\b\\w)-", FALSE, TRUE)
@@ -881,9 +880,9 @@ web_query <- function(ids, what = c("kegg", "drug")) {
 NULL
 
 collect.kegg_compounds <- function(x,
-    what = c("pathway", "brite", "activity", "exact_mass"), min.cov = 2L,
+    what = c("pathway", "brite", "activity", "exact_mass"),
     missing.na = TRUE, ...) {
-  partial_matrix <- function(name, x, min.cov) {
+  partial_matrix <- function(name, x) {
     convert <- list(
       ACTIVITY = function(x) {
         # notes in brackets make entries more specific; we use both variants
@@ -908,10 +907,10 @@ collect.kegg_compounds <- function(x,
     if (name == "EXACT_MASS")
       matrix(unlist(result), ncol = 1L, dimnames = list(NULL, tolower(name)))
     else
-      pkgutils::collect(result, "occurrences", min.cov)
+      pkgutils::collect(result, "occurrences")
   }
   what <- toupper(match.arg(what, several.ok = TRUE))
-  result <- do.call(cbind, lapply(what, partial_matrix, x, min.cov))
+  result <- do.call(cbind, lapply(what, partial_matrix, x))
   if (L(missing.na))
     result[!vapply(x, length, 0L), ] <- as(NA, typeof(result))
   result
