@@ -101,7 +101,9 @@
   of the same plate in \acronym{PM} mode. Results obtained
   with \emph{Geodermatophilus} strains and Generation-III
   plates indicate that this works well in practice. See the
-  references.
+  references, and see the documentation of the
+  \code{montero_et_al} data set in the \pkg{opmdata}
+  package.
 
   See the arguments \code{time.fmt} and \code{time.zone} of
   \code{\link{opm_opt}} for modifying the parsing of
@@ -155,6 +157,9 @@ stopifnot(is(x, "OPM"), dim(x) == c(2 * hours(vaas_1, "size"), 96))
 summary(x <- merge(vaas_4)) # biologically unreasonable for these data!
 stopifnot(is(x, "OPM"), dim(x) == c(sum(hours(vaas_4, "size")), 96))
 
+# See opmdata::montero_et_al for an object to which this can be sensibly
+# applied. An according example is given in the montero_et_al documentation.
+
 ## split: OPM methods
 (x <- split(vaas_1))
 metadata(x, opm_opt("series.key"))
@@ -195,6 +200,8 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
   449--456.
 }
 \seealso{
+  opmdata::montero_et_al
+
   Other conversion-functions: \code{\link{as.data.frame}},
   \code{\link{extract}}, \code{\link{extract_columns}},
   \code{\link{flatten}}, \code{\link{oapply}},

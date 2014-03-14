@@ -310,6 +310,11 @@ strip_whitespace <- function(x) {
 
 vector2row <- function(x) matrix(x, 1L, length(x), FALSE, list(NULL, names(x)))
 
+sortable_indexes <- function(x) {
+  n <- seq_along(x)
+  sprintf(sprintf("%%0%ii", ceiling(log(n[length(n)], 10))), n)
+}
+
 metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
 
 metadata_key.default <- function(x, to.formula = FALSE, remove = NULL, ...) {
