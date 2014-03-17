@@ -162,10 +162,7 @@ test_that("rows can be picked", {
 ## vector2row
 ## UNTESTED
 
-## sortable_indexes
-## UNTESTED
-
-## collect_columns
+## collect_rows
 ## UNTESTED
 
 

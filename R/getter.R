@@ -287,11 +287,7 @@ setMethod("csv_data", "OPMS", function(object, ...) {
   x <- lapply(X = object@plates, FUN = csv_data, ...)
   if (all(vapply(x, length, 0L) == 1L))
     return(unlist(x, FALSE, TRUE))
-  x <- lapply(x, vector2row)
-  idx <- sortable_indexes(x)
-  for (i in seq_along(idx)) # next step necessary to keep order and all rows
-    rownames(x[[i]]) <- idx[i] # TODO: this should go into collect()
-  collect(x, "datasets", 1L, TRUE)
+  collect_rows(lapply(x, vector2row))
 }, sealed = SEALED)
 
 setMethod("csv_data", "MOPMX", function(object, ...) {
@@ -299,12 +295,7 @@ setMethod("csv_data", "MOPMX", function(object, ...) {
   if (all(is.vec <- !vapply(x, is.matrix, 0L)))
     return(unlist(x, FALSE, TRUE))
   x[is.vec] <- lapply(x[is.vec], vector2row)
-  #idx <- sortable_indexes(x)
-  #for (i in seq_along(x)) # next step necessary to keep order and all rows
-  #  rownames(x[[i]]) <- paste(idx[i], sortable_indexes(x[[i]][, 1L]),
-  #    sep = ".")
-  #collect(x, "datasets", 1L, TRUE) # TODO: the above should go into collect()
-  collect_columns(x)
+  collect_rows(x)
 }, sealed = SEALED)
 
 setGeneric("has_aggr", function(object, ...) standardGeneric("has_aggr"))

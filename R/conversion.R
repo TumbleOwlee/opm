@@ -402,18 +402,20 @@ setMethod("extract", MOPMX, function(object, as.labels,
     as.groups = as.groups, ...)
 
   if (!dataframe)
-    return(structure(collect(x, "datasets"), row.groups = if (length(as.groups))
+    return(structure(collect_rows(x), row.groups = if (length(as.groups))
         convert_row_groups(x)
       else
         NULL))
 
-  pc <- protected(colnames(x[[1L]]))
-  grp.col <- group_columns(as.groups, pc)
-  x <- lapply(x, prepare_dataframe, pc[-length(pc)])
-  x <- collect(x, "datasets", dataframe = TRUE, stringsAsFactors = FALSE)
+  #pc <- protected(colnames(x[[1L]]))
+  #grp.col <- group_columns(as.groups, pc)
+  #x <- lapply(x, prepare_dataframe, pc[-length(pc)])
+  #x <- collect(x, "datasets", dataframe = TRUE, stringsAsFactors = FALSE)
+  #x <- lapply(x, as.data.frame,
+  x <- collect_rows(x)
   for (i in which(vapply(x, is.character, NA)))
     x[, i] <- as.factor(x[, i])
-  x <- x[, c(pc, setdiff(colnames(x), c(pc, grp.col)), grp.col), drop = FALSE]
+  #x <- x[, c(pc, setdiff(colnames(x), c(pc, grp.col)), grp.col), drop = FALSE]
   rownames(x) <- NULL
   x
 

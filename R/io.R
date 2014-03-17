@@ -513,19 +513,8 @@ setMethod("to_metadata", WMDS, function(object, stringsAsFactors = FALSE,
 
 setMethod("to_metadata", MOPMX, function(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
-  #make_rownames <- function(x, n) {
-  #  if (ncol(x))
-  #    rownames(x) <- paste(n, sortable_indexes(x[, 1L]), sep = ".")
-  #  x
-  #}
-  #x <- lapply(X = object, FUN = to_metadata, stringsAsFactors = FALSE,
-  #  optional = TRUE, sep = "\t", strip.white = FALSE, ...)
-  #x <- mapply(make_rownames, x, sortable_indexes(x), SIMPLIFY = FALSE)
-  #collect(x = x, what = "datasets", optional = optional, dataframe = TRUE,
-  #  stringsAsFactors = stringsAsFactors, keep.unnamed = NA, ...)
-  x <- lapply(X = object, FUN = to_metadata, optional = optional, sep = "\t",
-    stringsAsFactors = stringsAsFactors, strip.white = FALSE, ...)
-  collect_columns(x)
+  collect_rows(lapply(X = object, FUN = to_metadata, optional = optional,
+    sep = "\t", stringsAsFactors = stringsAsFactors, strip.white = FALSE, ...))
 }, sealed = SEALED)
 
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,

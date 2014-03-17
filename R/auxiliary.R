@@ -310,17 +310,12 @@ strip_whitespace <- function(x) {
 
 vector2row <- function(x) matrix(x, 1L, length(x), FALSE, list(NULL, names(x)))
 
-sortable_indexes <- function(x) {
-  n <- seq_along(x)
-  sprintf(sprintf("%%0%ii", ceiling(log(n[length(n)], 10))), n)
-}
-
-collect_columns <- function(x) {
+collect_rows <- function(x) {
   add_cols <- function(x, cols) {
-    if (nrow(x))
-      for (col in setdiff(cols, colnames(x)))
-        x[, col] <- NA
-    x
+    if (length(cols <- setdiff(cols, colnames(x))))
+      cbind(x, matrix(NA, nrow(x), length(cols), FALSE, list(NULL, cols)))
+    else
+      x
   }
   cn <- unique.default(unlist(lapply(x, colnames), FALSE, FALSE))
   do.call(rbind, lapply(x, add_cols, cn))
