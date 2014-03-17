@@ -482,7 +482,7 @@ setMethod("phylo_data", "data.frame", function(object, as.labels = NULL,
   phylo_data(object, ...)
 }, sealed = SEALED)
 
-setMethod("phylo_data", OPMS, function(object, as.labels,
+setMethod("phylo_data", XOPMX, function(object, as.labels,
     subset = param_names("disc.name"), sep = " ", extract.args = list(),
     join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,

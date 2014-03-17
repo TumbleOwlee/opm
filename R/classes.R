@@ -106,6 +106,10 @@ setClassUnion(OPMX, c(OPM, OPMS))
 
 NULL
 
+setClassUnion(XOPMX, c(MOPMX, OPMS))
+
+NULL
+
 setOldClass("print_easy")
 
 setClassUnion(YAML_VIA_LIST, c(OPM, OPMS, "print_easy"))

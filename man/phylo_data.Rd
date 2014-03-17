@@ -3,14 +3,15 @@
 \title{Export phylogenetic data}
 \arguments{
   \item{object}{Data frame, numeric matrix or
-  \code{\link{OPMS}} object (with aggregated values).
-  Currently only \sQuote{integer}, \sQuote{logical},
-  \sQuote{double} and \sQuote{character} matrix content is
-  supported. The data-frame and \code{\link{OPMS}} methods
-  first call \code{\link{extract}} and then the matrix
-  method. The methods for \code{OPMD_Listing} and
-  \code{OPMS_Listing} objects can be applied to the results
-  of \code{\link{listing}}.}
+  \code{\link{OPMS}} or \code{\link{MOPMX}} object (with
+  aggregated values). Currently only \sQuote{integer},
+  \sQuote{logical}, \sQuote{double} and \sQuote{character}
+  matrix content is supported. The data-frame and
+  \code{\link{OPMS}} methods first call
+  \code{\link{extract}} and then the matrix method. The
+  methods for \code{OPMD_Listing} and \code{OPMS_Listing}
+  objects can be applied to the results of
+  \code{\link{listing}}.}
 
   \item{format}{Character scalar determining the output
   format, either \kbd{epf} (Extended \acronym{PHYLIP}
@@ -360,18 +361,18 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
 \docType{methods}
 \alias{phylo_data-methods}
 \alias{phylo_data,OPMD_Listing-method}
-\alias{phylo_data,OPMS-method}
 \alias{phylo_data,OPMS_Listing-method}
+\alias{phylo_data,XOPMX-method}
 \alias{phylo_data,data.frame-method}
 \alias{phylo_data,matrix-method}
 \usage{
   \S4method{phylo_data}{OPMD_Listing}(object,
     html.args = html_args(), run.tidy = FALSE) 
-  \S4method{phylo_data}{OPMS}(object, as.labels,
-    subset = param_names("disc.name"), sep = " ", extract.args = list(),
-    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) 
   \S4method{phylo_data}{OPMS_Listing}(object,
     html.args = html_args(), run.tidy = FALSE) 
+  \S4method{phylo_data}{XOPMX}(object, as.labels,
+    subset = param_names("disc.name"), sep = " ", extract.args = list(),
+    join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) 
   \S4method{phylo_data}{data.frame}(object, as.labels = NULL,
     subset = "numeric", sep = " ", ...) 
   \S4method{phylo_data}{matrix}(object,

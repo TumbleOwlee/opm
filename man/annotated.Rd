@@ -213,12 +213,16 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{annotated-methods}
+\alias{annotated,MOPMX-method}
 \alias{annotated,OPMA-method}
 \alias{annotated,OPMD-method}
 \alias{annotated,OPMS-method}
 \alias{annotated,OPM_MCP-method}
 \alias{annotated,opm_glht-method}
 \usage{
+  \S4method{annotated}{MOPMX}(object, what = "kegg", how = "ids",
+    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
+    conc = FALSE) 
   \S4method{annotated}{OPMA}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) 
   \S4method{annotated}{OPMD}(object, what = "kegg", how = "ids",

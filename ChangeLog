@@ -37,7 +37,7 @@
 - new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
   as.data.frame(), find_positions(), substrate_info(), wells(), infix operators,
   bracket operator, duplicated(), anyDuplicated(), sort(), `+`(), contains(),
-  split(), to_metadata()
+  split(), to_metadata(), phylo_data(), opm_mcp()
 - new subset() methods for OPM and MOPMX methods
 - new demos on answering various research questions with the package
 - new demos on database I/O

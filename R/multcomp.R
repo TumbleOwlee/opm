@@ -256,6 +256,25 @@ setMethod("annotated", OPMS, function(object, what = "kegg", how = "ids",
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
+setMethod("annotated", MOPMX, function(object, what = "kegg", how = "ids",
+    output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
+    conc = FALSE) {
+  output <- match.arg(output,
+    unlist(map_param_names(plain = TRUE, disc = TRUE)))
+  if (output == DISC_PARAM) { # will crash unless all are discretized
+    result <- discretized(object, full = TRUE, in.parens = FALSE, max = 10000L)
+    is.vec <- !vapply(result, is.matrix, 0L)
+    result[is.vec] <- lapply(result[is.vec], vector2row)
+    result <- collect_rows(result)
+    result <- map_values(reduce_to_mode.matrix(result, L(sep), TRUE), lmap)
+  } else {
+    result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
+      in.parens = FALSE, max = 10000L)
+    result <- colMeans(collect_rows(unlist(result, FALSE, FALSE)), na.rm = TRUE)
+  }
+  convert_annotation_vector(result, how, what, conc)
+}, sealed = SEALED)
+
 setMethod("annotated", OPM_MCP, function(object, what = "kegg", how = "ids",
     output = c("full", "plain"), lmap = NULL, sep = NULL, conc = FALSE) {
   alternative <- function(x, y, sep) {

@@ -8,9 +8,6 @@ context("Testing the multiple-testing functions of the OPM package")
 if (!exists("TEST.DIR"))
   attach(objects_for_testing())
 
-EXPL.MOPMX <- as(list(c(SMALL.AGG, SMALL.AGG), THIN.AGG), "MOPMX")
-metadata(EXPL.MOPMX[[1L]][1L]) <- list(run = 5, organism = "Unknown")
-metadata(EXPL.MOPMX[[1L]][2L]) <- list(organism = "Unknown", run = 8)
 EXPL.OPMS <- c(THIN.AGG, THIN.AGG)
 EXPL.DF <- extract(EXPL.OPMS,
   as.labels = list("organism", "run"), subset = "A", dataframe = TRUE)
@@ -57,11 +54,11 @@ test_that("opm_mcp outputs converted data frames", {
 
 ## opm_mcp
 test_that("opm_mcp converts MOPMX objects", {
-  got <- opm_mcp(EXPL.MOPMX, ~ run + organism, output = "data")
+  got <- opm_mcp(MOPMX.2, ~ run + organism, output = "data")
   expect_is(got, "data.frame")
   expect_true(all(complete.cases(got)))
   expect_true(all(c("run", "organism") %in% colnames(got)))
-  w <- unlist(lapply(EXPL.MOPMX, wells, full = TRUE), FALSE, FALSE)
+  w <- unlist(lapply(MOPMX.2, wells, full = TRUE), FALSE, FALSE)
   expect_true(setequal(w, got[, RESERVED_NAMES[["well"]]]))
   expect_true(all(RESERVED_NAMES[c("parameter", "value")] %in% colnames(got)))
 })
@@ -253,6 +250,23 @@ test_that("annotated() yields amino-acid vectors, matrices and data frames", {
   klasses <- vapply(x, class, "")
   expect_true(setequal(klasses, c("numeric", "factor")))
 })
+
+
+## annotated
+test_that("annotated works with MOPMX objects", {
+  got <- annotated(MOPMX.2)
+  expect_is(got, "numeric")
+  expect_false(is.null(names(got)))
+  expect_error(got.d <- annotated(MOPMX.2, output = DISC_PARAM))
+  x <- do_disc(MOPMX.2)
+  got.d <- annotated(x, output = DISC_PARAM)
+  expect_is(got.d, "logical")
+  expect_equal(length(got), length(got.d))
+  expect_equal(names(got), names(got.d))
+})
+
+
+################################################################################
 
 
 ## opm_mcp

@@ -49,6 +49,9 @@ expect_length <- function(actual, expected) {
 ## MOPMX
 ## UNTESTED
 
+## XOPMX
+## UNTESTED
+
 ## OPM_MCP
 ## UNTESTED
 

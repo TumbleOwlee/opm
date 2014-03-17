@@ -263,6 +263,18 @@ test_that("a heatmap can be drawn", {
 })
 
 
+## heat_map
+test_that("a heat map can be drawn from a MOPMX object", {
+  hm <- heat_map(MOPMX.2, ~ run, as.groups = ~ organism)
+  expect_is(hm, "list")
+  expect_equal(NULL, hm$colColMap)
+  expect_true(setequal(names(hm$rowColMap), to_metadata(MOPMX.2)$organism))
+})
+
+
+################################################################################
+
+
 ## radial_plot
 test_that("a radial plot can be drawn", {
   mat <- extract(THIN.AGG, as.labels = list("organism", "run"),

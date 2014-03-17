@@ -752,27 +752,24 @@ test_that("extract() deals with duplicate column names", {
 ## extract
 test_that("extract() can be applied to MOPMX objects", {
 
-  x <- as(list(c(SMALL.AGG, SMALL.AGG), THIN.AGG), "MOPMX")
-  metadata(x[[1L]][1L]) <- list(run = 5, organism = "Unknown")
-  metadata(x[[1L]][2L]) <- list(organism = "Unknown", run = 8)
-
   # matrices
-  got <- extract(x, ~ run, dataframe = FALSE, as.groups = "organism")
+  got <- extract(MOPMX.2, ~ run, dataframe = FALSE, as.groups = "organism")
   expect_is(got, "matrix")
   expect_equal(mode(got), "numeric")
-  expect_true(setequal(to_metadata(x)$run, rownames(got)))
-  expect_false(all(to_metadata(x)$run == rownames(got)))
-  expect_equal(nrow(got), sum(vapply(x, length, 0L)))
+  expect_true(setequal(to_metadata(MOPMX.2)$run, rownames(got)))
+  expect_false(all(to_metadata(MOPMX.2)$run == rownames(got)))
+  expect_equal(nrow(got), sum(vapply(MOPMX.2, length, 0L)))
   expect_equal(sum(complete.cases(got)), 2L)
-  expect_equal(length(attr(got, "row.groups")), sum(vapply(x, length, 0L)))
+  expect_equal(length(attr(got, "row.groups")),
+    sum(vapply(MOPMX.2, length, 0L)))
 
   # data frames
-  got <- extract(x, ~ run, dataframe = TRUE, as.groups = "organism")
+  got <- extract(MOPMX.2, ~ run, dataframe = TRUE, as.groups = "organism")
   expect_is(got, "data.frame")
   expect_equal(colnames(got)[ncol(got)], "organism")
   expect_equal(sum(complete.cases(got)), 2L)
-  expect_equal(nrow(got), sum(vapply(x, length, 0L)))
-  expect_true(all(to_metadata(x)$run == got$run))
+  expect_equal(nrow(got), sum(vapply(MOPMX.2, length, 0L)))
+  expect_true(all(to_metadata(MOPMX.2)$run == got$run))
 
 })
 
