@@ -164,6 +164,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
       names(joined) <- make.names(names(joined))
       joined <- lapply(joined, make.names)
     }
+    if (any(isna <- is.na(object[, RESERVED_NAMES[["value"]]])))
+      object <- object[!isna, , drop = FALSE]
     colnames(object) <- make.names(colnames(object))
     object
   }

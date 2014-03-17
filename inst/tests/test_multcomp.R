@@ -8,7 +8,9 @@ context("Testing the multiple-testing functions of the OPM package")
 if (!exists("TEST.DIR"))
   attach(objects_for_testing())
 
-
+EXPL.MOPMX <- as(list(c(SMALL.AGG, SMALL.AGG), THIN.AGG), "MOPMX")
+metadata(EXPL.MOPMX[[1L]][1L]) <- list(run = 5, organism = "Unknown")
+metadata(EXPL.MOPMX[[1L]][2L]) <- list(organism = "Unknown", run = 8)
 EXPL.OPMS <- c(THIN.AGG, THIN.AGG)
 EXPL.DF <- extract(EXPL.OPMS,
   as.labels = list("organism", "run"), subset = "A", dataframe = TRUE)
@@ -50,6 +52,18 @@ test_that("opm_mcp outputs converted data frames", {
   expect_equivalent(x, y[, setdiff(colnames(y), "organism.Well.run")])
   expect_equal(attr(y, "joined.columns"),
     list(organism.Well.run = c("organism", "Well", "run")))
+})
+
+
+## opm_mcp
+test_that("opm_mcp converts MOPMX objects", {
+  got <- opm_mcp(EXPL.MOPMX, ~ run + organism, output = "data")
+  expect_is(got, "data.frame")
+  expect_true(all(complete.cases(got)))
+  expect_true(all(c("run", "organism") %in% colnames(got)))
+  w <- unlist(lapply(EXPL.MOPMX, wells, full = TRUE), FALSE, FALSE)
+  expect_true(setequal(w, got[, RESERVED_NAMES[["well"]]]))
+  expect_true(all(RESERVED_NAMES[c("parameter", "value")] %in% colnames(got)))
 })
 
 

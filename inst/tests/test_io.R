@@ -322,11 +322,27 @@ test_that("to_metadata converts OPMS objects in the right way", {
 
 ## to_metadata
 test_that("to_metadata converts MOPMX objects in the right way", {
+  expect_warning(got <- to_metadata(MOPMX.1))
+  expect_is(got, "data.frame")
+  expect_equal(nrow(got), sum(vapply(MOPMX.1, length, 0L)))
+  expect_false(all(complete.cases(got)))
+  expect_equal(ncol(got), 2L)
+  expect_true(all(got[-1L, ] == to_metadata(MOPMX.1[2L])))
+
   metadata(MOPMX.1[[1]]) <- list(run = 17)
   got <- to_metadata(MOPMX.1)
   expect_is(got, "data.frame")
   expect_equal(nrow(got), sum(vapply(MOPMX.1, length, 0L)))
+  expect_false(all(complete.cases(got)))
   expect_equal(ncol(got), 2L)
+  expect_true(all(got[-1L, ] == to_metadata(MOPMX.1[2L])))
+
+  metadata(MOPMX.1[[1]]) <- list(organism = 'Unknown', run = 17)
+  got <- to_metadata(MOPMX.1)
+  expect_true(all(complete.cases(got)))
+
+  expect_equivalent(to_metadata(MOPMX.1[2L]), to_metadata(MOPMX.1[[2L]]))
+  # i.e. differences in the row names are possible
 })
 
 

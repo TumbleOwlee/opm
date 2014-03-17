@@ -311,6 +311,10 @@ strip_whitespace <- function(x) {
 vector2row <- function(x) matrix(x, 1L, length(x), FALSE, list(NULL, names(x)))
 
 collect_rows <- function(x) {
+  #sortable_indexes <- function(x) {
+  #  n <- seq_along(x)
+  #  sprintf(sprintf("%%0%ii", ceiling(log(n[length(n)], 10))), n)
+  #}
   add_cols <- function(x, cols) {
     if (length(cols <- setdiff(cols, colnames(x))))
       cbind(x, matrix(NA, nrow(x), length(cols), FALSE, list(NULL, cols)))

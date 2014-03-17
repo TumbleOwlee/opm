@@ -382,16 +382,6 @@ setMethod("extract", MOPMX, function(object, as.labels,
 
   protected <- function(x) x[seq_len(match(RESERVED_NAMES[["parameter"]], x))]
 
-  prepare_dataframe <- function(x, name.cols) {
-    if (length(name.cols))
-      rownames(x) <- make.unique(extract_columns(x, name.cols, direct = TRUE))
-    if (any(dup <- duplicated.default(colnames(x))))
-      x <- x[, !dup, drop = FALSE]
-    for (i in which(vapply(x, is.factor, NA)))
-      x[, i] <- as.character(x[, i])
-    x
-  }
-
   group_columns <- function(x, other) { # for generated data frames only
     x <- metadata_key(x)
     setdiff(c(unlist(x, FALSE, FALSE), names(attr(x, "combine"))), other)
@@ -402,22 +392,18 @@ setMethod("extract", MOPMX, function(object, as.labels,
     as.groups = as.groups, ...)
 
   if (!dataframe)
-    return(structure(collect_rows(x), row.groups = if (length(as.groups))
+    return(structure(collect(x, "datasets"), row.groups = if (length(as.groups))
         convert_row_groups(x)
       else
         NULL))
 
-  #pc <- protected(colnames(x[[1L]]))
-  #grp.col <- group_columns(as.groups, pc)
-  #x <- lapply(x, prepare_dataframe, pc[-length(pc)])
-  #x <- collect(x, "datasets", dataframe = TRUE, stringsAsFactors = FALSE)
-  #x <- lapply(x, as.data.frame,
   x <- collect_rows(x)
-  for (i in which(vapply(x, is.character, NA)))
-    x[, i] <- as.factor(x[, i])
-  #x <- x[, c(pc, setdiff(colnames(x), c(pc, grp.col)), grp.col), drop = FALSE]
   rownames(x) <- NULL
-  x
+  if (!length(as.groups))
+    return(x)
+  p.col <- protected(colnames(x))
+  g.col <- group_columns(as.groups, p.col)
+  x[, c(p.col, setdiff(colnames(x), c(p.col, g.col)), g.col), drop = FALSE]
 
 }, sealed = SEALED)
 

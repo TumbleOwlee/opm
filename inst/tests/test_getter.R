@@ -240,12 +240,17 @@ test_that("CSV data of MOPMX objects can be accessed", {
   got <- csv_data(MOPMX.1)
   expect_is(got, "matrix")
   expect_equal(nrow(got), length(plates(MOPMX.1)))
+  expect_true(all(got[1L, ] == csv_data(MOPMX.1[[1L]])))
+  expect_true(all(got[-1L, ] == csv_data(MOPMX.1[[2L]])))
+
   got.2 <- csv_data(MOPMX.1, normalize = TRUE)
   expect_equal(dim(got.2), dim(got))
   expect_false(all(got == got.2))
+
   got <- csv_data(MOPMX.1, what = "position")
   expect_is(got, "character")
   expect_equal(length(got), length(plates(MOPMX.1)))
+
   got.2 <- csv_data(MOPMX.1, what = "position", normalize = TRUE)
   expect_equal(got, got.2) # positions were already normalised
 })
