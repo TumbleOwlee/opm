@@ -23,19 +23,28 @@ setMethod("opm_dbput", c("OPM_DB", "RODBC"), function(object, conn,
   object@plates[, "id"]
 }, sealed = FALSE)
 
-setMethod("opm_dbput", c("OPM", "ANY"), function(object, conn, ...) {
-  opm_dbput(as(object, paste0(class(object), "_DB")), conn, ...)
+setMethod("opm_dbput", c("ANY", "ANY"), function(object, conn, ...) {
+  opm_dbput(as(object, opm_dbclass(object)), conn, ...)
 })
 
-setMethod("opm_dbput", c("OPMS", "ANY"), function(object, conn, ...) {
-  klass <- if (all(has_disc(object)))
-      "OPMD"
-    else if (all(has_aggr(object)))
-      "OPMA"
-    else
-      "OPM"
-  opm_dbput(as(object, paste0(klass, "_DB")), conn, ...)
-})
+setGeneric("opm_dbclass", function(object) standardGeneric("opm_dbclass"))
+
+setMethod("opm_dbclass", "numeric", function(object) {
+  int2dbclass(object)
+}, sealed = SEALED)
+
+setMethod("opm_dbclass", OPM, function(object) {
+  paste0(class(object), "_DB")
+}, sealed = SEALED)
+
+setMethod("opm_dbclass", OPMS, function(object) {
+  int2dbclass(all(has_aggr(object)) + all(has_disc(object)))
+}, sealed = SEALED)
+
+setMethod("opm_dbclass", MOPMX, function(object) {
+  int2dbclass(all(unlist(has_disc(object), FALSE, FALSE)) +
+    all(unlist(has_aggr(object), FALSE, FALSE)))
+}, sealed = SEALED)
 
 setGeneric("opm_dbfind",
   function(object, conn, ...) standardGeneric("opm_dbfind"))
@@ -73,14 +82,14 @@ setGeneric("opm_dbget",
 
 setMethod("opm_dbget", c("integer", "DBIConnection"), function(object, conn,
     map.tables = NULL, include = 2L) {
-  db2opmx(by(int2dbclass(include), object, dbGetQuery, conn = conn,
+  db2opmx(by(new(int2dbclass(include)), object, dbGetQuery, conn = conn,
     do_map = map.tables, do_inline = TRUE, simplify = TRUE,
     do_quote = function(x) make.db.names(conn, x)))
 }, sealed = SEALED)
 
 setMethod("opm_dbget", c("integer", "RODBC"), function(object, conn,
     map.tables = NULL, include = 2L) {
-  db2opmx(by(int2dbclass(include), object, sqlQuery, channel = conn,
+  db2opmx(by(new(int2dbclass(include)), object, sqlQuery, channel = conn,
     do_map = map.tables, do_inline = TRUE, do_quote = if (attr(conn, "isMySQL"))
       "`"
     else
@@ -95,17 +104,9 @@ setMethod("opm_dbget", c("character", "ANY"), function(object, conn,
 setGeneric("opm_dbnext",
   function(object, conn, ...) standardGeneric("opm_dbnext"))
 
-setMethod("opm_dbnext", c("OPM", "ANY"), function(object, conn, ...) {
-  opm_dbnext(has_disc(object) + has_aggr(object), conn, ...)
-})
-
-setMethod("opm_dbnext", c("OPMS", "ANY"), function(object, conn, ...) {
-  opm_dbnext(all(has_disc(object)) + all(has_aggr(object)), conn, ...)
-})
-
-setMethod("opm_dbnext", c("integer", "ANY"), function(object, conn,
+setMethod("opm_dbnext", c("ANY", "ANY"), function(object, conn,
     map.tables = NULL) {
-  opm_dbnext(int2dbclass(object), conn, map.tables)
+  opm_dbnext(new(opm_dbclass(object)), conn, map.tables)
 }, sealed = SEALED)
 
 setMethod("opm_dbnext", c("OPM_DB", "DBIConnection"), function(object, conn,
@@ -294,12 +295,12 @@ quote_protected <- function(x, s) {
 }
 
 int2dbclass <- function(x) {
-  new(paste0(case(x, "OPM", "OPMA", "OPMD"), "_DB"))
+  paste0(case(x, "OPM", "OPMA", "OPMD"), "_DB")
 }
 
 db2opmx <- function(x) {
-  x <- as(x, "list")
-  case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
+  do.call(opms, c(as(x, "list"),
+    list(precomputed = TRUE, skip = FALSE, group = FALSE)))
 }
 
 db2ids <- function(x) {

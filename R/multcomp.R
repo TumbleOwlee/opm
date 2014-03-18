@@ -178,15 +178,11 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     mapply(multcomp::contrMat, n = n, type = linfct, SIMPLIFY = FALSE)
   }
 
-  opm_mcp_object <- function(x) {
-    as(x, OPM_MCP) ## TODO: deal with distinct plate types
-  }
-
   # conversions and early returns, if requested
   sep <- check_mcp_sep(sep)
   model <- convert_model(model, ops)
   case(match.arg(output),
-    data = return(opm_mcp_object(convert_data(object, split.at, model, sep))),
+    data = return(as(convert_data(object, split.at, model, sep), OPM_MCP_OUT)),
     model = return(model),
     linfct = return(convert_hypothesis_spec(linfct, model,
       convert_data(object, split.at, model, sep), rhs, alternative)),
@@ -275,7 +271,7 @@ setMethod("annotated", MOPMX, function(object, what = "kegg", how = "ids",
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
-setMethod("annotated", OPM_MCP, function(object, what = "kegg", how = "ids",
+setMethod("annotated", OPM_MCP_OUT, function(object, what = "kegg", how = "ids",
     output = c("full", "plain"), lmap = NULL, sep = NULL, conc = FALSE) {
   alternative <- function(x, y, sep) {
     if (!length(sep) || identical(sep, FALSE))

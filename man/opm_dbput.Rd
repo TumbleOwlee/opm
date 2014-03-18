@@ -1,5 +1,6 @@
 \name{opm_dbput}
 \alias{opm_dbcheck}
+\alias{opm_dbclass}
 \alias{opm_dbclear}
 \alias{opm_dbfind}
 \alias{opm_dbget}
@@ -7,24 +8,28 @@
 \alias{opm_dbput}
 \title{Database I/O for \pkg{opm}}
 \arguments{
-  \item{object}{\code{\link{OPMX}} or \code{\link{OPM_DB}}
-  object, integer vector containing real or potential
-  primary keys of a database table, or character scalar
-  containing a partial \acronym{SQL} query (the part after
-  the \sQuote{WHERE} keyword).}
+  \item{object}{\code{\link{OPMX}}, \code{\link{MOPMX}} or
+  \code{\link{OPM_DB}} object, integer vector containing
+  real or potential primary keys of a database table, or
+  character scalar containing a partial \acronym{SQL} query
+  (the part after the \sQuote{WHERE} keyword).}
 
   \item{conn}{Database connection object. Currently
-  \code{DBIConnection} object from one of the reverse
+  \code{DBIConnection} objects from one of the reverse
   dependencies of \pkg{DBI} (recommended) and \code{RODBC}
   objects as created by the \pkg{RODBC} package are
   supported.}
 
   \item{map.tables}{Passed as \code{do_map} argument to
-  \code{\link{by}}.}
+  \code{by} from the \pkg{pkgutils} package. Necessary if
+  table names that deviate from the defaults are to be
+  used.}
 
   \item{include}{Integer scalar indicating whether
   aggregated data (1) or aggregated and discretised data
-  (2) should be added to the result.}
+  (2) or neither (0) should be added to the result. The
+  numeric method of \code{opm_dbnext} needs the same kind
+  of \code{object} argument.}
 
   \item{start}{Integer vector determining the minimum
   primary keys to which those in \code{object} should be
@@ -49,22 +54,28 @@
   methods.}
 }
 \value{
-  \code{opm_dbget} returns an \code{\link{OPMX}} object or
-  \code{NULL}.
+  The main functions are those for create, search, read and
+  delete operations:\itemize{ \item{\code{opm_dbput}
+  returns an integer vector containing the primary keys of
+  the inserted plates.} \item{\code{opm_dbfind} returns an
+  integer vector containing the primary keys of the found
+  plates.} \item{\code{opm_dbget} returns an
+  \code{\link{OPMX}} or \code{\link{MOPMX}} object or
+  \code{NULL}.} \item{\code{opm_dbclear} invisibly returns
+  the result of \code{dbGetQuery} (which is usually
+  \code{NULL}).} } Regarding the helper functions,
+  \code{opm_dbnext} returns an integer scalar that is
+  suitable as \code{start} argument of \code{opm_dbput},
+  whereas \code{opm_dbclass} returns a character scalar
+  with the name of the intermediary class (derived from
+  \code{\link{OPM_DB}}) to be created for database I/O.
+  These need not normally be called by an \pkg{opm} user.
 
-  \code{opm_dbput} returns an integer vector containing the
-  primary keys of the inserted plates.
-
-  \code{opm_dbnext} returns an integer vector that is
-  suitable as \code{start} argument of \code{opm_dbput}.
-
-  \code{opm_dbclear} invisibly returns the result of
-  \code{dbGetQuery} (which is usually \code{NULL}).
-
-  \code{opm_dbcheck} returns a character vector whose
-  elements are either \kbd{ok} or a description of the
-  error that has occurred at that step of the checking
-  process.
+  For checking whether a database (connection) is correctly
+  set up, \code{opm_dbcheck} is available, which returns a
+  character vector whose elements are either \kbd{ok} or a
+  description of the error that has occurred at that step
+  of the checking process.
 }
 \description{
   Methods for inserting, querying and deleting
@@ -96,7 +107,8 @@
   Note that the deletion mechanism is based on \code{ON
   DELETE CASCADE}. To enable this in \code{SQLite},
   \code{PRAGMA foreign_keys = ON;} has to be called each
-  time a database is opened.
+  time a database is opened. See the according \code{demo}
+  entry.
 }
 \examples{
 # The SQL files for generating the expected database tables. Tables can
@@ -117,6 +129,11 @@ if (interactive())
 \docType{methods}
 \alias{opm_dbcheck-methods}
 \alias{opm_dbcheck,ANY-method}
+\alias{opm_dbclass-methods}
+\alias{opm_dbclass,MOPMX-method}
+\alias{opm_dbclass,OPM-method}
+\alias{opm_dbclass,OPMS-method}
+\alias{opm_dbclass,numeric-method}
 \alias{opm_dbclear-methods}
 \alias{opm_dbclear,character,ANY-method}
 \alias{opm_dbclear,integer,DBIConnection-method}
@@ -129,19 +146,21 @@ if (interactive())
 \alias{opm_dbget,integer,DBIConnection-method}
 \alias{opm_dbget,integer,RODBC-method}
 \alias{opm_dbnext-methods}
-\alias{opm_dbnext,OPM,ANY-method}
-\alias{opm_dbnext,OPMS,ANY-method}
+\alias{opm_dbnext,ANY,ANY-method}
 \alias{opm_dbnext,OPM_DB,DBIConnection-method}
 \alias{opm_dbnext,OPM_DB,RODBC-method}
-\alias{opm_dbnext,integer,ANY-method}
 \alias{opm_dbput-methods}
-\alias{opm_dbput,OPM,ANY-method}
-\alias{opm_dbput,OPMS,ANY-method}
+\alias{opm_dbput,ANY,ANY-method}
 \alias{opm_dbput,OPM_DB,DBIConnection-method}
 \alias{opm_dbput,OPM_DB,RODBC-method}
 \usage{
   \S4method{opm_dbcheck}{ANY}(conn, metadata = NULL,
     time.points = TRUE, wells = TRUE) 
+
+  \S4method{opm_dbclass}{MOPMX}(object) 
+  \S4method{opm_dbclass}{OPM}(object) 
+  \S4method{opm_dbclass}{OPMS}(object) 
+  \S4method{opm_dbclass}{numeric}(object) 
 
   \S4method{opm_dbclear}{character,ANY}(object, conn,
     map.tables = NULL) 
@@ -162,17 +181,14 @@ if (interactive())
   \S4method{opm_dbget}{integer,RODBC}(object, conn,
     map.tables = NULL, include = 2L) 
 
-  \S4method{opm_dbnext}{OPM,ANY}(object, conn, ...) 
-  \S4method{opm_dbnext}{OPMS,ANY}(object, conn, ...) 
+  \S4method{opm_dbnext}{ANY,ANY}(object, conn,
+    map.tables = NULL) 
   \S4method{opm_dbnext}{OPM_DB,DBIConnection}(object, conn,
     map.tables = NULL) 
   \S4method{opm_dbnext}{OPM_DB,RODBC}(object, conn,
     map.tables = NULL) 
-  \S4method{opm_dbnext}{integer,ANY}(object, conn,
-    map.tables = NULL) 
 
-  \S4method{opm_dbput}{OPM,ANY}(object, conn, ...) 
-  \S4method{opm_dbput}{OPMS,ANY}(object, conn, ...) 
+  \S4method{opm_dbput}{ANY,ANY}(object, conn, ...) 
   \S4method{opm_dbput}{OPM_DB,DBIConnection}(object, conn,
     map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) 
   \S4method{opm_dbput}{OPM_DB,RODBC}(object, conn,

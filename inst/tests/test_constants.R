@@ -52,7 +52,7 @@ expect_length <- function(actual, expected) {
 ## XOPMX
 ## UNTESTED
 
-## OPM_MCP
+## OPM_MCP_OUT
 ## UNTESTED
 
 ## YAML_VIA_LIST

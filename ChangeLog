@@ -1,9 +1,9 @@
 
 
-2014-02-XX (the 13th release on CRAN)
+2014-0X-XX (the 13th release on CRAN)
 
 - fixed bug in extract() that affected logical 'what' arguments; now the
-  special treatmen of logical vectors is already done by extract_columns()
+  special treatment of logical vectors is already done by extract_columns()
 - fixed bug in 'MOPMX' bracket method (non-confoming objects were not removed
   when using an out-of-range index)
 - fixed bug in 'MOPMX' object creation (empty input yielded an error for
@@ -32,12 +32,12 @@
 - new vignette on analysing growth-curve (and user-defined PM) data
 - new register_plate() and opmx() methods for managing user-defined data
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
-  opm_dbcheck() for database I/O, and according new classes 'OPM_DB', 'OPMA_DB'
-  and 'OPMD_DB'
+  opm_dbclass() and opm_dbcheck() for database I/O, and according new classes
+  'OPM_DB', 'OPMA_DB' and 'OPMD_DB'
 - new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
   as.data.frame(), find_positions(), substrate_info(), wells(), infix operators,
   bracket operator, duplicated(), anyDuplicated(), sort(), `+`(), contains(),
-  split(), to_metadata(), phylo_data(), opm_mcp()
+  split(), to_metadata(), phylo_data(), opm_mcp(), listing()
 - new subset() methods for OPM and MOPMX methods
 - new demos on answering various research questions with the package
 - new demos on database I/O

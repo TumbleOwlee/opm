@@ -604,7 +604,7 @@ setMethod("listing", OPMD, function(x, as.groups,
   res
 }, sealed = SEALED)
 
-setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
+setMethod("listing", XOPMX, function(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) {
   add_stuff <- function(x, html, cutoff) {
@@ -615,7 +615,7 @@ setMethod("listing", OPMS, function(x, as.groups, cutoff = opm_opt("min.mode"),
   }
   LL(cutoff, sep)
   if (!length(as.groups)) {
-    res <- do.call(rbind, lapply(X = x@plates, FUN = listing, html = html,
+    res <- do.call(rbind, lapply(X = plates(x), FUN = listing, html = html,
       downcase = downcase, full = full, in.parens = in.parens,
       as.groups = NULL, ...))
     rownames(res) <- seq_len(nrow(res))

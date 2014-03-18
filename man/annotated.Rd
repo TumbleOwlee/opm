@@ -3,7 +3,7 @@
 \title{Create vector or matrix with substrate annotation}
 \arguments{
   \item{object}{An object of the classes \code{opm_glht} or
-  \code{\link{OPM_MCP}} as created by
+  \code{\link{OPM_MCP_OUT}} as created by
   \code{\link{opm_mcp}}, \code{\link{OPMA}},
   \code{\link{OPMD}} or \code{\link{OPMS}}.}
 
@@ -217,7 +217,7 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
 \alias{annotated,OPMA-method}
 \alias{annotated,OPMD-method}
 \alias{annotated,OPMS-method}
-\alias{annotated,OPM_MCP-method}
+\alias{annotated,OPM_MCP_OUT-method}
 \alias{annotated,opm_glht-method}
 \usage{
   \S4method{annotated}{MOPMX}(object, what = "kegg", how = "ids",
@@ -230,7 +230,7 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
   \S4method{annotated}{OPMS}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
     conc = FALSE) 
-  \S4method{annotated}{OPM_MCP}(object, what = "kegg", how = "ids",
+  \S4method{annotated}{OPM_MCP_OUT}(object, what = "kegg", how = "ids",
     output = c("full", "plain"), lmap = NULL, sep = NULL, conc = FALSE) 
   \S4method{annotated}{opm_glht}(object, what = "kegg", how = "ids",
     output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join"),

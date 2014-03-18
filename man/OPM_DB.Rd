@@ -106,7 +106,7 @@ stopifnot(fkeys_valid(y), fkeys(y) == fkeys(x), !length(y))
   Other classes: \code{\link{FOE}}, \code{\link{MOPMX}},
   \code{\link{OPM}}, \code{\link{OPMA}},
   \code{\link{OPMD}}, \code{\link{OPMS}},
-  \code{\link{OPMX}}, \code{\link{OPM_MCP}},
+  \code{\link{OPMX}}, \code{\link{OPM_MCP_OUT}},
   \code{\link{WMD}}, \code{\link{WMDS}},
   \code{\link{WMDX}},   \code{\link{YAML_VIA_LIST}}
 }

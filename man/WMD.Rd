@@ -68,6 +68,9 @@
   \code{\link{OPMS}} objects. See \code{\link{show}} and
   \code{\link{sort}} for usage examples.
 
+  Similarly, \acronym{XOPMX} unifies \code{\link{OPMS}} and
+  \code{\link{MOPMX}}.
+
   See \code{\link{to_yaml}} for a usage example of
   \code{YAML_VIA_LIST}. This is a virtual class
   facilitating the conversion to \acronym{YAML} format (or
@@ -78,6 +81,7 @@
 showClass("WMD")
 showClass("WMDS")
 showClass("OPMX")
+showClass("XOPMX")
 showClass("FOE")
 showClass("YAML_VIA_LIST")
 }
@@ -89,7 +93,7 @@ showClass("YAML_VIA_LIST")
   \code{\link{OPMA}}, \code{\link{OPMA_DB}},
   \code{\link{OPMD}}, \code{\link{OPMD_DB}},
   \code{\link{OPMS}}, \code{\link{OPM_DB}},
-  \code{\link{OPM_MCP}}
+  \code{\link{OPM_MCP_OUT}}
 }
 \keyword{classes}
 \keyword{methods}

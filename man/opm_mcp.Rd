@@ -158,10 +158,10 @@
   \code{coef} and \code{vcov} are available for this class.
   See \code{glht} in the \pkg{multcomp} package for
   details.} \item{data}{Reshaped (\sQuote{flattened}) data
-  frame of the class \code{\link{OPM_MCP}}. It contains one
-  column for the measured values, one factorial variable
-  determining the well, one factorial variable for the
-  curve parameter (see \code{\link{param_names}}) and
+  frame of the class \code{\link{OPM_MCP_OUT}}. It contains
+  one column for the measured values, one factorial
+  variable determining the well, one factorial variable for
+  the curve parameter (see \code{\link{param_names}}) and
   additional factorial variables selected by \code{model}
   as factors. The column names are converted to syntactical
   names. Such a data frame might be of use for

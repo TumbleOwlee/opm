@@ -10,8 +10,8 @@
 \alias{OPMD-class}
 \alias{OPMS}
 \alias{OPMS-class}
-\alias{OPM_MCP}
-\alias{OPM_MCP-class}
+\alias{OPM_MCP_OUT}
+\alias{OPM_MCP_OUT-class}
 \title{Real classes of the \pkg{opm} package}
 \description{
   Classes whose members can be generated and manipulated by
@@ -124,9 +124,9 @@
   \code{new} or \code{as} and then further manipulated; see
   the examples below.
 
-  \acronym{OPM_MCP} is a data-frame based class useful as
-  intermediate result of \code{\link{opm_mcp}}. See there
-  and its \code{\link{annotated}} method for usages.
+  \acronym{OPM_MCP_OUT} is a data-frame based class useful
+  as intermediate result of \code{\link{opm_mcp}}. See
+  there and its \code{\link{annotated}} method for usages.
 }
 \examples{
 ## overview on the classes
@@ -137,7 +137,7 @@ showClass("OPMS")
 showClass("MOPMX")
 
 ## OPMX conversions with as()
-showMethods("coerce", classes = c("OPM", "OPMA", "OPMD"))
+showMethods("coerce", classes = c("OPM", "OPMA", "OPMD", "OPMS"))
 data(vaas_1)
 data(vaas_4)
 (x <- as(vaas_1, "OPMA")) # drops the discretised data
@@ -151,6 +151,7 @@ stopifnot(has_aggr(vaas_1), !has_aggr(x))
 (x <- as(vaas_4, "MOPMX"))
 # conversion backwards is only possible as long as the MOPMX object contains
 # only a single OPMX object
+showMethods("coerce", classes = "MOPMX")
 }
 \seealso{
   methods::Methods methods::new

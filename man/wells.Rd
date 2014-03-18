@@ -4,9 +4,10 @@
 \title{Listing of well names}
 \arguments{
   \item{object}{\code{\link{OPM}} object,
-  \code{\link{OPMS}} object or well name or index. If
-  missing, defaults to the selection of all possible wells
-  (for the default plate type, see below).}
+  \code{\link{OPMS}} or \code{\link{MOPMX}} object or well
+  name or index. If missing, defaults to the selection of
+  all possible wells (for the default plate type, see
+  below).}
 
   \item{full}{Logical scalar. Return the full names of the
   wells (if available) or just their coordinates on the
@@ -237,7 +238,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \docType{methods}
 \alias{listing-methods}
 \alias{listing,OPMD-method}
-\alias{listing,OPMS-method}
+\alias{listing,XOPMX-method}
 \alias{listing,well_coords_map-method}
 \alias{wells-methods}
 \alias{wells,ANY-method}
@@ -250,7 +251,7 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 
-  \S4method{listing}{OPMS}(x, as.groups, cutoff = opm_opt("min.mode"),
+  \S4method{listing}{XOPMX}(x, as.groups, cutoff = opm_opt("min.mode"),
     downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
     ..., exact = TRUE, strict = TRUE) 
   \S4method{listing}{well_coords_map}(x) 

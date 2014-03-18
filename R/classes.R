@@ -85,7 +85,7 @@ setClass(MOPMX,
   }, sealed = SEALED
 )
 
-setClass(OPM_MCP,
+setClass(OPM_MCP_OUT,
   contains = "data.frame",
   validity = function(object) {
     errs <- NULL
@@ -577,14 +577,14 @@ setAs("OPMA_DB", "OPMA", function(from) {
 
 setAs("OPMD", "OPMD_DB", function(from) {
   x <- forward_OPMA_to_list(from)
-  dsets <- settings_forward(from@disc_settings, x$plates[, "id"])
-  ddata <- from@discretized
-  ddata <- data.frame(id = seq_along(ddata), stringsAsFactors = FALSE,
-    well_id = match(names(ddata), x$wells[, "coordinate"]),
-    disc_setting_id = 1L, value = unname(ddata), check.names = FALSE)
+  d.sets <- settings_forward(from@disc_settings, x$plates[, "id"])
+  d.data <- from@discretized
+  d.data <- data.frame(id = seq_along(d.data), stringsAsFactors = FALSE,
+    well_id = match(names(d.data), x$wells[, "coordinate"]),
+    disc_setting_id = 1L, value = unname(d.data), check.names = FALSE)
   new("OPMD_DB", plates = x$plates, wells = x$wells,
     measurements = x$measurements, aggr_settings = x$aggr_settings,
-    aggregated = x$aggregated, disc_settings = dsets, discretized = ddata)
+    aggregated = x$aggregated, disc_settings = d.sets, discretized = d.data)
 })
 
 setAs("OPMD_DB", "OPMD", function(from) {
@@ -637,5 +637,29 @@ setAs("OPMA_DB", "OPMS", function(from) {
 
 setAs("OPMD_DB", "OPMS", function(from) {
   as(lapply(split(from), backward_OPMD_to_list), "OPMS")
+})
+
+setAs("MOPMX", "OPM_DB", function(from) {
+  do.call(c, lapply(from, as, "OPM_DB"))
+})
+
+setAs("MOPMX", "OPMA_DB", function(from) {
+  do.call(c, lapply(from, as, "OPMA_DB"))
+})
+
+setAs("MOPMX", "OPMD_DB", function(from) {
+  do.call(c, lapply(from, as, "OPMD_DB"))
+})
+
+setAs("OPM_DB", "MOPMX", function(from) {
+  db2opmx(from)
+})
+
+setAs("OPMA_DB", "MOPMX", function(from) {
+  db2opmx(from)
+})
+
+setAs("OPMD_DB", "MOPMX", function(from) {
+  db2opmx(from)
 })
 
