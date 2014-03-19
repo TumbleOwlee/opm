@@ -59,10 +59,10 @@
   returns an integer vector containing the primary keys of
   the inserted plates.} \item{\code{opm_dbfind} returns an
   integer vector containing the primary keys of the found
-  plates.} \item{\code{opm_dbget} returns an
-  \code{\link{OPMX}} or \code{\link{MOPMX}} object or
-  \code{NULL}.} \item{\code{opm_dbclear} invisibly returns
-  the result of \code{dbGetQuery} (which is usually
+  plates.} \item{\code{opm_dbget} returns a
+  \code{\link{MOPMX}} object with one element per plate
+  type.} \item{\code{opm_dbclear} invisibly returns the
+  result of \code{dbGetQuery} (which is usually
   \code{NULL}).} } Regarding the helper functions,
   \code{opm_dbnext} returns an integer scalar that is
   suitable as \code{start} argument of \code{opm_dbput},

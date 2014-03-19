@@ -82,18 +82,18 @@ setGeneric("opm_dbget",
 
 setMethod("opm_dbget", c("integer", "DBIConnection"), function(object, conn,
     map.tables = NULL, include = 2L) {
-  db2opmx(by(new(int2dbclass(include)), object, dbGetQuery, conn = conn,
+  as(by(new(int2dbclass(include)), object, dbGetQuery, conn = conn,
     do_map = map.tables, do_inline = TRUE, simplify = TRUE,
-    do_quote = function(x) make.db.names(conn, x)))
+    do_quote = function(x) make.db.names(conn, x)), MOPMX)
 }, sealed = SEALED)
 
 setMethod("opm_dbget", c("integer", "RODBC"), function(object, conn,
     map.tables = NULL, include = 2L) {
-  db2opmx(by(new(int2dbclass(include)), object, sqlQuery, channel = conn,
+  as(by(new(int2dbclass(include)), object, sqlQuery, channel = conn,
     do_map = map.tables, do_inline = TRUE, do_quote = if (attr(conn, "isMySQL"))
       "`"
     else
-      "\"", stringsAsFactors = FALSE, simplify = TRUE))
+      "\"", stringsAsFactors = FALSE, simplify = TRUE), MOPMX)
 }, sealed = FALSE)
 
 setMethod("opm_dbget", c("character", "ANY"), function(object, conn,
@@ -186,8 +186,8 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
       metadata(x) <- metadata
     else
       stop("'metadata' must be empty or a data frame")
-  result <- c(last1 = NA, insert = NA, receive = NA, clear = NA, compare = NA,
-    last2 = NA, samelast = NA)
+  result <- c(last1 = NA, insert = NA, receive = NA, clear = NA, object = NA,
+    compare = NA, last2 = NA, samelast = NA)
   storage.mode(result) <- "character"
   step <- 0L
   tryCatch({
@@ -199,13 +199,18 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     result[[step <- step + 1L]] <- "ok"
     opm_dbclear(ids, conn)
     result[[step <- step + 1L]] <- "ok"
+    if (!is(y, MOPMX) || length(y) != 1L)
+      stop("expect MOPMX object of length 1")
+    result[[step <- step + 1L]] <- "ok"
+    last2 <- opm_dbnext(y, conn)
+    y <- y[[1L]]
     cmp <- sapply(seq_along(x), function(i) slots_equal(y[i], x[i]))
     if (!is.logical(cmp))
       stop(paste0(cmp, collapse = " / "))
     result[[step <- step + 1L]] <- "ok"
-    last2 <- opm_dbnext(2L, conn)
+    last3 <- opm_dbnext(2L, conn)
     result[[step <- step + 1L]] <- "ok"
-    stopifnot(last1 == last2)
+    stopifnot(last1 == last2, last1 == last3)
     result[[step <- step + 1L]] <- "ok"
   }, error = function(e) result[[step + 1L]] <<- conditionMessage(e))
   result
@@ -296,11 +301,6 @@ quote_protected <- function(x, s) {
 
 int2dbclass <- function(x) {
   paste0(case(x, "OPM", "OPMA", "OPMD"), "_DB")
-}
-
-db2opmx <- function(x) {
-  do.call(opms, c(as(x, "list"),
-    list(precomputed = TRUE, skip = FALSE, group = FALSE)))
 }
 
 db2ids <- function(x) {

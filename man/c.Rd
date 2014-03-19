@@ -34,7 +34,7 @@
   combined.
 }
 \description{
-  Combine a \code{\link{OPMX}} or \code{\link{MOPMX}}
+  Combine an \code{\link{OPMX}} or \code{\link{MOPMX}}
   object with other objects.
 }
 \examples{

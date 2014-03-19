@@ -261,6 +261,7 @@ stopifnot(!"CUSTOM:MYPLATE" \%in\% plate_type(TRUE))
 \alias{plate_type,MOPMX-method}
 \alias{plate_type,OPM-method}
 \alias{plate_type,OPMS-method}
+\alias{plate_type,OPM_DB-method}
 \alias{plate_type,character-method}
 \alias{plate_type,factor-method}
 \alias{plate_type,logical-method}
@@ -279,6 +280,8 @@ stopifnot(!"CUSTOM:MYPLATE" \%in\% plate_type(TRUE))
   \S4method{plate_type}{OPM}(object, ..., normalize = FALSE,
     subtype = FALSE) 
   \S4method{plate_type}{OPMS}(object, ...) 
+  \S4method{plate_type}{OPM_DB}(object, ..., normalize = FALSE,
+    subtype = FALSE) 
   \S4method{plate_type}{character}(object, full = FALSE,
     in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
     brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,

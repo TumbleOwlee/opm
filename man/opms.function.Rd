@@ -41,7 +41,8 @@
   objects), or \code{\link{OPM}} object, or \code{NULL}.
 }
 \description{
-  Easily build \code{\link{OPMS}} objects.
+  Easily build \code{\link{OPMS}} (or \code{\link{MOPMX}})
+  objects.
 }
 \details{
   While otherwise rather flexible, this function will fail

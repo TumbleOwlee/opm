@@ -335,7 +335,13 @@ test_that("information on the wells in a MOPMX object can be received", {
 
 
 ## listing
-## UNTESTED
+test_that("listings can be obtained from MOPMX objects", {
+  expect_error(got <- listing(MOPMX.2, ~ organism))
+  x <- do_disc(MOPMX.2)
+  got <- listing(x, NULL)
+  #got <- listing(x, ~ organism)
+  ## TODO: complete this and check for bugs in MOPMX listing method
+})
 
 
 ################################################################################

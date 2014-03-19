@@ -144,7 +144,7 @@ test_that("the OPM example data can be converted to a list and back", {
   x <- as(SMALL, "list")
   x$measurements <- c(rev(x$measurements[7:8]), rev(x$measurements[-7:-8]))
   x <- as(x, "OPM")
-  stopifnot(identical(measurements(x), measurements(SMALL)))
+  expect_equal(measurements(x), measurements(SMALL))
 })
 
 ## as
@@ -154,7 +154,7 @@ test_that("the OPMA example data can be converted to a list and back", {
   x <- as(SMALL.AGG, "list")
   x$aggregated <- c(Answer = 42L, rev(x$aggregated), Text = LETTERS)
   x <- as(x, "OPMA")
-  stopifnot(identical(aggregated(x), aggregated(SMALL.AGG)))
+  expect_equal(aggregated(x), aggregated(SMALL.AGG))
 })
 
 ## as
@@ -165,7 +165,7 @@ test_that("OPMD objects can be converted to a list and back", {
   x <- as(d, "list")
   x$discretized <- c(Answer = 42L, rev(x$discretized), Text = LETTERS)
   x <- as(x, "OPMD")
-  stopifnot(identical(discretized(x), discretized(d)))
+  expect_equal(discretized(x), discretized(d))
 })
 
 
@@ -191,6 +191,24 @@ test_that("MOPMX objects are correctly created", {
   expect_equal(names(x), c("B", ""))
 })
 
+
+
+################################################################################
+
+
+## as
+test_that("MOPMX objects can be converted to database I/O objects and back", {
+  expect_error(got <- as(MOPMX.1, "OPMA_DB"))
+  expect_error(got <- as(MOPMX.1, "OPM_DB"))
+  x <- MOPMX.1
+  metadata(x[[1]]) <- list(organism = "Limulus polyphemus", run = 11)
+  got <- as(x, "OPM_DB")
+  expect_is(got, "OPM_DB")
+  expect_true(setequal(plate_type(got), plate_type(MOPMX.1)))
+  got.2 <- as(got, "MOPMX")
+  expect_is(got.2, "MOPMX")
+  expect_true(setequal(plate_type(got.2), plate_type(MOPMX.1)))
+})
 
 
 ################################################################################

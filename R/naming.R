@@ -163,6 +163,12 @@ setMethod("plate_type", MOPMX, function(object, ..., normalize = FALSE,
     normalize = normalize, subtype = subtype)
 }, sealed = SEALED)
 
+setMethod("plate_type", "OPM_DB", function(object, ..., normalize = FALSE,
+    subtype = FALSE) {
+  plate_type(object = object@plates[, "plate_type"], ...,
+    normalize = normalize, subtype = subtype)
+}, sealed = SEALED)
+
 setMethod("plate_type", "character", function(object, full = FALSE,
     in.parens = TRUE, max = opm_opt("max.chars"), clean = TRUE,
     brackets = FALSE, word.wise = FALSE, paren.sep = " ", downcase = FALSE,

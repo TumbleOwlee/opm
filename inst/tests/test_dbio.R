@@ -63,9 +63,6 @@ test_that("opm_dbclass finds the class", {
 ## int2dbclass
 ## UNTESTED
 
-## db2opmx
-## UNTESTED
-
 ## db2ids
 ## UNTESTED
 

@@ -640,26 +640,19 @@ setAs("OPMD_DB", "OPMS", function(from) {
 })
 
 setAs("MOPMX", "OPM_DB", function(from) {
-  do.call(c, lapply(from, as, "OPM_DB"))
+  do.call(c, lapply(unname(from), as, "OPM_DB"))
 })
 
 setAs("MOPMX", "OPMA_DB", function(from) {
-  do.call(c, lapply(from, as, "OPMA_DB"))
+  do.call(c, lapply(unname(from), as, "OPMA_DB"))
 })
 
 setAs("MOPMX", "OPMD_DB", function(from) {
-  do.call(c, lapply(from, as, "OPMD_DB"))
+  do.call(c, lapply(unname(from), as, "OPMD_DB"))
 })
 
 setAs("OPM_DB", "MOPMX", function(from) {
-  db2opmx(from)
-})
-
-setAs("OPMA_DB", "MOPMX", function(from) {
-  db2opmx(from)
-})
-
-setAs("OPMD_DB", "MOPMX", function(from) {
-  db2opmx(from)
+  do.call(opms, c(as(from, "list"),
+    list(precomputed = TRUE, skip = FALSE, group = TRUE)))
 })
 
