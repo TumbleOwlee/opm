@@ -43,8 +43,9 @@
   the beginning of the amino acid codes.}
   \item{peptide2}{Like \code{peptide}, but without removal
   of \sQuote{L-} from the beginning of the amino acid
-  codes.} } See the references for information on the
-  databases.}
+  codes.} \item{seed}{\acronym{SEED} compound database ID,
+  optionally expanded to an \acronym{URL}.} } See the
+  references for information on the databases.}
 
   \item{browse}{Numeric scalar. If non-zero, an
   \acronym{URL} is generated from each \acronym{ID}. If
@@ -201,6 +202,19 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
   reference database and ontology for biologically relevant
   chemistry: enhancements for 2013. \emph{Nucleic Acids
   Research} \strong{41}: D456--D463.
+
+  Overbeek, R., Begley, T., Butler, R., Choudhuri, J.,
+  Chuang, H., Cohoon, M., de Crecy-Lagard, V., Diaz, N.,
+  Disz, T., Edwards, R., Fonstein, M., Frank, E., Gerdes,
+  S., Glass, E., Goesmann, A., Hanson, A., Iwata-Reuyl, D.,
+  Jensen, R., Jamshidi, N., Krause, L., Kubal, M., Larsen,
+  N., Linke, B., McHardy, A., Meyer, F., Neuweger, H.,
+  Olsen, G., Olson, R., Osterman, A., Portnoy, V., Pusch,
+  G., Rodionov, D., Rueckert, C., Steiner, J., Stevens, R.,
+  Thiele, I., Vassieva, O., Ye, Y., Zagnitko, O., Vonstein,
+  V. 2005 The subsystems approach to genome annotation and
+  its use in the project to annotate 1000 genomes.
+  \emph{Nucleic Acids Research} \strong{33}: 5691--5702.
 }
 \seealso{
   utils::browseURL
@@ -229,8 +243,9 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
   \S4method{substrate_info}{OPM}(object, ...) 
   \S4method{substrate_info}{OPMS}(object, ...) 
   \S4method{substrate_info}{character}(object,
-    what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "concentration", "html", "peptide", "peptide2", "all"),
+    what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "seed",
+      "downcase", "greek", "concentration", "html", "peptide", "peptide2",
+      "all"),
     browse = 0L, download = FALSE, ...) 
   \S4method{substrate_info}{factor}(object, ...) 
   \S4method{substrate_info}{list}(object, ...) 

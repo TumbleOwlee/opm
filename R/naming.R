@@ -710,8 +710,9 @@ setGeneric("substrate_info",
   function(object, ...) standardGeneric("substrate_info"))
 
 setMethod("substrate_info", "character", function(object,
-    what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "downcase",
-      "greek", "concentration", "html", "peptide", "peptide2", "all"),
+    what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "seed",
+      "downcase", "greek", "concentration", "html", "peptide", "peptide2",
+      "all"),
     browse = 0L, download = FALSE, ...) {
 
   find_substrate_id <- function(x) {
@@ -726,9 +727,11 @@ setMethod("substrate_info", "character", function(object,
       chebi = "http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:",
       metacyc = "http://biocyc.org/META/NEW-IMAGE?type=COMPOUND&object=",
       cas = "http://chem.sis.nlm.nih.gov/chemidplus/direct.jsp?regno=",
-      mesh = "http://www.ncbi.nlm.nih.gov/mesh/"
+      mesh = "http://www.ncbi.nlm.nih.gov/mesh/",
+      seed = paste0("http://seed-viewer.theseed.org/seedviewer.cgi?",
+        "page=CompoundViewer&compound=")
     )
-    base <- url_base[match.arg(how, names(url_base))]
+    base <- url_base[[match.arg(how, names(url_base))]]
     x <- sub("^(CAS\\s+|CHEBI:)", "", x, TRUE, TRUE)
     ifelse(is.na(x), NA_character_, paste0(base, vapply(x, URLencode, "")))
   }
@@ -817,7 +820,7 @@ setMethod("substrate_info", "character", function(object,
 
   result <- case(what <- match.arg(what),
     all = all_information(object),
-    chebi =, drug =, kegg =, metacyc =, mesh =,
+    chebi =, drug =, kegg =, metacyc =, mesh =, seed =,
     cas = SUBSTRATE_INFO[find_substrate_id(object), toupper(what)],
     concentration = extract_concentration(object),
     downcase = safe_downcase(object),

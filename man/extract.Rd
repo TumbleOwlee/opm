@@ -219,14 +219,27 @@
 
   Duplicate combinations of row and columns names currently
   cause the \code{\link{MOPMX}} methods to skip all of them
-  except the last one. This should mainly effect substrates
-  that occur in plates of distinct plate types. Row names
-  and names of substrate columns will be reordered
-  (sorted).  The created \sQuote{row.groups} attribute, if
-  any, will be adapted accordingly. If \code{dataframe} is
-  \code{TRUE}, the placement of the columns created by
-  \code{as.groups} will also be as usual, but duplicates,
-  if any, will be removed.
+  except the last one if \code{dataframe} is \code{FALSE}.
+  This should mainly effect substrates that occur in plates
+  of distinct plate types.
+
+  Similarly, duplicate row names names will cause the
+  skipping of all but the last one. This can be
+  circumvented by using an \code{as.labels} argument that
+  yields unique row names. If \code{as.labels} is empty,
+  the \code{\link{MOPMX}} method of \code{extract} will
+  create potentially unique row names from the names if
+  these are present but from the plate types if the
+  \sQuote{names} attribute is \code{NULL}. This will not be
+  done, and rows will neither be skipped nor reordered, if
+  \code{dataframe} is \code{TRUE}.
+
+  Otherwise row names and names of substrate columns will
+  be reordered (sorted). The created \sQuote{row.groups}
+  attribute, if any, will be adapted accordingly. If
+  \code{dataframe} is \code{TRUE}, the placement of the
+  columns created by \code{as.groups} will also be as
+  usual, but duplicates, if any, will be removed.
 }
 \examples{
 ## 'OPMS' method

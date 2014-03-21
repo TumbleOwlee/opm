@@ -336,11 +336,35 @@ test_that("information on the wells in a MOPMX object can be received", {
 
 ## listing
 test_that("listings can be obtained from MOPMX objects", {
+
   expect_error(got <- listing(MOPMX.2, ~ organism))
+
   x <- do_disc(MOPMX.2)
+
   got <- listing(x, NULL)
-  #got <- listing(x, ~ organism)
-  ## TODO: complete this and check for bugs in MOPMX listing method
+  expect_is(got, "OPMS_Listing")
+  expect_equal(sum(sapply(x, length)), nrow(got))
+  expect_equal(ncol(got), 3)
+  expect_false(attr(got, "html"))
+
+  got <- listing(x, NULL, html = TRUE)
+  expect_is(got, "OPMS_Listing")
+  expect_equal(sum(sapply(x, length)), nrow(got))
+  expect_equal(ncol(got), 3)
+  expect_true(attr(got, "html"))
+
+  got <- listing(x, ~ organism)
+  expect_is(got, "OPMS_Listing")
+  expect_equal(length(unique(unlist(metadata(x, list("organism"))))), nrow(got))
+  expect_equal(ncol(got), 3)
+  expect_false(attr(got, "html"))
+
+  got <- listing(x, ~ organism, html = TRUE)
+  expect_is(got, "OPMS_Listing")
+  expect_equal(length(unique(unlist(metadata(x, list("organism"))))), nrow(got))
+  expect_equal(ncol(got), 3)
+  expect_true(attr(got, "html"))
+
 })
 
 

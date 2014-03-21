@@ -391,11 +391,18 @@ setMethod("extract", MOPMX, function(object, as.labels,
     subset = subset, ci = ci, trim = trim, dataframe = dataframe,
     as.groups = as.groups, ...)
 
-  if (!dataframe)
+  if (!dataframe) {
+    if (!length(as.labels)) { # create potentially unique row names
+      if (is.null(base <- names(object)))
+        base <- plate_type(object)
+      for (i in seq_along(x))
+        rownames(x[[i]]) <- paste(base[[i]], seq_len(nrow(x[[i]])), sep = ".")
+    }
     return(structure(collect(x, "datasets"), row.groups = if (length(as.groups))
         convert_row_groups(x)
       else
         NULL))
+  }
 
   x <- collect_rows(x)
   rownames(x) <- NULL

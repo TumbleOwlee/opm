@@ -39,6 +39,7 @@
   bracket operator, duplicated(), anyDuplicated(), sort(), `+`(), contains(),
   split(), to_metadata(), phylo_data(), opm_mcp(), listing()
 - new subset() methods for OPM and MOPMX methods
+- SEED compounds IDs have been added to the substrate information
 - new demos on answering various research questions with the package
 - new demos on database I/O
 - new virtual class 'WMDS' into which some 'OPMS' methods have been factored out
