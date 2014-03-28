@@ -223,15 +223,15 @@
   This should mainly effect substrates that occur in plates
   of distinct plate types.
 
-  Similarly, duplicate row names names will cause the
-  skipping of all but the last one. This can be
-  circumvented by using an \code{as.labels} argument that
-  yields unique row names. If \code{as.labels} is empty,
-  the \code{\link{MOPMX}} method of \code{extract} will
-  create potentially unique row names from the names if
-  these are present but from the plate types if the
-  \sQuote{names} attribute is \code{NULL}. This will not be
-  done, and rows will neither be skipped nor reordered, if
+  Similarly, duplicate row names will cause the skipping of
+  all but the last one. This can be circumvented by using
+  an \code{as.labels} argument that yields unique row
+  names. If \code{as.labels} is empty, the
+  \code{\link{MOPMX}} method of \code{extract} will create
+  potentially unique row names from the names if these are
+  present but from the plate types if the \sQuote{names}
+  attribute is \code{NULL}. This will not be done, and rows
+  will neither be skipped nor reordered, if
   \code{dataframe} is \code{TRUE}.
 
   Otherwise row names and names of substrate columns will

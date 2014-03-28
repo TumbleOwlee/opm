@@ -1,6 +1,6 @@
 Package: opm
-Version: 1.0.93
-Date: 2014-03-25
+Version: 1.0.94
+Date: 2014-03-28
 Title: Analysing Phenotype Microarray and Growth Curve Data
 Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
@@ -31,13 +31,13 @@ Suggests:
     multcomp,
     KEGGREST,
     pathview,
-    mboostDevel,
+    mboostDevel (>= 2.3.0),
     gridExtra
 Description: Tools for analysing OmniLog(R) and MicroStation(TM)
     phenotype microarray (PM) data as produced by the devices
     distributed by BIOLOG Inc. as well as similar kinds of data
-    such as growth curves. Implemented facilities include plotting,
-    aggregating (estimating curve parameters), comparing and
+    such as growth curves. Major facilities are plotting data,
+    accurately estimating curve parameters, comparing and
     discretising data, creating phylogenetic formats and reports
     for taxonomic journals, drawing the PM analysis results in
     biochemical pathway graphs optionally including genome

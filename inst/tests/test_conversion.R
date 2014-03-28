@@ -60,9 +60,10 @@ test_that("plates can be merged", {
 test_that("MOPMX objects can be merged", {
   got <- merge(MOPMX.1)
   expect_equal(got, MOPMX.1)
-  got <- merge(MOPMX.1, OPM.3)
+  got <- merge(MOPMX.1, MOPMX.1[[2]])
   expect_equal(length(got), length(MOPMX.1))
   expect_true(length(plates(got)) > length(plates(MOPMX.1)))
+  expect_error(got <- merge(MOPMX.2)) # non-uniform wells
 })
 
 

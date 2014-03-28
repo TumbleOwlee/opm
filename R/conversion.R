@@ -41,7 +41,7 @@ setMethod("merge", c(OPMS, "missing"), function(x, y, sort.first = TRUE,
 }, sealed = SEALED)
 
 setMethod("merge", c(MOPMX, "missing"), function(x, y) {
-  combine <- function(x) if (length(x) > 1L)
+  combine <- function(x) if (length(x <- plates(x)) > 1L)
       new(OPMS, plates = x)
     else
       x[[1L]]
