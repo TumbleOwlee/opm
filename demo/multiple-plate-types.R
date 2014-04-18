@@ -161,7 +161,7 @@ for (name in names(x)) {
   #
   if (length(x[[name]]) > 1)
     write(phylo_data(x[[name]], format = "html", as.labels = organism,
-      html.args = html_args(embed.css = TRUE)),
+        html.args = html_args(embed.css = TRUE)),
       sprintf("Table_%s.html", name))
 
   # Draw x-y-plot into PDF file.

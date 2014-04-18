@@ -1,6 +1,6 @@
 
 
-2014-0X-XX (the 13th release on CRAN)
+2014-04-23 (the 13th release on CRAN)
 
 - fixed bug in extract() that affected logical 'what' arguments; now the
   special treatment of logical vectors is already done by extract_columns()
@@ -29,6 +29,8 @@
 - the 'paren.sep' argument of wells() and other functions now only allows for
   one to several whitespace characters or the at sign '@'
 
+- the vignette on substrate information now explains in detail feature-selection
+  approaches available via 'opm', using the 'mboost' package
 - new vignette on analysing growth-curve (and user-defined PM) data
 - new register_plate() and opmx() methods for managing user-defined data
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
