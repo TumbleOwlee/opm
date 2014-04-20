@@ -41,6 +41,8 @@ New features:
 
 - many new demos
 
+- new data set 'boccuto_et_al'
+
 - new register_plate() and opmx() methods for managing user-defined data
 
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),

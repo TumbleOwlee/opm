@@ -184,17 +184,23 @@ stopifnot(is.null(rep(vaas_4, 0)))
 \alias{rev,OPMS-method}
 \alias{sort-methods}
 \alias{sort,MOPMX,ANY-method}
+\alias{sort,MOPMX-method}
 \alias{sort,MOPMX,missing-method}
 \alias{sort,OPM,ANY-method}
+\alias{sort,OPM-method}
 \alias{sort,OPM,missing-method}
 \alias{sort,OPMS,ANY-method}
+\alias{sort,OPMS-method}
 \alias{sort,OPMS,missing-method}
 \alias{unique-methods}
 \alias{unique,MOPMX,ANY-method}
+\alias{unique,MOPMX-method}
 \alias{unique,MOPMX,missing-method}
 \alias{unique,OPM,ANY-method}
+\alias{unique,OPM-method}
 \alias{unique,OPM,missing-method}
 \alias{unique,OPMS,ANY-method}
+\alias{unique,OPMS-method}
 \alias{unique,OPMS,missing-method}
 \usage{
   \S4method{rep}{OPM}(x, ...) 

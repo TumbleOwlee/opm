@@ -32,6 +32,8 @@
 - the vignette on substrate information now explains in detail feature-selection
   approaches available via 'opm', using the 'mboost' package
 - new vignette on analysing growth-curve (and user-defined PM) data
+- added new data set 'boccuto_et_al' from the 2013 paper on metabolism of
+  autism-spectrum disorder patients
 - new register_plate() and opmx() methods for managing user-defined data
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
   opm_dbclass() and opm_dbcheck() for database I/O, and according new classes

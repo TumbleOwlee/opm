@@ -123,10 +123,13 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 \docType{methods}
 \alias{anyDuplicated-methods}
 \alias{anyDuplicated,MOPMX,ANY-method}
+\alias{anyDuplicated,MOPMX-method}
 \alias{anyDuplicated,MOPMX,missing-method}
 \alias{anyDuplicated,OPM,ANY-method}
+\alias{anyDuplicated,OPM-method}
 \alias{anyDuplicated,OPM,missing-method}
 \alias{anyDuplicated,OPMS,ANY-method}
+\alias{anyDuplicated,OPMS-method}
 \alias{anyDuplicated,OPMS,missing-method}
 \alias{contains-methods}
 \alias{contains,MOPMX,MOPMX-method}
@@ -138,10 +141,13 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 \alias{contains,OPMX,MOPMX-method}
 \alias{duplicated-methods}
 \alias{duplicated,MOPMX,ANY-method}
+\alias{duplicated,MOPMX-method}
 \alias{duplicated,MOPMX,missing-method}
 \alias{duplicated,OPM,ANY-method}
+\alias{duplicated,OPM-method}
 \alias{duplicated,OPM,missing-method}
 \alias{duplicated,OPMS,ANY-method}
+\alias{duplicated,OPMS-method}
 \alias{duplicated,OPMS,missing-method}
 \usage{
   \S4method{anyDuplicated}{MOPMX,ANY}(x, incomparables, ...) 

@@ -136,6 +136,7 @@ if (interactive())
 \alias{opm_dbclass,numeric-method}
 \alias{opm_dbclear-methods}
 \alias{opm_dbclear,character,ANY-method}
+\alias{opm_dbclear,character-method}
 \alias{opm_dbclear,integer,DBIConnection-method}
 \alias{opm_dbclear,integer,RODBC-method}
 \alias{opm_dbfind-methods}
@@ -143,14 +144,17 @@ if (interactive())
 \alias{opm_dbfind,character,RODBC-method}
 \alias{opm_dbget-methods}
 \alias{opm_dbget,character,ANY-method}
+\alias{opm_dbget,character-method}
 \alias{opm_dbget,integer,DBIConnection-method}
 \alias{opm_dbget,integer,RODBC-method}
 \alias{opm_dbnext-methods}
 \alias{opm_dbnext,ANY,ANY-method}
+\alias{opm_dbnext,ANY-method}
 \alias{opm_dbnext,OPM_DB,DBIConnection-method}
 \alias{opm_dbnext,OPM_DB,RODBC-method}
 \alias{opm_dbput-methods}
 \alias{opm_dbput,ANY,ANY-method}
+\alias{opm_dbput,ANY-method}
 \alias{opm_dbput,OPM_DB,DBIConnection-method}
 \alias{opm_dbput,OPM_DB,RODBC-method}
 \usage{

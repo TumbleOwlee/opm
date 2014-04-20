@@ -1,6 +1,6 @@
 Package: opm
-Version: 1.0.100
-Date: 2014-04-19
+Version: 1.0.101
+Date: 2014-04-20
 Title: Analysing Phenotype Microarray and Growth Curve Data
 Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
@@ -41,10 +41,11 @@ Description: Tools for analysing OmniLog(R) and MicroStation(TM)
     discretising data, creating phylogenetic formats and reports
     for taxonomic journals, drawing the PM analysis results in
     biochemical pathway graphs optionally including genome
-    annotations, running multiple comparisons of means, integrating
-    metadata, using the YAML format for the storage of data and
-    metadata, batch conversion of large numbers of files, and
-    database I/O.
+    annotations, running multiple comparisons of means, easy
+    interaction with powerful feature-selection approaches,
+    integrating metadata, using the YAML format for the storage of
+    data and metadata, batch conversion of large numbers of files,
+    and database I/O.
 License: GPL (>= 2)
 URL: http://opm.dsmz.de/
 MailingList: http://lists.r-forge.r-project.org/mailman/listinfo/opm-support

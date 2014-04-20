@@ -57,10 +57,6 @@ test_that("we can memoize queries", {
 ## UNTESTED
 
 
-## fix_names
-## UNTESTED
-
-
 ## metadata2factorlist
 ## UNTESTED
 

@@ -237,12 +237,14 @@ stopifnot(identical(z, y))
 \alias{include_metadata,WMDS-method}
 \alias{map_metadata-methods}
 \alias{map_metadata,MOPMX,ANY-method}
+\alias{map_metadata,MOPMX-method}
 \alias{map_metadata,MOPMX,missing-method}
 \alias{map_metadata,WMD,FOE-method}
 \alias{map_metadata,WMD,character-method}
 \alias{map_metadata,WMD,function-method}
 \alias{map_metadata,WMD,missing-method}
 \alias{map_metadata,WMDS,ANY-method}
+\alias{map_metadata,WMDS-method}
 \alias{map_metadata,WMDS,missing-method}
 \alias{map_values-methods}
 \alias{map_values,list,formula-method}

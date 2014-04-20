@@ -94,7 +94,9 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \alias{plus,ANY,MOPMX-method}
 \alias{+,ANY,MOPMX-method}
 \alias{plus,MOPMX,ANY-method}
+\alias{plus,MOPMX-method}
 \alias{+,MOPMX,ANY-method}
+\alias{+,MOPMX-method}
 \alias{plus,MOPMX,OPMX-method}
 \alias{+,MOPMX,OPMX-method}
 \alias{plus,OPM,MOPMX-method}

@@ -76,7 +76,9 @@ setClass(OPMS,
 
 setClass(MOPMX,
   contains = "list",
-  prototype = structure(list(), names = character()),
+  slots = c(names = "character"),
+  prototype = prototype(names = character()),
+  #prototype = structure(list(), names = character()),
   validity = function(object) {
     if (all(vapply(object@.Data, is, NA, OPMX)))
       TRUE

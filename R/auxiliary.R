@@ -177,12 +177,6 @@ close_index_gaps <- function(x) {
   x
 }
 
-fix_names <- function(x, y) {
-  if (any(bad <- !nzchar(x)[i <- seq_along(y)] & nzchar(y)))
-    x[i][bad] <- y[bad]
-  x
-}
-
 metadata2factorlist <- function(x, f) {
   replace_null <- function(x) {
     x[vapply(x, is.null, NA)] <- NA

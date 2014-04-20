@@ -215,9 +215,11 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
 \docType{methods}
 \alias{merge-methods}
 \alias{merge,CMAT,ANY-method}
+\alias{merge,CMAT-method}
 \alias{merge,CMAT,factor-method}
 \alias{merge,CMAT,logical-method}
 \alias{merge,MOPMX,ANY-method}
+\alias{merge,MOPMX-method}
 \alias{merge,MOPMX,missing-method}
 \alias{merge,OPM,OPM-method}
 \alias{merge,OPM,missing-method}
@@ -226,22 +228,30 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
 \alias{merge,OPMS,numeric-method}
 \alias{split-methods}
 \alias{split,MOPMX,ANY,ANY-method}
+\alias{split,MOPMX-method}
 \alias{split,MOPMX,ANY,missing-method}
 \alias{split,MOPMX,factor,ANY-method}
+\alias{split,MOPMX,factor-method}
 \alias{split,MOPMX,factor,missing-method}
 \alias{split,MOPMX,list,ANY-method}
+\alias{split,MOPMX,list-method}
 \alias{split,MOPMX,list,missing-method}
 \alias{split,OPM,ANY,missing-method}
 \alias{split,OPM,factor,ANY-method}
+\alias{split,OPM,factor-method}
 \alias{split,OPM,factor,missing-method}
 \alias{split,OPM,missing,ANY-method}
+\alias{split,OPM,missing-method}
 \alias{split,OPM,missing,missing-method}
 \alias{split,OPMS,ANY,missing-method}
 \alias{split,OPMS,factor,ANY-method}
+\alias{split,OPMS,factor-method}
 \alias{split,OPMS,factor,missing-method}
 \alias{split,OPMS,missing,ANY-method}
+\alias{split,OPMS,missing-method}
 \alias{split,OPMS,missing,missing-method}
 \alias{split,OPMX,ANY,ANY-method}
+\alias{split,OPMX-method}
 \usage{
   \S4method{merge}{CMAT,ANY}(x, y) 
   \S4method{merge}{CMAT,factor}(x, y) 
