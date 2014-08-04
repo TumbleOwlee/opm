@@ -60,7 +60,7 @@ test_that("MOPMX objects are restricted (double bracket operator)", {
   expect_equal(length(x), 0L)
   expect_error(x[["A"]] <- 1)
   expect_equal(length(x), 0L)
-  expect_error(x[[2]] <- "a")
+  expect_warning(expect_error(x[[2]] <- "a"))
   expect_equal(length(x), 0L)
   x[[TRUE]] <- NULL
   expect_equal(length(x), 0L)

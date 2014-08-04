@@ -53,9 +53,10 @@ objects_for_testing <- function() {
   x$SMALL.WITH.MD <- x$OPM.WITH.MD[, 1L:10L]
   metadata(x$OPMS.INPUT) <- data.frame(run = 4L:3L, organism = x$ORGN,
     stringsAsFactors = FALSE)
-  x$THIN.AGG <- do_aggr(thin_out(x$OPMS.INPUT, 10), boot = 2L, verbose = FALSE)
+  x$THIN.AGG <- do_aggr(thin_out(x$OPMS.INPUT, 10), method = "grofit",
+    boot = 2L, verbose = FALSE)
   x$SMALL <- x$OPM.1[, 1L:10L]
-  x$SMALL.AGG <- do_aggr(x$SMALL, boot = 0L, cores = 1L)
+  x$SMALL.AGG <- do_aggr(x$SMALL, boot = 0L, cores = 1L, method = "grofit")
   x$MOPMX.1 <- as(list(A = x$OPM.3, B = x$OPMS.INPUT), MOPMX)
   x$MOPMX.2 <- as(list(U = c(x$SMALL.AGG, x$SMALL.AGG), V = x$THIN.AGG), MOPMX)
   metadata(x$MOPMX.2[[1L]][1L]) <- list(run = 5, organism = "Unknown")

@@ -129,8 +129,11 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 
 setGeneric("do_aggr", function(object, ...) standardGeneric("do_aggr"))
 
-setMethod("do_aggr", OPM, function(object, boot = 100L, verbose = FALSE,
-    cores = 1L, options = list(), method = "grofit", plain = FALSE) {
+setMethod("do_aggr", OPM, function(object, boot = 0L, verbose = FALSE,
+    cores = 1L, options = if (identical(method, "splines"))
+      set_spline_options()
+    else
+      list(), method = "splines", plain = FALSE) {
 
   # Convert to OPMA
   integrate_in_opma <- function(object, result) {

@@ -37,7 +37,7 @@ if (!exists("TEST.DIR"))
 ## do_aggr
 test_that("OPM objects can be aggregated using the fast method", {
 
-  fast.agg <- do_aggr(SMALL, method = "opm-fast")
+  fast.agg <- do_aggr(SMALL, method = "opm-fast", boot = 100L)
 
   expect_is(SMALL, "OPM")
   expect_false(is(SMALL, "OPMA"))
@@ -82,7 +82,8 @@ test_that("OPM objects can be aggregated using the fast method", {
 ## do_aggr
 test_that("OPMS objects can be aggregated using the fast method", {
 
-  fast.agg <- do_aggr(thin_out(OPMS.INPUT, 10), method = "opm-fast")
+  fast.agg <- do_aggr(thin_out(OPMS.INPUT, 10), method = "opm-fast",
+    boot = 100L)
 
   expect_is(OPMS.INPUT, "OPMS")
   expect_is(fast.agg, "OPMS")
@@ -105,7 +106,8 @@ test_that("OPMS objects can be aggregated using the fast method", {
 
 ## do_aggr
 test_that("MOPMX object can be agregated using the fast method", {
-  junk <- capture.output(got <- do_aggr(MOPMX.1, method = "opm-fast"))
+  junk <- capture.output(got <- do_aggr(MOPMX.1, method = "opm-fast",
+    boot = 100L))
   expect_true(all(unlist(has_aggr(got))))
   expect_false(any(unlist(has_disc(got))))
   got <- do_disc(got, TRUE)

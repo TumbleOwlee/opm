@@ -223,8 +223,11 @@ stopifnot(identical(dim(x), c(3L, 96L)))
 \alias{do_aggr,matrix-method}
 \usage{
   \S4method{do_aggr}{MOPMX}(object, ...) 
-  \S4method{do_aggr}{OPM}(object, boot = 100L, verbose = FALSE,
-    cores = 1L, options = list(), method = "grofit", plain = FALSE) 
+  \S4method{do_aggr}{OPM}(object, boot = 0L, verbose = FALSE,
+    cores = 1L, options = if (identical(method, "splines"))
+      set_spline_options()
+    else
+      list(), method = "splines", plain = FALSE) 
   \S4method{do_aggr}{OPMS}(object, ...) 
   \S4method{do_aggr}{matrix}(object, what = c("AUC", "A"),
     boot = 100L, ci = 0.95, as.pe = "median", ci.type = "norm",
