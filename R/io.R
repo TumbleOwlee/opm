@@ -22,6 +22,41 @@ read_new_opm <- function(filename) {
   new(OPM, measurements = data, metadata = list(), csv_data = comments)
 }
 
+read_lims_opm <- function(filename) {
+  possible_wells <- function(n = 12L) {
+    sprintf("%s%02i", rep(LETTERS, each = n), seq.int(n))
+  }
+  to_csv_data <- function(x) {
+    x <- strsplit(x, "=", TRUE)
+    x <- do.call(rbind, x[vapply(x, length, 0L) == 2L])
+    structure(x[, 2L], names = x[, 1L])
+  }
+  to_measurements <- function(x) {
+    x <- do.call(rbind, strsplit(chartr('"', " ", x), ",", TRUE))
+    storage.mode(x) <- "double"
+    colnames(x) <- c(HOUR, possible_wells())[seq.int(ncol(x))]
+    if (any(is.na(colnames(x))))
+      stop("measurement data contain too many columns")
+    # TODO: correct time points
+    x
+  }
+  con <- file(description = filename, encoding = opm_opt("file.encoding"))
+  on.exit(close(con))
+  if (!all(nzchar(x <- readLines(con = con, warn = FALSE))))
+    x <- x[nzchar(x)]
+  if (!length(x <- split.default(x, sections(x == "#"))) == 3L)
+    stop("input lines not in three #-separated sections")
+  x[[1L]] <- to_csv_data(x[[1L]][-1L])
+  pos <- match(c("plate_type", "plate_position", "time_start"), names(x[[1L]]))
+  if (any(is.na(pos)))
+    stop("missing plate type, position or setup time")
+  x[[3L]] <- c(filename, x[[1L]][pos])
+  names(x[[3L]]) <- CSV_NAMES
+  x[[1L]] <- as.list(x[[1L]][-pos])
+  x[[2L]] <- to_measurements(x[[2L]][-1L])
+  new(OPM, measurements = x[[2L]], csv_data = x[[3L]], metadata = x[[1L]])
+}
+
 read_old_opm <- function(filename) {
 
   prepare_comments <- function(x, filename) {
@@ -34,8 +69,8 @@ read_old_opm <- function(filename) {
   }
 
   con <- file(description = filename, encoding = opm_opt("file.encoding"))
+  on.exit(close(con))
   data <- readLines(con = con, warn = FALSE)
-  close(con)
   data <- strsplit(data, ",", TRUE) # fixed-string splitting most efficient
   data <- data[vapply(data, length, 0L) > 0L]
 
@@ -257,7 +292,8 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
 }
 
 file_pattern <- function(
-    type = c("both", "csv", "yaml", "json", "yorj", "any", "empty"),
+    type = c("both", "csv", "yaml", "json", "yorj", "lims", "nolims", "any",
+      "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs")) {
   make_pat <- function(x, compressed, enclose = "\\.%s$") {
     if (compressed)
@@ -280,9 +316,9 @@ file_pattern <- function(
     case(length(type), stop("'type' must be non-empty"), type,
       sprintf("(%s)", paste0(type, collapse = "|")))
   } else
-    case(match.arg(type), both = "(csv|ya?ml|json)", csv = "csv",
-      yaml = "ya?ml", json = "json", yorj = "(ya?ml|json)", any = "[^.]+",
-      empty = "")
+    case(match.arg(type), both = "(csv|exl|ya?ml|json)", csv = "(csv|exl)",
+      yaml = "ya?ml", json = "json", yorj = "(ya?ml|json)", lims = "exl",
+      nolims = "csv", any = "[^.]+", empty = "")
   make_pat(result, compressed)
 }
 
@@ -352,15 +388,20 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
 
 FILE_NOT_CSV <- file_pattern(type = "yorj", compressed = TRUE)
 
+FILE_LIMS <- file_pattern(type = "lims", compressed = TRUE)
+
 read_single_opm <- function(filename) {
   if (!file.exists(filename <- as.character(L(filename))))
     stop(sprintf("file '%s' does not exist", filename))
   routines <- list(`New CSV` = read_new_opm, `Old CSV` = read_old_opm,
     `MicroStation CSV` = read_microstation_opm)
   routines <- if (grepl(FILE_NOT_CSV, filename, TRUE, TRUE))
-      c(YAML = read_opm_yaml, routines)
+      c(YAML = read_opm_yaml, routines, `LIMS CSV` = read_lims_opm)
+    else if (grepl(FILE_LIMS, filename, TRUE, TRUE))
+      c(`LIMS CSV` = read_lims_opm, routines, YAML = read_opm_yaml)
     else
-      c(routines[get("input.try.order", OPM_OPTIONS)], YAML = read_opm_yaml)
+      c(routines[get("input.try.order", OPM_OPTIONS)],
+        `LIMS CSV` = read_lims_opm, YAML = read_opm_yaml)
   errs <- character(length(routines))
   for (i in seq_along(routines)) {
     result <- tryCatch(routines[[i]](filename), error = conditionMessage)
@@ -761,8 +802,8 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
 
   invisible(mapply(function(infile, out.base, out.ext) {
     con <- file(description = infile, encoding = opm_opt("file.encoding"))
+    on.exit(close(con))
     data <- readLines(con = con, warn = FALSE)
-    close(con)
     data <- sections(x = data, pattern = pattern, invert = invert,
       include = include, ...)
     if ((len <- length(data)) == 0L || (!single && len == 1L))

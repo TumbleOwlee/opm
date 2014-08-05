@@ -22,7 +22,8 @@
     literally = inherits(in.ext, "AsIs"), ...,
     verbose = TRUE, demo = FALSE)
 
-  file_pattern(type = c("both", "csv", "yaml", "json", "yorj", "any", "empty"),
+  file_pattern(type = c("both", "csv", "yaml", "json", "yorj", "lims", "nolims",
+    "any", "empty"),
     compressed = TRUE, literally = inherits(type, "AsIs"))
 
   glob_to_regex(object)
@@ -109,9 +110,12 @@
   be matched by extension. For historical reasons,
   \kbd{both} means either \acronym{CSV} or \acronym{YAML}
   \emph{or} \acronym{JSON}, whereas \kbd{yorj} means either
-  \acronym{YAML} or \acronym{JSON}. Alternatively, directly
-  the extension or extensions, or a list of file names (not
-  \code{NA}).}
+  \acronym{YAML} or \acronym{JSON}. \acronym{CSV} also
+  includes the \acronym{LIMS} \acronym{CSV} format
+  introduced in 2014, which can be specifically selected
+  using \kbd{lims} or excluded using \kbd{nolims}.
+  Alternatively, directly the extension or extensions, or a
+  list of file names (not \code{NA}).}
 
   \item{compressed}{Logical scalar. Shall compressed files
   also be matched?  This affects the returned pattern as

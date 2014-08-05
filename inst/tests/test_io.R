@@ -68,9 +68,9 @@ test_that("wildcards can be converted to regular expressions", {
 
 ## file_pattern
 test_that("file patterns can be constructed", {
-  default.pat <- "\\.(csv|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
+  default.pat <- "\\.(csv|exl|ya?ml|json)(\\.(bz2|gz|lzma|xz))?$"
   expect_equal(default.pat, file_pattern())
-  expect_equal("\\.csv$", file_pattern(type = "csv", compressed = FALSE))
+  expect_equal("\\.(csv|exl)$", file_pattern(type = "csv", compressed = FALSE))
   expect_equal("\\.(ya?ml|json)$", file_pattern(type = "yorj",
     compressed = FALSE))
 })
@@ -91,6 +91,9 @@ test_that("file patterns can be constructed", {
 ## read_new_opm
 ## UNTESTED
 
+## read_lims_opm
+## UNTESTED
+
 ## read_microstation_opm
 ## UNTESTED
 
@@ -98,6 +101,9 @@ test_that("file patterns can be constructed", {
 ## UNTESTED
 
 ## FILE_NOT_CSV
+## UNTESTED
+
+## FILE_LIMS
 ## UNTESTED
 
 ## read_single_opm
@@ -216,12 +222,12 @@ test_that("explode_dir finds the files it should find", {
   files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
     wildcard = FALSE)
   expect_true(all(grepl(TEST.DIR, files, fixed = TRUE)))
-  expect_equal(length(files), 9L)
+  expect_equal(length(files), 10L)
   expect_equal(names(files), NULL)
   files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
     exclude = "old", wildcard = FALSE)
   expect_true(all(grepl(TEST.DIR, files, fixed = TRUE)))
-  expect_equal(length(files), 5L)
+  expect_equal(length(files), 6L)
   expect_equal(names(files), NULL)
 })
 
@@ -240,10 +246,10 @@ test_that("explode_dir uses list pattern input", {
 
 ## explode_dir
 test_that("explode_dir uses globbing patterns", {
-  csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
+  csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "nolims"),
     wildcard = FALSE)
-  old.csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
-    exclude = "old", wildcard = FALSE)
+  old.csv.files <- explode_dir(TEST.DIR,
+    include = file_pattern(type = "nolims"), exclude = "old", wildcard = FALSE)
   files <- explode_dir(TEST.DIR, include = "*.csv.xz", wildcard = TRUE)
   expect_equal(files, csv.files)
   files <- explode_dir(TEST.DIR, include = "*.csv.xz", wildcard = TRUE,
@@ -253,10 +259,10 @@ test_that("explode_dir uses globbing patterns", {
 
 ## explode_dir
 test_that("explode_dir uses regex patterns", {
-  csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
+  csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "nolims"),
     wildcard = FALSE)
-  old.csv.files <- explode_dir(TEST.DIR, include = file_pattern(type = "csv"),
-    exclude = "old", wildcard = FALSE)
+  old.csv.files <- explode_dir(TEST.DIR,
+    include = file_pattern(type = "nolims"), exclude = "old", wildcard = FALSE)
   files <- explode_dir(TEST.DIR, include = ".*\\.csv\\.xz$",
     wildcard = FALSE)
   expect_equal(files, csv.files)
