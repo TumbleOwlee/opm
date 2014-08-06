@@ -115,7 +115,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # arbitrary thresholds, allowing intermediate ('weak') reactions
 summary(x <- do_disc(vaas_1, cutoff = c(75, 125)))
 # the intermediate reactions are coded as NA
-stopifnot(has_disc(x), dim(x) == dim(vaas_1), any(is.na(discretized(x))))
+stopifnot(has_disc(x), dim(x) == dim(vaas_1), anyNA(discretized(x)))
 (y <- disc_settings(x)) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
@@ -147,7 +147,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # arbitrary threshold, no ambiguity, no groups, with unification
 x <- do_disc(vaas_4, cutoff = 100, unify = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4))
-stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+stopifnot(anyNA(discretized(x))) # NAs caused by unification
 (y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "direct"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
@@ -180,7 +180,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # same, with unification
 x <- do_disc(vaas_4, cutoff = FALSE, groups = "Species", unify = TRUE)
 stopifnot(has_disc(x), dim(x) == dim(vaas_4))
-stopifnot(any(is.na(discretized(x)))) # NAs caused by unification
+stopifnot(anyNA(discretized(x))) # NAs caused by unification
 (y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "kmeans"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
@@ -189,7 +189,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # using best_cutoff(), groups defined by species affiliation (makes not
 # much sense and by default yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = "Species")
-stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
+stopifnot(has_disc(x), dim(x) == dim(vaas_4), anyNA(discretized(x)))
 (y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists
@@ -198,7 +198,7 @@ stopifnot(is.list(y), is.list(y$options)) # named lists
 # using best_cutoff(), single group for all plates (makes even less sense
 # and by default also yields warnings with these data)
 x <- do_disc(vaas_4, cutoff = NULL, groups = FALSE)
-stopifnot(has_disc(x), dim(x) == dim(vaas_4), any(is.na(discretized(x))))
+stopifnot(has_disc(x), dim(x) == dim(vaas_4), anyNA(discretized(x)))
 (y <- disc_settings(x)[[1]]) # stored discretisation settings
 stopifnot(identical(y$method, "best-cutoff"))
 stopifnot(is.list(y), is.list(y$options)) # named lists

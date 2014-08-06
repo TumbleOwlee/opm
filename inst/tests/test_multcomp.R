@@ -148,7 +148,7 @@ test_that("Pairs-like tests are converted by annotated() to continuous data", {
   expect_is(got, "numeric")
   expect_equal(length(got), 4L)
   expect_is(names(got), "character")
-  expect_true(!any(is.na(names(got))))
+  expect_true(!anyNA(names(got)))
   # full substrate names, wells second
   x <- opm_mcp(expl.opms, model = ~ J(run, Well),
     linfct = c(Pairs.Well = 1L), output = "mcp")
@@ -200,7 +200,7 @@ test_that("Pairs-like tests are converted by annotated() to binary data", {
   expect_is(got, "logical")
   expect_equal(length(got), 4L)
   expect_is(names(got), "character")
-  expect_true(!any(is.na(names(got))))
+  expect_true(!anyNA(names(got)))
   expect_true(all(got))
 
   got.2 <- annotated(x, output = "!0")
@@ -235,7 +235,7 @@ test_that("annotated() yields amino-acid vectors, matrices and data frames", {
   x <- annotated(EXPL.OPMS, "peptide")
   expect_is(x, "numeric")
   got <- names(x)
-  expect_true(any(is.na(got)))
+  expect_true(anyNA(got))
   expect_false(all(is.na(got)))
   x <- annotated(EXPL.OPMS, "peptide", how = "values")
   expect_is(x, "matrix")

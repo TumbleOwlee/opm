@@ -131,7 +131,7 @@
 \examples{
 # Character method; compare correct and misspelled substrate name
 (x <- substrate_info(c("D-Glucose", "D-Gloucose")))
-stopifnot(any(is.na(x)), !all(is.na(x)))
+stopifnot(anyNA(x), !all(is.na(x)))
 stopifnot(identical(x, # Factor method yields same result
   substrate_info(as.factor(c("D-Glucose", "D-Gloucose")))))
 

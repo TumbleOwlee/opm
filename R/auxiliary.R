@@ -525,7 +525,7 @@ setMethod("parse_time", c("character", "character"), function(object, format,
   result <- strptime(object, format[1L], tz)
   for (fmt in format[-1L])
     result[isna] <- strptime(object[isna <- is.na(result)], fmt, tz)
-  if (any(is.na(result)))
+  if (anyNA(result))
     warning("parsing time strings resulted in NA values")
   result
 }, sealed = SEALED)

@@ -639,10 +639,10 @@ test_that("character-matrix objects can be updated by converting NAs", {
   data <- as(data, CMAT)
 
   for (x in list(data, data + 1L, data * 2L)) {
-    expect_true(any(is.na(x)))
+    expect_true(anyNA(x))
     got <- update(x)
     expect_equal(length(unique(c(x))), length(unique(c(got))))
-    expect_false(any(is.na(got)))
+    expect_false(anyNA(got))
 
     expect_true(all(got[is.na(x)] > min(got, na.rm = TRUE)))
     expect_true(all(got[is.na(x)] < max(got, na.rm = TRUE)))

@@ -120,7 +120,7 @@ setClass(CMAT,
   contains = "matrix",
   validity = function(object) {
     errs <- character()
-    if (is.null(rownames(object)) || any(is.na(rownames(object))))
+    if (is.null(rownames(object)) || anyNA(rownames(object)))
       errs <- c(errs, "missing row names")
     mode <- typeof(object)
     if (mode == "list") {
@@ -178,7 +178,7 @@ setGeneric("opm_problems",
 setMethod("opm_problems", "matrix", function(object) {
   errs <- character()
   # Check content
-  if (any(is.na(object)))
+  if (anyNA(object))
     errs <- c(errs, "matrix contains NAs")
   if (!is.numeric(object))
     errs <- c(errs, "matrix is not numeric")

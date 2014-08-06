@@ -285,7 +285,7 @@ setMethod("register_plate", "missing", function(object, ...) {
 }, sealed = SEALED)
 
 setMethod("register_plate", "list", function(object, ...) {
-  valid_names <- function(n) length(n) && !any(is.na(n)) && all(nzchar(n))
+  valid_names <- function(n) length(n) && !anyNA(n) && all(nzchar(n))
   prepare_names <- function(n) {
     if (!valid_names(n))
       stop("all arguments must be validly named")

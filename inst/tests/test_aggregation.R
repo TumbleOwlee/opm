@@ -63,9 +63,9 @@ test_that("OPM objects can be aggregated using the fast method", {
   expect_is(x, "matrix")
   expect_equal(dim(x), c(12L, 10L))
   expect_equal(colnames(x), wells(fast.agg))
-  expect_true(any(is.na(x)))
+  expect_true(anyNA(x))
   x <- x[!grepl("^(mu|lambda)", rownames(x), perl = TRUE), ]
-  expect_false(any(is.na(x)))
+  expect_false(anyNA(x))
 
   x <- aggregated(fast.agg, subset = "mu")
   expect_is(x, "matrix")

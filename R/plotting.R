@@ -219,7 +219,7 @@ setGeneric("draw_ci", function(object, ...) standardGeneric("draw_ci"))
 setMethod("draw_ci", "numeric", function(object, col = "blue", cex = 1,
     na.action = c("warn", "error", "ignore")) {
   LL(object, .wanted = 4L)
-  if (any(is.na(c(left <- object[1L], right <- object[3L])))) {
+  if (anyNA(c(left <- object[1L], right <- object[3L]))) {
     msg <- "cannot draw CI because left or right margin is 'NA'"
     case(match.arg(na.action),
       warn = warning(msg),

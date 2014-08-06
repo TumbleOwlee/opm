@@ -106,7 +106,7 @@ stopifnot(identical(y, x))
 
 # Restrict to  a certain plate
 (x <- find_positions(c("D-Glucose", "D-Gloucose"), type = "Gen III"))
-stopifnot(is.character(x), any(is.na(x)), !all(is.na(x)))
+stopifnot(is.character(x), anyNA(x), !all(is.na(x)))
 
 # List method
 x <- find_positions(find_substrate(c("D-Glucose", "D-Gloucose")))

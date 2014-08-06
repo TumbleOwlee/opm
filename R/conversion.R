@@ -70,7 +70,7 @@ setMethod("merge", c(CMAT, "ANY"), function(x, y) {
 setMethod("merge", c(CMAT, "factor"), function(x, y) {
   if (length(y) != nrow(x)) # this also covers NULL row names
     stop("length of 'y' not equal to number of rows")
-  if (any(is.na(y)))
+  if (anyNA(y))
     stop("'y' must not contain NA values")
   if (length(levels(y)) == length(y))
     return(x)

@@ -35,7 +35,7 @@ read_lims_opm <- function(filename) {
     x <- do.call(rbind, strsplit(chartr('"', " ", x), ",", TRUE))
     storage.mode(x) <- "double"
     colnames(x) <- c(HOUR, possible_wells())[seq.int(ncol(x))]
-    if (any(is.na(colnames(x))))
+    if (anyNA(colnames(x)))
       stop("measurement data contain too many columns")
     # TODO: correct time points
     x
@@ -48,7 +48,7 @@ read_lims_opm <- function(filename) {
     stop("input lines not in three #-separated sections")
   x[[1L]] <- to_csv_data(x[[1L]][-1L])
   pos <- match(c("plate_type", "plate_position", "time_start"), names(x[[1L]]))
-  if (any(is.na(pos)))
+  if (anyNA(pos))
     stop("missing plate type, position or setup time")
   x[[3L]] <- c(filename, x[[1L]][pos])
   names(x[[3L]]) <- CSV_NAMES
