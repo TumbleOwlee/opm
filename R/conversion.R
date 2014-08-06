@@ -22,15 +22,16 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
   if (L(sort.first))
     x <- sort(x, by = "setup_time", parse = parse, na.last = TRUE)
   m <- do.call(rbind, measurements(x))
-  if (is.matrix(tp <- hours(x, what = "all"))) {
-    to.add <- c(0, must(cumsum(tp[-nrow(tp), ncol(tp), drop = FALSE]) + y))
+  if (is.matrix(tp <- hours(x, "all"))) {
+    to.add <- c(0, must(cumsum(tp[-nrow(tp), ncol(tp), drop = FALSE] + y)))
     m[, 1L] <- as.vector(t(tp + to.add))
   } else if (is.list(tp)) {
-    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], tail, 1, 1L)) + y))
+    to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], tail, 1, 1L) + y)))
     m[, 1L] <- unlist(mapply(`+`, tp, to.add, SIMPLIFY = FALSE,
-      USE.NAMES = FALSE))
-  } else
+      USE.NAMES = FALSE), FALSE, FALSE)
+  } else {
     stop(BUG_MSG)
+  }
   new(OPM, measurements = m, csv_data = csv_data(x[1L]),
     metadata = metadata(x[1L]))
 }, sealed = SEALED)

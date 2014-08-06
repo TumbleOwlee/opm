@@ -51,6 +51,7 @@ test_that("plates can be merged", {
   d1 <- dim(OPMS.INPUT)
   expect_equal(dim(x),
     c(dim(OPMS.INPUT[1L])[1L] + dim(OPMS.INPUT[2L])[1L], d1[3L]))
+  expect_false(any(duplicated(hours(x, "all"))))
   expect_warning(y <- opms(OPMS.INPUT[1L], OPMS.INPUT[2L, 1L:13L, ]))
   x <- merge(y)
   expect_equal(dim(x), c(dim(y[1L])[1L] + dim(y[2L])[1L], d1[3L]))

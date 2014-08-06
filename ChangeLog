@@ -1,7 +1,12 @@
 2014-08-XX (the 14the release on CRAN)
 
+- fixed bug in merge() that caused duplicate time points if more than two
+  plates were merged
 - dependencies updated from mboostDevel to mboost
 - default options of do_aggr() changed to 'method = "splines" boot = 0L'
+
+
+################################################################################
 
 
 2014-04-23 (the 13th release on CRAN)
