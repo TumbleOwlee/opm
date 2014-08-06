@@ -39,7 +39,7 @@ extract_curve_params.opm_model <- function(x, all = FALSE, ...) {
   x <- get_data(x)[, 1]
   ## quick and dirty
   deriv <- diff(pred) / diff(x)
-  slope <- max(deriv)
+  slope <- max(deriv, na.rm = TRUE)
   ## index of max. slope
   idx <- which.max(deriv):(which.max(deriv) + 1)
   ## x-value of max. slope
@@ -187,6 +187,9 @@ setMethod("do_aggr", OPM, function(object, boot = 0L, verbose = FALSE,
     result[map[["A.point.est"]], ] <- x
     result
   }
+
+  if (anyDuplicated.default(hours(object, "all")))
+    warning("duplicate time points are present, which makes no sense")
 
   if ((plate_type(object) %in% SPECIAL_PLATES ||
       custom_plate_is(plate_type(object))) && dim(object)[1] < 2L) {

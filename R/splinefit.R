@@ -11,12 +11,17 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
   if (is.null(weights))
     weights <- rep(1, nrow(data))
 
-  ## compute number of knots adaptive to the number of unique observations
-  ## (equal to behavior of smooth.spline(..., nknots = NULL) )
-  if (is.null(knots))
-    knots <- n_knots(length(unique(data[, x])))
-  ## PERHAPS USE OTHER METHOD TO GET NUMBER OF KNOTS. E.G. BASED ON ROUGHNESS
-  ## OF THE DATA
+  if (is.null(knots)) {
+    if (type == "smooth.spline") {
+      ## compute number of knots adaptive to the number of unique observations
+      ## (equal to behavior of smooth.spline(..., nknots = NULL) )
+      knots <- n_knots(length(unique(data[, x])))
+      ## PERHAPS USE OTHER METHOD TO GET NUMBER OF KNOTS. E.G. BASED ON
+      ## ROUGHNESS OF THE DATA
+    } else {
+      knots <- -1
+    }
+  }
 
   ## set up model formulae
   if (type == "p.spline" || type == "tp.spline") {
@@ -249,7 +254,7 @@ add_parameters <- function(model, add.deriv = FALSE, col = "red",
         abline(h = 0, lty = lty, col = deriv.col)
     }
     abline(a = x$intercept, b = x$mu, col = col, lty = lty, ...)
-    points(x$lambda, 0, col = col, ...)
+    points(x$lambda, 0, col = col, pch = 20, ...)
     abline(h = x$A, col = col, lty = lty, ...)
 }
 

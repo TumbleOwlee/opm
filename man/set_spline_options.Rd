@@ -17,7 +17,8 @@
 
   \item{knots}{Integer scalar. Determines the number of
   knots. Per default, the number of knots is chosen
-  adaptively to the number of unique observations.}
+  adaptively to the number of unique observations.  The
+  default number also depends on the spline \code{type}.}
 
   \item{gamma}{Integer scalar. Specifies a constant
   multiplier to inflate the degrees of freedom in the
