@@ -196,7 +196,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
   \S4method{heat_map}{data.frame}(object, as.labels,
     as.groups = NULL, sep = " ", ...) 
   \S4method{heat_map}{matrix}(object,
-    hclustfun = "ward", distfun = "euclidean", scale = "none",
+    hclustfun = "ward.D2", distfun = "euclidean", scale = "none",
     r.groups = "row.groups", r.col = opm_opt("colors"),
     c.groups = "col.groups", c.col = opm_opt("colors"),
     magnif = 4, cexRow = magnif[1L] / sqrt(nrow(object)),

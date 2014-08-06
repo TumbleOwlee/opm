@@ -2,8 +2,14 @@
 
 - fixed bug in merge() that caused duplicate time points if more than two
   plates were merged
+- improved behaviour of smoothing splines in the case of long runs (and those
+  made long using merge())
+
+- R >= 3.1.0 is now needed
 - dependencies updated from mboostDevel to mboost
 - default options of do_aggr() changed to 'method = "splines" boot = 0L'
+- default clustering method of heat_map() is now 'ward.D2', which implements
+  Ward's method correctly; see according change in R 3.1.0
 
 
 ################################################################################

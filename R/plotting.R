@@ -613,7 +613,7 @@ setMethod("ci_plot", OPMS, function(object, as.labels,
 setGeneric("heat_map", function(object, ...) standardGeneric("heat_map"))
 
 setMethod("heat_map", "matrix", function(object,
-    hclustfun = "ward", distfun = "euclidean", scale = "none",
+    hclustfun = "ward.D2", distfun = "euclidean", scale = "none",
     r.groups = "row.groups", r.col = opm_opt("colors"),
     c.groups = "col.groups", c.col = opm_opt("colors"),
     magnif = 4, cexRow = magnif[1L] / sqrt(nrow(object)),

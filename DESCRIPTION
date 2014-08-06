@@ -6,7 +6,7 @@ Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Nora Buddruhs and Anne Fiebig
 Maintainer: Markus Goeker <markus.goeker@dsmz.de>
 Depends:
-    R (>= 3.0.0)
+    R (>= 3.1.0)
 Imports:
     methods,
     lattice,
