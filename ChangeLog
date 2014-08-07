@@ -1,4 +1,5 @@
-2014-08-XX (the 14the release on CRAN)
+
+2014-08-XX (the 14th release on CRAN)
 
 - fixed bug in merge() that caused duplicate time points if more than two
   plates were merged
@@ -10,6 +11,8 @@
 - default options of do_aggr() changed to 'method = "splines" boot = 0L'
 - default clustering method of heat_map() is now 'ward.D2', which implements
   Ward's method correctly; see according change in R 3.1.0
+
+- new options for input file formats (support of LIMS CSV style)
 
 
 ################################################################################

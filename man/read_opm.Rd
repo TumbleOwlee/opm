@@ -77,13 +77,15 @@
 }
 \description{
   Read OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  or \pkg{opm} data file(s) in one of three possible
+  or \pkg{opm} data file(s) in one of four possible
   formats: either new- or old-style
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  \acronym{CSV} or \pkg{opm} \acronym{YAML} (including
-  \acronym{JSON}) format.
+  \acronym{CSV},
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{LIMS} format or \pkg{opm} \acronym{YAML}
+  (including \acronym{JSON}) format.
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
-  \acronym{CSV} are also understood, as well as files
+  \acronym{CSV} is also understood, as well as files
   compressed using \command{gzip}, \command{bzip2},
   \command{lzma} or \command{xz}. (Files can be
   specifically excluded using \code{include} and/or
@@ -101,6 +103,11 @@
   understood. For this reason, if any editing of the files
   was necessary at all, it is advisable to do this in an
   editor for plain text, not in a spreadsheet program.
+
+  The same holds for the
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{LIMS} format, which was introduced in 2014 and
+  uses the file extension \code{EXL}.
 
   Plates run in ID mode are automatically detected as such
   (their plate type is changed from \acronym{OTH} to the

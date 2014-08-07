@@ -52,9 +52,9 @@ read_lims_opm <- function(filename) {
     stop("missing plate type, position or setup time")
   x[[3L]] <- c(filename, x[[1L]][pos])
   names(x[[3L]]) <- CSV_NAMES
-  x[[1L]] <- lapply(as.list(x[[1L]][-pos]), type.convert, "NA", TRUE)
+  x[[1L]] <- lapply(x[[1L]][-pos], type.convert, "NA", TRUE)
   x[[2L]] <- to_measurements(x[[2L]][-1L])
-  x[[2L]][, 1L] <- x[[2L]][, 1L] * get("read_interval", x[[1L]]) / 60
+  x[[2L]][, 1L] <- (x[[2L]][, 1L] - 1) * get("read_interval", x[[1L]]) / 60
   new(OPM, measurements = x[[2L]], csv_data = x[[3L]], metadata = x[[1L]])
 }
 
