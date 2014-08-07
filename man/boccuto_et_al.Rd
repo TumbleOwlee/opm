@@ -63,5 +63,4 @@ register_plate(`CUSTOM:PM-M04` = wells(plate = "PM-M04"))
   Schwartz, C.E., pers. comm.
 }
 \keyword{datasets}
-\keyword{datasets}
 
