@@ -1,3 +1,25 @@
+Changes in version 1.2.0
+------------------------
+
+Bug fixes:
+
+- fixed bug in merge() potentially causing duplicate time points
+
+- better behaviour of splines with long run times
+
+Significant user-visible changes:
+
+- dependency on R >= 3.1.0 and mboost, removed mboostDevel
+
+- do_aggr() default is now 'method = "splines" boot = 0L'
+
+- heat_map() uses 'ward.D2' by default
+
+New features:
+
+- support of LIMS CSV style input format
+
+
 Changes in version 1.1.0
 ------------------------
 
