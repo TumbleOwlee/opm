@@ -36,22 +36,19 @@
   (2013) is gratefully acknowledged.
 }
 \examples{
-\dontrun{
-
-# Calling this yielded a variable 'boccuto_et_al' containing the data. The
-# opm package must be loaded beforehand using library().
+# This yields a variable 'boccuto_et_al' containing the data.
 data(boccuto_et_al)
 
 # Pseudo-aggregate the data (use a copy of each point measurement as
 # maximum-height value).
 boccuto_et_al <- do_aggr(boccuto_et_al)
-}
+
 # Copy the well maps of the pre-defined counterparts.
 register_plate(`CUSTOM:PM-M01` = wells(plate = "PM-M01"))
 register_plate(`CUSTOM:PM-M02` = wells(plate = "PM-M02"))
 register_plate(`CUSTOM:PM-M03` = wells(plate = "PM-M03"))
 register_plate(`CUSTOM:PM-M04` = wells(plate = "PM-M04"))
-# Now the data would be ready for analysis.
+# Now the data are ready for analysis.
 }
 \references{
   Boccuto, L., Chen, C.-F., Pittman, A.R., Skinner, C.D.,

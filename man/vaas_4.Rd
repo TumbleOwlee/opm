@@ -46,16 +46,11 @@
   in the \pkg{opmdata} package.
 }
 \examples{
-\dontrun{
+# This yields a variable 'vaas_4' containing the data.
+data(vaas_4, package = "opm")
 
-# Calling this yielded a variable 'vaas_4' containing the data. The opm
-# package must be loaded beforehand using library().
-data(vaas_4)
-
-# Calling this yielded a variable 'vaas_1' containing the data. The opm
-# package must be loaded beforehand using library().
-data(vaas_1)
-}
+# This yields a variable 'vaas_1' containing the data.
+data(vaas_1, package = "opm")
 }
 \references{
   Bochner, B.R., Savageau, M.A. 1977. Generalized indicator

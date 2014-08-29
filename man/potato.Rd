@@ -29,12 +29,9 @@
   the vignette on working with growth curves in \pkg{opm}.
 }
 \examples{
-\dontrun{
-
-# Calling this yielded a variable 'potato' containing the data. The opm
-# package must be loaded beforehand using library().
+# This yields a variable 'potato' containing the data.
 data(potato)
-}
+head(potato)
 }
 \references{
   Vaas, L. A. I., Marheine, M., Sikorski, J., Goeker, M.,
