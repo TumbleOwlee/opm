@@ -7,6 +7,8 @@ Bug fixes:
 
 - better behaviour of splines with long run times
 
+- included missing 'potato' data set
+
 Significant user-visible changes:
 
 - dependency on R >= 3.1.0 and mboost, removed mboostDevel
