@@ -237,32 +237,19 @@ stopifnot(is(y, "MOPMX"), length(y) == 2, !identical(x, y))
 \usage{
   \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, j, drop) 
   \S4method{[}{MOPMX,ANY,missing,missing}(x, i, j, drop) 
-  \S4method{[}{MOPMX,character,missing,ANY}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,character,missing,missing}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,expression,missing,ANY}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,expression,missing,missing}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,formula,missing,ANY}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,formula,missing,missing}(x, i, j,
-    drop) 
+  \S4method{[}{MOPMX,character,missing,ANY}(x, i, j, drop)
+  \S4method{[}{MOPMX,character,missing,missing}(x, i, j, drop)
+  \S4method{[}{MOPMX,expression,missing,ANY}(x, i, j, drop)
+  \S4method{[}{MOPMX,expression,missing,missing}(x, i, j, drop)
+  \S4method{[}{MOPMX,formula,missing,ANY}(x, i, j, drop)
+  \S4method{[}{MOPMX,formula,missing,missing}(x, i, j, drop)
   \S4method{[}{MOPMX,list,missing,ANY}(x, i, j, drop) 
-  \S4method{[}{MOPMX,list,missing,missing}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,missing,missing,ANY}(x, i, j,
-    drop) 
-  \S4method{[}{MOPMX,missing,missing,missing}(x, i, j,
-    drop) 
-  \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ...,
-    drop = FALSE) 
-  \S4method{[}{OPMA,ANY,ANY,ANY}(x, i, j, ...,
-    drop = FALSE) 
-  \S4method{[}{OPMD,ANY,ANY,ANY}(x, i, j, ...,
-    drop = FALSE) 
-  \S4method{[}{OPMS,ANY,ANY,ANY}(x, i, j, k, ...,
-    drop = FALSE) 
+  \S4method{[}{MOPMX,list,missing,missing}(x, i, j, drop)
+  \S4method{[}{MOPMX,missing,missing,ANY}(x, i, j, drop)
+  \S4method{[}{MOPMX,missing,missing,missing}(x, i, j, drop)
+  \S4method{[}{OPM,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
+  \S4method{[}{OPMA,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
+  \S4method{[}{OPMD,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
+  \S4method{[}{OPMS,ANY,ANY,ANY}(x, i, j, k, ..., drop = FALSE)
 }
 %% END INSERTION BY repair_S4_docu.rb

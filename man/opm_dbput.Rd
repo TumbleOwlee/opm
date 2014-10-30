@@ -166,31 +166,20 @@ if (interactive())
   \S4method{opm_dbclass}{OPMS}(object) 
   \S4method{opm_dbclass}{numeric}(object) 
 
-  \S4method{opm_dbclear}{character,ANY}(object, conn,
-    map.tables = NULL) 
-  \S4method{opm_dbclear}{integer,DBIConnection}(object, conn,
-    map.tables = NULL) 
-  \S4method{opm_dbclear}{integer,RODBC}(object, conn,
-    map.tables = NULL) 
+  \S4method{opm_dbclear}{character,ANY}(object, conn, map.tables = NULL)
+  \S4method{opm_dbclear}{integer,DBIConnection}(object, conn, map.tables = NULL)
+  \S4method{opm_dbclear}{integer,RODBC}(object, conn, map.tables = NULL)
 
-  \S4method{opm_dbfind}{character,DBIConnection}(object, conn,
-    map.tables = NULL) 
-  \S4method{opm_dbfind}{character,RODBC}(object, conn,
-    map.tables = NULL) 
+  \S4method{opm_dbfind}{character,DBIConnection}(object, conn, map.tables = NULL)
+  \S4method{opm_dbfind}{character,RODBC}(object, conn, map.tables = NULL)
 
-  \S4method{opm_dbget}{character,ANY}(object, conn,
-    map.tables = NULL, include = 2L) 
-  \S4method{opm_dbget}{integer,DBIConnection}(object, conn,
-    map.tables = NULL, include = 2L) 
-  \S4method{opm_dbget}{integer,RODBC}(object, conn,
-    map.tables = NULL, include = 2L) 
+  \S4method{opm_dbget}{character,ANY}(object, conn, map.tables = NULL, include = 2L)
+  \S4method{opm_dbget}{integer,DBIConnection}(object, conn, map.tables = NULL, include = 2L)
+  \S4method{opm_dbget}{integer,RODBC}(object, conn, map.tables = NULL, include = 2L)
 
-  \S4method{opm_dbnext}{ANY,ANY}(object, conn,
-    map.tables = NULL) 
-  \S4method{opm_dbnext}{OPM_DB,DBIConnection}(object, conn,
-    map.tables = NULL) 
-  \S4method{opm_dbnext}{OPM_DB,RODBC}(object, conn,
-    map.tables = NULL) 
+  \S4method{opm_dbnext}{ANY,ANY}(object, conn, map.tables = NULL)
+  \S4method{opm_dbnext}{OPM_DB,DBIConnection}(object, conn, map.tables = NULL)
+  \S4method{opm_dbnext}{OPM_DB,RODBC}(object, conn, map.tables = NULL)
 
   \S4method{opm_dbput}{ANY,ANY}(object, conn, ...) 
   \S4method{opm_dbput}{OPM_DB,DBIConnection}(object, conn,

@@ -151,8 +151,7 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
 \alias{duplicated,OPMS,missing-method}
 \usage{
   \S4method{anyDuplicated}{MOPMX,ANY}(x, incomparables, ...) 
-  \S4method{anyDuplicated}{MOPMX,missing}(x, incomparables,
-    ...) 
+  \S4method{anyDuplicated}{MOPMX,missing}(x, incomparables, ...)
   \S4method{anyDuplicated}{OPM,ANY}(x, incomparables, ...) 
   \S4method{anyDuplicated}{OPM,missing}(x, incomparables, ...) 
   \S4method{anyDuplicated}{OPMS,ANY}(x, incomparables, ...) 

@@ -245,8 +245,7 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
   \S4method{substrate_info}{character}(object,
     what = c("cas", "kegg", "drug", "metacyc", "chebi", "mesh", "seed",
       "downcase", "greek", "concentration", "html", "peptide", "peptide2",
-      "all"),
-    browse = 0L, download = FALSE, ...) 
+      "all"), browse = 0L, download = FALSE, ...)
   \S4method{substrate_info}{factor}(object, ...) 
   \S4method{substrate_info}{list}(object, ...) 
   \S4method{substrate_info}{substrate_match}(object, ...) 

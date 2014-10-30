@@ -249,7 +249,6 @@ stopifnot(is.data.frame(x), identical(dim(x), c(15360L, 6L)))
   \S4method{flatten}{OPM}(object, include = NULL, fixed = list(),
     factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
     numbers = FALSE, ...) 
-  \S4method{flatten}{OPMS}(object, include = NULL, fixed = list(),
-    ...) 
+  \S4method{flatten}{OPMS}(object, include = NULL, fixed = list(), ...)
 }
 %% END INSERTION BY repair_S4_docu.rb

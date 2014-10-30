@@ -253,28 +253,21 @@ stopifnot(identical(z, y))
   \S4method{edit}{WMDX}(name, ...) 
 
   \S4method{include_metadata}{MOPMX}(object, ...) 
-  \S4method{include_metadata}{OPM}(object, md,
-    keys = opm_opt("csv.keys"), ...) 
+  \S4method{include_metadata}{OPM}(object, md, keys = opm_opt("csv.keys"), ...)
   \S4method{include_metadata}{WMD}(object, md, keys, replace = FALSE,
     skip.failure = FALSE, remove.keys = TRUE, ...) 
   \S4method{include_metadata}{WMDS}(object, ...) 
 
   \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 
-  \S4method{map_metadata}{MOPMX,missing}(object, mapping,
-    values = TRUE, classes = "factor") 
+  \S4method{map_metadata}{MOPMX,missing}(object, mapping, values = TRUE, classes = "factor")
   \S4method{map_metadata}{WMD,FOE}(object, mapping,
     values = parent.frame(), classes = NULL) 
-  \S4method{map_metadata}{WMD,character}(object, mapping,
-    values = TRUE, classes = "factor") 
-  \S4method{map_metadata}{WMD,function}(object, mapping,
-    values = TRUE, classes = "ANY", ...) 
-  \S4method{map_metadata}{WMD,missing}(object, mapping,
-    values = TRUE, classes = "factor") 
+  \S4method{map_metadata}{WMD,character}(object, mapping, values = TRUE, classes = "factor")
+  \S4method{map_metadata}{WMD,function}(object, mapping, values = TRUE, classes = "ANY", ...)
+  \S4method{map_metadata}{WMD,missing}(object, mapping, values = TRUE, classes = "factor")
   \S4method{map_metadata}{WMDS,ANY}(object, mapping, ...) 
-  \S4method{map_metadata}{WMDS,missing}(object, mapping,
-    values = TRUE, classes = "factor") 
+  \S4method{map_metadata}{WMDS,missing}(object, mapping, values = TRUE, classes = "factor")
 
-  \S4method{map_values}{list,formula}(object, mapping,
-    coerce = parent.frame()) 
+  \S4method{map_values}{list,formula}(object, mapping, coerce = parent.frame())
 }
 %% END INSERTION BY repair_S4_docu.rb

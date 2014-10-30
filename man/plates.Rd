@@ -92,12 +92,9 @@ stopifnot(is.list(x), length(x) == 4, sapply(x, class) == "OPMD")
 \alias{plates,WMDS-method}
 \alias{plates,list-method}
 \usage{
-  \S4method{oapply}{MOPMX}(object, fun, ...,
-    simplify = TRUE) 
-  \S4method{oapply}{OPM}(object, fun, ...,
-    simplify = TRUE) 
-  \S4method{oapply}{OPMS}(object, fun, ...,
-    simplify = TRUE) 
+  \S4method{oapply}{MOPMX}(object, fun, ..., simplify = TRUE)
+  \S4method{oapply}{OPM}(object, fun, ..., simplify = TRUE)
+  \S4method{oapply}{OPMS}(object, fun, ..., simplify = TRUE)
 
   \S4method{plates}{MOPMX}(object) 
   \S4method{plates}{WMD}(object) 

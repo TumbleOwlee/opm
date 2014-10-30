@@ -51,4 +51,5 @@ head(potato)
   \emph{Annals of Improbable Research} \strong{1} (3).
 }
 \keyword{datasets}
+\keyword{datasets}
 

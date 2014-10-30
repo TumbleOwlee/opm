@@ -55,9 +55,7 @@ stopifnot(sapply(x.km, class) == "kmeans", names(x.km) == 1:10)
 \alias{run_kmeans,matrix,numeric-method}
 \alias{run_kmeans,numeric,numeric-method}
 \usage{
-  \S4method{run_kmeans}{matrix,numeric}(object, k,
-    cores = 1L, nstart = 10L, ...) 
-  \S4method{run_kmeans}{numeric,numeric}(object, k,
-    cores = 1L) 
+  \S4method{run_kmeans}{matrix,numeric}(object, k, cores = 1L, nstart = 10L, ...)
+  \S4method{run_kmeans}{numeric,numeric}(object, k, cores = 1L)
 }
 %% END INSERTION BY repair_S4_docu.rb

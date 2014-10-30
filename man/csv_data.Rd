@@ -128,8 +128,7 @@ stopifnot(sapply(metadata(x), length) > sapply(metadata(vaas_4), length))
 \alias{csv_data,OPMS-method}
 \usage{
   \S4method{csv_data}{MOPMX}(object, ...) 
-  \S4method{csv_data}{OPM}(object,
-    keys = character(), strict = TRUE,
+  \S4method{csv_data}{OPM}(object, keys = character(), strict = TRUE,
     what = c("select", "filename", "setup_time", "position", "other"),
     normalize = FALSE) 
   \S4method{csv_data}{OPMS}(object, ...) 

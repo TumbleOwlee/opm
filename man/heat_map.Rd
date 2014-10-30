@@ -193,8 +193,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
   \S4method{heat_map}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
     extract.args = list(), ...) 
-  \S4method{heat_map}{data.frame}(object, as.labels,
-    as.groups = NULL, sep = " ", ...) 
+  \S4method{heat_map}{data.frame}(object, as.labels, as.groups = NULL, sep = " ", ...)
   \S4method{heat_map}{matrix}(object,
     hclustfun = "ward.D2", distfun = "euclidean", scale = "none",
     r.groups = "row.groups", r.col = opm_opt("colors"),
@@ -208,8 +207,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
     else
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
-    abbrev = c("none", "row", "column", "both"),
-    ...,
+    abbrev = c("none", "row", "column", "both"), ...,
     use.fun = c("gplots", "stats")) 
 }
 %% END INSERTION BY repair_S4_docu.rb

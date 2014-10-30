@@ -110,13 +110,11 @@ stopifnot(length(x) > length(y))
 \alias{metadata_chars,WMDS-method}
 \usage{
   \S4method{metadata}{MOPMX}(object, ...) 
-  \S4method{metadata}{WMD}(object, key = NULL, exact = TRUE,
-    strict = FALSE) 
+  \S4method{metadata}{WMD}(object, key = NULL, exact = TRUE, strict = FALSE)
   \S4method{metadata}{WMDS}(object, ...) 
 
   \S4method{metadata_chars}{MOPMX}(object, ...) 
-  \S4method{metadata_chars}{WMD}(object, values = TRUE,
-    classes = "factor") 
+  \S4method{metadata_chars}{WMD}(object, values = TRUE, classes = "factor")
   \S4method{metadata_chars}{WMDS}(object, ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb

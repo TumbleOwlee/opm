@@ -258,16 +258,11 @@ stopifnot(is(x, "MOPMX"), length(x) == 1, class(x[[1]]) == "OPMS")
   \S4method{merge}{CMAT,logical}(x, y) 
   \S4method{merge}{MOPMX,ANY}(x, y) 
   \S4method{merge}{MOPMX,missing}(x, y) 
-  \S4method{merge}{OPM,OPM}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-  \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-  \S4method{merge}{OPM,numeric}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-  \S4method{merge}{OPMS,missing}(x, y, sort.first = TRUE,
-    parse = TRUE) 
-  \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE,
-    parse = TRUE) 
+  \S4method{merge}{OPM,OPM}(x, y, sort.first = TRUE, parse = TRUE)
+  \S4method{merge}{OPM,missing}(x, y, sort.first = TRUE, parse = TRUE)
+  \S4method{merge}{OPM,numeric}(x, y, sort.first = TRUE, parse = TRUE)
+  \S4method{merge}{OPMS,missing}(x, y, sort.first = TRUE, parse = TRUE)
+  \S4method{merge}{OPMS,numeric}(x, y, sort.first = TRUE, parse = TRUE)
 
   \S4method{split}{MOPMX,ANY,ANY}(x, f, drop) 
   \S4method{split}{MOPMX,ANY,missing}(x, f, drop) 

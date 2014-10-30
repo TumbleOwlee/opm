@@ -278,8 +278,7 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
   \S4method{metadata}{WMD,missing,FOE}(object, key) <- value
   \S4method{metadata}{WMD,missing,WMD}(object, key) <- value
   \S4method{metadata}{WMD,missing,WMDS}(object, key) <- value
-  \S4method{metadata}{WMD,missing,data.frame}(object,
-    key) <- value
+  \S4method{metadata}{WMD,missing,data.frame}(object, key) <- value
   \S4method{metadata}{WMD,missing,list}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMD}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMDS}(object, key) <- value
@@ -290,13 +289,11 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
   \S4method{metadata}{WMDS,ANY,WMDS}(object, key) <- value
   \S4method{metadata}{WMDS,ANY,data.frame}(object, key) <- value
   \S4method{metadata}{WMDS,character,WMDS}(object, key) <- value
-  \S4method{metadata}{WMDS,character,data.frame}(object,
-    key) <- value
+  \S4method{metadata}{WMDS,character,data.frame}(object, key) <- value
   \S4method{metadata}{WMDS,missing,FOE}(object, key) <- value
   \S4method{metadata}{WMDS,missing,WMD}(object, key) <- value
   \S4method{metadata}{WMDS,missing,WMDS}(object, key) <- value
-  \S4method{metadata}{WMDS,missing,data.frame}(object,
-    key) <- value
+  \S4method{metadata}{WMDS,missing,data.frame}(object, key) <- value
   \S4method{metadata}{WMDS,missing,list}(object, key) <- value
 }
 %% END INSERTION BY repair_S4_docu.rb
