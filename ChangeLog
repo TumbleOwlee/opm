@@ -1,5 +1,6 @@
 
-2014-09-20 (the 14th release on CRAN)
+
+2014-12-07 (the 14th release on CRAN)
 
 - fixed bug in merge() that caused duplicate time points if more than two
   plates were merged
