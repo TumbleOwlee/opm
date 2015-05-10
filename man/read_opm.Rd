@@ -94,20 +94,24 @@
 \details{
   The expected \acronym{CSV} format is what is output by an
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  instrument, one plate per file, or a
+  instrument, one plate per file. The data import section
+  of the \pkg{opm} tutorial provides a detailed description
+  of how to generate such files.
+
+  The output of a
   MicroStation\eqn{\textsuperscript{\texttrademark}}{(TM)}
-  instrument, with one to many plates per file. Other
-  formats, or
+  instrument, with one to many plates per file, can also be
+  read. The same holds for the
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{LIMS} format, which was introduced in 2014 and
+  uses the file extension \code{EXL}.
+
+  Other formats, or
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} files
   re-saved with distinct \acronym{CSV} settings, are not
   understood. For this reason, if any editing of the files
   was necessary at all, it is advisable to do this in an
   editor for plain text, not in a spreadsheet program.
-
-  The same holds for the
-  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
-  \acronym{LIMS} format, which was introduced in 2014 and
-  uses the file extension \code{EXL}.
 
   Plates run in ID mode are automatically detected as such
   (their plate type is changed from \acronym{OTH} to the
@@ -116,13 +120,15 @@
   later on by using \code{\link{gen_iii}}.
 
   It is \strong{impossible} to read \acronym{CSV} files
-  that contain more than one plate. For splitting old-style
-  and new-style \acronym{CSV} files into one file per
-  plate, see the example under \code{\link{split_files}}.
-  In contrast, input \acronym{YAML} files can contain data
-  from more than one plate. The format (which includes
-  \acronym{JSON}) is described in detail under
-  \code{\link{batch_opm}}.
+  that contain more than one plate. The data import section
+  of the \pkg{opm} tutorial provides a detailed description
+  of how to batch-generate many files with one plate per
+  file. For splitting old-style and new-style \acronym{CSV}
+  files into one file per plate, see the example under
+  \code{\link{split_files}}. In contrast, input
+  \acronym{YAML} files can contain data from more than one
+  plate. The format (which includes \acronym{JSON}) is
+  described in detail under \code{\link{batch_opm}}.
 
   For splitting lists of \code{\link{OPM}} objects
   according to the plate type, see
