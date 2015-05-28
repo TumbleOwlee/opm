@@ -246,12 +246,17 @@ setMethod("plate_type", "logical", function(object, ...) {
 
 setGeneric("gen_iii", function(object, ...) standardGeneric("gen_iii"))
 
-setMethod("gen_iii", OPM, function(object, to = "gen.iii") {
+setMethod("gen_iii", OPM, function(object, to = "gen.iii", force = FALSE) {
+  get <- function(name, map) map[[match.arg(tolower(name), names(map))]]
   if (custom_plate_is(L(to))) {
     to <- custom_plate_normalize(to)
     custom_plate_assert(to, colnames(object@measurements)[-1L])
-  } else
-    to <- SPECIAL_PLATES[[match.arg(tolower(to), names(SPECIAL_PLATES))]]
+  } else {
+    to <- get(to, if (L(force))
+      structure(names(PLATE_MAP), names = make.names(tolower(names(PLATE_MAP))))
+    else
+      SPECIAL_PLATES)
+  }
   object@csv_data[[CSV_NAMES[["PLATE_TYPE"]]]] <- to
   object
 }, sealed = SEALED)

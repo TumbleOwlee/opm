@@ -60,6 +60,11 @@
   passed to the \code{\link{MOPMX}} method, which recycles
   its \code{to} argument.}
 
+  \item{force}{Logical scalar allowing for changes to
+  essentially all plate types already know to \pkg{opm},
+  not only the special plate types listed above. Should be
+  used with care, of course.}
+
   \item{...}{Optional arguments passed between the methods.
   For \code{register_plate}, named arguments to be used if
   \code{object} is missing.}
@@ -272,7 +277,7 @@ stopifnot(!"CUSTOM:MYPLATE" \%in\% plate_type(TRUE))
 \alias{register_plate,missing-method}
 \usage{
   \S4method{gen_iii}{MOPMX}(object, ...) 
-  \S4method{gen_iii}{OPM}(object, to = "gen.iii") 
+  \S4method{gen_iii}{OPM}(object, to = "gen.iii", force = FALSE) 
   \S4method{gen_iii}{OPMS}(object, ...) 
 
   \S4method{plate_type}{MOPMX}(object, ..., normalize = FALSE, subtype = FALSE)
