@@ -154,6 +154,16 @@
   \code{opmx} also takes care of the necessary changes in
   format and naming for converting a data frame to a
   \code{\link{MOPMX}} object.
+
+  In contrast to functions for reading \acronym{PM} data,
+  \code{opmx} allows for input \code{NA} values by
+  removing, within each resulting pseudo-plate
+  (\code{\link{OPM}} object) individually, all time points
+  that contain at least one \code{NA} value. This might
+  lose information, of course, but not between plates, even
+  though it might yield \code{\link{OPMX}} objects with
+  non-uniform measurement times. A warning is issued in the
+  case of removal.
 }
 \examples{
 ## 'horizontal' input format

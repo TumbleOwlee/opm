@@ -15,6 +15,7 @@
   Ward's method correctly; see according change in R 3.1.0
 
 - new options for input file formats (support of LIMS CSV style)
+- opmx() deals with missing input values
 - gen_iii() gets a 'force' argument
 
 - some formal improvements in the manual (argument lists of methods)

@@ -1030,7 +1030,19 @@ setMethod("opmx", "data.frame", function(object,
     x
   }
 
-  # At this stage, 'x' must be a matrix acceptable as 'measurements' entry.
+  # Where 'x' must be a matrix acceptable as 'measurements' entry, but
+  # optionally containing NA values.
+  #
+  filter_times <- function(x) {
+    if (!any(bad <- rowSums(is.na(x)) > 0L))
+      return(x)
+    warning("removing ", sum(bad), " time points that contain NAs")
+    x[!bad, , drop = FALSE]
+  }
+
+  # At this stage, 'x' must be a matrix acceptable as 'measurements' entry, the
+  # only exception being that rows with NAs are removed. Not used for the
+  # 'horizontal' format.
   #
   create_opm_object <- function(x, position, plate.type, full.name, setup.time,
       filename) {
@@ -1042,7 +1054,7 @@ setMethod("opmx", "data.frame", function(object,
       custom_plate_set_full(plate.type, full)
     y <- c(L(filename), plate.type, position, L(setup.time))
     names(y) <- CSV_NAMES
-    new(OPM, measurements = x, csv_data = y, metadata = list())
+    new(OPM, measurements = filter_times(x), csv_data = y, metadata = list())
   }
 
   # 'plate.type' and 'full.name' must already be normalized at this stage.
@@ -1116,7 +1128,8 @@ setMethod("opmx", "data.frame", function(object,
         val <- x[, idx <- indexes[[i]], drop = FALSE]
         result[[i]] <- new("OPM", csv_data = cd[idx[1L], ],
           metadata = lapply(md[idx, , drop = FALSE], unique.default),
-          measurements = cbind(tp, val[, order(colnames(val)), drop = FALSE]))
+          measurements = filter_times(cbind(tp,
+            val[, order(colnames(val)), drop = FALSE])))
       }
       case(length(result), NULL, result[[1L]], new("OPMS", plates = result))
     }
