@@ -5,8 +5,8 @@
   batch_opm(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL,
     force.disc = FALSE, gen.iii = opm_opt("gen.iii"),
-    device = "mypdf", dev.args = NULL, plot.args = NULL,
-    csv.args = NULL,
+    force.plate = FALSE, device = "mypdf", dev.args = NULL,
+    plot.args = NULL, csv.args = NULL,
     table.args = list(sep = "\t", row.names = FALSE), ...,
     proc = 1L, outdir = "", overwrite = "no",
     output = c("yaml", "json", "csv", "xyplot", "levelplot", "split", "clean"),
@@ -41,6 +41,9 @@
   \item{force.disc}{Logical scalar. If \code{FALSE}, do not
   discretise already discretised data (which can be present
   in \acronym{YAML} input).}
+
+  \item{force.plate}{Logical scalar passed as \code{force}
+  argument to \code{\link{read_opm}}.}
 
   \item{device}{Character scalar describing the graphics
   device used for outputting plots. See \code{Devices} from

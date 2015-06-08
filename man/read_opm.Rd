@@ -6,7 +6,7 @@
   read_opm(names,
     convert = c("try", "no", "yes", "sep", "grp"),
     gen.iii = opm_opt("gen.iii"), include = list(), ...,
-    demo = FALSE)
+    force = FALSE, demo = FALSE)
 
   read_single_opm(filename)
 }
@@ -58,6 +58,10 @@
 
   \item{...}{Optional further arguments passed to
   \code{\link{explode_dir}}.}
+
+  \item{force}{Logical scalar passed to
+  \code{\link{gen_iii}} (if that function is called, see
+  the \code{gen.iii} argument).}
 
   \item{demo}{Logical scalar. Do not read files, but print
   a vector with the names of the files that would be

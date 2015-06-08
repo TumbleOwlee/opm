@@ -338,7 +338,8 @@ glob_to_regex.factor <- function(object) {
 }
 
 read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
-    gen.iii = opm_opt("gen.iii"), include = list(), ..., demo = FALSE) {
+    gen.iii = opm_opt("gen.iii"), include = list(), ..., force = FALSE,
+    demo = FALSE) {
   do_split <- function(x) split(x, vapply(x, plate_type, ""))
   do_opms <- function(x) case(length(x), , x[[1L]], new(OPMS, plates = x))
   convert <- match.arg(convert)
@@ -354,7 +355,7 @@ read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
     logical = if (gen.iii)
       result <- lapply(result, gen_iii),
     character = if (nzchar(gen.iii))
-      result <- lapply(result, gen_iii, to = gen.iii),
+      result <- lapply(result, gen_iii, to = gen.iii, force = force),
     stop("'gen.iii' must either be logical or character scalar")
   )
   case(length(result),
@@ -561,8 +562,8 @@ setMethod("to_metadata", MOPMX, function(object, stringsAsFactors = FALSE,
 
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     force.aggr = FALSE, disc.args = NULL, force.disc = FALSE,
-    gen.iii = opm_opt("gen.iii"), device = "mypdf", dev.args = NULL,
-    plot.args = NULL, csv.args = NULL,
+    gen.iii = opm_opt("gen.iii"), force.plate = FALSE, device = "mypdf",
+    dev.args = NULL, plot.args = NULL, csv.args = NULL,
     table.args = list(sep = "\t", row.names = FALSE),
     ..., proc = 1L, outdir = "", overwrite = "no",
     output = c("yaml", "json", "csv", "xyplot", "levelplot", "split", "clean"),
@@ -596,12 +597,12 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
       logical = if (gen.iii) {
         if (verbose)
           message("conversion: changing to 'Generation III'...")
-        data <- gen_iii(data)
+        data <- gen_iii(data, force = force.plate)
       },
       character = if (nzchar(gen.iii)) {
         if (verbose)
           message(sprintf("conversion: changing to '%s'...", gen.iii))
-        data <- gen_iii(data, to = gen.iii)
+        data <- gen_iii(data, to = gen.iii, force = force.plate)
       },
       stop("'gen.iii' must either be a logical or a character scalar")
     )
@@ -697,7 +698,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   graphics_format_map <- function() c(bitmap = "bmp", mypdf = "pdf",
     postscript = "ps", cairo_pdf = "pdf", cairo_ps = "ps")
 
-  LL(force.aggr, force.disc, gen.iii, device, overwrite)
+  LL(force.aggr, force.disc, gen.iii, force.plate, device, overwrite)
 
   # If a metadata file name is given, read it into data frame right now to
   # avoid opening the file each time in the batch_process() loop

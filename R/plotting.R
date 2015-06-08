@@ -724,7 +724,7 @@ setMethod("heat_map", "matrix", function(object,
   LL(asqr, log1)
   if (is.na(asqr) || asqr) {
     if (log1)
-      stop("log and asrq tranformation cannot both be chosen")
+      stop("log and asrq transformation cannot both be chosen")
     object[] <- do_asqr(object, is.na(asqr))
   } else if (log1)
     object[] <- log1p(object)
