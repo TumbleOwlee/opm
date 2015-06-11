@@ -104,6 +104,24 @@
   \code{\link{WMDS}} object with accordingly modified
   metadata.
 
+  Two kinds of errors can occur when attempting to identify
+  a data-frame row using the given combination of keys and
+  values. \itemize{ \item{The combination results in more
+  than a single row.} \item{The combination results in now
+  rows at all.} } The according error message puts the
+  failed values in single quotes, doubling all contained
+  single quotes, if any. This eases recognising leading and
+  trailing spaces, which are frequent cause of mismatches
+  between data-frame fields and \code{\link{csv_data}}
+  within \code{\link{WMD}} objects. This in turn is often
+  due to leading or trailing spaces being lost when
+  inputting \acronym{CSV} files again. Consider setting
+  \code{strip.white} to \code{FALSE} in such cases. A
+  potential cause of mismatches is the reformatting of
+  setup time entries by spreadsheet software. This could be
+  prevented by forcing that software to treat the setup
+  time as character strings.
+
   Calling \code{edit} will only work if
   \code{\link{to_metadata}} yields a data frame suitable
   for the \code{edit} method from the \pkg{utils} package.

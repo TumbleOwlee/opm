@@ -268,9 +268,9 @@ setMethod("include_metadata", WMD, function(object, md, keys, replace = FALSE,
 
   # Try to select the necessary information from the metadata.
   found <- pick_from(md, selection)
-  msg <- case(nrow(found), listing(selection,
+  msg <- case(nrow(found), listing(lapply(selection, safe_labels, "nexus"),
       header = "could not find this key/value combination in 'metadata':"),
-    NULL, listing(selection,
+    NULL, listing(lapply(selection, safe_labels, "nexus"),
       header = "the selection resulted in more than one row for:"))
 
   # Failures.

@@ -13,7 +13,9 @@
 }
 \arguments{
   \item{files}{Character vector or convertible to such.
-  Names of the files to be split.}
+  Names of the files to be split. In contrast to functions
+  such as \code{\link{read_opm}}, names of directories are
+  not supported (will not be expanded to lists of files).}
 
   \item{pattern}{Regular expression or shell globbing
   pattern for matching the separator lines if \code{invert}
@@ -79,7 +81,9 @@
   \code{invert} listed above.}
 
   \item{x}{Character vector or convertible to such. Names
-  of the files to be modified.}
+  of the files to be modified. In contrast to functions
+  such as \code{\link{read_opm}}, names of directories are
+  not supported (will not be expanded to lists of files).}
 
   \item{overwrite}{Logical scalar. Overwrite already
   existing files, and do not care for duplicate names

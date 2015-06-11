@@ -61,6 +61,47 @@
   Optionally coerce data of other types.
 }
 \details{
+  If a named list is used as \code{key} argument, its names
+  will be used within the first level of the resulting
+  nested or non-nested list.  That is, \code{key} can be
+  used to translate names on the fly, and this can be used
+  by all functions that call \code{metadata} indirectly,
+  usually via an \code{as.labels} or \code{as.groups}
+  argument.
+
+  Even though it is not technically impossible, it is
+  usually a bad idea to select metadata entries using
+  numeric (positional) or logical keys. The problem is
+  that, in contrast to, e.g., data frames, their is no
+  guarantee that metadata entries with the same name occur
+  in the same position, even if they belong to
+  \code{\link{WMD}} objects within a single
+  \code{\link{WMDS}} object.
+
+  Note that \code{key = c("a", "b")} would search for an
+  element named \code{b} \emph{within} the element named
+  \code{a}. To extract two elements at the same (highest)
+  level, \code{key = list("a", "b")} should be used.  This
+  prevents many \sQuote{subscript out of bounds} errors.
+
+  Formulae passed as \code{key} argument are treated by
+  ignoring the left side (if any) and converting the right
+  side to a list or other vector. Code enclosed in \code{I}
+  is evaluated with a call to \code{eval}. It is up to the
+  user to ensure that this call succeeds and yields a
+  character vector or a list. Operators in all other code
+  within the formula are used just as separators, and all
+  names are converted to character scalars. The \code{$}
+  operator binds tightly, i.e. it separates elements of a
+  character vector (for nested querying) in the output. The
+  same effect have other operators of high precedence such
+  as \code{::} but their use is not recommended. All
+  operators with a lower precedence than \code{$} separate
+  list elements.
+
+  Additional options when using formulae are described
+  under \code{\link{extract}}.
+
   The result of \code{metadata_chars} can be used to create
   a mapping for \code{\link{map_metadata}}. The
   \code{\link{WMDS}} method just applies the
