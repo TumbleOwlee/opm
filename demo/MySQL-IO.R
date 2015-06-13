@@ -28,7 +28,7 @@ if (exists("OPM_MYSQL_DB")) {
 }
 
 print(dbname)
-conn <- dbConnect("MySQL", dbname = dbname)
+conn <- dbConnect(MySQL(), dbname = dbname)
 
 #' ### Check without metadata
 

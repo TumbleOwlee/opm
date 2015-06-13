@@ -29,7 +29,7 @@ if (exists("OPM_SQLITE_DB")) {
 }
 
 print(dbname)
-conn <- dbConnect("SQLite", dbname = dbname)
+conn <- dbConnect(SQLite(), dbname = dbname)
 
 #' Next comes an `SQLite`-specific command necessary to enable the deletion
 #' mechanism. Must be called each time the database is opened:
