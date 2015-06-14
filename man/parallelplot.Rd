@@ -98,6 +98,9 @@
   between experimental repetitions occur?  }
 }
 \examples{
+if ("package:lattice" \%in\% search())
+  detach("package:lattice") # only necessary for knitr
+
 ## OPM objects
 
 parallelplot(vaas_1)

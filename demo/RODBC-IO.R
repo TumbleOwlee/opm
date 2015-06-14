@@ -63,6 +63,7 @@ if (all(result == "ok")) {
 
 
 odbcClose(conn)
+rm(conn)
 
 print(result)
 stopifnot(result == "ok")
@@ -71,3 +72,4 @@ stopifnot(result2 == "ok")
 
 
 detach("package:RODBC")
+

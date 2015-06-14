@@ -28,7 +28,7 @@ if (exists("OPM_SQLITE_DB")) {
   dbname <- Sys.getenv("OPM_SQLITE_DB", file.path("misc", "pmdata.db"))
 }
 
-print(dbname)
+print(basename(dbname))
 conn <- dbConnect(SQLite(), dbname = dbname)
 
 #' Next comes an `SQLite`-specific command necessary to enable the deletion
@@ -64,6 +64,7 @@ if (all(result == "ok")) {
 
 
 dbDisconnect(conn)
+rm(conn)
 
 print(result)
 stopifnot(result == "ok")
@@ -71,5 +72,5 @@ print(result2)
 stopifnot(result2 == "ok")
 
 
-detach("package:RSQLite")
+detach("package:RSQLite", unload = TRUE)
 

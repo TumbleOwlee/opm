@@ -60,6 +60,7 @@ if (all(result == "ok")) {
 
 
 dbDisconnect(conn)
+rm(conn)
 
 print(result)
 stopifnot(result == "ok")
