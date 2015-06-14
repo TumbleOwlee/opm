@@ -175,9 +175,11 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
       on.exit(opm_opt(time.fmt = old))
       opm_opt(time.fmt = c(fmt, old))
     }
-    c(sapply(setdiff(slotNames(a), "csv_data"),
-      function(n) all.equal(slot(a, n), slot(b, n))),
-      all.equal(csv_data(a, normalize = TRUE), csv_data(b, normalize = TRUE)))
+    sn <- setdiff(slotNames(a), "csv_data")
+    result <- lapply(sn, function(n) all.equal(slot(a, n), slot(b, n)))
+    names(result) <- sn
+    c(unlist(result), csv_data = all.equal(csv_data(a, normalize = TRUE),
+      csv_data(b, normalize = TRUE)))
   }
   x <- vaas_4[1L:2L, time.points, wells]
   metadata(x) <- structure(list(), names = character())
@@ -200,13 +202,13 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     opm_dbclear(ids, conn)
     result[[step <- step + 1L]] <- "ok"
     if (!is(y, MOPMX) || length(y) != 1L)
-      stop("expect MOPMX object of length 1")
+      stop("expected MOPMX object of length 1")
     result[[step <- step + 1L]] <- "ok"
     last2 <- opm_dbnext(y, conn)
     y <- y[[1L]]
-    cmp <- sapply(seq_along(x), function(i) slots_equal(y[i], x[i]))
+    cmp <- unlist(lapply(seq_along(x), function(i) slots_equal(y[i], x[i])))
     if (!is.logical(cmp))
-      stop(paste0(cmp, collapse = " / "))
+      stop(paste(names(cmp), cmp, sep = ": ", collapse = " / "))
     result[[step <- step + 1L]] <- "ok"
     last3 <- opm_dbnext(2L, conn)
     result[[step <- step + 1L]] <- "ok"

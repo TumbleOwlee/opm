@@ -3,7 +3,8 @@
 -- -----------------------------------------------------------------------------
 --
 -- Code for removing the tables that hold PM data in the correct order. Tested
--- with PostgreSQL (9.1), SQLite (3.7.9) and MySQL (5.5.32).
+-- with PostgreSQL (9.1, 9.3.8), SQLite (3.7.9, 3.8.2) and MySQL (5.5.32,
+-- 5.5.43).
 --
 -- -----------------------------------------------------------------------------
 

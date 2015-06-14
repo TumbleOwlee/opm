@@ -26,7 +26,7 @@ x <- t(extract(vaas_4, list("Species", "Strain")))
 #' The default distance method is based on correlations, which makes not much
 #' sense for the usual application of PM data, at least not for *vaas_4*. (It
 #' could be preferable to Euclidean distances if the overall reaction levels
-#' were different between organisms because of experimental artifacts.) Several
+#' were different between organisms because of experimental artefacts.) Several
 #' other distance measures could be applicable, however, as well as clustering
 #' algorithms other than the default average-linkage clustering.
 

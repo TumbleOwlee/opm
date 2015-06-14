@@ -581,6 +581,7 @@ setAs("OPMD", "OPMD_DB", function(from) {
   x <- forward_OPMA_to_list(from)
   d.sets <- settings_forward(from@disc_settings, x$plates[, "id"])
   d.data <- from@discretized
+  storage.mode(d.data) <- "integer" # RMySQL might otherwise set all to FALSE
   d.data <- data.frame(id = seq_along(d.data), stringsAsFactors = FALSE,
     well_id = match(names(d.data), x$wells[, "coordinate"]),
     disc_setting_id = 1L, value = unname(d.data), check.names = FALSE)

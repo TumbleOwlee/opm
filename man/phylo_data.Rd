@@ -117,7 +117,7 @@
   \item{discrete.args}{Optional list of arguments passed
   from the \code{\link{OPMS}} method to
   \code{\link{discrete}}. If set to \code{NULL},
-  discretisation is turned off. Ignored if precomputed
+  discretisation is turned off. Ignored if stored
   discretised values are chosen by setting \code{subset} to
   \code{\link{param_names}("disc.name")}.}
 

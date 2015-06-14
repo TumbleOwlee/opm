@@ -3,9 +3,9 @@
 -- -----------------------------------------------------------------------------
 --
 -- Code for creating the tables that hold PM data in the correct order. Tested
--- with PostgreSQL (9.1), SQLite (3.7.9) and MySQL (5.5.32). The SQL phrasing
--- used is unnecessarily verbose for some of these RDBMS but guarantees that
--- all of them work as expected.
+-- with PostgreSQL (9.1, 9.3.8), SQLite (3.7.9, 3.8.2) and MySQL (5.5.32,
+-- 5.5.43). The SQL phrasing used is unnecessarily verbose for some of these
+-- RDBMS but guarantees that all of them work as expected.
 --
 -- -----------------------------------------------------------------------------
 

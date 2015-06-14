@@ -37,7 +37,7 @@ dim(wittmann_small)
 
 #' ### Display phenotypic similarity of strains using a heat map approach
 #' * The row dendrogram will be coloured by the metadata information on
-#'   phylogenetic clusters "Ax1", "Ax2", "Ax4" and "Ax6"
+#'   phylogenetic clusters `Ax1`, `Ax2`, `Ax4` and `Ax6`
 #' * The curve parameter "Area under the Curve" (`AUC`) will be used
 #'
 #+  fig.width = 15, fig.height = 8
@@ -53,12 +53,12 @@ heat_map(wittmann_small,
   ylab = "strains, replicates, and their MLST cluster affiliation")
 
 #' ### Result:
-#' * Obviously the four phylogenetic clades "Ax1", "Ax2", "Ax4" and "Ax6",
+#' * Obviously the four phylogenetic clades `Ax1`, `Ax2`, `Ax4` and `Ax6`,
 #'   indicated by the four different colours on the row dendrogram, fit to
 #'   the phenotypic similarity clustering
-#' * Only one strain from clade "Ax2" (strain `CCUG` 47074, second replicate)
-#'   falls into the phenotypic similarity cluster of clade "Ax4"
-#' * Similarly, a clade "Ax4" strain clusters with "Ax2" strains with respect
+#' * Only one strain from clade `Ax2` (strain `CCUG` 47074, second replicate)
+#'   falls into the phenotypic similarity cluster of clade `Ax4`
+#' * Similarly, a clade `Ax4` strain clusters with `Ax2` strains with respect
 #'   to the phenotype
 #'
 #' ### Are these phenotypic similarity clusters statistically robust?
@@ -100,8 +100,8 @@ mcp.summary
 
 #' ### Result:
 #' * There is no statistically significant difference across all `AUC` values
-#'   between the strains of the different phylogenetic clades "Ax1", "Ax2",
-#'   "Ax4" and "Ax6".
+#'   between the strains of the different phylogenetic clades `Ax1`, `Ax2`,
+#'   `Ax4` and `Ax6`.
 #' * Though there is no statistical support, the graphical analysis using the
 #'   heat map approach suggest a correlation between phylogenetic similarity and
 #'   phenotypic similarity.
