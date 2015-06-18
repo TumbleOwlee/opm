@@ -187,6 +187,7 @@ setMethod("opm_problems", "matrix", function(object) {
     errs <- c(errs, "non-empty row names")
   # Check column names
   col.names <- colnames(object)
+  # Pattern must be in sync with clean_coords() and is_coord()
   pattern <- sprintf("^([A-H][01]\\d|%s)$", HOUR)
   if (length(bad <- grep(pattern, col.names, invert = TRUE, value = TRUE)))
     errs <- c(errs, paste("invalid entry in header:", bad[1L]))

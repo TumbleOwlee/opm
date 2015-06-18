@@ -20,18 +20,21 @@
   Several plates and even several plate types can be
   contained within \code{object}.}
   \item{rectangular}{Several rows and columns per time
-  point, yielding a set of rectangles per plate. Only a
-  single plate, and only measurements are contained within
+  point, yielding a set of (potentially incomplete)
+  rectangles per plate. Empty columns are skipped; empty
+  rows are skipped or act as separator. Only a single
+  plate, and only measurements are contained within
   \code{object}, thus some of the other arguments cannot be
   empty. See the \code{interval} argument for setting time
-  points.} \item{vertical}{One column per well. Only a
-  single plate, and only measurements and time points are
-  contained within \code{object}, thus some of the other
-  arguments cannot be empty. The time points are either
-  contained as column or can be read from the row names.
-  Ideally, they are given in hours.If \code{object} has no
-  column names, the first column or the row names yield the
-  time points.} }}
+  points and see \code{sep} for details of the format.}
+  \item{vertical}{One column per well. Only a single plate,
+  and only measurements and time points are contained
+  within \code{object}, thus some of the other arguments
+  cannot be empty. The time points are either contained as
+  column or can be read from the row names. Ideally, they
+  are given in hours.If \code{object} has no column names,
+  the first column or the row names yield the time points.}
+  }}
 
   \item{position}{Character vector. In \sQuote{horizontal}
   format, the name of one to several columns to be joined
@@ -95,14 +98,28 @@
   \item{prefix}{Character scalar. In \sQuote{horizontal}
   format, used for identifying the measurements columns.}
 
-  \item{sep}{Character scalar. In \sQuote{rectangular}
-  format, used for identifying the rows and column with
-  time-points and well coordinates.}
+  \item{sep}{Character vector, numeric scalar, or empty. In
+  \sQuote{rectangular} format, used for identifying the
+  rows and column with time-points and well coordinates. If
+  empty, \code{object} is split at rows containing only
+  \code{NA} values or empty strings. If a positive number,
+  \code{object} is split into section with that many rows.
+  If a non-empty character vector, rows harbouring values
+  contained in \code{sep} are regarded as the first row of
+  each section.
+
+  Well coordinates can be missing from each rectangle
+  unless \code{sep} is a non-empty character vector. If
+  present, they must comprise single letters in one column
+  and values interpretable as integers in the first row, or
+  otherwise around. If missing, in the case of more rows
+  than columns letters are assigned to the columns, numbers
+  to the rows, else otherwise around.}
 
   \item{full.name}{Named character vector indicating the
-  full plate names. Ignored if empty. Names should be names
-  of the plate types found within \code{object}, if any,
-  but normalisation will be done. Values should be the
+  full plate names.  Ignored if empty. Names should be
+  names of the plate types found within \code{object}, if
+  any, but normalisation will be done. Values should be the
   respective full names. Missing ones are silently ignored.
 
   If the plate type is not found within \code{object}, then
@@ -135,6 +152,13 @@
   \code{interval}. Ideally, \code{interval} is given in
   hours (because this corresponds to the default axis
   labelling of some plotting functions).}
+
+  \item{na.strings}{Character vector passed to
+  \code{type.convert} from the \pkg{utils} package.
+  Currently only relevant for the \sQuote{rectangular}
+  format.}
+
+  \item{dec}{Likewise.}
 }
 \value{
   \code{\link{OPMX}} or \code{\link{MOPMX}} object or
@@ -276,7 +300,8 @@ register_plate(XYZ = NULL) # tidying up
 \usage{
   \S4method{opmx}{data.frame}(object,
     format = c("horizontal", "rectangular", "vertical"), plate.type = NULL,
-    position = NULL, well = NULL, prefix = "T_", sep = "<>", full.name = NULL,
-    setup.time = date(), filename = "", interval = NULL) 
+    position = NULL, well = NULL, prefix = "T_", sep = object[1L, 1L],
+    full.name = NULL, setup.time = date(), filename = "", interval = NULL,
+    na.strings = "NA", dec = ".") 
 }
 %% END INSERTION BY repair_S4_docu.rb

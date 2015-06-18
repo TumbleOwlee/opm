@@ -895,7 +895,38 @@ test_that("MOPMX example data can be converted to YAML", {
 
 
 ## opmx
-## UNTESTED
+test_that("opmx can convert irregular formats", {
+
+  text <- c("\t\t\t",
+    "\t13\t12\t21",
+    "\t56\t18\t7",
+    "\t\t\t",
+    "\t14\t13\t22",
+    "\t57\t19\t8",
+    "\t\t\t")
+  con <- textConnection(text)
+  x <- read.table(con, sep = "\t")
+  close(con)
+
+  # empty 'sep' argument
+  got1 <- opmx(x, format = "rectangular", sep = NULL, plate.type = I("test"),
+    position = 1L)
+  expect_is(got1, OPM)
+  expect_equal(dim(got1), c(2L, 6L))
+
+  # number as 'sep' argument
+  expect_error(got <- opmx(x, format = "rectangular", sep = 3L,
+    plate.type = I("test"), position = 1L)) # does not work (1 line too many)
+  got2 <- opmx(x[-1L, ], format = "rectangular", sep = 3L,
+    plate.type = I("test"), position = 1L)
+  expect_is(got2, OPM)
+  expect_equal(dim(got2), c(2L, 6L))
+  expect_equal(got1, got2)
+
+  # NA as 'sep' argument (does not work because row/column names are missing)
+  expect_error(opmx(x, format = "rectangular", sep = NA_character_,
+    plate.type = I("test"), position = 1L))
+})
 
 
 ################################################################################

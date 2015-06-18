@@ -948,45 +948,111 @@ setGeneric("opmx", function(object, ...) standardGeneric("opmx"))
 
 setMethod("opmx", "data.frame", function(object,
     format = c("horizontal", "rectangular", "vertical"), plate.type = NULL,
-    position = NULL, well = NULL, prefix = "T_", sep = "<>", full.name = NULL,
-    setup.time = date(), filename = "", interval = NULL) {
+    position = NULL, well = NULL, prefix = "T_", sep = object[1L, 1L],
+    full.name = NULL, setup.time = date(), filename = "", interval = NULL,
+    na.strings = "NA", dec = ".") {
+
+  try_numeric <- function(x, na.strings, dec) {
+    if (is.numeric(x))
+      return(x)
+    type.convert(x, na.strings, TRUE, dec)
+  }
+
+  convert_interval <- function(x, y) {
+    if (length(x) == 1L)
+      return(x * (seq_len(y) - 1L))
+    if (length(x) != y)
+      stop(sprintf("expected 1 or %i as length of non-empty 'interval', got %i",
+        y, length(x)))
+    if (!is.numeric(x))
+      stop("non-empty 'interval' must be numeric")
+    x
+  }
 
   # Create a matrix acceptable as 'measurements' entry.
   #
-  convert_rectangular_matrix <- function(x, sep, interval) {
-    convert_time_point <- function(x) {
-      n <- as.integer(x[1L, -1L, drop = TRUE])
-      n <- vapply(x[-1L, 1L], sprintf, character(length(n)), fmt = "%s%02i", n)
-      x <- t(as.matrix(x[-1L, -1L]))
-      converted <- tryCatch({
-          storage.mode(x) <- "numeric"
-          TRUE
-        }, warning = function(w) FALSE)
-      if (converted)
-        structure(c(x), names = toupper(c(n)))
+  convert_rectangular_matrix <- function(x, sep, interval, na.strings, dec) {
+
+    empty <- function(x) {
+      if (is.character(x))
+        !nzchar(x) | is.na(x)
       else
-        NULL
+        is.na(x)
     }
-    for (i in which(vapply(x, is.factor, NA)))
-      x[, i] <- as.character(x[, i])
-    pos <- logical(nrow(x))
-    for (i in seq_along(x))
-      if (any(pos <- x[, i] == sep)) {
-        x <- x[, c(i, setdiff(seq_along(x), i)), drop = FALSE]
-        break
+
+    convert_time_point <- function(x, header, na.strings, dec) {
+      make_coords <- function(left, right, na.strings, dec) {
+        vapply(toupper(left), sprintf, character(length(right)),
+          fmt = "%s%02i", try_numeric(right, na.strings, dec))
       }
-    if (!any(pos))
-      stop("'sep' neither found in some column nor in the row names")
-    x <- split.data.frame(x, sections(pos, TRUE))
-    x <- do.call(rbind, lapply(x, convert_time_point))
-    times <- as.double(seq_len(nrow(x)) - 1L)
-    if (length(interval) == 1L)
-      times <- interval * times
-    else if (length(interval) == nrow(x))
-      times <- must(as.double(interval))
-    else if (length(interval))
-      stop("length of 'interval' must be 0, 1, or nrow(x)")
-    x <- cbind(times, x)
+      if (all(x[-1L, 1L] %in% c(LETTERS, letters))) {
+        coords <- make_coords(x[-1L, 1L], unlist(x[1L, -1L], FALSE, FALSE),
+          na.strings, dec)
+        x <- t(as.matrix(x[-1L, -1L, drop = FALSE]))
+      } else if (all(x[1L, -1L] %in% c(LETTERS, letters))) {
+        coords <- make_coords(x[1L, -1L], x[-1L, 1L], na.strings, dec)
+        x <- as.matrix(x[-1L, -1L, drop = FALSE])
+      } else if (header) {
+        stop("expected row and column names comprising letters or integers")
+      } else if (nrow(x) > ncol(x)) {
+        coords <- make_coords(LETTERS[seq_len(ncol(x))], seq_len(nrow(x)),
+          na.strings, dec)
+        x <- as.matrix(x)
+      } else {
+        coords <- make_coords(LETTERS[seq_len(nrow(x))], seq_len(ncol(x)),
+          na.strings, dec)
+        x <- t(as.matrix(x))
+      }
+      dim(x) <- NULL
+      if (!is.numeric(x <- try_numeric(x))) {
+        warning("skipping uninterpretable (non-numeric) alleged time point")
+        return(NULL)
+      }
+      names(x) <- coords
+      if (is.unsorted(names(x)))
+        return(x[order(names(x))])
+      x
+    }
+
+    if (any(pos <- vapply(x, function(x) all(empty(x)), NA)))
+      x <- x[, !pos, drop = FALSE] # remove all-NA columns
+
+    if (!length(sep)) {
+      pos <- Reduce(`&`, lapply(x, empty)) # split at empty rows
+      pos <- sections(pos, FALSE)
+      header <- FALSE
+    } else if (is.character(sep)) {
+      pos <- logical(nrow(x))
+      for (i in seq_along(x))
+        if (any(pos <- x[, i] %in% sep)) {
+          x <- x[, c(i, setdiff(seq_along(x), i)), drop = FALSE]
+          break
+        }
+      if (!any(pos))
+        stop("'sep' found in none of the columns")
+      pos <- sections(pos, TRUE)
+      header <- TRUE
+    } else if (is.numeric(sep) && length(sep) == 1L && !is.na(sep) && sep > 0) {
+      if (nrow(x) %% sep > 0L)
+        stop("number of rows must be a multiple of any number given as 'sep'")
+      pos <- factor(rep(seq.int(nrow(x) / sep), each = sep))
+      header <- FALSE
+    } else {
+      stop("'sep' must be empty or character vector or positive number")
+    }
+
+    x <- split.data.frame(x, pos)
+    x <- do.call(rbind, lapply(x, convert_time_point, header, na.strings, dec))
+
+    if (any(bad <- apply(is.na(x), 2L, all)))
+      x <- x[, !bad, drop = FALSE] # removal of all-NA columns
+    if (is.integer(x))
+      storage.mode(x) <- "double"
+
+    x <- cbind(if (length(interval))
+        convert_interval(interval, nrow(x))
+      else
+        seq_len(nrow(x)) - 1L, x)
     colnames(x)[1L] <- HOUR
     rownames(x) <- NULL
     x
@@ -994,7 +1060,7 @@ setMethod("opmx", "data.frame", function(object,
 
   # Create a matrix acceptable as 'measurements' entry.
   #
-  convert_vertical_matrix <- function(x, interval) {
+  convert_vertical_matrix <- function(x, interval, na.strings, dec) {
     select_columns <- function(x) {
       n <- clean_coords(colnames(x))
       if (any(ok <- grepl("^[A-H]\\d{2}$", n, FALSE, TRUE))) {
@@ -1010,21 +1076,18 @@ setMethod("opmx", "data.frame", function(object,
           ok[1L] <- FALSE # first column contains time points
         colnames(x)[ok] <- rownames(WELL_MAP)[seq_along(which(ok))]
       }
-      if (length(interval))
-        if (length(interval) == 1L)
-          hour <- interval * (seq_len(nrow(x)) - 1L)
-        else if (length(interval) == nrow(x))
-          hour <- must(as.double(interval))
+      cbind(if (length(interval))
+          convert_interval(interval, nrow(x))
+        else if (any(!ok))
+          x[, !ok, drop = FALSE][, 1L]
         else
-          stop("length of 'interval' must be 0, 1, or nrow(x)")
-      else if (any(!ok))
-        hour <- x[, !ok, drop = FALSE][, 1L]
-      else
-        hour <- rownames(x)
-      cbind(hour, x[, ok, drop = FALSE])
+          rownames(x), x[, ok, drop = FALSE])
     }
-    x <- as.matrix(select_columns(x))
-    must(storage.mode(x) <- "double")
+    x <- try_numeric(as.matrix(select_columns(x)), na.strings, dec)
+    if (is.integer(x))
+      storage.mode(x) <- "double"
+    else if (!is.double(x))
+      stop("could not convert mesurements to numeric type")
     rownames(x) <- NULL
     colnames(x)[1L] <- HOUR
     x
@@ -1048,10 +1111,14 @@ setMethod("opmx", "data.frame", function(object,
       filename) {
     L(plate.type, .msg = "plate type missing or non-unique")
     L(position, .msg = "'position' missing or non-unique")
-    plate.type <- custom_plate_normalize_all(plate.type)
-    custom_plate_assert(plate.type, colnames(x)[-1L])
-    if (!is.na(full <- full.name[plate.type]))
-      custom_plate_set_full(plate.type, full)
+    if (inherits(plate.type, "AsIs")) { # undocumented behaviour
+      plate.type <- unclass(plate.type)
+    } else {
+      plate.type <- custom_plate_normalize_all(plate.type)
+      custom_plate_assert(plate.type, colnames(x)[-1L])
+      if (!is.na(full <- full.name[plate.type]))
+        custom_plate_set_full(plate.type, full)
+    }
     y <- c(L(filename), plate.type, position, L(setup.time))
     names(y) <- CSV_NAMES
     new(OPM, measurements = filter_times(x), csv_data = y, metadata = list())
@@ -1205,10 +1272,11 @@ setMethod("opmx", "data.frame", function(object,
       plate.type, position, well), prefix, full.name, setup.time, filename),
 
     rectangular = create_opm_object(convert_rectangular_matrix(object, sep,
-      interval), position, plate.type, full.name, setup.time, filename),
+      interval, na.strings, dec), position, plate.type, full.name,
+      setup.time, filename),
 
-    vertical = create_opm_object(convert_vertical_matrix(object, interval),
-      position, plate.type, full.name, setup.time, filename)
+    vertical = create_opm_object(convert_vertical_matrix(object, interval,
+      na.strings, dec), position, plate.type, full.name, setup.time, filename)
 
   )
 }, sealed = SEALED)
