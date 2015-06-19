@@ -66,3 +66,34 @@ citEntry(
 )
 
 
+citEntry(
+  entry = "Article",
+  title = paste(
+    "Controlling false discoveries in high-dimensional situations:",
+    "Boosting with stability selection"
+  ),
+  author = personList(
+    as.person("Benjamin Hofner"),
+    as.person("Luigi Boccuto"),
+    as.person("Markus G\\\"{o}ker")
+  ),
+  journal = "BMC Bioinformatics",
+  year = "2015",
+  volume = "16",
+  number = "6",
+  pages = "144",
+  doi = "10.1186/s12859-015-0575-3",
+  header = paste(
+    "To cite the application of boosting with stability selection",
+    "please use:"
+  ),
+  textVersion = paste(
+    "B. Hofner, L. Boccuto and M. G\"oker.",
+    "Controlling false discoveries in high-dimensional situations:",
+    "Boosting with stability selection. BMC Bioinformatics 16 (6): 144.",
+    "doi:10.1186/s12859-015-0575-3"
+  )
+)
+
+
+
