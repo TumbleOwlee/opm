@@ -176,6 +176,10 @@ test_that("instrument key fits to CSV names", {
 ## UNTESTED
 
 
+## STR_NOTE
+## UNTESTED
+
+
 ################################################################################
 
 

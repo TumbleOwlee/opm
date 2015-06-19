@@ -44,6 +44,9 @@ test_that("a summary can be printed", {
 ## print
 ## UNTESTED
 
+## str
+## UNTESTED
+
 
 ################################################################################
 

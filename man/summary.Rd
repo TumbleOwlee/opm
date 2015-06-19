@@ -58,6 +58,10 @@ vaas_4 # calls show()
 \alias{show,CMAT-method}
 \alias{show,MOPMX-method}
 \alias{show,OPMX-method}
+\alias{str-methods}
+\alias{str,CMAT-method}
+\alias{str,MOPMX-method}
+\alias{str,WMDX-method}
 \alias{summary-methods}
 \alias{summary,MOPMX-method}
 \alias{summary,OPM-method}
@@ -66,6 +70,10 @@ vaas_4 # calls show()
   \S4method{show}{CMAT}(object) 
   \S4method{show}{MOPMX}(object) 
   \S4method{show}{OPMX}(object) 
+
+  \S4method{str}{CMAT}(object, ...) 
+  \S4method{str}{MOPMX}(object, ...) 
+  \S4method{str}{WMDX}(object, ...) 
 
   \S4method{summary}{MOPMX}(object, ...) 
   \S4method{summary}{OPM}(object, ...) 

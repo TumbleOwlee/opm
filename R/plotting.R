@@ -65,6 +65,26 @@ setMethod("show", CMAT, function(object) {
   callNextMethod()
 }, sealed = SEALED)
 
+setGeneric("str")
+
+setMethod("str", WMDX, function(object, ...) {
+  callNextMethod(object, ...)
+  cat(STR_NOTE)
+  invisible(NULL)
+}, sealed = SEALED)
+
+setMethod("str", MOPMX, function(object, ...) {
+  callNextMethod(object, ...)
+  cat(STR_NOTE)
+  invisible(NULL)
+}, sealed = SEALED)
+
+setMethod("str", CMAT, function(object, ...) {
+  callNextMethod(object, ...)
+  cat(STR_NOTE)
+  invisible(NULL)
+}, sealed = SEALED)
+
 NULL
 
 print.OPMD_Listing <- function(x, ...) {

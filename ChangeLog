@@ -1,4 +1,14 @@
 
+- opmx() has more abilities in 'rectangular' mode
+- opmx() treates 'NA' values more gracefully
+
+- new example data file for PM data measured with other reader
+
+- a number of additions to the manual
+
+
+################################################################################
+
 
 2014-12-07 (the 14th release on CRAN)
 
