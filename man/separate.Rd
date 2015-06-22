@@ -119,7 +119,8 @@ stopifnot(sapply(y, class) == c("integer", "factor", "factor"))
 \seealso{
   base::strsplit utils::read.fwf
 
-  Other auxiliary-functions: \code{\link{opm_opt}}
+  Other auxiliary-functions: \code{\link{opm_opt}},
+  \code{\link{param_names}}
 }
 \keyword{character}
 \keyword{manip}

@@ -937,6 +937,21 @@ setMethod("opm_opt", "character", function(x) {
   OPM_OPTIONS[[x]]
 }, sealed = SEALED)
 
+setGeneric("param_names", function(what) standardGeneric("param_names"))
+
+setMethod("param_names", "missing", function(what) {
+  CURVE_PARAMS
+}, sealed = SEALED)
+
+setMethod("param_names", "character", function(what) {
+  switch(match.arg(what,
+    c("param.names", "disc.name", "reserved.md.names", "split.at")),
+    param.names = CURVE_PARAMS,
+    disc.name = DISC_PARAM,
+    reserved.md.names = unname(RESERVED_NAMES),
+    split.at = RESERVED_NAMES[["parameter"]])
+}, sealed = SEALED)
+
 setGeneric("update")
 
 setMethod("update", CMAT, function(object,

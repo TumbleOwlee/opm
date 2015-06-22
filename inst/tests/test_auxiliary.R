@@ -620,6 +620,11 @@ test_that("anything and nothing can be inserted in a list", {
 ## opm_opt
 ## UNTESTED
 
+## param_names
+test_that("param_names() is consistent with other settings", {
+  expect_true(OPM_OPTIONS$curve.param %in%
+      c(param_names(), param_names("disc.name")))
+})
 
 
 ################################################################################

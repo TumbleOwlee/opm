@@ -17,16 +17,6 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
   )
 }
 
-param_names <- function(
-    what = c("param.names", "disc.name", "reserved.md.names", "split.at")) {
-  case(match.arg(what),
-    param.names = CURVE_PARAMS,
-    disc.name = DISC_PARAM,
-    reserved.md.names = unname(RESERVED_NAMES),
-    split.at = RESERVED_NAMES[["parameter"]]
-  )
-}
-
 select_colors <- function(
     set = c("w3c", "w3c.i", "nora", "nora.i", "brewer", "brewer.i",
       "roseo", "roseo.i")) {

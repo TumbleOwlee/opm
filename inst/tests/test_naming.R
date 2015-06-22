@@ -23,13 +23,6 @@ if (!exists("TEST.DIR"))
 ## UNTESTED
 
 
-## param_names
-test_that("param_names() is consistent with other settings", {
-  expect_true(OPM_OPTIONS$curve.param %in%
-      c(param_names(), param_names("disc.name")))
-})
-
-
 ## select_colors
 test_that("predefined color sets can be obtained", {
   for (arg in as.character(formals(select_colors)[[1L]])[-1L]) {

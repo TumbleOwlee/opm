@@ -2,8 +2,9 @@
 - opmx() has more abilities in 'rectangular' mode
 - opmx() treates 'NA' values more gracefully
 
-- new example data file for PM data measured with other reader
+- param_names() is now generic
 
+- new example data file for PM data measured with other reader
 - a number of additions to the manual
 
 

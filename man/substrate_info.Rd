@@ -222,8 +222,7 @@ stopifnot(identical(x, substrate_info(vaas_4[, , 1:3], "all")))
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}}, \code{\link{gen_iii}},
   \code{\link{listing}}, \code{\link{opm_files}},
-  \code{\link{param_names}}, \code{\link{plate_type}},
-  \code{\link{register_plate}},
+  \code{\link{plate_type}}, \code{\link{register_plate}},
   \code{\link{select_colors}}, \code{\link{wells}}
 }
 \keyword{utilities}

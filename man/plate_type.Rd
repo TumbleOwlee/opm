@@ -247,8 +247,7 @@ stopifnot(!"CUSTOM:MYPLATE" \%in\% plate_type(TRUE))
 
   Other naming-functions: \code{\link{find_positions}},
   \code{\link{find_substrate}}, \code{\link{listing}},
-  \code{\link{opm_files}}, \code{\link{param_names}},
-  \code{\link{select_colors}},
+  \code{\link{opm_files}}, \code{\link{select_colors}},
   \code{\link{substrate_info}}, \code{\link{wells}}
 }
 \keyword{attribute}
