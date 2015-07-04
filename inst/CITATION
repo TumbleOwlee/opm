@@ -27,7 +27,7 @@ citEntry(
     "Lea A.I. Vaas, J. Sikorski, B. Hofner, N. Buddruhs, A. Fiebig,",
     "H.-P. Klenk and M. G\"oker.",
     "opm: An R package for analysing OmniLog(R) Phenotype",
-    "MicroArray Data. Bioinformatics 29 (14): 1823-1824.",
+    "MicroArray Data. Bioinformatics 29 (14): 1823-1824, 2013.",
     "doi:10.1093/bioinformatics/btt291"
   )
 )
@@ -90,8 +90,8 @@ citEntry(
   textVersion = paste(
     "B. Hofner, L. Boccuto and M. G\"oker.",
     "Controlling false discoveries in high-dimensional situations:",
-    "Boosting with stability selection. BMC Bioinformatics 16 (6): 144.",
-    "doi:10.1186/s12859-015-0575-3"
+    "Boosting with stability selection. BMC Bioinformatics 16 (6): 144,",
+    "2015. doi:10.1186/s12859-015-0575-3"
   )
 )
 
