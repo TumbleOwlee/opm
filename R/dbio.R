@@ -21,11 +21,11 @@ setMethod("opm_dbput", c("OPM_DB", "RODBC"), function(object, conn,
     else
       "\"", do_map = map.tables, simplify = FALSE)
   object@plates[, "id"]
-}, sealed = FALSE)
+}, sealed = SEALED)
 
 setMethod("opm_dbput", c("ANY", "ANY"), function(object, conn, ...) {
   opm_dbput(as(object, opm_dbclass(object)), conn, ...)
-})
+}, sealed = SEALED)
 
 setGeneric("opm_dbclass", function(object) standardGeneric("opm_dbclass"))
 
@@ -94,7 +94,7 @@ setMethod("opm_dbget", c("integer", "RODBC"), function(object, conn,
       "`"
     else
       "\"", stringsAsFactors = FALSE, simplify = TRUE), MOPMX)
-}, sealed = FALSE)
+}, sealed = SEALED)
 
 setMethod("opm_dbget", c("character", "ANY"), function(object, conn,
     map.tables = NULL, include = 2L) {
@@ -132,7 +132,7 @@ setMethod("opm_dbnext", c("OPM_DB", "RODBC"), function(object, conn,
       "`"
     else
       "\"", do_map = map.tables, do_inline = FALSE, simplify = TRUE))
-}, sealed = FALSE)
+}, sealed = SEALED)
 
 setGeneric("opm_dbclear",
   function(object, conn, ...) standardGeneric("opm_dbclear"))

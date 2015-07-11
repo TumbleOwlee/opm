@@ -133,7 +133,7 @@ setMethod("split", c(OPMS, "missing", "ANY"), function(x, f, drop) {
   x@plates <- lapply(x@plates, split, drop = drop)
   x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
   x
-}, sealed = FALSE)
+}, sealed = SEALED)
 
 setMethod("split", c(OPM, "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
