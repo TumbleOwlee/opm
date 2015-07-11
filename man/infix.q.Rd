@@ -163,10 +163,18 @@ rm(missing.name) # tidy up
 \alias{infix.largeq,MOPMX-method}
 \alias{\%Q\%,MOPMX,ANY-method}
 \alias{\%Q\%,MOPMX-method}
+\alias{infix.largeq,MOPMX,MOPMX-method}
+\alias{\%Q\%,MOPMX,MOPMX-method}
+\alias{infix.largeq,MOPMX,WMD-method}
+\alias{\%Q\%,MOPMX,WMD-method}
+\alias{infix.largeq,MOPMX,WMDS-method}
+\alias{\%Q\%,MOPMX,WMDS-method}
 \alias{infix.largeq,WMD,ANY-method}
 \alias{infix.largeq,WMD-method}
 \alias{\%Q\%,WMD,ANY-method}
 \alias{\%Q\%,WMD-method}
+\alias{infix.largeq,WMD,MOPMX-method}
+\alias{\%Q\%,WMD,MOPMX-method}
 \alias{infix.largeq,WMD,WMD-method}
 \alias{\%Q\%,WMD,WMD-method}
 \alias{infix.largeq,WMD,WMDS-method}
@@ -175,6 +183,8 @@ rm(missing.name) # tidy up
 \alias{infix.largeq,WMDS-method}
 \alias{\%Q\%,WMDS,ANY-method}
 \alias{\%Q\%,WMDS-method}
+\alias{infix.largeq,WMDS,MOPMX-method}
+\alias{\%Q\%,WMDS,MOPMX-method}
 \alias{infix.largeq,character,WMD-method}
 \alias{\%Q\%,character,WMD-method}
 \alias{infix.largeq,character,WMDS-method}
@@ -202,10 +212,18 @@ rm(missing.name) # tidy up
 \alias{infix.q,MOPMX-method}
 \alias{\%q\%,MOPMX,ANY-method}
 \alias{\%q\%,MOPMX-method}
+\alias{infix.q,MOPMX,MOPMX-method}
+\alias{\%q\%,MOPMX,MOPMX-method}
+\alias{infix.q,MOPMX,WMD-method}
+\alias{\%q\%,MOPMX,WMD-method}
+\alias{infix.q,MOPMX,WMDS-method}
+\alias{\%q\%,MOPMX,WMDS-method}
 \alias{infix.q,WMD,ANY-method}
 \alias{infix.q,WMD-method}
 \alias{\%q\%,WMD,ANY-method}
 \alias{\%q\%,WMD-method}
+\alias{infix.q,WMD,MOPMX-method}
+\alias{\%q\%,WMD,MOPMX-method}
 \alias{infix.q,WMD,WMD-method}
 \alias{\%q\%,WMD,WMD-method}
 \alias{infix.q,WMD,WMDS-method}
@@ -214,6 +232,8 @@ rm(missing.name) # tidy up
 \alias{infix.q,WMDS-method}
 \alias{\%q\%,WMDS,ANY-method}
 \alias{\%q\%,WMDS-method}
+\alias{infix.q,WMDS,MOPMX-method}
+\alias{\%q\%,WMDS,MOPMX-method}
 \alias{infix.q,character,WMD-method}
 \alias{\%q\%,character,WMD-method}
 \alias{infix.q,character,WMDS-method}
@@ -237,10 +257,15 @@ rm(missing.name) # tidy up
 \usage{
   \S4method{\%Q\%}{ANY,MOPMX}(x, table) 
   \S4method{\%Q\%}{MOPMX,ANY}(x, table) 
+  \S4method{\%Q\%}{MOPMX,MOPMX}(x, table) 
+  \S4method{\%Q\%}{MOPMX,WMD}(x, table) 
+  \S4method{\%Q\%}{MOPMX,WMDS}(x, table) 
   \S4method{\%Q\%}{WMD,ANY}(x, table) 
+  \S4method{\%Q\%}{WMD,MOPMX}(x, table) 
   \S4method{\%Q\%}{WMD,WMD}(x, table) 
   \S4method{\%Q\%}{WMD,WMDS}(x, table) 
   \S4method{\%Q\%}{WMDS,ANY}(x, table) 
+  \S4method{\%Q\%}{WMDS,MOPMX}(x, table) 
   \S4method{\%Q\%}{character,WMD}(x, table) 
   \S4method{\%Q\%}{character,WMDS}(x, table) 
   \S4method{\%Q\%}{expression,WMD}(x, table) 
@@ -254,10 +279,15 @@ rm(missing.name) # tidy up
 
   \S4method{\%q\%}{ANY,MOPMX}(x, table) 
   \S4method{\%q\%}{MOPMX,ANY}(x, table) 
+  \S4method{\%q\%}{MOPMX,MOPMX}(x, table) 
+  \S4method{\%q\%}{MOPMX,WMD}(x, table) 
+  \S4method{\%q\%}{MOPMX,WMDS}(x, table) 
   \S4method{\%q\%}{WMD,ANY}(x, table) 
+  \S4method{\%q\%}{WMD,MOPMX}(x, table) 
   \S4method{\%q\%}{WMD,WMD}(x, table) 
   \S4method{\%q\%}{WMD,WMDS}(x, table) 
   \S4method{\%q\%}{WMDS,ANY}(x, table) 
+  \S4method{\%q\%}{WMDS,MOPMX}(x, table) 
   \S4method{\%q\%}{character,WMD}(x, table) 
   \S4method{\%q\%}{character,WMDS}(x, table) 
   \S4method{\%q\%}{expression,WMD}(x, table) 

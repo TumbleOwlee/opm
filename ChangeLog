@@ -1,3 +1,6 @@
+XXXX-XX-XX
+
+- fixed some ambiguities in method dispatch of MOPMX infix operators
 
 - opmx() has more abilities in 'rectangular' mode
 - opmx() treates 'NA' values more gracefully
@@ -6,6 +9,8 @@
 
 - new example data file for PM data measured with other reader
 - a number of additions to the manual
+- a number of additions to the vignette on grwoth curves
+- improvements of the main tutorial
 
 
 ################################################################################
