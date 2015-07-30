@@ -25,9 +25,9 @@
   table names that deviate from the defaults are to be
   used.}
 
-  \item{klass}{Character scalar indicating a class name.
-  For \acronym{PM} data this argument should \strong{not}
-  be changed.}
+  \item{klass}{Character vector indicating one or several
+  class names. For \acronym{PM} data this argument should
+  \strong{not} be changed.}
 
   \item{include}{Integer scalar indicating whether
   aggregated data (1) or aggregated and discretised data
@@ -178,11 +178,11 @@ if (interactive())
   \S4method{opm_dbfind}{character,RODBC}(object, conn, map.tables = NULL, klass = "OPM_DB")
 
   \S4method{opm_dbget}{character,ANY}(object, conn,
-    map.tables = NULL, include = 2L, klass = "MOPMX") 
+    map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
   \S4method{opm_dbget}{integer,DBIConnection}(object, conn,
-    map.tables = NULL, include = 2L, klass = "MOPMX") 
+    map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
   \S4method{opm_dbget}{integer,RODBC}(object, conn,
-    map.tables = NULL, include = 2L, klass = "MOPMX") 
+    map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
 
   \S4method{opm_dbnext}{ANY,ANY}(object, conn, map.tables = NULL)
   \S4method{opm_dbnext}{DBTABLES,DBIConnection}(object, conn, map.tables = NULL)
