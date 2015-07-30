@@ -11,7 +11,7 @@ Bug fixes:
 
 Significant user-visible changes:
 
-- dependency on R >= 3.1.0 and mboost, removed mboostDevel
+- dependency on R >= 3.1.0 and 'mboost', removed 'mboostDevel'
 
 - do_aggr() default is now 'method = "splines" boot = 0L'
 
@@ -37,14 +37,14 @@ Bug fixes:
   correctly
 
 - automatically generated conversion methods previously yielding invalid objects
-  now explicitely raise an error
+  now explicitly raise an error
 
 - fixed missing export of virtual classes
 
 Significant user-visible changes:
 
 - list method of contains() and all map_names() and map_values() methods moved
-  to pkgutils
+  to 'pkgutils'
 
 - removed deprecated functions filename(), position() and setup_time()
 
@@ -58,19 +58,12 @@ Significant user-visible changes:
 
 New features:
 
-- much expanded vignette on substrate information, particularly regarding
-  feature selection
-
-- added vignette on analysing growth-curve (and user-defined PM) data
-
-- many new demos
-
 - new data set 'boccuto_et_al'
 
 - new register_plate() and opmx() methods for managing user-defined data
 
 - new methods opm_dbput(), opm_dbget(), opm_dbnext(), opm_dbfind(),
-  opm_dbclass() and opm_dbcheck() new classes'OPM_DB', 'OPMA_DB' and 'OPMD_DB'
+  opm_dbclass() and opm_dbcheck(); new classes OPM_DB, OPMA_DB and OPMD_DB
 
 - new MOPMX methods: for extract(), heat_map(), thin_out(), edit(), flatten(),
   as.data.frame(), find_positions(), substrate_info(), wells(), infix operators,
@@ -87,6 +80,15 @@ New features:
 
 - new virtual class 'WMDS' into which 'OPMS' methods have been factored out,
   similarly, more OPM methods are now WMD methods
+
+Documentation:
+
+- much expanded vignette on substrate information, particularly regarding
+  feature selection
+
+- added vignette on analysing growth-curve (and user-defined PM) data
+
+- many new demos
 
 
 Changes in version 1.0.22
@@ -164,13 +166,13 @@ New features:
 
 - new entries managed via opm_opt()
 
-- support for plate types FF, YT and AN2 added (thanks to Barry Bochner) and
-  many additions to the stored substrate information (thanks to the ChEBI
+- support for plate types FF, YT and AN2 added (thanks to Barry *Bochner*) and
+  many additions to the stored substrate information (thanks to the 'ChEBI'
   staff); better conversion of substrate names to HTML
 
 - new command-line options for 'run_opm.R'
 
-Other changes:
+Documentation:
 
 - second vignette for explaining substrate-information processing, including
   visualisation in KEGG graphs and feature selection
@@ -260,7 +262,7 @@ New features:
 
 - novel extract() method for data frames for calculating means and confidence
   intervals from observation groups (for plotting with ci_plot())
- 
+
 - listing() can now generate HTML-formatted text describing positive/negative
   results
 
@@ -276,8 +278,8 @@ New features:
 
 - opms() now normalises plate-type names if used as 'group' argument
 
-- in addition to YAML, JSON can be produced (a subset of YAML that is understood
-  by proper JSON parsers)
+- in addition to YAML, JSON can be produced (the subset of YAML that is
+  understood by proper JSON libraries)
 
 - new expression methods for metadata mapping
 
@@ -292,11 +294,13 @@ New features:
 
 - support for three more plate types
 
-Other changes:
+Documentation:
 
 - much extended vignette
 
 - improved documentation in the manual
+
+Other changes:
 
 - new directory with example code
 
@@ -386,7 +390,7 @@ New features:
 - enhancements in phylo_data(), discrete(), map_values(), summary(), sort(),
   select(), duplicated() and anyDuplicated()
 
-Other changes:
+Documentation:
 
 - vignette was included as tutorial
 
@@ -496,16 +500,18 @@ New features:
   added 'run.tidy' option for reformatting the generated HTML with HTML Tidy;
   added 'delete' argument
 
-- for the 'A' parameter estimated using 'opm-fast', CIs that cannot be 
-  calculated because the values are constant are not set to NA anymore but to 
-  that value
+- for the 'A' parameter estimated using 'opm-fast', confidence intervals that
+  cannot be calculated because the values are constant are not set to NA anymore
+  but to that value
 
 - annoying messages when calling require() for 'gplots' have been silenced
 
-Other changes:
+Documentation:
 
 - added the remaining so far missing OPMS-method documentation entries and 
   improved the format of the references
+
+Other changes:
 
 - added example file from a run in identification mode
 
@@ -551,9 +557,9 @@ Changes in version 0.2-0
 ------------------------
 
 Bug fixes:
- 
+
 - fixed bug that caused xy_plot() to crash if 'theor.max' was set to FALSE
- 
+
 New features:
 
 - novel filename(), aggr_settings(), duplicated(), anyDuplicated(), seq() and 
@@ -562,7 +568,7 @@ New features:
 - novel map_names() and map_values() methods (e.g., for data frames)
 
 - novel separate() function
- 
+
 - 'coerce = TRUE' option for map_names(), map_values(), map_metadata() and 
   metadata_chars()
 
@@ -579,10 +585,8 @@ Removed features:
 
 - curve_params() has been deleted (functionality now integrated in do_aggr())
 
-Other changes:
+Significant user-visible changes:
 
-- many improvements of the documentation
-  
 - the 'coerce' argument of map_metadata() and metadata_chars() has been renamed
   to 'classes' (to make this uniform)
 
@@ -591,6 +595,10 @@ Other changes:
   but the default behaviour remains the same)
 
 - changed 'gplots' to default of 'use.fun' argument of heat_map()
+
+Documentation:
+
+- many improvements of the documentation
 
 
 Changes in version 0.1-25

@@ -25,6 +25,10 @@
   table names that deviate from the defaults are to be
   used.}
 
+  \item{klass}{Character scalar indicating a class name.
+  For \acronym{PM} data this argument should \strong{not}
+  be changed.}
+
   \item{include}{Integer scalar indicating whether
   aggregated data (1) or aggregated and discretised data
   (2) or neither (0) should be added to the result. The
@@ -133,7 +137,7 @@ if (interactive())
 \alias{opm_dbclass,MOPMX-method}
 \alias{opm_dbclass,OPM-method}
 \alias{opm_dbclass,OPMS-method}
-\alias{opm_dbclass,numeric-method}
+\alias{opm_dbclass,integer-method}
 \alias{opm_dbclear-methods}
 \alias{opm_dbclear,character,ANY-method}
 \alias{opm_dbclear,character-method}
@@ -150,13 +154,13 @@ if (interactive())
 \alias{opm_dbnext-methods}
 \alias{opm_dbnext,ANY,ANY-method}
 \alias{opm_dbnext,ANY-method}
-\alias{opm_dbnext,OPM_DB,DBIConnection-method}
-\alias{opm_dbnext,OPM_DB,RODBC-method}
+\alias{opm_dbnext,DBTABLES,DBIConnection-method}
+\alias{opm_dbnext,DBTABLES,RODBC-method}
 \alias{opm_dbput-methods}
 \alias{opm_dbput,ANY,ANY-method}
 \alias{opm_dbput,ANY-method}
-\alias{opm_dbput,OPM_DB,DBIConnection-method}
-\alias{opm_dbput,OPM_DB,RODBC-method}
+\alias{opm_dbput,DBTABLES,DBIConnection-method}
+\alias{opm_dbput,DBTABLES,RODBC-method}
 \usage{
   \S4method{opm_dbcheck}{ANY}(conn, metadata = NULL,
     time.points = TRUE, wells = TRUE) 
@@ -164,27 +168,30 @@ if (interactive())
   \S4method{opm_dbclass}{MOPMX}(object) 
   \S4method{opm_dbclass}{OPM}(object) 
   \S4method{opm_dbclass}{OPMS}(object) 
-  \S4method{opm_dbclass}{numeric}(object) 
+  \S4method{opm_dbclass}{integer}(object) 
 
-  \S4method{opm_dbclear}{character,ANY}(object, conn, map.tables = NULL)
-  \S4method{opm_dbclear}{integer,DBIConnection}(object, conn, map.tables = NULL)
-  \S4method{opm_dbclear}{integer,RODBC}(object, conn, map.tables = NULL)
+  \S4method{opm_dbclear}{character,ANY}(object, conn, map.tables = NULL, klass = "OPM_DB")
+  \S4method{opm_dbclear}{integer,DBIConnection}(object, conn, map.tables = NULL, klass = "OPM_DB")
+  \S4method{opm_dbclear}{integer,RODBC}(object, conn, map.tables = NULL, klass = "OPM_DB")
 
-  \S4method{opm_dbfind}{character,DBIConnection}(object, conn, map.tables = NULL)
-  \S4method{opm_dbfind}{character,RODBC}(object, conn, map.tables = NULL)
+  \S4method{opm_dbfind}{character,DBIConnection}(object, conn, map.tables = NULL, klass = "OPM_DB")
+  \S4method{opm_dbfind}{character,RODBC}(object, conn, map.tables = NULL, klass = "OPM_DB")
 
-  \S4method{opm_dbget}{character,ANY}(object, conn, map.tables = NULL, include = 2L)
-  \S4method{opm_dbget}{integer,DBIConnection}(object, conn, map.tables = NULL, include = 2L)
-  \S4method{opm_dbget}{integer,RODBC}(object, conn, map.tables = NULL, include = 2L)
+  \S4method{opm_dbget}{character,ANY}(object, conn,
+    map.tables = NULL, include = 2L, klass = "MOPMX") 
+  \S4method{opm_dbget}{integer,DBIConnection}(object, conn,
+    map.tables = NULL, include = 2L, klass = "MOPMX") 
+  \S4method{opm_dbget}{integer,RODBC}(object, conn,
+    map.tables = NULL, include = 2L, klass = "MOPMX") 
 
   \S4method{opm_dbnext}{ANY,ANY}(object, conn, map.tables = NULL)
-  \S4method{opm_dbnext}{OPM_DB,DBIConnection}(object, conn, map.tables = NULL)
-  \S4method{opm_dbnext}{OPM_DB,RODBC}(object, conn, map.tables = NULL)
+  \S4method{opm_dbnext}{DBTABLES,DBIConnection}(object, conn, map.tables = NULL)
+  \S4method{opm_dbnext}{DBTABLES,RODBC}(object, conn, map.tables = NULL)
 
   \S4method{opm_dbput}{ANY,ANY}(object, conn, ...) 
-  \S4method{opm_dbput}{OPM_DB,DBIConnection}(object, conn,
+  \S4method{opm_dbput}{DBTABLES,DBIConnection}(object, conn,
     map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) 
-  \S4method{opm_dbput}{OPM_DB,RODBC}(object, conn,
+  \S4method{opm_dbput}{DBTABLES,RODBC}(object, conn,
     map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) 
 }
 %% END INSERTION BY repair_S4_docu.rb
