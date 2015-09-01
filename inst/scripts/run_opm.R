@@ -13,7 +13,7 @@
 ################################################################################
 
 
-invisible(lapply(c("methods", "optparse", "pkgutils"), library, quietly = TRUE,
+invisible(lapply(X = c("methods", "pkgutils"), FUN = library, quietly = TRUE,
   warn.conflicts = FALSE, character.only = TRUE))
 
 
@@ -135,110 +135,163 @@ run_batch_opm <- function(input, opt) {
 #
 
 
-option.parser <- OptionParser(option_list = list(
+option.parser <- optparse::OptionParser(option_list = list(
 
-  make_option(c("-a", "--aggregate"), type = "character", default = "no",
+  optparse::make_option(c("-a", "--aggregate"), type = "character",
     help = "Aggregate by estimating curve parameters [default: %default]",
-    metavar = "METHOD"),
+    default = "no", metavar = "METHOD"),
 
-  make_option(c("-b", "--bootstrap"), type = "integer", default = 100L,
+  # A
+
+  optparse::make_option(c("-b", "--bootstrap"), type = "integer",
     help = "# bootstrap replicates when aggregating [default: %default]",
-    metavar = "NUMBER"),
+    default = 100L, metavar = "NUMBER"),
 
-  make_option(c("-c", "--coarse"), action = "store_true", default = FALSE,
-    help = "Use coarse-grained parallelization, if any [default: %default]"),
+  # B
 
-  make_option(c("-d", "--dir"), type = "character", default = ".",
+  optparse::make_option(c("-c", "--coarse"), action = "store_true",
+    help = "Use coarse-grained parallelization, if any [default: %default]",
+    default = FALSE),
+
+  # C
+
+  optparse::make_option(c("-d", "--dir"), type = "character", default = ".",
     help = "Output directory (empty => input directory) [default: %default]"),
 
-  make_option(c("-e", "--exclude"), type = "character", default = "",
+  # D
+
+  optparse::make_option(c("-e", "--exclude"), type = "character", default = "",
     help = "File exclusion globbing pattern [default: <none>]",
     metavar = "PATTERN"),
 
-  make_option(c("-f", "--format"), type = "character", default = "postscript",
-    help = "Graphics output format [default: %default]", metavar = "NAME"),
+  # E
 
-  make_option(c("-F", "--force"), action = "store_true", default = FALSE,
+  optparse::make_option(c("-f", "--format"), type = "character",
+    help = "Graphics output format [default: %default]", metavar = "NAME",
+    default = "postscript"),
+
+  optparse::make_option(c("-F", "--force"), action = "store_true",
     help = paste("Overwrite previous aggregated/discretized values",
-      "[default: %default]")),
+      "[default: %default]"), default = FALSE),
 
   ## A bug in Rscript causes '-g' to generate strange warning messages.
   ## See https://stat.ethz.ch/pipermail/r-devel/2008-January/047944.html
   # g
 
-  make_option(c("-h", "--help"), action = "store_true", default = FALSE,
-    help = "Show this help message and exit [default: %default]"),
+  # G
 
-  make_option(c("-i", "--include"), type = "character", default = NULL,
+  optparse::make_option(c("-h", "--help"), action = "store_true",
+    help = "Show this help message and exit [default: %default]",
+    default = FALSE),
+
+  # H
+
+  optparse::make_option(c("-i", "--include"), type = "character",
     help = "File inclusion globbing pattern [default: <see package>]",
-    metavar = "PATTERN"),
+    metavar = "PATTERN", default = NULL),
 
-  make_option(c("-j", "--join"), type = "character", default = NULL,
+  # I
+
+  optparse::make_option(c("-j", "--join"), type = "character", default = NULL,
     help = "Template for joining data into that outfile [default: <none>]",
     metavar = "TEMPLATE"),
 
-  make_option(c("-k", "--keys"), type = "character", default = NULL,
+  # J
+
+  optparse::make_option(c("-k", "--keys"), type = "character", default = NULL,
     help = "Keys for CSV => metadata, comma-separated list [default: <none>]",
     metavar = "KEYS"),
 
-  make_option(c("-l", "--list"), type = "character", default = "1,2,3",
-    help = "List of numbers giving the 'input.try.order' [default: %default]",
-    metavar = "INDEXES"),
+  # K
 
-  make_option(c("-m", "--mdfile"), type = "character",
+  optparse::make_option(c("-l", "--list"), type = "character",
+    help = "List of numbers giving the 'input.try.order' [default: %default]",
+    metavar = "INDEXES", default = "1,2,3"),
+
+  # L
+
+  optparse::make_option(c("-m", "--mdfile"), type = "character",
     default = NULL, metavar = "NAME",
     help = "Metadata infile (also used as outfile if given) [default: <none>]"),
 
-  make_option(c("-n", "--encoding"), type = "character",
+  # M
+
+  optparse::make_option(c("-n", "--encoding"), type = "character",
     default = "", metavar = "NAME",
     help = "Assumed character encoding in CSV input [default: %default]"),
 
-  make_option(c("-o", "--overwrite"), type = "character", default = "older",
-    help = "Overwrite pre-existing output files [default: %default]",
-    metavar = "MODE"),
+  # N
 
-  make_option(c("-p", "--processes"), type = "integer", default = 1L,
+  optparse::make_option(c("-o", "--overwrite"), type = "character",
+    help = "Overwrite pre-existing output files [default: %default]",
+    metavar = "MODE", default = "older"),
+
+  # O
+
+  optparse::make_option(c("-p", "--processes"), type = "integer", default = 1L,
     help = paste("Number of processes to spawn (>1 impossible under Windows)",
       "[default: %default]"),
     metavar = "NUMBER"),
 
-  make_option(c("-q", "--quiet"), action = "store_true", default = FALSE,
-    help = "Do not run verbosely [default: %default]"),
+  # P
 
-  make_option(c("-r", "--result"), type = "character", default = "yaml",
-    metavar = "MODE", help = sprintf(
+  optparse::make_option(c("-q", "--quiet"), action = "store_true",
+    help = "Do not run verbosely [default: %default]", default = FALSE),
+
+  # Q
+
+  optparse::make_option(c("-r", "--result"), type = "character",
+    metavar = "MODE", default = "yaml", help = sprintf(
       "Main result mode; possible values: %s [default: %%default]",
       paste(names(RESULT), collapse = ", "))),
 
-  make_option(c("-s", "--sep"), type = "character", default = "\t",
+  # R
+
+  optparse::make_option(c("-s", "--sep"), type = "character", default = "\t",
     help = "Field separator for metadata files [default: <tab>]",
     metavar = "CHAR"),
 
-  make_option(c("-t", "--type"), type = "character", default = "",
+  # S
+
+  optparse::make_option(c("-t", "--type"), type = "character", default = "",
     help = "Change plate type to this one [default: %default]",
     metavar = "CHAR"),
 
-  make_option(c("-u", "--use-sep"), type = "character", default = "\t",
+  # T
+
+  optparse::make_option(c("-u", "--use-sep"), type = "character",
     help = "Field separator for metadata files [default: <tab>]",
-    metavar = "CHAR"),
+    metavar = "CHAR", default = "\t"),
 
-  make_option(c("-v", "--value-normal"), action = "store_true", default = FALSE,
-    help = paste("Normalize setup time and position [default: %default]")),
+  # U
 
-  make_option(c("-w", "--weak"), action = "store_true", default = FALSE,
+  optparse::make_option(c("-v", "--value-normal"), action = "store_true",
+    help = "Normalize setup time and position [default: %default]",
+    default = FALSE),
+
+  # V
+
+  optparse::make_option(c("-w", "--weak"), action = "store_true",
     help = paste("When discretizing, estimate intermediary (weak) reaction",
-      "[default: %default]")),
+      "[default: %default]"), default = FALSE),
 
-  make_option(c("-x", "--exchange"), action = "store_true", default = FALSE,
+  # W
+
+  optparse::make_option(c("-x", "--exchange"), action = "store_true",
     help = paste("Exchange old by new metadata instead of appending",
-      "[default: %default]")),
+      "[default: %default]"), default = FALSE),
 
-  make_option(c("-y", "--ynstrument"), type = "integer", default = -1,
+  # X
+
+  optparse::make_option(c("-y", "--ynstrument"), type = "integer", default = -1,
     help = "Use this as instrument ID (ignored if < 0) [default: %default]",
     metavar = "NUM"),
 
-  make_option(c("-z", "--discretize"), action = "store_true", default = FALSE,
-    help = "Discretize after estimating curve parameters [default: %default]")
+  # Z
+
+  optparse::make_option(c("-z", "--discretize"), action = "store_true",
+    help = "Discretize after estimating curve parameters [default: %default]",
+    default = FALSE)
 
 ), usage = "%prog [options] [directories/files]", add_help_option = FALSE,
   epilogue = c(
@@ -253,7 +306,7 @@ option.parser <- OptionParser(option_list = list(
   )
 )
 
-opt <- parse_args(option.parser, positional_arguments = TRUE)
+opt <- optparse::parse_args(object = option.parser, positional_arguments = TRUE)
 input <- opt$args
 opt <- opt$options
 if (is.null(opt$include))
@@ -273,8 +326,8 @@ opt$list <- must(as.integer(parse_key_list(opt$list)))
 
 
 if (!length(input)) {
-  print_help(option.parser)
-  quit(status = 1L)
+  optparse::print_help(option.parser)
+  quit("default", 1L)
 }
 
 

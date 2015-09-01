@@ -10,6 +10,7 @@
 \alias{WMDS-class}
 \alias{WMDX}
 \alias{WMDX-class}
+\alias{XOPMX}
 \alias{XOPMX-class}
 \alias{YAML_VIA_LIST}
 \alias{YAML_VIA_LIST-class}

@@ -2,10 +2,10 @@
 \alias{radial_plot}
 \title{Radial plot}
 \arguments{
-  \item{object}{\code{\link{OPMS}} object (with aggregated
-  values) to be plotted. Alternatively a data frame or a
-  numeric matrix, but the methods for these objects are
-  rarely needed.}
+  \item{object}{\code{\link{OPMS}} or \code{\link{MOPMX}}
+  object (with aggregated values) to be plotted.
+  Alternatively a data frame or a numeric matrix, but the
+  methods for these objects are rarely needed.}
 
   \item{as.labels}{For the \code{\link{OPMS}} method, a
   metadata selection defining the data to be joined and
@@ -70,7 +70,8 @@
   \item{main}{The main title of the plot.}
 
   \item{...}{Optional other arguments passed to
-  \code{radial.plot} from the \pkg{plotrix} package.}
+  \code{radial.plot} from the \pkg{plotrix} package or
+  between the methods.}
 
   \item{draw.legend}{Logical scalar. Whether to draw a
   legend. Ignored unless \code{object} has row names
@@ -93,7 +94,9 @@
 \value{
   A vector with the row names of \code{object} as names and
   the corresponding colours as values, equivalent to the
-  legend; \code{NULL} if no row names are present.
+  legend; \code{NULL} if no row names are present. A list
+  of such objects in the case of the \code{\link{MOPMX}}
+  method.
 }
 \description{
   A wrapper for \code{radial.plot} from the \pkg{plotrix}
@@ -159,10 +162,12 @@ stopifnot(is.character(yy), names(yy) == rownames(x))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{radial_plot-methods}
+\alias{radial_plot,MOPMX-method}
 \alias{radial_plot,OPMS-method}
 \alias{radial_plot,data.frame-method}
 \alias{radial_plot,matrix-method}
 \usage{
+  \S4method{radial_plot}{MOPMX}(object, ...) 
   \S4method{radial_plot}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), sep = " ", extract.args = list(), ...) 
   \S4method{radial_plot}{data.frame}(object, as.labels,

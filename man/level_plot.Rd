@@ -2,7 +2,8 @@
 \alias{level_plot}
 \title{Level plot}
 \arguments{
-  \item{x}{\code{\link{OPM}} or \code{\link{OPMS}} object.}
+  \item{x}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{main}{The settings controlling the construction of
   the main title.  Works like the \code{main} argument of
@@ -54,12 +55,13 @@
   \item{num.colors}{Numeric scalar passed to the function
   returned by \code{colorRampPalette}.}
 
-  \item{...}{Arguments that are passed to
-  \code{\link{flatten}}.}
+  \item{...}{Arguments that are passed between the methods
+  or to \code{\link{flatten}}.}
 }
 \value{
-  An object of class \sQuote{trellis}. See \code{levelplot}
-  from the \pkg{lattice} package for details.
+  An object of class \sQuote{trellis} or a list if such
+  objects. See \code{levelplot} from the \pkg{lattice}
+  package for details.
 }
 \description{
   Level plot for \code{\link{OPM}} and \code{\link{OPMS}}
@@ -106,9 +108,11 @@ level_plot(vaas_4, include = c("Species", "Strain"))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{level_plot-methods}
+\alias{level_plot,MOPMX-method}
 \alias{level_plot,OPM-method}
 \alias{level_plot,OPMS-method}
 \usage{
+  \S4method{level_plot}{MOPMX}(x, ...) 
   \S4method{level_plot}{OPM}(x, main = list(),
     colors = opm_opt("color.borders"), panel.headers = FALSE, cex = NULL,
     strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",

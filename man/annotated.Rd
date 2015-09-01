@@ -230,8 +230,9 @@ stopifnot(is.numeric(y.ann.eq), !is.null(names(y.ann.eq)))
   \S4method{annotated}{OPMS}(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
     conc = FALSE) 
-  \S4method{annotated}{OPM_MCP_OUT}(object, what = "kegg", how = "ids",
-    output = c("full", "plain"), lmap = NULL, sep = NULL, conc = FALSE) 
+  \S4method{annotated}{OPM_MCP_OUT}(object, what = "kegg",
+    how = "ids", output = c("full", "plain"), lmap = NULL, sep = NULL,
+    conc = FALSE) 
   \S4method{annotated}{opm_glht}(object, what = "kegg", how = "ids",
     output = "numeric", lmap = NULL, sep = opm_opt("comb.value.join"),
     conc = FALSE) 

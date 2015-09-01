@@ -75,7 +75,7 @@ test_that("character-matrix objects can be merged", {
   rownames(data) <- paste("taxon", 1L:5L, sep = "_")
   colnames(data) <- paste("char", 1L:2L, sep = "_")
   data <- discrete(data, TRUE, TRUE)
-  data <- as(data, CMAT)
+  data <- as(data, "CMAT")
 
   got <- merge(data, TRUE)
   expect_equal(got, data)

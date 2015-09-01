@@ -1,7 +1,7 @@
 setGeneric("metadata<-",
   function(object, key, ..., value) standardGeneric("metadata<-"))
 
-setMethod("metadata<-", c(WMD, "missing", FOE), function(object, key,
+setMethod("metadata<-", c(WMD, "missing", "FOE"), function(object, key,
     value) {
   object@metadata <- map_values(object@metadata, value)
   object
@@ -25,7 +25,8 @@ setMethod("metadata<-", c(WMD, "missing", WMD), function(object, key, value) {
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "missing", WMDS), function(object, key, value) {
+setMethod("metadata<-", c("WMD", "missing", "WMDS"), function(object, key,
+    value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
@@ -84,7 +85,8 @@ setMethod("metadata<-", c(WMD, "numeric", "WMD"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "numeric", WMDS), function(object, key, value) {
+setMethod("metadata<-", c("WMD", "numeric", "WMDS"), function(object, key,
+    value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
@@ -112,7 +114,7 @@ setMethod("metadata<-", c(WMD, "list", WMD), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "list", WMDS), function(object, key, value) {
+setMethod("metadata<-", c(WMD, "list", "WMDS"), function(object, key, value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
@@ -122,7 +124,7 @@ setMethod("metadata<-", c(WMD, "ANY", "ANY"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "missing", FOE), function(object, key,
+setMethod("metadata<-", c("WMDS", "missing", "FOE"), function(object, key,
     value) {
   for (i in seq_along(object@plates))
     object@plates[[i]]@metadata <- map_values(object@plates[[i]]@metadata,
@@ -130,14 +132,14 @@ setMethod("metadata<-", c(WMDS, "missing", FOE), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "missing", "list"), function(object, key,
+setMethod("metadata<-", c("WMDS", "missing", "list"), function(object, key,
     value) {
   for (i in seq_along(object@plates))
     object@plates[[i]]@metadata <- value
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "missing", "data.frame"), function(object,
+setMethod("metadata<-", c("WMDS", "missing", "data.frame"), function(object,
     key, value) {
   LL(object, .wanted = nrow(value))
   for (i in seq_along(object@plates))
@@ -145,13 +147,14 @@ setMethod("metadata<-", c(WMDS, "missing", "data.frame"), function(object,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "missing", WMD), function(object, key, value) {
+setMethod("metadata<-", c("WMDS", "missing", "WMD"), function(object, key,
+    value) {
   for (i in seq_along(object@plates))
     metadata(object@plates[[i]]) <- value@metadata
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "missing", WMDS), function(object, key,
+setMethod("metadata<-", c("WMDS", "missing", "WMDS"), function(object, key,
     value) {
   LL(object, .wanted = length(value))
   for (i in seq_along(object@plates))
@@ -159,7 +162,7 @@ setMethod("metadata<-", c(WMDS, "missing", WMDS), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "character", WMDS), function(object, key,
+setMethod("metadata<-", c("WMDS", "character", "WMDS"), function(object, key,
     value) {
   LL(object, .wanted = length(value))
   for (i in seq_along(object@plates))
@@ -167,7 +170,7 @@ setMethod("metadata<-", c(WMDS, "character", WMDS), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "character", "data.frame"), function(object,
+setMethod("metadata<-", c("WMDS", "character", "data.frame"), function(object,
     key, value) {
   LL(object, .wanted = nrow(value))
   if (any(found <- key %in% colnames(value))) {
@@ -180,7 +183,7 @@ setMethod("metadata<-", c(WMDS, "character", "data.frame"), function(object,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "ANY", "data.frame"), function(object, key,
+setMethod("metadata<-", c("WMDS", "ANY", "data.frame"), function(object, key,
     value) {
   LL(object, .wanted = nrow(value))
   for (i in seq_along(object@plates))
@@ -188,20 +191,20 @@ setMethod("metadata<-", c(WMDS, "ANY", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "ANY", WMD), function(object, key, value) {
+setMethod("metadata<-", c("WMDS", "ANY", WMD), function(object, key, value) {
   for (i in seq_along(object@plates))
     metadata(object@plates[[i]], key) <- value@metadata
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "ANY", WMDS), function(object, key, value) {
+setMethod("metadata<-", c("WMDS", "ANY", "WMDS"), function(object, key, value) {
   LL(object, .wanted = length(value))
   for (i in seq_along(object@plates))
     metadata(object@plates[[i]], key) <- value@plates[[i]]@metadata
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMDS, "ANY", "ANY"), function(object, key, value) {
+setMethod("metadata<-", c("WMDS", "ANY", "ANY"), function(object, key, value) {
   for (i in seq_along(object@plates))
     metadata(object@plates[[i]], key) <- value
   object
@@ -302,7 +305,7 @@ setMethod("include_metadata", OPM, function(object, md,
   callNextMethod(object = object, md = md, keys = keys, ...)
 }, sealed = SEALED)
 
-setMethod("include_metadata", WMDS, function(object, ...) {
+setMethod("include_metadata", "WMDS", function(object, ...) {
   object@plates <- lapply(X = object@plates, FUN = include_metadata, ...)
   object
 }, sealed = SEALED)
@@ -334,7 +337,7 @@ setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, FOE), function(object, mapping,
+setMethod("map_metadata", c(WMD, "FOE"), function(object, mapping,
     values = parent.frame(), classes = NULL) {
   object@metadata <- map_values(object@metadata, mapping, values)
   object
@@ -351,14 +354,14 @@ setMethod("map_metadata", c(WMD, "missing"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMDS, "missing"), function(object, mapping,
+setMethod("map_metadata", c("WMDS", "missing"), function(object, mapping,
     values = TRUE, classes = "factor") {
   object@plates <- lapply(X = object@plates, FUN = map_metadata,
     values = values, classes = classes)
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMDS, "ANY"), function(object, mapping, ...) {
+setMethod("map_metadata", c("WMDS", "ANY"), function(object, mapping, ...) {
   object@plates <- lapply(X = object@plates, FUN = map_metadata,
     mapping = mapping, ...)
   object
@@ -397,12 +400,12 @@ setMethod("map_values", c("list", "formula"), function(object, mapping,
 
 setGeneric("edit")
 
-setMethod("edit", WMDX, function(name, ...) {
+setMethod("edit", "WMDX", function(name, ...) {
   metadata(name) <- edit(to_metadata(name), ...)
   map_metadata(name)
 }, sealed = SEALED)
 
-setMethod("edit", MOPMX, function(name, ...) {
+setMethod("edit", "MOPMX", function(name, ...) {
   for (i in seq_along(name))
     name[[i]] <- edit(name[[i]], ...)
   name
@@ -431,7 +434,7 @@ setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
     fetch_fun(key)
 }, sealed = SEALED)
 
-setMethod("metadata", WMDS, function(object, ...) {
+setMethod("metadata", "WMDS", function(object, ...) {
   simplify_conditionally(lapply(X = object@plates, FUN = metadata, ...))
 }, sealed = SEALED)
 
@@ -446,7 +449,7 @@ setMethod("metadata_chars", WMD, function(object, values = TRUE,
     map_names(object@metadata)
 }, sealed = SEALED)
 
-setMethod("metadata_chars", WMDS, function(object, ...) {
+setMethod("metadata_chars", "WMDS", function(object, ...) {
   # 2nd call of map_values unifies the vector but keeps the names
   map_values(unlist(lapply(object@plates, FUN = metadata_chars, ...)))
 }, sealed = SEALED)

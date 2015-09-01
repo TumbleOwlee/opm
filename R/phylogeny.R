@@ -72,7 +72,7 @@ safe_labels <- function(x, format, enclose = TRUE, pad = FALSE,
 
 setGeneric("format")
 
-setMethod("format", CMAT, function(x, how, enclose, digits, indent,
+setMethod("format", "CMAT", function(x, how, enclose, digits, indent,
     paup.block, comments, html.args, ...) {
 
   # HTML helper methods.
@@ -455,7 +455,7 @@ setMethod("phylo_data", "matrix", function(object,
   format <- match.arg(format, PHYLO_FORMATS)
   delete <- match.arg(delete)
   comments <- comments
-  object <- new(CMAT, object)
+  object <- new("CMAT", object)
   if (L(prefer.char))
     object <- update(object, how = "NA2int")
   object <- merge(x = object, y = join)
@@ -482,7 +482,7 @@ setMethod("phylo_data", "data.frame", function(object, as.labels = NULL,
   phylo_data(object, ...)
 }, sealed = SEALED)
 
-setMethod("phylo_data", XOPMX, function(object, as.labels,
+setMethod("phylo_data", "XOPMX", function(object, as.labels,
     subset = param_names("disc.name"), sep = " ", extract.args = list(),
     join = TRUE, discrete.args = list(range = TRUE, gap = TRUE), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,

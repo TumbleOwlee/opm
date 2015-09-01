@@ -1,10 +1,10 @@
-setClass(WMD,
+setClass("WMD",
   slots = c(metadata = "list"),
   contains = "VIRTUAL",
   sealed = SEALED
 )
 
-setClass(WMDS,
+setClass("WMDS",
   slots = c(plates = "list"),
   contains = "VIRTUAL",
   sealed = SEALED
@@ -12,13 +12,13 @@ setClass(WMDS,
 
 NULL
 
-setClassUnion(WMDX, c(WMD, WMDS))
+setClassUnion("WMDX", c("WMD", "WMDS"))
 
 NULL
 
-setClassUnion(FOE, c("formula", "expression"))
+setClassUnion("FOE", c("formula", "expression"))
 
-setClass(OPM,
+setClass("OPM",
   slots = c(measurements = "matrix", csv_data = "character"),
   contains = WMD,
   validity = function(object) {
@@ -31,9 +31,9 @@ setClass(OPM,
   sealed = SEALED
 )
 
-setClass(OPMA,
+setClass("OPMA",
   slots = c(aggregated = "matrix", aggr_settings = "list"),
-  contains = OPM,
+  contains = "OPM",
   validity = function(object) {
     settings <- object@aggr_settings
     if (length(errs <- opma_problems(settings)))
@@ -48,9 +48,9 @@ setClass(OPMA,
   sealed = SEALED
 )
 
-setClass(OPMD,
+setClass("OPMD",
   slots = c(discretized = "logical", disc_settings = "list"),
-  contains = OPMA,
+  contains = "OPMA",
   validity = function(object) {
     errs <- opmd_problems(object@disc_settings)
     errs <- c(errs, opmd_problems(object@aggregated, object@discretized,
@@ -63,8 +63,8 @@ setClass(OPMD,
   sealed = SEALED
 )
 
-setClass(OPMS,
-  contains = WMDS,
+setClass("OPMS",
+  contains = "WMDS",
   validity = function(object) {
     if (length(errs <- opms_problems(object@plates)))
       errs
@@ -74,20 +74,20 @@ setClass(OPMS,
   sealed = SEALED
 )
 
-setClass(MOPMX,
+setClass("MOPMX",
   contains = "list",
   slots = c(names = "character"),
   prototype = prototype(names = character()),
   #prototype = structure(list(), names = character()),
   validity = function(object) {
-    if (all(vapply(object@.Data, is, NA, OPMX)))
+    if (all(vapply(object@.Data, is, NA, "OPMX")))
       TRUE
     else
       "not ell elements inherit from 'OPMX'"
   }, sealed = SEALED
 )
 
-setClass(OPM_MCP_OUT,
+setClass("OPM_MCP_OUT",
   contains = "data.frame",
   validity = function(object) {
     errs <- NULL
@@ -104,19 +104,19 @@ setClass(OPM_MCP_OUT,
 
 NULL
 
-setClassUnion(OPMX, c(OPM, OPMS))
+setClassUnion("OPMX", c("OPM", "OPMS"))
 
 NULL
 
-setClassUnion(XOPMX, c(MOPMX, OPMS))
+setClassUnion("XOPMX", c("MOPMX", "OPMS", "OPM"))
 
 NULL
 
 setOldClass("print_easy")
 
-setClassUnion(YAML_VIA_LIST, c(OPM, OPMS, "print_easy"))
+setClassUnion("YAML_VIA_LIST", c("OPM", "OPMS", "print_easy"))
 
-setClass(CMAT,
+setClass("CMAT",
   contains = "matrix",
   validity = function(object) {
     errs <- character()
@@ -141,20 +141,20 @@ setClass(CMAT,
   sealed = SEALED
 )
 
-setMethod("initialize", OPM, function(.Object, ...) {
+setMethod("initialize", "OPM", function(.Object, ...) {
   .Object <- callNextMethod()
   plate.type <- CSV_NAMES[["PLATE_TYPE"]]
   .Object@csv_data[plate.type] <- plate_type(.Object@csv_data[plate.type])
   .Object
 }, sealed = SEALED)
 
-setMethod("initialize", OPMS, function(.Object, ...) {
+setMethod("initialize", "OPMS", function(.Object, ...) {
   .Object <- callNextMethod()
   names(.Object@plates) <- NULL
   .Object
 }, sealed = SEALED)
 
-setMethod("initialize", CMAT, function(.Object, ...) {
+setMethod("initialize", "CMAT", function(.Object, ...) {
   map2int <- function(x) match(toupper(x), CHARACTER_STATES)
   .Object <- callNextMethod()
   switch(typeof(.Object),
@@ -189,7 +189,8 @@ setMethod("opm_problems", "matrix", function(object) {
   col.names <- colnames(object)
   # Pattern must be in sync with clean_coords() and is_coord()
   pattern <- sprintf("^([A-H][01]\\d|%s)$", HOUR)
-  if (length(bad <- grep(pattern, col.names, invert = TRUE, value = TRUE)))
+  if (length(bad <- grep(pattern = pattern, x = col.names, invert = TRUE,
+      value = TRUE)))
     errs <- c(errs, paste("invalid entry in header:", bad[1L]))
   if (bad <- anyDuplicated(col.names))
     errs <- c(errs, paste("duplicated entry in header:", col.names[bad]))
@@ -298,7 +299,7 @@ setMethod("opms_problems", "list", function(object) {
     errs <- c(errs, "less than two plates submitted")
     return(errs) # further checks are useless in that case
   }
-  if (length(no.opm <- which(!vapply(object, is, NA, OPM))) > 0L) {
+  if (length(no.opm <- which(!vapply(object, is, NA, "OPM"))) > 0L) {
     bad.classes <- unlist(lapply(object[no.opm], class))
     errs <- c(errs, paste("wrong class:", bad.classes))
     return(errs) # further checks are impossible in that case
@@ -309,14 +310,14 @@ setMethod("opms_problems", "list", function(object) {
   if (!isTRUE(is_uniform(lapply(object, wells))))
     errs <- c(errs, "wells are not uniform")
   if (!length(errs) &&
-      !isTRUE(is_uniform(lapply(object, FUN = hours, what = "all"))))
+      !isTRUE(is_uniform(lapply(X = object, FUN = hours, what = "all"))))
     warning("running times are not uniform")
   errs
 }, sealed = SEALED)
 
 setGeneric("attach_attr", function(object, ...) standardGeneric("attach_attr"))
 
-setMethod("attach_attr", OPM, function(object, other) {
+setMethod("attach_attr", "OPM", function(object, other) {
   for (name in setdiff(slotNames(object), "measurements"))
     attr(other, name) <- slot(object, name)
   other
@@ -350,37 +351,37 @@ setMethod("update_settings_list", "list", function(x) {
 setGeneric("rename_wells",
   function(object, keys) standardGeneric("rename_wells"))
 
-setMethod("rename_wells", c(OPM, "ANY"), function(object, keys) {
+setMethod("rename_wells", c("OPM", "ANY"), function(object, keys) {
   colnames(object@measurements)[-1L] <- keys
   object
 }, sealed = SEALED)
 
-setMethod("rename_wells", c(OPMA, "ANY"), function(object, keys) {
+setMethod("rename_wells", c("OPMA", "ANY"), function(object, keys) {
   object <- callNextMethod()
   colnames(object@aggregated) <- keys
   object
 }, sealed = SEALED)
 
-setMethod("rename_wells", c(OPMS, "ANY"), function(object, keys) {
+setMethod("rename_wells", c("OPMS", "ANY"), function(object, keys) {
   object <- callNextMethod()
   names(object@discretized) <- keys
   object
 }, sealed = SEALED)
 
-setAs(from = OPM, to = "matrix", function(from) {
+setAs("OPM", "matrix", function(from) {
   attach_attr(from, from@measurements)
 })
 
-setAs(from = OPM, to = "data.frame", function(from) {
+setAs("OPM", "data.frame", function(from) {
   attach_attr(from, as.data.frame(from@measurements))
 })
 
-setAs(from = OPM, to = "list", function(from) {
+setAs("OPM", "list", function(from) {
   list(metadata = metadata(from), csv_data = as.list(csv_data(from)),
     measurements = as.list(as.data.frame(measurements(from))))
 })
 
-setAs(from = "list", to = OPM, function(from) {
+setAs("list", "OPM", function(from) {
   convert_measurements <- function(mat) {
     mat <- must(do.call(cbind, lapply(mat, as.numeric)))
     if (length(hour.pos <- which(colnames(mat) == HOUR)) != 1L)
@@ -390,56 +391,56 @@ setAs(from = "list", to = OPM, function(from) {
     mat[, sorted.names, drop = FALSE]
   }
   md <- repair_na_strings.list(as.list(from$metadata), "character")
-  new(OPM, csv_data = map_names(unlist(from$csv_data), rescue_dots),
+  new("OPM", csv_data = map_names(unlist(from$csv_data), rescue_dots),
     metadata = map_names(md, rescue_dots),
     measurements = convert_measurements(from$measurements))
 })
 
-setAs(from = OPMA, to = "matrix", function(from) {
+setAs("OPMA", "matrix", function(from) {
   attach_attr(from, from@measurements)
 })
 
-setAs(from = OPMA, to = "data.frame", function(from) {
+setAs("OPMA", "data.frame", function(from) {
   attach_attr(from, as.data.frame(from@measurements))
 })
 
-setAs(from = OPMA, to = "list", function(from) {
-  result <- as(as(from, OPM), "list")
+setAs("OPMA", "list", function(from) {
+  result <- as(as(from, "OPM"), "list")
   result$aggregated <- apply(aggregated(from), MARGIN = 2L, FUN = as.list)
   result$aggr_settings <- aggr_settings(from)
   result
 })
 
-setAs(from = "list", to = OPMA, function(from) {
+setAs("list", "OPMA", function(from) {
   select_aggr <- function(x, wanted) {
     x <- repair_na_strings(lapply(x, `[`, unlist(map_param_names())))
     x <- do.call(cbind, x[wanted])
     must(mode(x) <- "numeric")
     x # should now be matrix, reduced to the known wells, parameters and CIs
   }
-  x <- as(from, OPM)
-  new(OPMA, measurements = measurements(x),
+  x <- as(from, "OPM")
+  new("OPMA", measurements = measurements(x),
     csv_data = csv_data(x), metadata = metadata(x),
     aggregated = select_aggr(from$aggregated, colnames(x@measurements)[-1L]),
     aggr_settings = update_settings_list(as.list(from$aggr_settings)))
 })
 
-setAs(from = OPMD, to = "matrix", function(from) {
+setAs("OPMD", "matrix", function(from) {
   attach_attr(from, from@measurements)
 })
 
-setAs(from = OPMD, to = "data.frame", function(from) {
+setAs("OPMD", "data.frame", function(from) {
   attach_attr(from, as.data.frame(from@measurements))
 })
 
-setAs(from = OPMD, to = "list", function(from) {
-  result <- as(as(from, OPMA), "list")
+setAs("OPMD", "list", function(from) {
+  result <- as(as(from, "OPMA"), "list")
   result$discretized <- as.list(from@discretized)
   result$disc_settings <- from@disc_settings
   result
 })
 
-setAs(from = "list", to = OPMD, function(from) {
+setAs("list", "OPMD", function(from) {
   # up to official release opm 0.10.0, the discretized curve parameter had
   # not been included in the discretization settings
   repair_missing_parameter <- function(x) {
@@ -451,51 +452,51 @@ setAs(from = "list", to = OPMD, function(from) {
     }
     x
   }
-  x <- as(from, OPMA)
+  x <- as(from, "OPMA")
   settings <- update_settings_list(as.list(from$disc_settings))
   settings <- repair_missing_parameter(settings)
   discretized <- from$discretized[colnames(x@aggregated)]
   discretized <- unlist(repair_na_strings(discretized, "logical"))
-  new(OPMD, csv_data = csv_data(x), measurements = measurements(x),
+  new("OPMD", csv_data = csv_data(x), measurements = measurements(x),
     metadata = metadata(x), aggr_settings = aggr_settings(x),
     aggregated = aggregated(x), discretized = discretized,
     disc_settings = settings)
 })
 
-setAs(from = OPMS, to = "list", function(from) {
+setAs("OPMS", "list", function(from) {
   lapply(from@plates, as, Class = "list")
 })
 
-setAs(from = "list", to = OPMS, function(from) {
-  opmd.slots <- setdiff(slotNames(OPMD), opma.slots <- slotNames(OPMA))
-  opma.slots <- setdiff(opma.slots, slotNames(OPM))
-  new(OPMS, plates = lapply(from, FUN = function(x) {
+setAs("list", "OPMS", function(from) {
+  opmd.slots <- setdiff(slotNames("OPMD"), opma.slots <- slotNames("OPMA"))
+  opma.slots <- setdiff(opma.slots, slotNames("OPM"))
+  new("OPMS", plates = lapply(from, function(x) {
     as(x, if (all(opma.slots %in% names(x)))
       if (all(opmd.slots %in% names(x)))
-        OPMD
+        "OPMD"
       else
-        OPMA
+        "OPMA"
       else
-        OPM)
+        "OPM")
   }))
 })
 
-setAs(from = "list", to = MOPMX, function(from) {
-  new(MOPMX, from)
+setAs("list", "MOPMX", function(from) {
+  new("MOPMX", from) # overwritten to enforce consistency checks
 })
 
-setAs(from = OPMX, to = MOPMX, function(from) {
-  new(MOPMX, list(from))
+setAs("OPMX", "MOPMX", function(from) {
+  new("MOPMX", list(from))
 })
 
-setAs(from = MOPMX, to = OPMX, function(from) {
+setAs("MOPMX", "OPMX", function(from) {
   if (length(from) != 1L)
     stop("conversion impossible: number of elements is not 1")
   from[[1L]]
 })
 
-setAs(from = "matrix", to = CMAT, function(from) {
-  new(CMAT, from) # overwritten to enforce consistency checks
+setAs("matrix", "CMAT", function(from) {
+  new("CMAT", from) # overwritten to enforce consistency checks
 })
 
 setClass("OPM_DB",

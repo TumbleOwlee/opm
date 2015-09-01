@@ -1,10 +1,11 @@
-XXXX-XX-XX
+2015-09-01
 
 - fixed some ambiguities in method dispatch of MOPMX infix operators
 
 - param_names() is now generic
 - specific str() methods now discourage the use of this function
 
+- all plotting functions get MOPMX methods
 - gen_iii() and read_opm() get a 'force' argument, batch_opm() gets an according
   'force.plate' argument
 - some database I/O methods get a 'klass' argument to make them more generally
@@ -16,8 +17,8 @@ XXXX-XX-XX
 - updated stored substrate information
 - new example data file for phenotype microarray data measured with other reader
 
-- nice HTML online documentation generating using 'knitr' now available
-- according addition to the vignette on growth curves regarding file input
+- nice HTML online documentation generated using 'knitr' now available
+- additions to the vignette on growth curves regarding file input
 - additions to the manual regarding the preferred spline method
 - addition of hints in the main tutorial regarding commonly encountered problems
 - the main tutorial now explains in detail how to export files from the

@@ -2,9 +2,9 @@
 \alias{parallelplot}
 \title{Parallel plot}
 \arguments{
-  \item{x}{An \code{\link{OPMA}} or \code{\link{OPMS}}
-  object with aggregated data. This and the following
-  argument can swap their places.}
+  \item{x}{An \code{\link{OPMA}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX} }object with aggregated data. This and
+  the following argument can swap their places.}
 
   \item{data}{Any kind of object that can be used for
   selecting \code{\link{metadata}}. Either \code{NULL}, a
@@ -69,11 +69,13 @@
   \item{space}{Character scalar.}
 
   \item{...}{Optional arguments passed to
-  \code{parallelplot} from the \pkg{lattice} package.}
+  \code{parallelplot} from the \pkg{lattice} package or
+  between the methods.}
 }
 \value{
-  An object of class \sQuote{trellis}. See \code{xyplot}
-  from the \pkg{lattice} package for details.
+  An object of class \sQuote{trellis} or list of such
+  objects. See \code{xyplot} from the \pkg{lattice} package
+  for details.
 }
 \description{
   Customised plotting of estimated curve parameter values
@@ -191,22 +193,31 @@ stopifnot(inherits(x, "try-error"))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{parallelplot-methods}
-\alias{parallelplot,NULL,OPMX-method}
+\alias{parallelplot,MOPMX,ANY-method}
+\alias{parallelplot,MOPMX-method}
+\alias{parallelplot,MOPMX,XOPMX-method}
+\alias{parallelplot,MOPMX,missing-method}
+\alias{parallelplot,NULL,XOPMX-method}
 \alias{parallelplot,OPMX,ANY-method}
 \alias{parallelplot,OPMX-method}
+\alias{parallelplot,OPMX,XOPMX-method}
 \alias{parallelplot,OPMX,missing-method}
-\alias{parallelplot,formula,OPMX-method}
-\alias{parallelplot,missing,OPMX-method}
-\alias{parallelplot,vector,OPMX-method}
+\alias{parallelplot,formula,XOPMX-method}
+\alias{parallelplot,missing,XOPMX-method}
+\alias{parallelplot,vector,XOPMX-method}
 \usage{
-  \S4method{parallelplot}{NULL,OPMX}(x, data, ...) 
+  \S4method{parallelplot}{MOPMX,ANY}(x, data, ...) 
+  \S4method{parallelplot}{MOPMX,XOPMX}(x, data, ...) 
+  \S4method{parallelplot}{MOPMX,missing}(x, data, ...) 
+  \S4method{parallelplot}{NULL,XOPMX}(x, data, ...) 
   \S4method{parallelplot}{OPMX,ANY}(x, data, groups = 1L,
   panel.var = NULL, pnames = param_names(), col = opm_opt("colors"),
   strip.fmt = list(), striptext.fmt = list(), legend.fmt = list(),
   legend.sep = " ", draw.legend = TRUE, space = "top", ...) 
+  \S4method{parallelplot}{OPMX,XOPMX}(x, data, ...) 
   \S4method{parallelplot}{OPMX,missing}(x, data, ...) 
-  \S4method{parallelplot}{formula,OPMX}(x, data, ...) 
-  \S4method{parallelplot}{missing,OPMX}(x, data, ...) 
-  \S4method{parallelplot}{vector,OPMX}(x, data, ...) 
+  \S4method{parallelplot}{formula,XOPMX}(x, data, ...) 
+  \S4method{parallelplot}{missing,XOPMX}(x, data, ...) 
+  \S4method{parallelplot}{vector,XOPMX}(x, data, ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb

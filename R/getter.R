@@ -220,7 +220,7 @@ setMethod("length", WMD, function(x) {
   1L
 }, sealed = SEALED)
 
-setMethod("length", WMDS, function(x) {
+setMethod("length", "WMDS", function(x) {
   length(x@plates)
 }, sealed = SEALED)
 
@@ -230,7 +230,7 @@ setMethod("seq", WMD, function(...) {
   stop("one cannot loop over an object of class ", class(..1))
 }, sealed = SEALED)
 
-setMethod("seq", WMDS, function(...) {
+setMethod("seq", "WMDS", function(...) {
   seq_along(..1@plates)
 }, sealed = SEALED)
 
@@ -766,7 +766,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("list", WMDS), function(x, table) {
+  setMethod(func_, c("list", "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -779,7 +779,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(WMD, WMDS), function(x, table) {
+  setMethod(func_, c(WMD, "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -792,7 +792,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("character", WMDS), function(x, table) {
+  setMethod(func_, c("character", "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -805,7 +805,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("factor", WMDS), function(x, table) {
+  setMethod(func_, c("factor", "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -818,7 +818,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("formula", WMDS), function(x, table) {
+  setMethod(func_, c("formula", "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -831,7 +831,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c("expression", WMDS), function(x, table) {
+  setMethod(func_, c("expression", "WMDS"), function(x, table) {
     vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
@@ -857,7 +857,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(WMDS, "ANY"), function(x, table) {
+  setMethod(func_, c("WMDS", "ANY"), function(x, table) {
     func_(table, x)
   }, sealed = SEALED)
 })
@@ -896,7 +896,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(MOPMX, WMDS), function(x, table) {
+  setMethod(func_, c(MOPMX, "WMDS"), function(x, table) {
     func_(table, x)
   }, sealed = SEALED)
 })
@@ -935,7 +935,7 @@ lapply(c(
     `%Q%`
     #-
   ), FUN = function(func_) {
-  setMethod(func_, c(WMDS, MOPMX), function(x, table) {
+  setMethod(func_, c("WMDS", MOPMX), function(x, table) {
     lapply(table@.Data, func_, x = x)
   }, sealed = SEALED)
 })

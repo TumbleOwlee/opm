@@ -1,6 +1,6 @@
 setGeneric("summary")
 
-setMethod("summary", OPM, function(object, ...) {
+setMethod("summary", "OPM", function(object, ...) {
   result <- list(
     Class = class(object),
     `From file` = csv_data(object, what = "filename"),
@@ -18,7 +18,7 @@ setMethod("summary", OPM, function(object, ...) {
   result
 }, sealed = SEALED)
 
-setMethod("summary", OPMS, function(object, ...) {
+setMethod("summary", "OPMS", function(object, ...) {
   result <- lapply(X = object@plates, FUN = summary, ...)
   attr(result, "overall") <- list(Dimensions = dim(object),
     Aggregated = sum(has_aggr(object)), Discretized = sum(has_disc(object)),
@@ -27,7 +27,7 @@ setMethod("summary", OPMS, function(object, ...) {
   result
 }, sealed = SEALED)
 
-setMethod("summary", MOPMX, function(object, ...) {
+setMethod("summary", "MOPMX", function(object, ...) {
   select_parts <- function(x) if (is.null(y <- attr(x, "overall")))
       c(list(Length = 1L, Plate.type = x[["Plate type"]]),
         x[c("Aggregated", "Discretized")])
@@ -47,17 +47,17 @@ setMethod("summary", MOPMX, function(object, ...) {
   result
 }, sealed = SEALED)
 
-setMethod("show", OPMX, function(object) {
+setMethod("show", "OPMX", function(object) {
   print(summary(object))
   invisible(NULL)
 }, sealed = SEALED)
 
-setMethod("show", MOPMX, function(object) {
+setMethod("show", "MOPMX", function(object) {
   print(summary(object))
   invisible(NULL)
 }, sealed = SEALED)
 
-setMethod("show", CMAT, function(object) {
+setMethod("show", "CMAT", function(object) {
   if (typeof(object) == "list") {
     object[] <- lapply(object, paste0, collapse = "/")
     storage.mode(object) <- "character"
@@ -67,19 +67,19 @@ setMethod("show", CMAT, function(object) {
 
 setGeneric("str")
 
-setMethod("str", WMDX, function(object, ...) {
+setMethod("str", "WMDX", function(object, ...) {
   callNextMethod(object, ...)
   cat(STR_NOTE)
   invisible(NULL)
 }, sealed = SEALED)
 
-setMethod("str", MOPMX, function(object, ...) {
+setMethod("str", "MOPMX", function(object, ...) {
   callNextMethod(object, ...)
   cat(STR_NOTE)
   invisible(NULL)
 }, sealed = SEALED)
 
-setMethod("str", CMAT, function(object, ...) {
+setMethod("str", "CMAT", function(object, ...) {
   callNextMethod(object, ...)
   cat(STR_NOTE)
   invisible(NULL)
@@ -115,7 +115,7 @@ print.OPMS_Summary <- function(x, ...) {
   tmpl <- "=> %s object with %i plates (%i aggregated, %i discretized)"
   tmpl <- paste(tmpl, "of type '%s', %i well(s) and about %i time point(s).")
   y <- attr(x, "overall")
-  cat(sprintf(tmpl, OPMS, y$Dimensions[1L], y$Aggregated, y$Discretized,
+  cat(sprintf(tmpl, "OPMS", y$Dimensions[1L], y$Aggregated, y$Discretized,
     y$Plate.type, y$Dimensions[3L], y$Dimensions[2L]), sep = "\n")
   invisible(x)
 }
@@ -228,7 +228,7 @@ setMethod("improved_max", "numeric", function(object, by = 10) {
   ceiling(m / by) * by + by # => error unless 'by' is numeric
 }, sealed = SEALED)
 
-setMethod("improved_max", OPMX, function(object, theor.max = TRUE, by = 10) {
+setMethod("improved_max", "OPMX", function(object, theor.max = TRUE, by = 10) {
   if (L(theor.max))
     return(THEOR_RANGE[2L])
   improved_max(max(object), by)
@@ -260,7 +260,7 @@ setMethod("draw_ci", "numeric", function(object, col = "blue", cex = 1,
 setGeneric("negative_control",
   function(object, ...) standardGeneric("negative_control"))
 
-setMethod("negative_control", OPMX, function(object, neg.ctrl) {
+setMethod("negative_control", "OPMX", function(object, neg.ctrl) {
   if (!length(neg.ctrl) || is.numeric(neg.ctrl))
     neg.ctrl
   else if (is.character(neg.ctrl)) {
@@ -283,7 +283,7 @@ setMethod("negative_control", OPMX, function(object, neg.ctrl) {
 
 setGeneric("main_title", function(object, ...) standardGeneric("main_title"))
 
-setMethod("main_title", OPMX, function(object, settings) {
+setMethod("main_title", "OPMX", function(object, settings) {
   if (is.character(settings) || is.expression(settings))
     settings <- list(predef = settings)
   else if (is.logical(settings))
@@ -312,7 +312,11 @@ default_color_regions <- function(colors, space, bias, n) {
 
 setGeneric("xy_plot", function(x, ...) standardGeneric("xy_plot"))
 
-setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
+setMethod("xy_plot", "MOPMX", function(x, ...) {
+  sapply(X = x, FUN = xy_plot, ..., simplify = FALSE, USE.NAMES = TRUE)
+}, sealed = SEALED)
+
+setMethod("xy_plot", "OPM", function(x, col = "midnightblue", lwd = 1,
     neg.ctrl = "A01", base.col = "grey10", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
     theor.max = TRUE, draw.grid = TRUE,
@@ -361,7 +365,7 @@ setMethod("xy_plot", OPM, function(x, col = "midnightblue", lwd = 1,
 
 }, sealed = SEALED)
 
-setMethod("xy_plot", OPMS, function(x, col = opm_opt("colors"), lwd = 1,
+setMethod("xy_plot", "OPMS", function(x, col = opm_opt("colors"), lwd = 1,
     neg.ctrl = "A01", base.col = "black", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
     theor.max = TRUE, draw.grid = TRUE, space = "top",
@@ -512,7 +516,7 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
 
 setGeneric("level_plot", function(x, ...) standardGeneric("level_plot"))
 
-setMethod("level_plot", OPM, function(x, main = list(),
+setMethod("level_plot", "OPM", function(x, main = list(),
     colors = opm_opt("color.borders"), panel.headers = FALSE, cex = NULL,
     strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",
     space = "Lab", bias = 0.5, num.colors = 200L, ...) {
@@ -526,7 +530,7 @@ setMethod("level_plot", OPM, function(x, main = list(),
     scales = list(cex = cex, lineheight = 10))
 }, sealed = SEALED)
 
-setMethod("level_plot", OPMS, function(x, main = list(),
+setMethod("level_plot", "OPMS", function(x, main = list(),
     colors = opm_opt("color.borders"), panel.headers = TRUE, cex = NULL,
     strip.fmt = list(), striptext.fmt = list(), legend.sep = " ",
     space = "Lab", bias = 0.5, num.colors = 200L, ...) {
@@ -552,6 +556,10 @@ setMethod("level_plot", OPMS, function(x, main = list(),
     strip = strip.fmt, as.table = TRUE, layout = c(dims[1L], 1L),
     par.strip.text = as.list(striptext.fmt),
     scales = list(cex = cex, lineheight = 10))
+}, sealed = SEALED)
+
+setMethod("level_plot", "MOPMX", function(x, ...) {
+  sapply(X = x, FUN = level_plot, ..., simplify = FALSE, USE.NAMES = TRUE)
 }, sealed = SEALED)
 
 setGeneric("ci_plot", function(object, ...) standardGeneric("ci_plot"))
@@ -624,10 +632,14 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
 
 }, sealed = SEALED)
 
-setMethod("ci_plot", OPMS, function(object, as.labels,
+setMethod("ci_plot", "OPMS", function(object, as.labels,
     subset = opm_opt("curve.param"), ...) {
   ci_plot(extract(object, as.labels = as.labels, subset = subset,
     dataframe = TRUE, ci = TRUE), split.at = param_names("split.at"), ...)
+}, sealed = SEALED)
+
+setMethod("ci_plot", "MOPMX", function(object, ...) {
+  sapply(X = object, FUN = ci_plot, ..., simplify = FALSE, USE.NAMES = TRUE)
 }, sealed = SEALED)
 
 setGeneric("heat_map", function(object, ...) standardGeneric("heat_map"))
@@ -762,7 +774,7 @@ setMethod("heat_map", "data.frame", function(object, as.labels,
     as.labels = as.labels, as.groups = as.groups, sep = sep), ...))
 }, sealed = SEALED)
 
-setMethod("heat_map", OPMS, function(object, as.labels,
+setMethod("heat_map", "OPMS", function(object, as.labels,
     subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
     extract.args = list(), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,
@@ -771,7 +783,7 @@ setMethod("heat_map", OPMS, function(object, as.labels,
   invisible(heat_map(do.call(extract, extract.args), ...))
 }, sealed = SEALED)
 
-setMethod("heat_map", MOPMX, function(object, as.labels,
+setMethod("heat_map", "MOPMX", function(object, as.labels,
     subset = opm_opt("curve.param"), as.groups = NULL, sep = " ",
     extract.args = list(), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,
@@ -842,7 +854,7 @@ setMethod("radial_plot", "data.frame", function(object, as.labels,
     direct = FALSE, as.labels = as.labels, sep = sep), ...))
 }, sealed = SEALED)
 
-setMethod("radial_plot", OPMS, function(object, as.labels,
+setMethod("radial_plot", "OPMS", function(object, as.labels,
     subset = opm_opt("curve.param"), sep = " ", extract.args = list(), ...) {
   extract.args <- insert(as.list(extract.args), list(object = object,
     as.labels = as.labels, as.groups = NULL, subset = subset,
@@ -850,29 +862,50 @@ setMethod("radial_plot", OPMS, function(object, as.labels,
   invisible(radial_plot(do.call(extract, extract.args), ...))
 }, sealed = SEALED)
 
+setMethod("radial_plot", "MOPMX", function(object, ...) {
+  sapply(X = object, FUN = radial_plot, ..., simplify = FALSE, USE.NAMES = TRUE)
+}, sealed = SEALED)
+
 setGeneric("parallelplot")
 
-setMethod("parallelplot", c("missing", OPMX), function(x, data, ...) {
+setMethod("parallelplot", c("missing", "XOPMX"), function(x, data, ...) {
   parallelplot(data, NULL, ...)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c("NULL", OPMX), function(x, data, ...) {
+setMethod("parallelplot", c("NULL", "XOPMX"), function(x, data, ...) {
   parallelplot(data, x, ...)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c("vector", OPMX), function(x, data, ...) {
+setMethod("parallelplot", c("vector", "XOPMX"), function(x, data, ...) {
   parallelplot(data, x, ...)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c("formula", OPMX), function(x, data, ...) {
+setMethod("parallelplot", c("MOPMX", "XOPMX"), function(x, data, ...) {
+  stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
+}, sealed = SEALED)
+
+setMethod("parallelplot", c("OPMX", "XOPMX"), function(x, data, ...) {
+  stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
+}, sealed = SEALED)
+
+setMethod("parallelplot", c("formula", "XOPMX"), function(x, data, ...) {
   parallelplot(data, x, ...)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c(OPMX, "missing"), function(x, data, ...) {
+setMethod("parallelplot", c("OPMX", "missing"), function(x, data, ...) {
   parallelplot(x, NULL, ...)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c(OPMX, "ANY"), function(x, data, groups = 1L,
+setMethod("parallelplot", c("MOPMX", "missing"), function(x, data, ...) {
+  parallelplot(x, NULL, ...)
+}, sealed = SEALED)
+
+setMethod("parallelplot", c("MOPMX", "ANY"), function(x, data, ...) {
+  sapply(X = x, FUN = parallelplot, data = data, ..., simplify = FALSE,
+    USE.NAMES = TRUE)
+}, sealed = SEALED)
+
+setMethod("parallelplot", c("OPMX", "ANY"), function(x, data, groups = 1L,
   panel.var = NULL, pnames = param_names(), col = opm_opt("colors"),
   strip.fmt = list(), striptext.fmt = list(), legend.fmt = list(),
   legend.sep = " ", draw.legend = TRUE, space = "top", ...) {

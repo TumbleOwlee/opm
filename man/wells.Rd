@@ -251,9 +251,10 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 
-  \S4method{listing}{XOPMX}(x, as.groups, cutoff = opm_opt("min.mode"),
-    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
-    ..., exact = TRUE, strict = TRUE) 
+  \S4method{listing}{XOPMX}(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) 
   \S4method{listing}{well_coords_map}(x) 
 
   \S4method{wells}{ANY}(object, full = TRUE, in.parens = FALSE,

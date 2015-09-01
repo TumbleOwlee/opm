@@ -2,11 +2,13 @@
 \alias{ci_plot}
 \title{Plot point estimates with \acronym{CI}s}
 \arguments{
-  \item{object}{\code{\link{OPMS}} object or (rarely) a
-  data frame. If an \code{\link{OPMS}} object, it is in
-  most cases necessary to restrict the plates to at most
-  about one dozen wells. See \code{\link{[}} for how to
-  achieve this.
+  \item{object}{\code{\link{OPMS}} or \code{\link{MOPMX}}
+  object or (rarely) a data frame. If an \code{\link{OPMS}}
+  object, it is in most cases necessary to restrict the
+  plates to at most about one dozen wells. See
+  \code{\link{[}} for how to achieve this. This also means
+  that care should be taken when applying this function to
+  a \code{\link{MOPMX}} object.
 
   The data frame method is not normally directly called by
   an \pkg{opm} user but via the \code{\link{OPMS}} method,
@@ -75,15 +77,14 @@
   arrangement of the subplots.}
 
   \item{...}{Optional arguments passed to \code{legend}, or
-  arguments passed from the \code{\link{OPMS}} method to
-  the data frame method.}
+  arguments passed between the methods.}
 
   \item{split.at}{Character vector. See
   \code{\link{extract}}.}
 }
 \value{
   Character vector describing the plot's legend, returned
-  invisibly.
+  invisibly, or list of such vectors.
 }
 \description{
   Draw point estimates with their confidence intervals.
@@ -129,9 +130,11 @@ stopifnot(is.character(x), identical(length(x), 4L))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{ci_plot-methods}
+\alias{ci_plot,MOPMX-method}
 \alias{ci_plot,OPMS-method}
 \alias{ci_plot,data.frame-method}
 \usage{
+  \S4method{ci_plot}{MOPMX}(object, ...) 
   \S4method{ci_plot}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), ...) 
   \S4method{ci_plot}{data.frame}(object, rowname.sep = " ",

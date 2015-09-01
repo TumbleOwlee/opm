@@ -605,9 +605,10 @@ setMethod("listing", OPMD, function(x, as.groups,
   res
 }, sealed = SEALED)
 
-setMethod("listing", XOPMX, function(x, as.groups, cutoff = opm_opt("min.mode"),
-    downcase = TRUE, full = TRUE, in.parens = FALSE, html = FALSE, sep = " ",
-    ..., exact = TRUE, strict = TRUE) {
+setMethod("listing", "XOPMX", function(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) {
   add_stuff <- function(x, html, cutoff) {
     class(x) <- "OPMS_Listing"
     attr(x, "html") <- html

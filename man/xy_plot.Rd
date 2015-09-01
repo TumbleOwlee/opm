@@ -2,7 +2,8 @@
 \alias{xy_plot}
 \title{X-Y plot}
 \arguments{
-  \item{x}{\code{\link{OPM}} or \code{\link{OPMS}} object.}
+  \item{x}{\code{\link{OPM}}, \code{\link{OPMS}} or
+  \code{\link{MOPMX}} object.}
 
   \item{col}{For the \code{\link{OPM}} method, just a
   character scalar (colour name) determining the line
@@ -132,8 +133,9 @@
   method).}
 }
 \value{
-  An object of class \sQuote{trellis}. See \code{xyplot}
-  from the \pkg{lattice} package for details.
+  An object of class \sQuote{trellis} or list of such
+  objects. See \code{xyplot} from the \pkg{lattice} package
+  for details.
 }
 \description{
   Customised plotting of a single \acronym{PM} plate or
@@ -206,10 +208,12 @@ xy_plot(vaas_4, include = c("Species", "Strain"),
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{xy_plot-methods}
+\alias{xy_plot,MOPMX-method}
 \alias{xy_plot,OPM-method}
 \alias{xy_plot,OPMS-method}
 \alias{xy_plot,data.frame-method}
 \usage{
+  \S4method{xy_plot}{MOPMX}(x, ...) 
   \S4method{xy_plot}{OPM}(x, col = "midnightblue", lwd = 1,
     neg.ctrl = "A01", base.col = "grey10", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",

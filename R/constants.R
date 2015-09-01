@@ -2,19 +2,12 @@ NOT_YET <- "not yet implemented"
 BUG_MSG <- "a bug -- this should not happen"
 
 WMD <- "WMD"
-WMDS <- "WMDS"
-WMDX <- "WMDX"
 OPM <- "OPM"
 OPMA <- "OPMA"
 OPMD <- "OPMD"
 OPMS <- "OPMS"
 OPMX <- "OPMX"
 MOPMX <- "MOPMX"
-XOPMX <- "XOPMX"
-OPM_MCP_OUT <- "OPM_MCP_OUT"
-YAML_VIA_LIST <- "YAML_VIA_LIST"
-FOE <- "FOE"
-CMAT <- "CMAT"
 
 SEALED <- TRUE #|| SEALED <- FALSE
 

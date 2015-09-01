@@ -225,7 +225,7 @@ setMethod("is_constant", "array", function(x, margin = 1L, na.rm = TRUE) {
   apply(X = x, MARGIN = margin, FUN = is_constant, na.rm = na.rm)
 }, sealed = SEALED)
 
-setMethod("is_constant", CMAT, function(x, strict, digits = opm_opt("digits"),
+setMethod("is_constant", "CMAT", function(x, strict, digits = opm_opt("digits"),
     na.rm = TRUE) {
   no_dup <- function(y) all(duplicated(if (na.rm)
     y[!is.na(y)]
@@ -954,7 +954,7 @@ setMethod("param_names", "character", function(what) {
 
 setGeneric("update")
 
-setMethod("update", CMAT, function(object,
+setMethod("update", "CMAT", function(object,
     how = c("NA2int", "delete.uninf", "delete.constant", "delete.ambig"),
     digits = opm_opt("digits"), na.rm = TRUE) {
   if (!length(object))
@@ -1016,7 +1016,7 @@ setMethod("update", CMAT, function(object,
           na.rm = na.rm)
       )
       if (any(bad))
-        object <- as(object[, !bad, drop = FALSE], CMAT)
+        object <- as(object[, !bad, drop = FALSE], "CMAT")
     }
   )
   object

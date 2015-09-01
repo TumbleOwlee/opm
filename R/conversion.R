@@ -56,18 +56,18 @@ setMethod("merge", c(MOPMX, "ANY"), function(x, y) {
   merge(x + y)
 }, sealed = SEALED)
 
-setMethod("merge", c(CMAT, "logical"), function(x, y) {
+setMethod("merge", c("CMAT", "logical"), function(x, y) {
   merge(x, if (L(y))
       as.factor(rownames(x))
     else
       as.factor(seq_len(nrow(x))))
 }, sealed = SEALED)
 
-setMethod("merge", c(CMAT, "ANY"), function(x, y) {
+setMethod("merge", c("CMAT", "ANY"), function(x, y) {
   merge(x, as.factor(y))
 }, sealed = SEALED)
 
-setMethod("merge", c(CMAT, "factor"), function(x, y) {
+setMethod("merge", c("CMAT", "factor"), function(x, y) {
   if (length(y) != nrow(x)) # this also covers NULL row names
     stop("length of 'y' not equal to number of rows")
   if (anyNA(y))
@@ -81,7 +81,7 @@ setMethod("merge", c(CMAT, "factor"), function(x, y) {
   x[] <- lapply(x, sort.int, na.last = TRUE)
   rownames(x) <- levels(y)
   colnames(x) <- cn
-  new(CMAT, x)
+  new("CMAT", x)
 }, sealed = SEALED)
 
 setGeneric("split")
@@ -199,11 +199,11 @@ setMethod("split", c(MOPMX, "ANY", "ANY"), function(x, f, drop) {
 
 setGeneric("plates", function(object, ...) standardGeneric("plates"))
 
-setMethod("plates", WMDS, function(object) {
+setMethod("plates", "WMDS", function(object) {
   object@plates
 }, sealed = SEALED)
 
-setMethod("plates", WMD, function(object) {
+setMethod("plates", "WMD", function(object) {
   list(object)
 }, sealed = SEALED)
 
@@ -211,7 +211,7 @@ setMethod("plates", "list", function(object) {
   to_opm_list.list(object, TRUE, TRUE, FALSE)
 }, sealed = SEALED)
 
-setMethod("plates", MOPMX, function(object) {
+setMethod("plates", "MOPMX", function(object) {
   unlist(lapply(object@.Data, plates), FALSE)
 }, sealed = SEALED)
 
@@ -605,7 +605,7 @@ setMethod("extract_columns", WMD, function(object, what, join = FALSE,
   result
 }, sealed = SEALED)
 
-setMethod("extract_columns", WMDS, function(object, what, join = FALSE,
+setMethod("extract_columns", "WMDS", function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
@@ -932,7 +932,7 @@ setMethod("to_yaml", "list", function(object, sep = TRUE,
   result
 }, sealed = SEALED)
 
-setMethod("to_yaml", YAML_VIA_LIST, function(object, ...) {
+setMethod("to_yaml", "YAML_VIA_LIST", function(object, ...) {
   n <- names(object)
   object <- as(object, "list")
   if (is.null(names(object)) && length(object) == length(n))
@@ -940,7 +940,7 @@ setMethod("to_yaml", YAML_VIA_LIST, function(object, ...) {
   to_yaml(object, ...)
 }, sealed = SEALED)
 
-setMethod("to_yaml", MOPMX, function(object, ...) {
+setMethod("to_yaml", "MOPMX", function(object, ...) {
   to_yaml(lapply(object, as, "list"), ...)
 }, sealed = SEALED)
 

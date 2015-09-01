@@ -25,12 +25,6 @@ expect_length <- function(actual, expected) {
 ## WMD
 ## UNTESTED
 
-## WMDS
-## UNTESTED
-
-## WMDX
-## UNTESTED
-
 ## OPM
 ## UNTESTED
 
@@ -47,21 +41,6 @@ expect_length <- function(actual, expected) {
 ## UNTESTED
 
 ## MOPMX
-## UNTESTED
-
-## XOPMX
-## UNTESTED
-
-## OPM_MCP_OUT
-## UNTESTED
-
-## YAML_VIA_LIST
-## UNTESTED
-
-## FOE
-## UNTESTED
-
-## CMAT
 ## UNTESTED
 
 

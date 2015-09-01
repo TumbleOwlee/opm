@@ -182,7 +182,8 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   sep <- check_mcp_sep(sep)
   model <- convert_model(model, ops)
   case(match.arg(output),
-    data = return(as(convert_data(object, split.at, model, sep), OPM_MCP_OUT)),
+    data = return(as(convert_data(object, split.at, model, sep),
+      "OPM_MCP_OUT")),
     model = return(model),
     linfct = return(convert_hypothesis_spec(linfct, model,
       convert_data(object, split.at, model, sep), rhs, alternative)),
@@ -271,8 +272,9 @@ setMethod("annotated", MOPMX, function(object, what = "kegg", how = "ids",
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
-setMethod("annotated", OPM_MCP_OUT, function(object, what = "kegg", how = "ids",
-    output = c("full", "plain"), lmap = NULL, sep = NULL, conc = FALSE) {
+setMethod("annotated", "OPM_MCP_OUT", function(object, what = "kegg",
+    how = "ids", output = c("full", "plain"), lmap = NULL, sep = NULL,
+    conc = FALSE) {
   alternative <- function(x, y, sep) {
     if (!length(sep) || identical(sep, FALSE))
       return(y)
