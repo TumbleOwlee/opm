@@ -198,6 +198,9 @@ setMethod("opm_problems", "matrix", function(object) {
     errs <- c(errs, paste("first entry in header must be", HOUR))
   if (is.unsorted(col.names[-1L]))
     errs <- c(errs, "names of wells must be sorted")
+  if (!length(errs) && any(bad <- is_constant(object, 2L, FALSE)))
+    warning("possible artefact(s): constant data in column(s) ",
+      paste0(names(bad)[bad], collapse = ", "))
   errs
 }, sealed = SEALED)
 

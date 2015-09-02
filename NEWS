@@ -5,15 +5,22 @@ Bug fixes:
 
 - removed ambiguities in dispatch of MOPMX methods
 
+- constant data do not cause aggregation to crash any more with some spline
+  fitting methods
+
 Significant user-visible changes:
 
 - param_names() is now generic
 
 - using str() is now discouraged by the code, too
 
+- a warning is now issued in the case of constant measurements
+
 New features:
 
 - MOPMX plotting functions
+
+- do_aggr() can detect number of computational cores
 
 - new arguments for gen_iii(), read_opm() and batch_opm()
 

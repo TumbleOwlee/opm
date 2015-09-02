@@ -1,11 +1,16 @@
 2015-09-01
 
 - fixed some ambiguities in method dispatch of MOPMX infix operators
+- constant data caused two of the spline methods to crash; this is now treated
+  more gracefully, with a warning
 
 - param_names() is now generic
 - specific str() methods now discourage the use of this function
+- a warning is now issued in the case of constant measurements, which may be
+  artefacts
 
 - all plotting functions get MOPMX methods
+- do_aggr() can auto-detect the number of cores on the system
 - gen_iii() and read_opm() get a 'force' argument, batch_opm() gets an according
   'force.plate' argument
 - some database I/O methods get a 'klass' argument to make them more generally

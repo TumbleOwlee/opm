@@ -3,6 +3,17 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
 
   call <- match.call()
   type <- options$type
+
+  # BEGIN code added by MG
+  if (type %in% c("p.spline", "tp.spline") && is_constant(data[, y])) {
+    warning("column '", y, "' is constant, cannot apply method '", type, "'")
+    result <- c(min.t = min(data[, x]), max.t = max(data[, x]),
+      height = data[1L, y])
+    class(result) <- "fake_opm_model"
+    return(result)
+  }
+  # END code added by MG
+
   method <- options$est.method
   knots <- options$knots
   class <- options$class

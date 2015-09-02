@@ -21,11 +21,17 @@
   \item{verbose}{Logical scalar. Print progress messages?}
 
   \item{cores}{Integer scalar. Number of cores to use.
-  Setting this to a value > 1 requires that \code{mclapply}
-  from the \pkg{parallel} package can be run with more than
-  1 core, which is impossible under Windows. The
-  \code{cores} argument has no effect if \kbd{opm-fast} is
-  chosen (see below).}
+  Setting this to a value larger than \code{1} requires
+  that \code{mclapply} from the \pkg{parallel} package can
+  be run with more than 1 core, which is impossible under
+  Windows. The \code{cores} argument has no effect if
+  \kbd{opm-fast} is chosen (see below). If \code{cores} is
+  zero or negative, the overall number of cores on the
+  system as determined by \code{detectCores} from the
+  \pkg{parallel} package is used after addition of the
+  original \code{cores} argument. For instance, if the
+  system has eight cores, \code{-1} means using seven
+  cores.}
 
   \item{options}{List. For its use in \pkg{grofit} mode,
   see \code{grofit.control} in that package. The
@@ -130,7 +136,16 @@
 
   The \code{\link{OPMS}} method just applies the
   \code{\link{OPM}} method to each contained plate in turn;
-  there are no inter-dependencies.
+  there are no inter-dependencies. The same holds for the
+  \code{\link{MOPMX}} method.
+
+  Note that some spline-fitting methods would crash with
+  constant input data (horizontal lines instead of curves).
+  As it is not entirely clear that those input data always
+  represent artefacts, spline-fitting is skipped in such
+  cases and replaced by reading the maximum height and the
+  area under the curve directly from the data but setting
+  the slope and the lag phase to \code{NA}, with a warning.
 
   Examples with \code{plain = TRUE} are not given, as only
   the return value is different: Let \code{x} be the normal
@@ -210,7 +225,7 @@ stopifnot(identical(dim(x), c(3L, 96L)))
   \strong{7}, e34846.
 }
 \seealso{
-  grofit::grofit
+  grofit::grofit parallel::detectCores
 }
 \keyword{smooth}
 

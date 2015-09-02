@@ -225,6 +225,10 @@ setMethod("is_constant", "array", function(x, margin = 1L, na.rm = TRUE) {
   apply(X = x, MARGIN = margin, FUN = is_constant, na.rm = na.rm)
 }, sealed = SEALED)
 
+setMethod("is_constant", "OPM", function(x, na.rm = FALSE) {
+  is_constant(x@measurements, 2L, na.rm)
+}, sealed = SEALED)
+
 setMethod("is_constant", "CMAT", function(x, strict, digits = opm_opt("digits"),
     na.rm = TRUE) {
   no_dup <- function(y) all(duplicated(if (na.rm)
