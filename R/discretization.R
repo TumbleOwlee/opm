@@ -159,7 +159,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 
 setGeneric("do_disc", function(object, ...) standardGeneric("do_disc"))
 
-setMethod("do_disc", OPMA, function(object, cutoff, groups = FALSE,
+setMethod("do_disc", "OPMA", function(object, cutoff, groups = FALSE,
     plain = FALSE, subset = opm_opt("disc.param"), unify = FALSE) {
   if (!length(cutoff))
     stop(sprintf(
@@ -178,7 +178,7 @@ setMethod("do_disc", OPMA, function(object, cutoff, groups = FALSE,
   names(settings) <- c(METHOD, OPTIONS, SOFTWARE, VERSION)
   if (L(plain))
     return(structure(c(x), settings = settings))
-  new(OPMD, measurements = measurements(object),
+  new("OPMD", measurements = measurements(object),
     metadata = metadata(object), csv_data = csv_data(object),
     aggregated = aggregated(object), aggr_settings = aggr_settings(object),
     discretized = c(x), disc_settings = settings)
@@ -197,7 +197,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
   }
 
   add_disc <- function(x, discretized, disc.settings) {
-    new(OPMD, measurements = measurements(x),
+    new("OPMD", measurements = measurements(x),
       metadata = metadata(x), csv_data = csv_data(x),
       aggregated = aggregated(x), aggr_settings = aggr_settings(x),
       discretized = discretized, disc_settings = disc.settings)

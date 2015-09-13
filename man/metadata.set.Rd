@@ -7,46 +7,63 @@
   \code{\link{MOPMX}} object.}
 
   \item{key}{Missing, numeric scalar, character vector,
-  factor, or list. \itemize{ \item If missing, replace all
-  metadata by \code{value} (unless \code{value} is a
-  formula that specifies the key to replace).  \item If a
-  numeric scalar, then if positive, prepend \code{value} to
-  old metadata. If negative, append \code{value} to old
-  metadata. If zero, replace old metadata entirely by
-  \code{value}.  \item If a list, treated as list of keys;
-  expect \code{value} to be a list of corresponding
-  metadata values to be set. Names are replaced by the
-  values of either list if they are missing.  \item If a
-  character vector, used as key for setting/replacing this
-  metadata entry to/by \code{value}. It is an error if
-  \code{key} has zero length. If it contains more than one
-  entry, a nested query is done. See \code{[[} from the
-  \pkg{base} package for details.  \item The factor method
-  calls the character method after converting \code{key} to
-  mode \sQuote{character}. }}
+  factor, or list. \itemize{ \item If missing, this mostly
+  means replace all metadata by \code{value}, but behaviour
+  is special for some kinds of \code{value} arguments. See
+  below for details.  \item If a numeric scalar, then if
+  positive, prepend \code{value} to old metadata. If
+  negative, append \code{value} to old metadata. If zero,
+  replace old metadata entirely by \code{value}.  \item If
+  a list, treated as list of keys; expect \code{value} to
+  be a list of corresponding metadata values to be set.
+  Names are replaced by the values of either list if they
+  are missing.  \item If a character vector, used as key
+  for setting/replacing this metadata entry to/by
+  \code{value}. It is an error if \code{key} has zero
+  length. If it contains more than one entry, a nested
+  query is done. See \code{[[} from the \pkg{base} package
+  for details.  \item The factor method calls the character
+  method after converting \code{key} to mode
+  \sQuote{character}. }}
 
   \item{value}{Character vector, list, data frame, formula,
   \code{\link{WMD}} or \code{\link{WMDS}} object.
   \itemize{ \item If \code{key} is a character vector, this
   can be arbitrary value(s) to be included in the metadata
   (if \code{NULL}, this metadata entry is deleted).  \item
-  If \code{key} is otherwise, \code{value} must be list of
-  values to be prepended, appended or set as metadata,
-  either entirely or specifically, depending on \code{key}.
-  \item Formulae can also be used as \code{value}. In that
-  case, the formula can specify the key to be replaced. See
-  the examples below and \code{\link{map_values}} for
-  details.  \item If \code{object} is of class
-  \code{\link{WMDS}}, \code{value} can be a data frame
-  whose number of rows must be equal to the number of
-  plates.  Metadata to be set will then be selected from
-  each individual row in turn and in input order. This
-  works analogously if \code{value} is an
-  \code{\link{WMDS}} object. The lengths of both objects
-  must match. If \code{value} is a \code{\link{WMD}}
-  object, its metadata entries will be recycled. \item If
-  \code{object} is of class \code{\link{WMD}}, \code{value}
-  cannot be of class \code{\link{WMD}}.  }}
+  If \code{key} is missing and \code{value} is a list but
+  not a data frame, all metadata are replaced by it. If
+  \code{value} is of mode \sQuote{logical}, \code{TRUE}
+  causes all \code{\link{csv_data}} entries that are
+  \emph{not} included in
+  \code{\link{opm_opt}("csv.selection")} to be included in
+  the metadata; \code{FALSE} causes these entries, if any,
+  to be removed. If \code{value} is a character vector and
+  it contains the value given by
+  \code{\link{opm_opt}("md.id.name")}, then by default a
+  globally unique \acronym{ID} identifying each plate is
+  included in the metadata. Uniqueness only holds per
+  session and can be circumvented by modifying
+  \code{\link{opm_opt}("md.id.start")}. Other elements of a
+  character vector are not currently supported (they may
+  get a special meaning later on).  \item If \code{key} is
+  otherwise, \code{value} must be list of values to be
+  prepended, appended or set as metadata, either entirely
+  or specifically, depending on \code{key}.  \item Formulae
+  can also be used as \code{value}. In that case, the
+  formula can specify the key to be replaced. See the
+  examples below and \code{\link{map_values}} for details.
+  \item If \code{object} is of class \code{\link{WMDS}},
+  \code{value} can be a data frame whose number of rows
+  must be equal to the number of plates.  Metadata to be
+  set will then be selected from each individual row in
+  turn and in input order. This works analogously if
+  \code{value} is an \code{\link{WMDS}} object. The lengths
+  of both objects must match. If \code{value} is a
+  \code{\link{WMD}} object, its metadata entries will be
+  recycled. \item If \code{object} is of class
+  \code{\link{WMD}}, \code{value} cannot be of class
+  \code{\link{WMD}}.  }}
 }
 \value{
   \code{value}.
@@ -173,6 +190,18 @@ stopifnot(identical(metadata(copy, "Type"), x$Type))
 # if keys do not match, the entire data-frame rows are included
 metadata(copy, "Type2") <- x
 stopifnot(!identical(metadata(copy, "Type2"), x$Type))
+
+# WMDS/missing/character method
+metadata(copy) <- opm_opt("md.id.name") # set IDs
+metadata(copy, opm_opt("md.id.name")) # get these IDs
+stopifnot(is.integer(metadata(copy, opm_opt("md.id.name"))))
+
+# WMDS/missing/logical method
+copy <- vaas_4
+metadata(copy) <- TRUE
+stopifnot(ncol(to_metadata(copy)) > ncol(to_metadata(vaas_4)))
+metadata(copy) <- FALSE
+stopifnot(identical(metadata(copy), metadata(vaas_4)))
 }
 \seealso{
   Other metadata-functions: \code{\link{edit}},
@@ -195,8 +224,12 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata.set,MOPMX,missing-method}
 \alias{metadata<-,MOPMX,missing,ANY-method}
 \alias{metadata<-,MOPMX,missing-method}
+\alias{metadata.set,MOPMX,missing,character-method}
+\alias{metadata<-,MOPMX,missing,character-method}
 \alias{metadata.set,MOPMX,missing,data.frame-method}
 \alias{metadata<-,MOPMX,missing,data.frame-method}
+\alias{metadata.set,MOPMX,missing,logical-method}
+\alias{metadata<-,MOPMX,missing,logical-method}
 \alias{metadata.set,WMD,ANY,ANY-method}
 \alias{metadata.set,WMD-method}
 \alias{metadata<-,WMD,ANY,ANY-method}
@@ -225,10 +258,14 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata<-,WMD,missing,WMD-method}
 \alias{metadata.set,WMD,missing,WMDS-method}
 \alias{metadata<-,WMD,missing,WMDS-method}
+\alias{metadata.set,WMD,missing,character-method}
+\alias{metadata<-,WMD,missing,character-method}
 \alias{metadata.set,WMD,missing,data.frame-method}
 \alias{metadata<-,WMD,missing,data.frame-method}
 \alias{metadata.set,WMD,missing,list-method}
 \alias{metadata<-,WMD,missing,list-method}
+\alias{metadata.set,WMD,missing,logical-method}
+\alias{metadata<-,WMD,missing,logical-method}
 \alias{metadata.set,WMD,numeric,WMD-method}
 \alias{metadata<-,WMD,numeric,WMD-method}
 \alias{metadata.set,WMD,numeric,WMDS-method}
@@ -257,15 +294,21 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 \alias{metadata<-,WMDS,missing,WMD-method}
 \alias{metadata.set,WMDS,missing,WMDS-method}
 \alias{metadata<-,WMDS,missing,WMDS-method}
+\alias{metadata.set,WMDS,missing,character-method}
+\alias{metadata<-,WMDS,missing,character-method}
 \alias{metadata.set,WMDS,missing,data.frame-method}
 \alias{metadata<-,WMDS,missing,data.frame-method}
 \alias{metadata.set,WMDS,missing,list-method}
 \alias{metadata<-,WMDS,missing,list-method}
+\alias{metadata.set,WMDS,missing,logical-method}
+\alias{metadata<-,WMDS,missing,logical-method}
 \usage{
   \S4method{metadata}{MOPMX,ANY,ANY}(object, key) <- value
   \S4method{metadata}{MOPMX,ANY,data.frame}(object, key) <- value
   \S4method{metadata}{MOPMX,missing,ANY}(object, key) <- value
+  \S4method{metadata}{MOPMX,missing,character}(object, key) <- value
   \S4method{metadata}{MOPMX,missing,data.frame}(object, key) <- value
+  \S4method{metadata}{MOPMX,missing,logical}(object, key) <- value
   \S4method{metadata}{WMD,ANY,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,WMD}(object, key) <- value
@@ -278,8 +321,10 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
   \S4method{metadata}{WMD,missing,FOE}(object, key) <- value
   \S4method{metadata}{WMD,missing,WMD}(object, key) <- value
   \S4method{metadata}{WMD,missing,WMDS}(object, key) <- value
+  \S4method{metadata}{WMD,missing,character}(object, key) <- value
   \S4method{metadata}{WMD,missing,data.frame}(object, key) <- value
   \S4method{metadata}{WMD,missing,list}(object, key) <- value
+  \S4method{metadata}{WMD,missing,logical}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMD}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMDS}(object, key) <- value
   \S4method{metadata}{WMD,numeric,data.frame}(object, key) <- value
@@ -293,7 +338,9 @@ stopifnot(!identical(metadata(copy, "Type2"), x$Type))
   \S4method{metadata}{WMDS,missing,FOE}(object, key) <- value
   \S4method{metadata}{WMDS,missing,WMD}(object, key) <- value
   \S4method{metadata}{WMDS,missing,WMDS}(object, key) <- value
+  \S4method{metadata}{WMDS,missing,character}(object, key) <- value
   \S4method{metadata}{WMDS,missing,data.frame}(object, key) <- value
   \S4method{metadata}{WMDS,missing,list}(object, key) <- value
+  \S4method{metadata}{WMDS,missing,logical}(object, key) <- value
 }
 %% END INSERTION BY repair_S4_docu.rb

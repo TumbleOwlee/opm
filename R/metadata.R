@@ -1,18 +1,18 @@
 setGeneric("metadata<-",
   function(object, key, ..., value) standardGeneric("metadata<-"))
 
-setMethod("metadata<-", c(WMD, "missing", "FOE"), function(object, key,
+setMethod("metadata<-", c("WMD", "missing", "FOE"), function(object, key,
     value) {
   object@metadata <- map_values(object@metadata, value)
   object
 }, sealed = SEALED)
-setMethod("metadata<-", c(WMD, "missing", "list"), function(object, key,
+setMethod("metadata<-", c("WMD", "missing", "list"), function(object, key,
     value) {
   object@metadata <- value
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "missing", "data.frame"), function(object,
+setMethod("metadata<-", c("WMD", "missing", "data.frame"), function(object,
     key, value) {
   if (nrow(value) != 1L)
     stop("need data frame with one row")
@@ -20,7 +20,8 @@ setMethod("metadata<-", c(WMD, "missing", "data.frame"), function(object,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "missing", WMD), function(object, key, value) {
+setMethod("metadata<-", c("WMD", "missing", "WMD"), function(object, key,
+    value) {
   object@metadata <- value@metadata
   object
 }, sealed = SEALED)
@@ -30,14 +31,37 @@ setMethod("metadata<-", c("WMD", "missing", "WMDS"), function(object, key,
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "character", "ANY"), function(object, key,
+setMethod("metadata<-", c("WMD", "missing", "character"), function(object, key,
+    value) {
+  if (found <- match(opm_opt("md.id.name"), value, 0L)) {
+    object@metadata[[value[[found]]]] <- id <- opm_opt("md.id.start")
+    OPM_OPTIONS$md.id.start <- id + 1L
+    value <- value[!found]
+  }
+  if (length(value))
+    stop("not yet implemented")
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c("WMD", "missing", "logical"), function(object, key,
+    value) {
+  if (L(value))
+    for (key in setdiff(names(object@csv_data), opm_opt("csv.selection")))
+      object@metadata[[key]] <- object@csv_data[[key]]
+  else
+    for (key in setdiff(names(object@csv_data), opm_opt("csv.selection")))
+      object@metadata[[key]] <- NULL
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c("WMD", "character", "ANY"), function(object, key,
     value) {
   object@metadata[[key]] <- value
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "character", "data.frame"), function(object, key,
-    value) {
+setMethod("metadata<-", c("WMD", "character", "data.frame"), function(object,
+    key, value) {
   if (nrow(value) != 1L)
     stop("need data frame with one row")
   if (any(found <- key %in% colnames(value))) {
@@ -49,18 +73,18 @@ setMethod("metadata<-", c(WMD, "character", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "character", "WMD"), function(object, key,
+setMethod("metadata<-", c("WMD", "character", "WMD"), function(object, key,
     value) {
   object@metadata[[key]] <- value@metadata
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "character", "WMDS"), function(object, key,
+setMethod("metadata<-", c("WMD", "character", "WMDS"), function(object, key,
     value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "numeric", "list"), function(object, key,
+setMethod("metadata<-", c("WMD", "numeric", "list"), function(object, key,
     value) {
   object@metadata <- if (L(key) > 0)
     c(value, object@metadata)
@@ -71,7 +95,7 @@ setMethod("metadata<-", c(WMD, "numeric", "list"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "numeric", "data.frame"), function(object, key,
+setMethod("metadata<-", c("WMD", "numeric", "data.frame"), function(object, key,
     value) {
   if (nrow(value) != 1L)
     stop("need data frame with one row")
@@ -79,7 +103,7 @@ setMethod("metadata<-", c(WMD, "numeric", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "numeric", "WMD"), function(object, key,
+setMethod("metadata<-", c("WMD", "numeric", "WMD"), function(object, key,
     value) {
   metadata(object, key) <- value@metadata
   object
@@ -90,7 +114,7 @@ setMethod("metadata<-", c("WMD", "numeric", "WMDS"), function(object, key,
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "list", "list"), function(object, key, value) {
+setMethod("metadata<-", c("WMD", "list", "list"), function(object, key, value) {
   if (is.null(names(key)))
     names(key) <- unlist(key, TRUE, FALSE)
   if (is.null(names(value)))
@@ -100,7 +124,7 @@ setMethod("metadata<-", c(WMD, "list", "list"), function(object, key, value) {
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "list", "data.frame"), function(object, key,
+setMethod("metadata<-", c("WMD", "list", "data.frame"), function(object, key,
     value) {
   if (nrow(value) != 1L)
     stop("need data frame with one row")
@@ -108,17 +132,17 @@ setMethod("metadata<-", c(WMD, "list", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "list", WMD), function(object, key,
+setMethod("metadata<-", c("WMD", "list", "WMD"), function(object, key,
     value) {
   metadata(object, key) <- value@metadata
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "list", "WMDS"), function(object, key, value) {
+setMethod("metadata<-", c("WMD", "list", "WMDS"), function(object, key, value) {
   stop("lengths of 'object' and 'value' do not fit")
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(WMD, "ANY", "ANY"), function(object, key,
+setMethod("metadata<-", c("WMD", "ANY", "ANY"), function(object, key,
     value) {
   metadata(object, as.character(key)) <- value
   object
@@ -162,6 +186,30 @@ setMethod("metadata<-", c("WMDS", "missing", "WMDS"), function(object, key,
   object
 }, sealed = SEALED)
 
+setMethod("metadata<-", c("WMDS", "missing", "character"), function(object, key,
+    value) {
+  if (found <- match(opm_opt("md.id.name"), value, 0L)) {
+    key <- value[[found]]
+    this <- opm_opt("md.id.start")
+    for (i in seq_along(object@plates)) {
+      object@plates[[i]]@metadata[[key]] <- this
+      this <- this + 1L
+    }
+    OPM_OPTIONS$md.id.start <- this
+    value <- value[!found]
+  }
+  if (length(value))
+    stop("not yet implemented")
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c("WMDS", "missing", "logical"), function(object, key,
+    value) {
+  for (i in seq_along(object@plates))
+    metadata(object@plates[[i]]) <- value
+  object
+}, sealed = SEALED)
+
 setMethod("metadata<-", c("WMDS", "character", "WMDS"), function(object, key,
     value) {
   LL(object, .wanted = length(value))
@@ -191,7 +239,7 @@ setMethod("metadata<-", c("WMDS", "ANY", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c("WMDS", "ANY", WMD), function(object, key, value) {
+setMethod("metadata<-", c("WMDS", "ANY", "WMD"), function(object, key, value) {
   for (i in seq_along(object@plates))
     metadata(object@plates[[i]], key) <- value@metadata
   object
@@ -210,22 +258,22 @@ setMethod("metadata<-", c("WMDS", "ANY", "ANY"), function(object, key, value) {
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(MOPMX, "missing", "ANY"), function(object, key,
+setMethod("metadata<-", c("MOPMX", "missing", "ANY"), function(object, key,
     value) {
   for (i in seq_along(object@.Data))
     metadata(object@.Data[[i]]) <- value
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(MOPMX, "ANY", "ANY"), function(object, key,
+setMethod("metadata<-", c("MOPMX", "ANY", "ANY"), function(object, key,
     value) {
   for (i in seq_along(object@.Data))
     metadata(object@.Data[[i]], key) <- value
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(MOPMX, "missing", "data.frame"), function(object, key,
-    value) {
+setMethod("metadata<-", c("MOPMX", "missing", "data.frame"), function(object,
+    key, value) {
   indexes <- sub_indexes(object)
   if (nrow(value) != attr(indexes, "total"))
     stop("number of rows in 'value' unequal to number of plates in 'object'")
@@ -234,7 +282,21 @@ setMethod("metadata<-", c(MOPMX, "missing", "data.frame"), function(object, key,
   object
 }, sealed = SEALED)
 
-setMethod("metadata<-", c(MOPMX, "ANY", "data.frame"), function(object, key,
+setMethod("metadata<-", c("MOPMX", "missing", "character"), function(object,
+    key, value) {
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]]) <- value
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c("MOPMX", "missing", "logical"), function(object, key,
+    value) {
+  for (i in seq_along(object@.Data))
+    metadata(object@.Data[[i]]) <- value
+  object
+}, sealed = SEALED)
+
+setMethod("metadata<-", c("MOPMX", "ANY", "data.frame"), function(object, key,
     value) {
   indexes <- sub_indexes(object)
   if (nrow(value) != attr(indexes, "total"))
@@ -247,8 +309,9 @@ setMethod("metadata<-", c(MOPMX, "ANY", "data.frame"), function(object, key,
 setGeneric("include_metadata",
   function(object, ...) standardGeneric("include_metadata"))
 
-setMethod("include_metadata", WMD, function(object, md, keys, replace = FALSE,
-    skip.failure = FALSE, remove.keys = TRUE, ...) {
+setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
+    skip.failure = FALSE, remove.keys = TRUE, col = NULL, strip.white = NULL,
+    ...) {
 
   pick_from <- function(object, selection) {
     matches <- lapply(names(selection), FUN = function(name) {
@@ -260,19 +323,48 @@ setMethod("include_metadata", WMD, function(object, md, keys, replace = FALSE,
     object[matches, , drop = FALSE]
   }
 
+  # Get and check metadata.
+  read_stuff <- function(md, col, keys, strip.white, ...) {
+    for (colname in col) {
+      md <- to_metadata(object = md, col = colname, strip.white = strip.white,
+        ...)
+      if (all(keys %in% colnames(md)))
+        break
+    }
+    if (length(absent.keys <- setdiff(keys, colnames(md))))
+      stop("key missing in 'metadata': ", absent.keys[1L])
+    md
+  }
+
   LL(replace, skip.failure, remove.keys)
 
   selection <- as.list(csv_data(object, keys))
 
-  # Get and check metadata.
-  md <- to_metadata(md, ...)
-  if (length(absent.keys <- setdiff(keys, colnames(md))))
-    stop("key missing in 'metadata': ", absent.keys[1L])
+  if (!length(col))
+    col <- if (is.character(md))
+        c("\t", ",", ";") # has an effect
+      else
+        "\t" # has no effect anyway
+  if (!length(strip.white))
+    strip.white <- if (is.character(md))
+        c(TRUE, FALSE, NA) # NA allowed
+      else
+        c(TRUE, FALSE) # NA not allowed
 
-  # Try to select the necessary information from the metadata.
-  found <- pick_from(md, selection)
+  if (skip.failure)
+    strip.white <- strip.white[[1L]]
+
+  for (strip.ws in strip.white) {
+    found <- read_stuff(md, col, keys, strip.ws, ...)
+    if (nrow(found <- pick_from(found, selection)))
+      break
+  }
+
+  # Check for the necessary information from the metadata.
   msg <- case(nrow(found), listing(lapply(selection, safe_labels, "nexus"),
-      header = "could not find this key/value combination in 'metadata':"),
+      header = "could not find this key/value combination in 'metadata':",
+      footer = paste0("white-space stripping setting was: ",
+        paste0(strip.white, collapse = "/"))),
     NULL, listing(lapply(selection, safe_labels, "nexus"),
       header = "the selection resulted in more than one row for:"))
 
@@ -300,7 +392,7 @@ setMethod("include_metadata", WMD, function(object, md, keys, replace = FALSE,
 
 }, sealed = SEALED)
 
-setMethod("include_metadata", OPM, function(object, md,
+setMethod("include_metadata", "OPM", function(object, md,
     keys = opm_opt("csv.keys"), ...) {
   callNextMethod(object = object, md = md, keys = keys, ...)
 }, sealed = SEALED)
@@ -310,7 +402,7 @@ setMethod("include_metadata", "WMDS", function(object, ...) {
   object
 }, sealed = SEALED)
 
-setMethod("include_metadata", MOPMX, function(object, ...) {
+setMethod("include_metadata", "MOPMX", function(object, ...) {
   object@.Data <- lapply(X = object@.Data, FUN = include_metadata, ...)
   object
 }, sealed = SEALED)
@@ -318,7 +410,7 @@ setMethod("include_metadata", MOPMX, function(object, ...) {
 setGeneric("map_metadata",
   function(object, mapping, ...) standardGeneric("map_metadata"))
 
-setMethod("map_metadata", c(WMD, "function"), function(object, mapping,
+setMethod("map_metadata", c("WMD", "function"), function(object, mapping,
     values = TRUE, classes = "ANY", ...) {
   object@metadata <- if (L(values))
     map_values(object = object@metadata, mapping = mapping, coerce = classes,
@@ -328,7 +420,7 @@ setMethod("map_metadata", c(WMD, "function"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
+setMethod("map_metadata", c("WMD", "character"), function(object, mapping,
     values = TRUE, classes = "factor") {
   object@metadata <- if (L(values))
     map_values(object@metadata, mapping, coerce = classes)
@@ -337,13 +429,13 @@ setMethod("map_metadata", c(WMD, "character"), function(object, mapping,
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, "FOE"), function(object, mapping,
+setMethod("map_metadata", c("WMD", "FOE"), function(object, mapping,
     values = parent.frame(), classes = NULL) {
   object@metadata <- map_values(object@metadata, mapping, values)
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(WMD, "missing"), function(object, mapping,
+setMethod("map_metadata", c("WMD", "missing"), function(object, mapping,
     values = TRUE, classes = "factor") {
   if (L(values))
     object@metadata <- rapply(object@metadata, function(x) if (all(is.na(x)))
@@ -367,14 +459,14 @@ setMethod("map_metadata", c("WMDS", "ANY"), function(object, mapping, ...) {
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(MOPMX, "missing"), function(object, mapping,
+setMethod("map_metadata", c("MOPMX", "missing"), function(object, mapping,
     values = TRUE, classes = "factor") {
   object@.Data <- lapply(X = object@.Data, FUN = map_metadata,
     values = values, classes = classes)
   object
 }, sealed = SEALED)
 
-setMethod("map_metadata", c(MOPMX, "ANY"), function(object, mapping, ...) {
+setMethod("map_metadata", c("MOPMX", "ANY"), function(object, mapping, ...) {
   object@.Data <- lapply(X = object@.Data, FUN = map_metadata,
     mapping = mapping, ...)
   object
@@ -413,7 +505,7 @@ setMethod("edit", "MOPMX", function(name, ...) {
 
 setGeneric("metadata", function(object, ...) standardGeneric("metadata"))
 
-setMethod("metadata", WMD, function(object, key = NULL, exact = TRUE,
+setMethod("metadata", "WMD", function(object, key = NULL, exact = TRUE,
     strict = FALSE) {
   LL(exact, strict)
   if (!length(key))
@@ -441,7 +533,7 @@ setMethod("metadata", "WMDS", function(object, ...) {
 setGeneric("metadata_chars",
   function(object, ...) standardGeneric("metadata_chars"))
 
-setMethod("metadata_chars", WMD, function(object, values = TRUE,
+setMethod("metadata_chars", "WMD", function(object, values = TRUE,
     classes = "factor") {
   if (L(values))
     map_values(object@metadata, coerce = classes)
@@ -454,7 +546,7 @@ setMethod("metadata_chars", "WMDS", function(object, ...) {
   map_values(unlist(lapply(object@plates, FUN = metadata_chars, ...)))
 }, sealed = SEALED)
 
-setMethod("metadata_chars", MOPMX, function(object, ...) {
+setMethod("metadata_chars", "MOPMX", function(object, ...) {
   # 3rd call of map_values unifies the vector but keeps the names
   map_values(unlist(lapply(object@.Data, FUN = metadata_chars, ...)))
 }, sealed = SEALED)

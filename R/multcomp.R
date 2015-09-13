@@ -1,7 +1,7 @@
 setGeneric("opm_mcp",
   function(object, ...) standardGeneric("opm_mcp"))
 
-setMethod("opm_mcp", MOPMX, function(object, model, linfct = 1L,
+setMethod("opm_mcp", "MOPMX", function(object, model, linfct = 1L,
     m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
     ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) {
   object <- extract(object = object, dataframe = TRUE, sep = sep, ...,
@@ -13,7 +13,7 @@ setMethod("opm_mcp", MOPMX, function(object, model, linfct = 1L,
     output = output, sep = sep, rhs = rhs, alternative = alternative)
 }, sealed = SEALED)
 
-setMethod("opm_mcp", OPMS, function(object, model, linfct = 1L,
+setMethod("opm_mcp", "OPMS", function(object, model, linfct = 1L,
     m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
     ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) {
   annotation <- list(plate.type = plate_type(object))
@@ -217,14 +217,14 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 
 setGeneric("annotated", function(object, ...) standardGeneric("annotated"))
 
-setMethod("annotated", OPMA, function(object, what = "kegg", how = "ids",
+setMethod("annotated", "OPMA", function(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) {
   result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
     in.parens = FALSE, max = 10000L)[1L, ]
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
-setMethod("annotated", OPMD, function(object, what = "kegg", how = "ids",
+setMethod("annotated", "OPMD", function(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = NULL, conc = FALSE) {
   output <- match.arg(output,
     unlist(map_param_names(plain = TRUE, disc = TRUE)))
@@ -237,7 +237,7 @@ setMethod("annotated", OPMD, function(object, what = "kegg", how = "ids",
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
-setMethod("annotated", OPMS, function(object, what = "kegg", how = "ids",
+setMethod("annotated", "OPMS", function(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
     conc = FALSE) {
   output <- match.arg(output,
@@ -253,7 +253,7 @@ setMethod("annotated", OPMS, function(object, what = "kegg", how = "ids",
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)
 
-setMethod("annotated", MOPMX, function(object, what = "kegg", how = "ids",
+setMethod("annotated", "MOPMX", function(object, what = "kegg", how = "ids",
     output = opm_opt("curve.param"), lmap = NULL, sep = opm_opt("min.mode"),
     conc = FALSE) {
   output <- match.arg(output,

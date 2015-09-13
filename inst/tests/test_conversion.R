@@ -99,7 +99,7 @@ test_that("MOPMX objects can be split", {
   expect_warning(got <- split(MOPMX.1, "organism"))
   expect_is(got, "list")
   expect_equal(names(got), c(ORGN, "NA"))
-  expect_true(all(vapply(got, is, NA, MOPMX)))
+  expect_true(all(vapply(got, is, NA, "MOPMX")))
 })
 
 

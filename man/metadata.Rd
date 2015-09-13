@@ -136,7 +136,7 @@ stopifnot(length(x) > length(y))
   Other metadata-functions: \code{\link{edit}},
   \code{\link{include_metadata}},
   \code{\link{map_metadata}}, \code{\link{map_values}},
-  \code{\link{metadata.set}},                                 }
+  \code{\link{metadata.set}},                                       }
 \keyword{attribute}
 
 %% BEGIN INSERTION BY repair_S4_docu.rb

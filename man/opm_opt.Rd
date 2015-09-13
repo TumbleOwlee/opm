@@ -102,13 +102,20 @@
   several such machines are in use.}
   \item{max.chars}{Integer scalar used when abbreviating
   full substrate names. See \code{\link{wells}} for an
-  example.} \item{min.mode}{Used when making discretisation
-  results uniform within a group. The minimum proportion
-  the most frequent value much reach to be used for
-  representing all values (if less, frequent, \code{NA} is
-  used). Must be a numeric scalar between 0 and 1.}
-  \item{phylo.fmt}{Character scalar indicating the default
-  output format used by \code{\link{phylo_data}}.}
+  example.} \item{md.id.name}{Default name of the key to be
+  treated as \acronym{ID} in the metadata. Currently only
+  relevant for easing the inclusion of plate-specific
+  \acronym{ID}s in the metadata.} \item{md.id.start}{The
+  first value to inserted next as \acronym{ID} value in the
+  metadata. Currently only relevant for easing the
+  inclusion of plate-specific \acronym{ID}s in the
+  metadata.} \item{min.mode}{Used when making
+  discretisation results uniform within a group. The
+  minimum proportion the most frequent value much reach to
+  be used for representing all values (if less, frequent,
+  \code{NA} is used). Must be a numeric scalar between 0
+  and 1.} \item{phylo.fmt}{Character scalar indicating the
+  default output format used by \code{\link{phylo_data}}.}
   \item{split}{Character scalar indicating the default
   splitting characters used by \code{\link{separate}}.}
   \item{strict.OPMD}{Logical scalar indicating whether

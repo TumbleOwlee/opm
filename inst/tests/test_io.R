@@ -211,7 +211,7 @@ test_that("read_opm can read three partially incompatible files", {
   opm.1 <- read_opm(files, convert = "grp")
   expect_is(opm.1, "MOPMX")
   expect_equal(2L, length(opm.1))
-  expect_is(opm.1[[1L]], OPMS)
+  expect_is(opm.1[[1L]], "OPMS")
   expect_is(opm.1[[2L]], OPM)
 
 })

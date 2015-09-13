@@ -236,7 +236,7 @@ stopifnot(is(y, "MOPMX"), length(y) == 2, !identical(x, y))
 \alias{[,OPMS-method}
 \usage{
   \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, j, drop) 
-  \S4method{[}{MOPMX,ANY,missing,missing}(x, i, j, drop) 
+  \S4method{[}{MOPMX,ANY,missing,missing}(x, i, j, drop)
   \S4method{[}{MOPMX,character,missing,ANY}(x, i, j, drop)
   \S4method{[}{MOPMX,character,missing,missing}(x, i, j, drop)
   \S4method{[}{MOPMX,expression,missing,ANY}(x, i, j, drop)

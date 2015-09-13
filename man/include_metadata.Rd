@@ -31,6 +31,22 @@
   \code{md} in the metadata, discard the \code{keys}
   columns?}
 
+  \item{col}{Passed to \code{\link{to_metadata}}. If empty,
+  the default values are inserted, depending on the
+  \code{md} object. If several values are present and if
+  \code{md} is a file name, the values will be tried in
+  turn until all \code{keys} are found in the resulting
+  column names.}
+
+  \item{strip.white}{Passed to \code{\link{to_metadata}}.
+  If empty, the default values are inserted, depending on
+  the \code{md} object. If several values are present and
+  \code{skip.failure} is \code{FALSE}, the values will be
+  tried in turn until all key-value pairs are found in the
+  resulting data frame with metadata. If
+  \code{skip.failure} is \code{TRUE}, only the first value
+  is tried.}
+
   \item{mapping}{In most cases passed to \code{map_values}.
   \itemize{ \item If a function, this is just a wrapper for
   \code{rapply}, with \code{how} set to \sQuote{replace},
@@ -104,11 +120,16 @@
   \code{\link{WMDS}} object with accordingly modified
   metadata.
 
-  Two kinds of errors can occur when attempting to identify
-  a data-frame row using the given combination of keys and
-  values. \itemize{ \item{The combination results in more
-  than a single row.} \item{The combination results in now
-  rows at all.} } The according error message puts the
+  Three kinds of errors can occur when attempting to
+  identify a data-frame row using the given combination of
+  keys and values. \itemize{ \item{The keys are not found
+  at all.} \item{The combination results in more than a
+  single row.} \item{The combination results in now rows at
+  all.} } The first case of error is usually caused by a
+  wrong column separator (\code{sep}) argument. This
+  happens particularly if a spreadsheet software saves the
+  file with a separator distinct from the one used in the
+  input. In the other cases the error message puts the
   failed values in single quotes, doubling all contained
   single quotes, if any. This eases recognising leading and
   trailing spaces, which are frequent cause of mismatches
@@ -121,6 +142,12 @@
   setup time entries by spreadsheet software. This could be
   prevented by forcing that software to treat the setup
   time as character strings.
+
+  If \code{md} is a file name, the default settings for
+  \code{sep} and \code{strip.white} try to avoid these
+  errors by trying several values in turn, at the cost of
+  decreased computational efficiency, particularly if
+  \code{object} contains many plates.
 
   Calling \code{edit} will only work if
   \code{\link{to_metadata}} yields a data frame suitable
@@ -239,7 +266,7 @@ stopifnot(identical(z, y))
   utils::edit
 
   Other metadata-functions: \code{\link{metadata}},
-                                    \code{\link{metadata_chars}}
+                                          \code{\link{metadata_chars}}
 }
 \keyword{manip}
 
@@ -273,7 +300,8 @@ stopifnot(identical(z, y))
   \S4method{include_metadata}{MOPMX}(object, ...) 
   \S4method{include_metadata}{OPM}(object, md, keys = opm_opt("csv.keys"), ...)
   \S4method{include_metadata}{WMD}(object, md, keys, replace = FALSE,
-    skip.failure = FALSE, remove.keys = TRUE, ...) 
+    skip.failure = FALSE, remove.keys = TRUE, col = NULL, strip.white = NULL,
+    ...) 
   \S4method{include_metadata}{WMDS}(object, ...) 
 
   \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 

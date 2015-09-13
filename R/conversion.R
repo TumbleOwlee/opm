@@ -12,10 +12,10 @@ setMethod("merge", c(OPM, "numeric"), function(x, y, sort.first = TRUE,
 
 setMethod("merge", c(OPM, OPM), function(x, y, sort.first = TRUE,
     parse = TRUE) {
-  merge(new(OPMS, plates = list(x, y)), 0.25, sort.first, parse)
+  merge(new("OPMS", plates = list(x, y)), 0.25, sort.first, parse)
 }, sealed = SEALED)
 
-setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
+setMethod("merge", c("OPMS", "numeric"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   if (any(y <= 0))
     stop("'y' must be positive throughout")
@@ -36,14 +36,14 @@ setMethod("merge", c(OPMS, "numeric"), function(x, y, sort.first = TRUE,
     metadata = metadata(x[1L]))
 }, sealed = SEALED)
 
-setMethod("merge", c(OPMS, "missing"), function(x, y, sort.first = TRUE,
+setMethod("merge", c("OPMS", "missing"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   merge(x, 0.25, sort.first, parse)
 }, sealed = SEALED)
 
-setMethod("merge", c(MOPMX, "missing"), function(x, y) {
+setMethod("merge", c("MOPMX", "missing"), function(x, y) {
   combine <- function(x) if (length(x <- plates(x)) > 1L)
-      new(OPMS, plates = x)
+      new("OPMS", plates = x)
     else
       x[[1L]]
   if (!anyDuplicated.default(pt <- plate_type(x)))
@@ -52,7 +52,7 @@ setMethod("merge", c(MOPMX, "missing"), function(x, y) {
   x
 }, sealed = SEALED)
 
-setMethod("merge", c(MOPMX, "ANY"), function(x, y) {
+setMethod("merge", c("MOPMX", "ANY"), function(x, y) {
   merge(x + y)
 }, sealed = SEALED)
 
@@ -90,7 +90,7 @@ setMethod("split", c(OPM, "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "missing", "missing"), function(x, f, drop) {
+setMethod("split", c("OPMS", "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
@@ -124,12 +124,12 @@ setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
   }
   for (i in seq_along(w)[-1L])
     w[[i]] <- w[[i]][names(w[[1L]])]
-  new(OPMS, plates = mapply(get_and_rename, conc = as.integer(names(w)),
+  new("OPMS", plates = mapply(get_and_rename, conc = as.integer(names(w)),
     w1 = w, SIMPLIFY = FALSE, USE.NAMES = FALSE, MoreArgs = list(x = x,
       w2 = w[[1L]], drop = drop, key = get("series.key", OPM_OPTIONS))))
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "missing", "ANY"), function(x, f, drop) {
+setMethod("split", c("OPMS", "missing", "ANY"), function(x, f, drop) {
   x@plates <- lapply(x@plates, split, drop = drop)
   x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
   x
@@ -139,7 +139,7 @@ setMethod("split", c(OPM, "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "ANY", "missing"), function(x, f, drop) {
+setMethod("split", c("OPMS", "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
@@ -150,34 +150,34 @@ setMethod("split", c(OPM, "factor", "missing"), function(x, f, drop) {
 setMethod("split", c(OPM, "factor", "ANY"), function(x, f, drop) {
   object <- split.default(0L, f, FALSE) # to get the warnings/errors
   object[[1L]] <- x[drop = drop]
-  new(MOPMX, object)
+  new("MOPMX", object)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "factor", "missing"), function(x, f, drop) {
+setMethod("split", c("OPMS", "factor", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPMS, "factor", "ANY"), function(x, f, drop) {
-  new(MOPMX, lapply(split.default(x, f, FALSE), `[`, drop = drop))
+setMethod("split", c("OPMS", "factor", "ANY"), function(x, f, drop) {
+  new("MOPMX", lapply(split.default(x, f, FALSE), `[`, drop = drop))
 }, sealed = SEALED)
 
-setMethod("split", c(OPMX, "ANY", "ANY"), function(x, f, drop) {
+setMethod("split", c("OPMX", "ANY", "ANY"), function(x, f, drop) {
   split(x, as.factor(extract_columns(x, f, TRUE, " ", "ignore")), drop)
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "factor", "missing"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "factor", "missing"), function(x, f, drop) {
   split.default(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "factor", "ANY"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "factor", "ANY"), function(x, f, drop) {
   split.default(x, f, drop)
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "list", "missing"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "list", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "list", "ANY"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "list", "ANY"), function(x, f, drop) {
   if (!all(vapply(f, is.factor, NA)))
     f <- metadata2factorlist(x, f)
   x <- mapply(split, x = x, f = f, MoreArgs = list(drop = drop),
@@ -186,14 +186,14 @@ setMethod("split", c(MOPMX, "list", "ANY"), function(x, f, drop) {
   result <- structure(vector("list", length(f)), names = f)
   for (level in f)
     result[[level]] <- lapply(x, `[[`, i = level)
-  lapply(lapply(result, close_index_gaps), as, MOPMX)
+  lapply(lapply(result, close_index_gaps), as, "MOPMX")
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "ANY", "missing"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(MOPMX, "ANY", "ANY"), function(x, f, drop) {
+setMethod("split", c("MOPMX", "ANY", "ANY"), function(x, f, drop) {
   split(x, metadata2factorlist(x, f), drop)
 }, sealed = SEALED)
 
@@ -222,7 +222,7 @@ setMethod("oapply", OPM, function(object, fun, ...,
   fun(object, ...)
 }, sealed = SEALED)
 
-setMethod("oapply", OPMS, function(object, fun, ...,
+setMethod("oapply", "OPMS", function(object, fun, ...,
     simplify = TRUE) {
   result <- sapply(X = object@plates, FUN = fun, ..., simplify = simplify,
     USE.NAMES = FALSE)
@@ -231,7 +231,7 @@ setMethod("oapply", OPMS, function(object, fun, ...,
   result
 }, sealed = SEALED)
 
-setMethod("oapply", MOPMX, function(object, fun, ...,
+setMethod("oapply", "MOPMX", function(object, fun, ...,
     simplify = TRUE) {
   result <- sapply(X = object, FUN = fun, ..., simplify = simplify,
     USE.NAMES = TRUE) # using object@.Data would lose the names
@@ -265,11 +265,11 @@ setMethod("sort", c(OPM, "ANY"), function(x, decreasing, ...) {
   x
 }, sealed = SEALED)
 
-setMethod("sort", c(OPMS, "missing"), function(x, decreasing, ...) {
+setMethod("sort", c("OPMS", "missing"), function(x, decreasing, ...) {
   sort(x = x, decreasing = FALSE, ...)
 }, sealed = SEALED)
 
-setMethod("sort", c(OPMS, "ANY"), function(x, decreasing, by = "setup_time",
+setMethod("sort", c("OPMS", "ANY"), function(x, decreasing, by = "setup_time",
     parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) {
   if (is.list(by)) {
     keys <- lapply(X = by, FUN = metadata, object = x, exact = exact,
@@ -296,11 +296,11 @@ setMethod("sort", c(OPMS, "ANY"), function(x, decreasing, by = "setup_time",
   x
 }, sealed = SEALED)
 
-setMethod("sort", c(MOPMX, "missing"), function(x, decreasing, ...) {
+setMethod("sort", c("MOPMX", "missing"), function(x, decreasing, ...) {
   sort(x = x, decreasing = FALSE, ...)
 }, sealed = SEALED)
 
-setMethod("sort", c(MOPMX, "ANY"), function(x, decreasing,
+setMethod("sort", c("MOPMX", "ANY"), function(x, decreasing,
     by = c("plate.type", "length"), exact = TRUE, strict = TRUE,
     na.last = TRUE, ...) {
   if (length(x) < 2L)
@@ -327,19 +327,19 @@ setMethod("unique", c(OPM, "missing"), function(x, incomparables, ...) {
   x
 }, sealed = SEALED)
 
-setMethod("unique", c(OPMS, "missing"), function(x, incomparables, ...) {
+setMethod("unique", c("OPMS", "missing"), function(x, incomparables, ...) {
   unique(x = x, incomparables = FALSE, ...)
 }, sealed = SEALED)
 
-setMethod("unique", c(OPMS, "ANY"), function(x, incomparables, ...) {
+setMethod("unique", c("OPMS", "ANY"), function(x, incomparables, ...) {
   x[!duplicated(x = x, incomparables = incomparables, ...)]
 }, sealed = SEALED)
 
-setMethod("unique", c(MOPMX, "missing"), function(x, incomparables, ...) {
+setMethod("unique", c("MOPMX", "missing"), function(x, incomparables, ...) {
   unique(x = x, incomparables = FALSE, ...)
 }, sealed = SEALED)
 
-setMethod("unique", c(MOPMX, "ANY"), function(x, incomparables, ...) {
+setMethod("unique", c("MOPMX", "ANY"), function(x, incomparables, ...) {
   x[!duplicated(x = x, incomparables = incomparables, ...)]
 }, sealed = SEALED)
 
@@ -349,7 +349,7 @@ setMethod("rev", OPM, function(x) {
   x
 }, sealed = SEALED)
 
-setMethod("rev", OPMS, function(x) {
+setMethod("rev", "OPMS", function(x) {
   x@plates <- x@plates[seq.int(length(x), 1L)]
   x
 }, sealed = SEALED)
@@ -358,17 +358,17 @@ setGeneric("rep")
 
 setMethod("rep", OPM, function(x, ...) {
   x <- rep(list(x), ...)
-  case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
+  case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
 }, sealed = SEALED)
 
-setMethod("rep", OPMS, function(x, ...) {
+setMethod("rep", "OPMS", function(x, ...) {
   x <- rep(x@plates, ...)
-  case(length(x), NULL, x[[1L]], new(OPMS, plates = x))
+  case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
 }, sealed = SEALED)
 
 setGeneric("extract", function(object, ...) standardGeneric("extract"))
 
-setMethod("extract", MOPMX, function(object, as.labels,
+setMethod("extract", "MOPMX", function(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, ...) {
 
@@ -415,7 +415,7 @@ setMethod("extract", MOPMX, function(object, as.labels,
 
 }, sealed = SEALED)
 
-setMethod("extract", OPMS, function(object, as.labels,
+setMethod("extract", "OPMS", function(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, sep = " ", dups = "warn",
     exact = TRUE, strict = TRUE, full = TRUE, max = 10000L, ...) {
@@ -572,7 +572,7 @@ setMethod("extract", "data.frame", function(object, as.groups = TRUE,
 setGeneric("extract_columns",
   function(object, ...) standardGeneric("extract_columns"))
 
-setMethod("extract_columns", WMD, function(object, what, join = FALSE,
+setMethod("extract_columns", "WMD", function(object, what, join = FALSE,
     sep = " ", dups = c("warn", "error", "ignore"), factors = TRUE,
     exact = TRUE, strict = TRUE) {
   what <- metadata_key(what, FALSE, NULL)
@@ -717,7 +717,7 @@ setMethod("as.data.frame", OPM, function(x, row.names = NULL,
   result
 }, sealed = SEALED)
 
-setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
+setMethod("as.data.frame", "OPMA", function(x, row.names = NULL,
     optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   result <- as.data.frame(t(x@aggregated), NULL, optional, ...,
@@ -743,7 +743,7 @@ setMethod("as.data.frame", OPMA, function(x, row.names = NULL,
   result
 }, sealed = SEALED)
 
-setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
+setMethod("as.data.frame", "OPMD", function(x, row.names = NULL,
     optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   result <- callNextMethod(x, row.names, optional, sep, csv.data, settings,
@@ -764,7 +764,7 @@ setMethod("as.data.frame", OPMD, function(x, row.names = NULL,
   result
 }, sealed = SEALED)
 
-setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
+setMethod("as.data.frame", "OPMS", function(x, row.names = NULL,
     optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   if (!length(row.names))
@@ -776,7 +776,7 @@ setMethod("as.data.frame", OPMS, function(x, row.names = NULL,
     SIMPLIFY = FALSE, USE.NAMES = FALSE))
 }, sealed = SEALED)
 
-setMethod("as.data.frame", MOPMX, function(x, row.names = NULL,
+setMethod("as.data.frame", "MOPMX", function(x, row.names = NULL,
     optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   if (!length(row.names))
@@ -876,7 +876,7 @@ setMethod("flatten", OPM, function(object, include = NULL, fixed = list(),
 
 }, sealed = SEALED)
 
-setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
+setMethod("flatten", "OPMS", function(object, include = NULL, fixed = list(),
     ...) {
   nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
   nums <- lapply(as.list(nums), `names<-`, value = RESERVED_NAMES[["plate"]])
@@ -885,7 +885,7 @@ setMethod("flatten", OPMS, function(object, include = NULL, fixed = list(),
     MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
 }, sealed = SEALED)
 
-setMethod("flatten", MOPMX, function(object, include = NULL, fixed = list(),
+setMethod("flatten", "MOPMX", function(object, include = NULL, fixed = list(),
     factors = FALSE, ...) {
   pt <- vapply(object@.Data, plate_type, "")
   pt <- lapply(as.list(pt), `names<-`, value = CSV_NAMES[["PLATE_TYPE"]])

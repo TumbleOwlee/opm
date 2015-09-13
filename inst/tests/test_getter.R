@@ -321,7 +321,7 @@ test_that("aggregated data in OPMS objects can be queried", {
 ## aggregated
 test_that("aggregated data in MOPMX objects can be queried", {
   expect_error(aggregated(MOPMX.1))
-  got <- aggregated(new(MOPMX))
+  got <- aggregated(new("MOPMX"))
   expect_equal(length(got), 0L)
 })
 
@@ -341,7 +341,7 @@ test_that("aggregation settings can be queried", {
 ## aggr_settings
 test_that("aggregation settings in MOPMX objects can be queried", {
   expect_error(aggr_settings(MOPMX.1))
-  got <- aggr_settings(new(MOPMX))
+  got <- aggr_settings(new("MOPMX"))
   expect_equal(length(got), 0L)
 })
 
@@ -352,7 +352,7 @@ test_that("aggregation settings in MOPMX objects can be queried", {
 ## discretized
 test_that("discretised data in MOPMX objects can be queried", {
   expect_error(discretized(MOPMX.1))
-  got <- discretized(new(MOPMX))
+  got <- discretized(new("MOPMX"))
   expect_equal(length(got), 0L)
 })
 
@@ -360,7 +360,7 @@ test_that("discretised data in MOPMX objects can be queried", {
 ## disc_settings
 test_that("discretisation settings in MOPMX objects can be queried", {
   expect_error(disc_settings(MOPMX.1))
-  got <- disc_settings(new(MOPMX))
+  got <- disc_settings(new("MOPMX"))
   expect_equal(length(got), 0L)
 })
 
@@ -378,17 +378,17 @@ test_that("the plates can be subset based on the metadata", {
   got <- subset(OPMS.INPUT, query = query, use = "q")
   expect_is(got, OPM)
   got <- subset(OPMS.INPUT, query = query, values = FALSE)
-  expect_is(got, OPMS)
+  expect_is(got, "OPMS")
   got <- subset(OPMS.INPUT, query = query, use = "k")
-  expect_is(got, OPMS)
+  expect_is(got, "OPMS")
   got <- subset(OPMS.INPUT, query = other.query, values = TRUE)
   expect_is(got, "NULL")
   got <- subset(OPMS.INPUT, query = other.query, use = "q")
   expect_is(got, "NULL")
   got <- subset(OPMS.INPUT, query = other.query, values = FALSE)
-  expect_is(got, OPMS)
+  expect_is(got, "OPMS")
   got <- subset(OPMS.INPUT, query = other.query, use = "k")
-  expect_is(got, OPMS)
+  expect_is(got, "OPMS")
   got <- subset(OPMS.INPUT, query = third.query, values = FALSE)
   expect_is(got, "NULL")
   got <- subset(OPMS.INPUT, query = third.query, use = "k")
@@ -466,7 +466,7 @@ test_that("OPMS example data can be thinned out", {
 ## thin_out
 test_that("MOPMX example data can be thinned out", {
   thin <- thin_out(MOPMX.1, 10)
-  expect_is(thin, MOPMX)
+  expect_is(thin, "MOPMX")
   expect_equal(length(thin), length(MOPMX.1))
   expect_false(identical(thin, MOPMX.1))
 })

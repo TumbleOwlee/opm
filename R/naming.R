@@ -147,7 +147,7 @@ setMethod("plate_type", OPM, function(object, ..., normalize = FALSE,
     normalize = normalize, subtype = subtype)
 }, sealed = SEALED)
 
-setMethod("plate_type", MOPMX, function(object, ..., normalize = FALSE,
+setMethod("plate_type", "MOPMX", function(object, ..., normalize = FALSE,
     subtype = FALSE) {
   vapply(X = object@.Data, FUN = plate_type, FUN.VALUE = "", ...,
     normalize = normalize, subtype = subtype)
@@ -251,12 +251,12 @@ setMethod("gen_iii", OPM, function(object, to = "gen.iii", force = FALSE) {
   object
 }, sealed = SEALED)
 
-setMethod("gen_iii", OPMS, function(object, ...) {
+setMethod("gen_iii", "OPMS", function(object, ...) {
   object@plates <- lapply(X = object@plates, FUN = gen_iii, ...)
   object
 }, sealed = SEALED)
 
-setMethod("gen_iii", MOPMX, function(object, ...) {
+setMethod("gen_iii", "MOPMX", function(object, ...) {
   object@.Data <- mapply(FUN = gen_iii, object = object@.Data, ...,
     MoreArgs = NULL, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   object
@@ -587,7 +587,7 @@ setMethod("listing", "well_coords_map", function(x) {
   result
 }, sealed = SEALED)
 
-setMethod("listing", OPMD, function(x, as.groups,
+setMethod("listing", "OPMD", function(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) {
@@ -941,7 +941,7 @@ lapply(c(
     plate_type
     #-
   ), FUN = function(func_) {
-  setMethod(func_, OPMS, function(object, ...) {
+  setMethod(func_, "OPMS", function(object, ...) {
     func_(object@plates[[1L]], ...)
   }, sealed = SEALED)
 })
@@ -953,7 +953,7 @@ lapply(c(
     wells
     #-
   ), FUN = function(func_) {
-  setMethod(func_, MOPMX, function(object, ...) {
+  setMethod(func_, "MOPMX", function(object, ...) {
     lapply(object@.Data, FUN = func_, ...)
   }, sealed = SEALED)
 })

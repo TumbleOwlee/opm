@@ -182,6 +182,7 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     c(unlist(result), csv_data = all.equal(csv_data(a, normalize = TRUE),
       csv_data(b, normalize = TRUE)))
   }
+  # data(list = "vaas_4", package = opm_string())
   x <- vaas_4[1L:2L, time.points, wells]
   metadata(x) <- structure(list(), names = character())
   if (length(metadata))
@@ -202,7 +203,7 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     result[[step <- step + 1L]] <- "ok"
     opm_dbclear(ids, conn)
     result[[step <- step + 1L]] <- "ok"
-    if (!is(y, MOPMX) || length(y) != 1L)
+    if (!is(y, "MOPMX") || length(y) != 1L)
       stop("expected MOPMX object of length 1")
     result[[step <- step + 1L]] <- "ok"
     last2 <- opm_dbnext(y, conn)

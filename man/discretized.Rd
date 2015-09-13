@@ -87,8 +87,8 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
   \S4method{disc_settings}{OPMS}(object, join = NULL) 
 
   \S4method{discretized}{MOPMX}(object, ...) 
-  \S4method{discretized}{OPMD}(object, full = FALSE, in.parens = TRUE,
-    max = opm_opt("max.chars"), ...) 
+  \S4method{discretized}{OPMD}(object, full = FALSE,
+    in.parens = TRUE, max = opm_opt("max.chars"), ...) 
   \S4method{discretized}{OPMS}(object, ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb
