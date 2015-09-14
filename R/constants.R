@@ -1,8 +1,6 @@
 NOT_YET <- "not yet implemented"
 BUG_MSG <- "a bug -- this should not happen"
 
-OPM <- "OPM"
-
 SEALED <- TRUE #|| SEALED <- FALSE
 
 CSV_NAMES <- c(FILE = "File", PLATE_TYPE = "Plate Type", POS = "Position",

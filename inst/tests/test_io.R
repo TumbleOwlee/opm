@@ -205,14 +205,14 @@ test_that("read_opm can read three partially incompatible files", {
   expect_is(opm.1, "list")
   expect_equal(2L, length(opm.1))
   expect_true(all(vapply(opm.1, is, NA, "MOPMX")))
-  expect_true(all(vapply(opm.1[[1]], is, NA, OPM)))
-  expect_true(all(vapply(opm.1[[2]], is, NA, OPM)))
+  expect_true(all(vapply(opm.1[[1]], is, NA, "OPM")))
+  expect_true(all(vapply(opm.1[[2]], is, NA, "OPM")))
 
   opm.1 <- read_opm(files, convert = "grp")
   expect_is(opm.1, "MOPMX")
   expect_equal(2L, length(opm.1))
   expect_is(opm.1[[1L]], "OPMS")
-  expect_is(opm.1[[2L]], OPM)
+  expect_is(opm.1[[2L]], "OPM")
 
 })
 

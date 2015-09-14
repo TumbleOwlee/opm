@@ -53,7 +53,7 @@ setMethod("pick_from", "data.frame", function(object, selection) {
 
 setGeneric("common_times", function(x) standardGeneric("common_times"))
 
-setMethod("common_times", OPM, function(x) {
+setMethod("common_times", "OPM", function(x) {
   x
 }, sealed = SEALED)
 
@@ -93,7 +93,7 @@ setMethod("select_by_disc", "OPMS", function(x, invert.1, invert.2, comb.fun) {
 
 setGeneric("do_select", function(x, query) standardGeneric("do_select"))
 
-setMethod("do_select", OPM, function(x, query) {
+setMethod("do_select", "OPM", function(x, query) {
   if (query)
     x
   else
@@ -183,7 +183,7 @@ metadata2factorlist <- function(x, f) {
     x
   }
   f <- metadata(x, f)
-  f[simple] <- lapply(f[simple <- vapply(x, is, NA, OPM)], list)
+  f[simple] <- lapply(f[simple <- vapply(x, is, NA, "OPM")], list)
   f <- lapply(lapply(f, replace_null), lapply, replace_null)
   lapply(lapply(f, vapply, paste0, "", collapse = " "), as.factor)
 }

@@ -39,7 +39,7 @@ setMethod("metadata<-", c("WMD", "missing", "character"), function(object, key,
     value <- value[!found]
   }
   if (length(value))
-    stop("not yet implemented")
+    stop("value '", value[[1L]], "' not understood")
   object
 }, sealed = SEALED)
 
@@ -199,7 +199,7 @@ setMethod("metadata<-", c("WMDS", "missing", "character"), function(object, key,
     value <- value[!found]
   }
   if (length(value))
-    stop("not yet implemented")
+    stop("value '", value[[1L]], "' not understood")
   object
 }, sealed = SEALED)
 

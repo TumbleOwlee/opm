@@ -19,7 +19,7 @@ read_new_opm <- function(filename) {
     comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
     data <- repair_oth(data)
   }
-  new(OPM, measurements = data, metadata = list(), csv_data = comments)
+  new("OPM", measurements = data, metadata = list(), csv_data = comments)
 }
 
 read_lims_opm <- function(filename) {
@@ -55,7 +55,7 @@ read_lims_opm <- function(filename) {
   x[[1L]] <- lapply(x[[1L]][-pos], type.convert, "NA", TRUE)
   x[[2L]] <- to_measurements(x[[2L]][-1L])
   x[[2L]][, 1L] <- (x[[2L]][, 1L] - 1) * get("read_interval", x[[1L]]) / 60
-  new(OPM, measurements = x[[2L]], csv_data = x[[3L]], metadata = x[[1L]])
+  new("OPM", measurements = x[[2L]], csv_data = x[[3L]], metadata = x[[1L]])
 }
 
 read_old_opm <- function(filename) {
@@ -99,7 +99,7 @@ read_old_opm <- function(filename) {
     data <- repair_oth(data)
   }
 
-  new(OPM, measurements = data, metadata = list(), csv_data = comments)
+  new("OPM", measurements = data, metadata = list(), csv_data = comments)
 }
 
 read_opm_yaml <- function(filename) {
@@ -471,7 +471,7 @@ setMethod("collect_template", "character", function(object, outfile = NULL,
   finish_template(result, outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
-setMethod("collect_template", OPM, function(object, outfile = NULL,
+setMethod("collect_template", "OPM", function(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
     selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
     instrument = NULL, ..., demo = FALSE) {

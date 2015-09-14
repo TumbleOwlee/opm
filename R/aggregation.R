@@ -1,7 +1,7 @@
 setGeneric("to_grofit_time",
   function(object, ...) standardGeneric("to_grofit_time"))
 
-setMethod("to_grofit_time", OPM, function(object) {
+setMethod("to_grofit_time", "OPM", function(object) {
   tp <- hours(object, "all")
   as.data.frame(matrix(rep.int(tp, length(wells(object))), ncol = length(tp),
     byrow = TRUE))
@@ -10,7 +10,7 @@ setMethod("to_grofit_time", OPM, function(object) {
 setGeneric("to_grofit_data",
   function(object, ...) standardGeneric("to_grofit_data"))
 
-setMethod("to_grofit_data", OPM, function(object) {
+setMethod("to_grofit_data", "OPM", function(object) {
   w <- wells(object)
   names <- matrix(nrow = length(w), ncol = 3L,
     dimnames = list(well = w, value = c("well", "plate_id", "concentration")))
@@ -134,7 +134,7 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
 
 setGeneric("do_aggr", function(object, ...) standardGeneric("do_aggr"))
 
-setMethod("do_aggr", OPM, function(object, boot = 0L, verbose = FALSE,
+setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
     cores = 1L, options = if (identical(method, "splines"))
       set_spline_options()
     else

@@ -162,7 +162,7 @@ if (length(test.files) > 0) { # if the files are found
   # This results in a CSV outfile which could be used as a starting point
   # for including the metadata of interest together with the plate
   # identifiers in a single file. include_metadata() can then be used to
-  # integrate the metadata in OPM, OPMA or OPMS objects.
+  # integrate the metadata in OPMX objects.
   x <- collect_template(test.files, outfile = outfile)
   stopifnot(file.exists(outfile))
   unlink(outfile)

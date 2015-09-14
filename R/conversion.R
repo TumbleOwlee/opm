@@ -1,16 +1,16 @@
 setGeneric("merge")
 
-setMethod("merge", c(OPM, "missing"), function(x, y, sort.first = TRUE,
+setMethod("merge", c("OPM", "missing"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   x
 }, sealed = SEALED)
 
-setMethod("merge", c(OPM, "numeric"), function(x, y, sort.first = TRUE,
+setMethod("merge", c("OPM", "numeric"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   x
 }, sealed = SEALED)
 
-setMethod("merge", c(OPM, OPM), function(x, y, sort.first = TRUE,
+setMethod("merge", c("OPM", "OPM"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
   merge(new("OPMS", plates = list(x, y)), 0.25, sort.first, parse)
 }, sealed = SEALED)
@@ -32,7 +32,7 @@ setMethod("merge", c("OPMS", "numeric"), function(x, y, sort.first = TRUE,
   } else {
     stop(BUG_MSG)
   }
-  new(OPM, measurements = m, csv_data = csv_data(x[1L]),
+  new("OPM", measurements = m, csv_data = csv_data(x[1L]),
     metadata = metadata(x[1L]))
 }, sealed = SEALED)
 
@@ -86,7 +86,7 @@ setMethod("merge", c("CMAT", "factor"), function(x, y) {
 
 setGeneric("split")
 
-setMethod("split", c(OPM, "missing", "missing"), function(x, f, drop) {
+setMethod("split", c("OPM", "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
@@ -94,7 +94,7 @@ setMethod("split", c("OPMS", "missing", "missing"), function(x, f, drop) {
   split(x, drop = FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "missing", "ANY"), function(x, f, drop) {
+setMethod("split", c("OPM", "missing", "ANY"), function(x, f, drop) {
   extract_concentration <- function(x) {
     m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     conc <- as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
@@ -135,7 +135,7 @@ setMethod("split", c("OPMS", "missing", "ANY"), function(x, f, drop) {
   x
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "ANY", "missing"), function(x, f, drop) {
+setMethod("split", c("OPM", "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
@@ -143,11 +143,11 @@ setMethod("split", c("OPMS", "ANY", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "factor", "missing"), function(x, f, drop) {
+setMethod("split", c("OPM", "factor", "missing"), function(x, f, drop) {
   split(x, f, FALSE)
 }, sealed = SEALED)
 
-setMethod("split", c(OPM, "factor", "ANY"), function(x, f, drop) {
+setMethod("split", c("OPM", "factor", "ANY"), function(x, f, drop) {
   object <- split.default(0L, f, FALSE) # to get the warnings/errors
   object[[1L]] <- x[drop = drop]
   new("MOPMX", object)
@@ -217,7 +217,7 @@ setMethod("plates", "MOPMX", function(object) {
 
 setGeneric("oapply", function(object, fun, ...) standardGeneric("oapply"))
 
-setMethod("oapply", OPM, function(object, fun, ...,
+setMethod("oapply", "OPM", function(object, fun, ...,
     simplify = TRUE) {
   fun(object, ...)
 }, sealed = SEALED)
@@ -257,11 +257,11 @@ setMethod("flattened_to_factor", "data.frame", function(object, sep = " ") {
 
 setGeneric("sort")
 
-setMethod("sort", c(OPM, "missing"), function(x, decreasing, ...) {
+setMethod("sort", c("OPM", "missing"), function(x, decreasing, ...) {
   x
 }, sealed = SEALED)
 
-setMethod("sort", c(OPM, "ANY"), function(x, decreasing, ...) {
+setMethod("sort", c("OPM", "ANY"), function(x, decreasing, ...) {
   x
 }, sealed = SEALED)
 
@@ -319,11 +319,11 @@ setMethod("sort", c("MOPMX", "ANY"), function(x, decreasing,
 
 setGeneric("unique")
 
-setMethod("unique", c(OPM, "ANY"), function(x, incomparables, ...) {
+setMethod("unique", c("OPM", "ANY"), function(x, incomparables, ...) {
   x
 }, sealed = SEALED)
 
-setMethod("unique", c(OPM, "missing"), function(x, incomparables, ...) {
+setMethod("unique", c("OPM", "missing"), function(x, incomparables, ...) {
   x
 }, sealed = SEALED)
 
@@ -345,7 +345,7 @@ setMethod("unique", c("MOPMX", "ANY"), function(x, incomparables, ...) {
 
 setGeneric("rev")
 
-setMethod("rev", OPM, function(x) {
+setMethod("rev", "OPM", function(x) {
   x
 }, sealed = SEALED)
 
@@ -356,7 +356,7 @@ setMethod("rev", "OPMS", function(x) {
 
 setGeneric("rep")
 
-setMethod("rep", OPM, function(x, ...) {
+setMethod("rep", "OPM", function(x, ...) {
   x <- rep(list(x), ...)
   case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
 }, sealed = SEALED)
@@ -692,7 +692,7 @@ setMethod("extract_columns", "data.frame", function(object, what,
 
 setGeneric("as.data.frame")
 
-setMethod("as.data.frame", OPM, function(x, row.names = NULL,
+setMethod("as.data.frame", "OPM", function(x, row.names = NULL,
     optional = FALSE, sep = "_", csv.data = TRUE, settings = TRUE,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   result <- as.data.frame(wells(x), NULL, optional, ...,
@@ -838,7 +838,7 @@ setMethod("as.data.frame", "kegg_compound", function(x, row.names = NULL,
 
 setGeneric("flatten")
 
-setMethod("flatten", OPM, function(object, include = NULL, fixed = list(),
+setMethod("flatten", "OPM", function(object, include = NULL, fixed = list(),
     factors = TRUE, exact = TRUE, strict = TRUE, full = TRUE,
     numbers = FALSE, ...) {
 
@@ -1121,7 +1121,7 @@ setMethod("opmx", "data.frame", function(object,
     }
     y <- c(L(filename), plate.type, position, L(setup.time))
     names(y) <- CSV_NAMES
-    new(OPM, measurements = filter_times(x), csv_data = y, metadata = list())
+    new("OPM", measurements = filter_times(x), csv_data = y, metadata = list())
   }
 
   # 'plate.type' and 'full.name' must already be normalized at this stage.

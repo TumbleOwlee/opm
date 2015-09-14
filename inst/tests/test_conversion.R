@@ -911,7 +911,7 @@ test_that("opmx can convert irregular formats", {
   # empty 'sep' argument
   got1 <- opmx(x, format = "rectangular", sep = NULL, plate.type = I("test"),
     position = 1L)
-  expect_is(got1, OPM)
+  expect_is(got1, "OPM")
   expect_equal(dim(got1), c(2L, 6L))
 
   # number as 'sep' argument
@@ -919,7 +919,7 @@ test_that("opmx can convert irregular formats", {
     plate.type = I("test"), position = 1L)) # does not work (1 line too many)
   got2 <- opmx(x[-1L, ], format = "rectangular", sep = 3L,
     plate.type = I("test"), position = 1L)
-  expect_is(got2, OPM)
+  expect_is(got2, "OPM")
   expect_equal(dim(got2), c(2L, 6L))
   expect_equal(got1, got2)
 
