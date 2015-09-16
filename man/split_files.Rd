@@ -117,7 +117,10 @@
   multiple-plate \acronym{CSV} files before inputting them
   with \code{\link{read_opm}}. It is used by
   \code{\link{batch_opm}} for this purpose. See also the
-  \sQuote{Examples}.
+  \sQuote{Examples}. The newly generated files are numbered
+  accordingly; they are \emph{not} named after any
+  \code{\link{csv_data}} entry because there is no
+  guarantee that it is present.
 
   \code{clean_filenames} modifies file names by removing
   anything else then word characters, dashes, and dots.
