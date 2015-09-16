@@ -31,7 +31,7 @@
   \code{md} in the metadata, discard the \code{keys}
   columns?}
 
-  \item{col}{Passed to \code{\link{to_metadata}}. If empty,
+  \item{sep}{Passed to \code{\link{to_metadata}}. If empty,
   the default values are inserted, depending on the
   \code{md} object. If several values are present and if
   \code{md} is a file name, the values will be tried in
@@ -158,8 +158,10 @@
   missing in some elements of \code{name} should not
   present a problem, however. Values that remained
   \code{NA} would be removed before returning the result.
-  The \code{\link{MOPMX}} method works by calling each
-  element in turn (allowing for independent editing).
+  Rows additionally included in the temporary data frame
+  during editing yielded an error. The \code{\link{MOPMX}}
+  method works by calling each element in turn (allowing
+  for independent editing).
 }
 \examples{
 ## include_metadata()
@@ -242,7 +244,8 @@ stopifnot(identical(x, metadata(vaas_4))) # nothing to modify in that case
 \dontrun{ ## edit metadata by hand
   x <- edit(vaas_4) # this would create a new object
   x <- edit(x) # overwrite x in 2nd editing step
-  ## This will not necessarily work if the metadata are nested!
+  ## This will not necessarily work as intended if the metadata are nested!
+  ## Moreover, additionally inserted rows would cause an error.
 }
 
 ## List/formula method of map_values()
@@ -300,7 +303,7 @@ stopifnot(identical(z, y))
   \S4method{include_metadata}{MOPMX}(object, ...) 
   \S4method{include_metadata}{OPM}(object, md, keys = opm_opt("csv.keys"), ...)
   \S4method{include_metadata}{WMD}(object, md, keys, replace = FALSE,
-    skip.failure = FALSE, remove.keys = TRUE, col = NULL, strip.white = NULL,
+    skip.failure = FALSE, remove.keys = TRUE, sep = NULL, strip.white = NULL,
     ...) 
   \S4method{include_metadata}{WMDS}(object, ...) 
 

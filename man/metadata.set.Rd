@@ -27,19 +27,21 @@
   \sQuote{character}. }}
 
   \item{value}{Character vector, list, data frame, formula,
-  \code{\link{WMD}} or \code{\link{WMDS}} object.
-  \itemize{ \item If \code{key} is a character vector, this
-  can be arbitrary value(s) to be included in the metadata
-  (if \code{NULL}, this metadata entry is deleted).  \item
-  If \code{key} is missing and \code{value} is a list but
-  not a data frame, all metadata are replaced by it. If
-  \code{value} is of mode \sQuote{logical}, \code{TRUE}
-  causes all \code{\link{csv_data}} entries that are
-  \emph{not} included in
-  \code{\link{opm_opt}("csv.selection")} to be included in
-  the metadata; \code{FALSE} causes these entries, if any,
-  to be removed. If \code{value} is a character vector and
-  it contains the value given by
+  \code{\link{WMD}} or \code{\link{WMDS}} object. As the
+  metadata are stored as a list, other kinds of objects
+  used as \code{value} are special, particularly if
+  \code{key} is missing. \itemize{ \item If \code{key} is a
+  character vector, this can be arbitrary value(s) to be
+  included in the metadata (if \code{NULL}, this metadata
+  entry is deleted).  \item If \code{key} is missing and
+  \code{value} is a list but not a data frame, all metadata
+  are replaced by it. If \code{value} is of mode
+  \sQuote{logical}, \code{TRUE} causes all
+  \code{\link{csv_data}} entries that are \emph{not}
+  included in \code{\link{opm_opt}("csv.selection")} to be
+  included in the metadata; \code{FALSE} causes these
+  entries, if any, to be removed. If \code{value} is a
+  character vector and it contains the value given by
   \code{\link{opm_opt}("md.id.name")}, then by default a
   globally unique \acronym{ID} identifying each plate is
   included in the metadata. Uniqueness only holds per
@@ -191,16 +193,17 @@ stopifnot(identical(metadata(copy, "Type"), x$Type))
 metadata(copy, "Type2") <- x
 stopifnot(!identical(metadata(copy, "Type2"), x$Type))
 
-# WMDS/missing/character method
+# WMDS/missing/character method: setting unique IDs
 metadata(copy) <- opm_opt("md.id.name") # set IDs
 metadata(copy, opm_opt("md.id.name")) # get these IDs
 stopifnot(is.integer(metadata(copy, opm_opt("md.id.name"))))
+# to reset the start point to the number n, use opm_opt(md.id.start = n)
 
-# WMDS/missing/logical method
+# WMDS/missing/logical method: storing or deleting csv_data() entries
 copy <- vaas_4
-metadata(copy) <- TRUE
+metadata(copy) <- TRUE # store them
 stopifnot(ncol(to_metadata(copy)) > ncol(to_metadata(vaas_4)))
-metadata(copy) <- FALSE
+metadata(copy) <- FALSE # remove them again
 stopifnot(identical(metadata(copy), metadata(vaas_4)))
 }
 \seealso{

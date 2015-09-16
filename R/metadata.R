@@ -310,7 +310,7 @@ setGeneric("include_metadata",
   function(object, ...) standardGeneric("include_metadata"))
 
 setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
-    skip.failure = FALSE, remove.keys = TRUE, col = NULL, strip.white = NULL,
+    skip.failure = FALSE, remove.keys = TRUE, sep = NULL, strip.white = NULL,
     ...) {
 
   pick_from <- function(object, selection) {
@@ -324,10 +324,10 @@ setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
   }
 
   # Get and check metadata.
-  read_stuff <- function(md, col, keys, strip.white, ...) {
-    for (colname in col) {
-      md <- to_metadata(object = md, col = colname, strip.white = strip.white,
-        ...)
+  read_stuff <- function(md, sep, keys, strip.white, ...) {
+    for (separator in sep) {
+      md <- to_metadata(object = md, sep = separator,
+        strip.white = strip.white, ...)
       if (all(keys %in% colnames(md)))
         break
     }
@@ -340,8 +340,8 @@ setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
 
   selection <- as.list(csv_data(object, keys))
 
-  if (!length(col))
-    col <- if (is.character(md))
+  if (!length(sep))
+    sep <- if (is.character(md))
         c("\t", ",", ";") # has an effect
       else
         "\t" # has no effect anyway
@@ -355,7 +355,7 @@ setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
     strip.white <- strip.white[[1L]]
 
   for (strip.ws in strip.white) {
-    found <- read_stuff(md, col, keys, strip.ws, ...)
+    found <- read_stuff(md, sep, keys, strip.ws, ...)
     if (nrow(found <- pick_from(found, selection)))
       break
   }
