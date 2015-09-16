@@ -52,7 +52,7 @@ heat_map(wittmann_small,
   xlab = "Well substrates on Generation-III Biolog plate",
   ylab = "strains, replicates, and their MLST cluster affiliation")
 
-#' ### Result:
+#' ### Result
 #' * Obviously the four phylogenetic clades `Ax1`, `Ax2`, `Ax4` and `Ax6`,
 #'   indicated by the four different colours on the row dendrogram, fit to
 #'   the phenotypic similarity clustering
@@ -74,7 +74,7 @@ x.pvc <- pvclust(x, method.dist = "euclidean", method.hclust = "ward",
 plot(x.pvc, hang = -1)
 pvrect(x.pvc, max.only = FALSE)
 
-#' ### Result:
+#' ### Result
 #' According to the `AU` p-values there is significant support for some of the
 #' observed phenotypic similarity clusters (highlighted with rectangles).
 #'
@@ -98,7 +98,7 @@ mcp.summary <- summary(test)
 mcp.summary$model$call <- NULL # avoid some unnecessary output
 mcp.summary
 
-#' ### Result:
+#' ### Result
 #' * There is no statistically significant difference across all `AUC` values
 #'   between the strains of the different phylogenetic clades `Ax1`, `Ax2`,
 #'   `Ax4` and `Ax6`.

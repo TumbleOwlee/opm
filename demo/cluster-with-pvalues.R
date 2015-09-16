@@ -33,7 +33,7 @@ x <- t(extract(vaas_4, list("Species", "Strain")))
 x.pvc <- pvclust(x, method.dist = "euclidean")
 
 
-#' ## Plotting the clustering:
+#' ## Plotting the clustering
 
 #' The two kinds of support values are visible on the branches. We see that *E.
 #' coli* is comparatively well differentiated from *P. aeruginosa*, but only if
@@ -44,6 +44,8 @@ plot(x.pvc, hang = -1)
 pvrect(x.pvc, pv = "bp")
 #' For real analyses, omit `pv = "bp"`.
 
+
+#' ## Tidying up
 
 detach("package:pvclust", unload = TRUE)
 

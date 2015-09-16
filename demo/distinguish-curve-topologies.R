@@ -27,6 +27,7 @@ library(opm)
 library(opmdata)
 data(wittmann_et_al)
 
+
 #' ### Subset for an appropriate data set for demonstration purpose
 
 wittmann_small <- subset(wittmann_et_al,
@@ -70,7 +71,7 @@ aggregated(subset(wittmann_small[, , "G07"], list(strain = "LMG 7051")),
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
   subset = "A", x = "topright", legend.field = NULL, cex = 0.8)
 
-#' ### Conclusions:
+#' ### Conclusions
 #' * strains `CCUG` 41513 and `CCUG` 2203 can not be distinguished by their
 #'   maximum height (A)
 #' * similarly, also strains `LMG` 7051 and `CCUG` 48135 can not be
@@ -83,7 +84,7 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
   subset = "AUC", x = "topright", legend.field = NULL, cex = 0.8)
 
-#' ### Conclusions:
+#' ### Conclusions
 #' * all strains show different `AUC` values
 #'
 #' ### Plot confidence interval for the steepness of the slope (mu)
@@ -92,7 +93,7 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
   subset = "mu", x = "topright", legend.field = NULL, cex = 0.8)
 
-#' ### Conclusions:
+#' ### Conclusions
 #' * all strains show different mu values
 #'
 #' ### Plot confidence interval for the lag phase (lambda)
@@ -101,7 +102,7 @@ ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
 ci_plot(wittmann_small[, , "G07"], as.labels = "strain",
   subset = "lambda", x = "topleft", legend.field = NULL, cex = 0.8)
 
-#' ### Conclusions:
+#' ### Conclusions
 #' * strains `LMG` 7051 and `CCUG` 2203 can not be distinguished by their
 #' lag phase length
 #' * the other pairs of strains can be distinguished

@@ -490,7 +490,9 @@ setAs("list", "MOPMX", function(from) {
 })
 
 setAs("OPMX", "MOPMX", function(from) {
-  new("MOPMX", list(from))
+  x <- new("MOPMX", list(from))
+  names(x) <- plate_type(from)
+  x
 })
 
 setAs("MOPMX", "OPMX", function(from) {

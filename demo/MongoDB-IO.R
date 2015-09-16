@@ -18,7 +18,7 @@ library(RMongo)
 library(opm)
 
 
-#' ## Define helper function:
+#' ## Define helper function
 
 #' In our case, **RMongo** unfortunately returns a data frame with one plate per
 #' row and raw `JSON` strings per field. But the following short function is
@@ -41,7 +41,7 @@ conn <- mongoDbConnect("test", "localhost", 27017)
 coll <- "pmdata"
 
 
-#' ## Insert plates:
+#' ## Insert plates
 
 #' We insert each plate separately to be able to query them separately. Note
 #' that under these settings, `to_yaml` takes care of removing names with dots,
@@ -94,6 +94,8 @@ stopifnot(is.data.frame(empty), dim(empty) == 0)
 dbDisconnect(conn)
 rm(conn)
 
+
+#' ## Tidy up
 
 detach("package:RMongo", unload = TRUE)
 
