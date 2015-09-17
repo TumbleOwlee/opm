@@ -85,9 +85,9 @@ if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
   )
 }
 
-#' You should now edit the file 'template.csv' with an editor or a spreadsheet
+#' You should now edit the file `template.csv` with an editor or a spreadsheet
 #' program, enter the values of interest and save it again, without destroying
-#' format. In Excel, you might need to use `Data -> Text to columns`, using
+#' the format. In Excel, you might need to use `Data -> Text to columns`, using
 #' tabulator as column separator and setting all columns to data type "Text".
 
 if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
@@ -155,8 +155,8 @@ if (!any(unlist(x %k% "ID"))) { # if there is no ID entry at all, we set it
 #'
 #' But there is a much easier shortcut:
 
-# metadata(x) <- TRUE # sets the default csv_data() components as metadata
-# metadata(x) <- FALSE # removes the default csv_data() components from the
+# metadata(x) <- TRUE # sets the default `csv_data` components as metadata
+# metadata(x) <- FALSE # removes the default `csv_data` components from the
 #                      # metadata
 
 #' *****************************************************************************

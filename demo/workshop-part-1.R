@@ -5,19 +5,18 @@
 #' *****************************************************************************
 #'
 #' ## 1.1
-#' How does `R` work? By excuting code, i.e. by calling functions, mostly with
+#' How does `R` work? By executing code, i.e. by calling functions, mostly with
 #' some arguments. Code can be commented, e.g. *this line* is a comment and will
-#' not be executed. You can use this to (de-)activate code, too:
+#' not be executed. You can use this to activate or deactivate code, too:
 #'
 #' This will be printed:
 
 message("I like R and opm!")
 
-#' This will *not* be printed:
-
-#message("I don't like R and opm!")
-
-
+#' This would *not* be printed:
+#'
+#' `# message("I don't like R and opm!")`
+#'
 #' ### Some calculations
 
 5 + 19 # result will be printed to the screen
@@ -51,8 +50,8 @@ x ~ a * y1 + b * y2 - c * y3 ^ 2
 
 ~ a * y1 + b * y2 - c * y3 ^ 2
 
-#' Formulas are unevaluated code for storing symbolic representations to be
-#' interpreted later on in a specific way.
+#' Formulas are code that is not evaluated but stores symbolic representations
+#' to be interpreted later on in a specific way.
 #'
 #' ### Troubleshooting
 #' If anything fails, read the error message!
@@ -76,14 +75,14 @@ message("Welcome to R and opm!")
 #' at any time to get the *documentation* for the topic *ITEM* (replace *ITEM*
 #' by what you are interested in). The following command would list the content
 #' of the entire `opm` documentation:
-
-# help(package = "opm")
-
+#'
+#' `help(package = "opm")`
+#'
 #' *****************************************************************************
 #'
 #' ## 1.3
 #' Now please make sure you are in the right directory! You can call the `getwd`
-#' command to check that. To change the working directory in Rstudio use:
+#' command to check that. To change the working directory in `RStudio` use:
 #' `Session > Set Working Directory > To Source File Location`.
 #'
 #' Let's issue a warning about the working directory:
@@ -112,11 +111,11 @@ x <- read_opm(
 #' ### Troubleshooting
 #' If this fails, read the error message! The most usual error we know about is
 #' to try to input CSV files with *several* plates per file, but these would
-#' need to be split beforehand, which you can do with opm itself. This works as
-#' follows:
-
-# split_files(filename, '^("Data File",|Data File)', getwd())
-
+#' need to be split beforehand, which you can do with `opm` itself. This works
+#' as follows:
+#'
+#' `split_files(filename, '^("Data File",|Data File)', getwd())`
+#'
 #' where `filename` is the name of the file to be split, provided as character
 #' string. The newly generated files are numbered accordingly. (They are not
 #' named after any metainformation entry because there is no guarantee that it
@@ -125,8 +124,8 @@ x <- read_opm(
 #' The second frequent kind of error is that you attempt to read files that are
 #' CSV but do not contain PM data. The name of the file that fails is shown in
 #' the error message, look at it! Use `demo = TRUE` to first show the files you
-#' would read, and if this list contains names of files that expectedly cannot
-#' be read by opm, modify the inclusion or exclusion settings. Alternatively,
+#' would read, and if this list contains names of files that apparently cannot
+#' be read by `opm`, modify the inclusion or exclusion settings. Alternatively,
 #' modify your folder structure. Finally, note that you can always use a
 #' character vector of specific file names collected by hand as `names`
 #' argument. This gives you most control about the files read.
@@ -140,7 +139,7 @@ x <- read_opm(
 #' these, some calls are just for beginners who are curious. Others tell you
 #' important features of the generated data object.
 #'
-#' That code yields "MOPMX"; if you are curious what that means, consult figure
+#' That code yields `MOPMX`; if you are curious what that means, consult figure
 #' 4 in the tutorial.
 
 class(x)
@@ -187,7 +186,7 @@ length(x) > 0
 #' If you have only one plate type, you could simplify the object:
 
 # x <- x[[1]] # fetches the 1st element, which belongs to the sole plate type
-# class(x) # yielded "OPMS" or "OPM"; if you are curious, consult figure 4 in
+# class(x) # yielded `OPMS` or `OPM`; if you are curious, consult figure 4 in
 #          # the tutorial
 
 #' But this is not normally necessary.

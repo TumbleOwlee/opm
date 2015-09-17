@@ -1,4 +1,4 @@
-#' # WORKSHOP PART 4: Estimating and visualizing curve parameters
+#' # WORKSHOP PART 4: Estimating and visualising curve parameters
 #'
 #' (According sections in the tutorial: 3.5. Aggregating data by estimating
 #' curve parameters, 3.8. Plotting the aggregated data)
@@ -113,9 +113,9 @@ radial_plot(
 #'
 #' ## 4.5
 #' The function `ci_plot` is able to visualise point estimates and corresponding
-#' 95% confidence intervals (CIs) for the parameters, derived via bootstrapping
-#' during aggregation of raw kinetic data into curve parameters, or, in
-#' conjunction with extract, from plate groups defined by metadata.
+#' 95% confidence intervals for the parameters, derived via bootstrapping during
+#' aggregation of raw kinetic data into curve parameters, or, in conjunction
+#' with extract, from plate groups defined by metadata.
 
 ci_plot.legend <- ci_plot(
   object = x[[1]][, , c("A01", "A02", "A03")], # use 3 wells from 1st plate type
@@ -129,8 +129,9 @@ ci_plot.legend <- ci_plot(
 #' calling `param_names`.
 #'
 #' As we have not conducted bootstrapping during aggregation, this shows only
-#' the point estimates but no CIs. We can get them from the replicates, however,
-#' *if* replicates are present (not for the data set `vaas_4`).
+#' the point estimates but no confidence intervals. We can get them from the
+#' replicates, however, *if* replicates are present (not for the data set
+#' `vaas_4`).
 
 ci_plot.legend <- ci_plot(
   object = extract(
@@ -147,10 +148,11 @@ ci_plot.legend <- ci_plot(
 #' calculated in that manner. This is a statistical, not a technical
 #' restriction: with a single measurement only, you can't get any idea of the
 #' variance in the data. We will meet this restriction again in part 5. However,
-#' because a respiration kinetic contains many values, CIs for the parameters
-#' could be calculated without replicates. It would need to be done during
-#' aggregation, however, by bootstrapping the curves. The approach using
-#' technical or even biological replicates might be more informative, however.
+#' because a respiration kinetic contains many values, confidence intervals for
+#' the parameters could be calculated without replicates. It would need to be
+#' done during aggregation, however, by bootstrapping the curves. The approach
+#' using technical or even biological replicates might be more informative,
+#' however.
 #'
 #' *****************************************************************************
 #'

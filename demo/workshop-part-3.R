@@ -1,4 +1,4 @@
-#' # WORKSHOP PART 3: Visualizing raw PM data in `opm`
+#' # WORKSHOP PART 3: Visualising raw PM data in `opm`
 #'
 #' (According section in the tutorial: 3.7. Plotting functions for raw data)
 #'
@@ -49,20 +49,24 @@ dim(x[[1]])
 #' * (1) plates, (2) time points, (3) wells if there is > 1 plate
 #' * (1) time points, (2) wells if there is 1 plate
 #'
-#' More subsettings examples:
-
-## The first 8 wells of the first plate type in x if it has > 1 plate
-# print(xy_plot(x[[1]][, , 1:8]))
-
-## The first 8 wells of the first plate type in x if it has 1 plate
-# print(xy_plot(x[[1]][, 1:8]))
-
-## The first 50 time points of the first plate type in x if it has > 1 plate
-# print(xy_plot(x[[1]][, 1:50]))
-
-## The first 50 time points of the first plate type in x if it has > 1 plate
-# print(xy_plot(x[[1]][1:50]))
-
+#' ### More subset-creation examples
+#'
+#' The first 8 wells of the first plate type in `x` if it has > 1 plate:
+#'
+#' `print(xy_plot(x[[1]][, , 1:8]))`
+#'
+#' The first 8 wells of the first plate type in `x` if it has 1 plate:
+#'
+#' `print(xy_plot(x[[1]][, 1:8]))`
+#'
+#' The first 50 time points of the first plate type in `x` if it has > 1 plate
+#'
+#' `print(xy_plot(x[[1]][, 1:50]))`
+#'
+#' The first 50 time points of the first plate type in `x` if it has > 1 plate:
+#'
+#' `print(xy_plot(x[[1]][1:50]))`
+#'
 #' ### Troubleshooting
 #' You can create subsets at any time, but what is allowed depends on the
 #' dimensions of the data. If you select beyond the real range, an error
@@ -75,13 +79,15 @@ dim(x[[1]])
 #' any.
 #'
 #' You could check whether 'Strain' occurs in the metadata keys of all of the
-#' plates as follows. Otherwise the plotting functions would crash if 'Strain'
-#' is within the `include` argument, as below.
-
-## if (all(unlist("Strain" %k% x))) {
-## # the code would come here
-## }
-
+#' plates as follows. (Otherwise the plotting functions would crash if 'Strain'
+#' is within the `include` argument, as below.)
+#'
+#' `if (all(unlist("Strain" %k% x))) {`
+#'
+#' `## the code would come here`
+#'
+#' `}`
+#'
 #' Here the proper plotting code is as in 3.3 but note the argument `include`.
 
 print(xy_plot(x, include = "Strain"))

@@ -11,6 +11,6 @@ distinguish-curve-topologies    identify significant differences in the curve to
 phenotype-vs-genotype    compare phenotypic clustering of organisms to their genotypic (phylogenetic) similarity
 workshop-part-1    workshop: input PM data
 workshop-part-2    workshop: add and manipulate metadata
-workshop-part-3    workshop: visualize raw PM data with opm
-workshop-part-4    workshop: estimate and visualize curve parameters
+workshop-part-3    workshop: visualise raw PM data with opm
+workshop-part-4    workshop: estimate and visualise curve parameters
 workshop-part-5    workshop: conduct statistical comparisons of experimental groups

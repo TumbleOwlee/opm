@@ -1,4 +1,4 @@
-#' WORKSHOP PART 5: Statistical comparisons of experimental groups
+#' # WORKSHOP PART 5: Statistical comparisons of experimental groups
 #'
 #' (According section in the tutorial: 3.9. Statistical comparisons of group
 #' means)
@@ -22,7 +22,7 @@ library(multcomp)
 
 #' ## 5.2
 #' Multiple Comparisons of means: The `opm_mcp` function allows the user to test
-#' for differences in the means of multiple groups directly on OPMS objects,
+#' for differences in the means of multiple groups directly in `OPMS` objects,
 #' obtaining the factors that determine the grouping structure from the stored
 #' metadata or the wells.
 #'
@@ -34,8 +34,8 @@ vg6 <- vaas_et_al[~ Experiment == "First replicate", , "G06"]
 #' This yields well `G06` from all plates that belong to the first biological
 #' replicate (there are many technical replicates).
 #'
-#' Tukey (all-againsta-all) comparison of different strains and the same well.
-#' The reseach questions is: Which strains show a significant difference in the
+#' Tukey (all-against-all) comparison of different strains and the same well.
+#' The research question is: Which strains show a significant difference in the
 #' respiration on well `G06`, as measured using the `A` parameter? (one could
 #' test the other parameters as well, of course).
 
@@ -56,12 +56,12 @@ par(old.mar) # reset to default plotting settings
 summary(tukey.g6)
 
 #' Compare the p-values with the plot: The significant differences can easily
-#' be recognized in the plot.
+#' be recognised in the plot.
 #'
 #' ### Troubleshooting
 #' Note that you need data sets which actually provide group structures for
-#' comparisons. That would be e.g. strains measured on the same plate type in
-#' several repetitions or one strain differentially treated and every treatment
+#' comparisons. These would be, e.g., strains measured on the same plate type in
+#' several repetitions, or one strain distinctly treated and every treatment
 #' measured in several repetitions. Of course, it is also possible to compare
 #' the wells between each other, when the plates are comparable.
 #'
@@ -75,12 +75,12 @@ summary(tukey.g6)
 #' others. (Unfortunately, we have no "all for one and one for all" type of
 #' comparison.)
 #'
-#' Prepare data set - all plates of first rep from strain 'DSM30083T'.
+#' Prepare data set - all plates of first rep from strain `DSM30083T`.
 
 dsm1 <- vaas_et_al[list(Experiment = "First replicate", Strain = "DSM30083T")]
 
-#' Compare first ten wells each against negative control. The reseach questions
-#' is: Which of the first nine wells of among the 'DSM30083T' measurements show
+#' Compare first ten wells each against negative control. The research question
+#' is: Which of the first nine wells of among the `DSM30083T` measurements show
 #' a significant respiration difference from the negative-control well `A01`?
 
 mcp.a1 <- opm_mcp(dsm1[, , 1:10],
@@ -105,12 +105,12 @@ summary(mcp.a1)
 #' ## 5.4
 #' Special feature: Choice of reference group in Dunnett-type comparisons.
 #'
-#' The value for the linfct argument can be constructed by typing `Dunnett`,
+#' The value for the `linfct` argument can be constructed by typing `Dunnett`,
 #' plus, separated by any sign, e.g. underscore (`_`), the level name which
 #' should serve as the reference group in the contrast set.
 #'
 #' Dunnett-type comparison with well `A03` chosen as the reference group. The
-#' reseach questions is: Which of the first nine wells of 'DSM30083T'
+#' research question is: Which of the first nine wells of `DSM30083T`
 #' measurements show a significant respiration difference from the well `A03`?
 
 mcp.a3 <- opm_mcp(dsm1[, , 1:10],
@@ -132,6 +132,6 @@ par(old.mar) # reset to default plotting settings
 summary(mcp.a3)
 
 #' There are many more types of comparisons possible, but the more complicated
-#' ones also need more elaborate preparation. For ways to dow this in `opm` see
+#' ones also need more elaborate preparation. For ways to do this in `opm` see
 #' the tutorial, section 3.9.
 
