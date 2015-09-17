@@ -6,8 +6,8 @@
 #'
 #' ## 1.1
 #' How does `R` work? By executing code, i.e. by calling functions, mostly with
-#' some arguments. Code can be commented, e.g. *this line* is a comment and will
-#' not be executed. You can use this to activate or deactivate code, too:
+#' some arguments. Code can be commented; everything after `#` is a comment and
+#' will not be executed. You can use this to activate or deactivate code, too:
 #'
 #' This will be printed:
 
@@ -21,14 +21,17 @@ message("I like R and opm!")
 
 5 + 19 # result will be printed to the screen
 result <- 5 + 19 # will not print
-result # will print: 'result' now contains 24, we have assigned it using `<-`
+result # will print: object `result` now contains 24, assigned to it using `<-`
 
 5 + 15:20 # what does this do?
+
+#' Note that in `R` you can pass vectors of length > 1 to most functions, and
+#' they will return a vector of the same length.
 
 result # still there
 rm(result) # deleting it
 
-#' Entering `result` would now yield "Error: object 'result' not found" or so.
+#' Entering `result` would now yield `Error: object 'result' not found`.
 #'
 #' ### Character strings
 
@@ -50,8 +53,8 @@ x ~ a * y1 + b * y2 - c * y3 ^ 2
 
 ~ a * y1 + b * y2 - c * y3 ^ 2
 
-#' Formulas are code that is not evaluated but stores symbolic representations
-#' to be interpreted later on in a specific way.
+#' Formulas are a special kind of code that is not evaluated but stores symbolic
+#' representations to be interpreted later on in a specific way.
 #'
 #' ### Troubleshooting
 #' If anything fails, read the error message!
@@ -59,8 +62,9 @@ x ~ a * y1 + b * y2 - c * y3 ^ 2
 #' *****************************************************************************
 #'
 #' ## 1.2
-#' Now we load and attach the `opm` functions. Note that if `opm` has already
-#' been loaded, this command does nothing. It thus can be called at any time.
+#' Now we load and attach the `opm` functions. Note that if a package such as
+#' `opm` has already been loaded, the `library` command does nothing. It thus
+#' can be called at any time.
 
 library(pkgutils)
 library(opm)
@@ -72,9 +76,9 @@ message("Welcome to R and opm!")
 
 #  ?ITEM
 
-#' at any time to get the *documentation* for the topic *ITEM* (replace *ITEM*
-#' by what you are interested in). The following command would list the content
-#' of the entire `opm` documentation:
+#' at any time to get the documentation for the topic *ITEM* (replace *ITEM* by
+#' what you are interested in). The following command would list the content of
+#' the entire `opm` documentation:
 #'
 #' `help(package = "opm")`
 #'
@@ -85,18 +89,20 @@ message("Welcome to R and opm!")
 #' command to check that. To change the working directory in `RStudio` use:
 #' `Session > Set Working Directory > To Source File Location`.
 #'
-#' Let's issue a warning about the working directory:
+#' Because it is important, let us issue a warning about the working directory:
 
 warning("the working directory is ", getwd(), " -- correct?")
 
+#' A warning is not an error; it does not stop the execution of code.
+#'
 #' *****************************************************************************
 #'
 #' ## 1.4
 #' We assume that only the CSV files within the working directory should be
 #' input and that the data read should be grouped by plate type (see below or
-#' consult the `opm` for what that means). This code fails if unreadable CSV
-#' files are there and not deselected (the `include` and/or `exclude` argument
-#' would need to be adapted).
+#' consult the `opm` manual or tutorial for what that means). The following code
+#' fails if unreadable CSV files are there and not deselected (the `include`
+#' and/or `exclude` argument would need to be adapted).
 
 x <- read_opm(
   names = getwd(), # search in the working directory for files of interest
@@ -121,14 +127,19 @@ x <- read_opm(
 #' named after any metainformation entry because there is no guarantee that it
 #' is present.)
 #'
+#' It is of course easier to use single-plate instead of multiple-plate files in
+#' the first place. How to do this is described in the `opm` tutorial.
+#'
 #' The second frequent kind of error is that you attempt to read files that are
-#' CSV but do not contain PM data. The name of the file that fails is shown in
-#' the error message, look at it! Use `demo = TRUE` to first show the files you
-#' would read, and if this list contains names of files that apparently cannot
-#' be read by `opm`, modify the inclusion or exclusion settings. Alternatively,
-#' modify your folder structure. Finally, note that you can always use a
-#' character vector of specific file names collected by hand as `names`
-#' argument. This gives you most control about the files read.
+#' CSV but do not contain PM data. This can be fixed as follows:
+#' * The name of the file that fails is shown in the error message, look at it!
+#' * Use `demo = TRUE` to first show the files you would read, and if this list
+#' contains names of files that apparently cannot be read by `opm`, modify the
+#' inclusion or exclusion settings.
+#' * Alternatively, modify your folder structure.
+#' * Finally, note that you can always use a character vector of specific file
+#' names collected by hand as `names` argument. This gives you most control
+#' about the files read.
 #'
 #' The `opm` package understands several styles of CSV and the new LIMS format.
 #'
@@ -136,42 +147,43 @@ x <- read_opm(
 #'
 #' ## 1.5
 #' We now have a look at the resulting object. You do not routinely need all of
-#' these, some calls are just for beginners who are curious. Others tell you
-#' important features of the generated data object.
+#' the following commands; some calls are just for beginners who are curious.
+#' Others tell you important features of the generated data object, however.
 #'
-#' That code yields `MOPMX`; if you are curious what that means, consult figure
-#' 4 in the tutorial.
+#' That command yields `MOPMX`; if you are curious what that means, consult
+#' figure 4 in the tutorial.
 
 class(x)
 
-#' As often in `R`, `summary` is a most useful function...
+#' As often in `R`, `summary` is a quite useful function ...
 
 summary(x)
 
-#' ...but in `opm` you can just enter the name of the object, which also shows
+#' ... but in `opm` you can just enter the name of the object, which also shows
 #' the summary:
 
 x
 
-#' Show the distinct plate types:
+#' Show the distinct input plate types:
 
 names(x)
 
-#' Names could be missing, however, but the next function always works to get
-#' the plate type:
+#' Names could theoretically be missing in such objects, however, but the next
+#' function always works to get the plate type:
 
 plate_type(x)
 
-#' This checks for aggregated data (a.k.a. curve parameters); must all be
-#' `FALSE`:
+#' This command checks for aggregated data (a.k.a. curve parameters); must all
+#' be `FALSE`:
 
 has_aggr(x)
 
-#' This show the metainformation that was directly found in the CSV files:
+#' This command shows the metainformation that was directly found in the CSV
+#' files:
 
 csv_data(x)
 
-#' The next functions shows the proper metadata (none there yet!):
+#' The next `R` instruction shows the proper metadata (none there yet!):
 
 metadata(x)
 

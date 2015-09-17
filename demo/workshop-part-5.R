@@ -4,8 +4,9 @@
 #' means)
 #'
 #' ## 5.1
-#' Load and attach the `opm` functions. Note that if `opm` has already been
-#' loaded, this command does nothing. It thus can be called at any time.
+#' Now we load and attach the `opm` functions. Note that if a package such as
+#' `opm` has already been loaded, the `library` command does nothing. It thus
+#' can be called at any time.
 
 library(pkgutils)
 library(opm)
@@ -32,12 +33,12 @@ library(multcomp)
 vg6 <- vaas_et_al[~ Experiment == "First replicate", , "G06"]
 
 #' This yields well `G06` from all plates that belong to the first biological
-#' replicate (there are many technical replicates).
+#' replicate (there are many technical replicates in `vaas_et_al`).
 #'
-#' Tukey (all-against-all) comparison of different strains and the same well.
-#' The research question is: Which strains show a significant difference in the
-#' respiration on well `G06`, as measured using the `A` parameter? (one could
-#' test the other parameters as well, of course).
+#' Now we conduct a Tukey (all-against-all) comparison of different strains and
+#' the same well. The research question is: Which strains show a significant
+#' difference in the respiration on well `G06`, as measured using the `A`
+#' parameter? (one could test the other parameters as well, of course).
 
 tukey.g6 <- opm_mcp(vg6,
   model = ~ Strain, # design the model for model-fitting
@@ -65,23 +66,24 @@ summary(tukey.g6)
 #' measured in several repetitions. Of course, it is also possible to compare
 #' the wells between each other, when the plates are comparable.
 #'
-#' But with a single value per group the code below will inevitably raise an
-#' error.
+#' But with a single value per group `opm_mcp` will inevitably raise an error.
 #'
 #' *****************************************************************************
 #'
 #' ## 5.3
-#' Multiple Comparisons: Dunnett-type comparisons of wells, i.e. one against the
-#' others. (Unfortunately, we have no "all for one and one for all" type of
-#' comparison.)
+#' Another kind of multiple comparisons are Dunnett-type comparisons of wells,
+#' i.e. one against the others. (Unfortunately, we have no *all for one and one
+#' for all* type of comparison ...)
 #'
-#' Prepare data set - all plates of first rep from strain `DSM30083T`.
+#' Prepare a data set with all plates of first replicate from the strain
+#' `DSM30083T`.
 
 dsm1 <- vaas_et_al[list(Experiment = "First replicate", Strain = "DSM30083T")]
 
-#' Compare first ten wells each against negative control. The research question
-#' is: Which of the first nine wells of among the `DSM30083T` measurements show
-#' a significant respiration difference from the negative-control well `A01`?
+#' Compare each of the first ten wells against the negative control. The
+#' research question is: Which of the first nine wells of among the `DSM30083T`
+#' measurements show a significant respiration difference from the
+#' negative-control well `A01`?
 
 mcp.a1 <- opm_mcp(dsm1[, , 1:10],
   model = ~ Well, # design the model for model-fitting
@@ -103,15 +105,17 @@ summary(mcp.a1)
 #' *****************************************************************************
 #'
 #' ## 5.4
-#' Special feature: Choice of reference group in Dunnett-type comparisons.
+#' Here we describe a special feature, the choice of a reference group in
+#' Dunnett-type comparisons.
 #'
 #' The value for the `linfct` argument can be constructed by typing `Dunnett`,
-#' plus, separated by any sign, e.g. underscore (`_`), the level name which
-#' should serve as the reference group in the contrast set.
+#' plus, separated by any sign, e.g. underscore (`_`), the name of the level
+#' which shall serve as the reference group in the contrast set.
 #'
-#' Dunnett-type comparison with well `A03` chosen as the reference group. The
-#' research question is: Which of the first nine wells of `DSM30083T`
-#' measurements show a significant respiration difference from the well `A03`?
+#' Next we conduct a Dunnett-type comparison with well `A03` chosen as the
+#' reference group. The research question is: Which of the first nine wells of
+#' `DSM30083T` measurements show a significant respiration difference from the
+#' well `A03`?
 
 mcp.a3 <- opm_mcp(dsm1[, , 1:10],
   model = ~ Well,  # design the model for model-fitting
@@ -134,4 +138,9 @@ summary(mcp.a3)
 #' There are many more types of comparisons possible, but the more complicated
 #' ones also need more elaborate preparation. For ways to do this in `opm` see
 #' the tutorial, section 3.9.
+#'
+#' The code prepared for the Florence 2015 `opm` workshop ends here. For
+#' proceeding with `opm`, consult the tutorial and the manual. There is much
+#' more you can do with `opm`.
+
 

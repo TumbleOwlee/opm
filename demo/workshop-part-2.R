@@ -6,8 +6,9 @@
 #' *****************************************************************************
 #'
 #' ## 2.1
-#' Load and attach the `opm` functions. Note that if `opm` has already been
-#' loaded, this command does nothing. It thus can be called at any time.
+#' Now we load and attach the `opm` functions. Note that if a package such as
+#' `opm` has already been loaded, the `library` command does nothing. It thus
+#' can be called at any time.
 
 library(pkgutils)
 library(opm)
@@ -34,10 +35,14 @@ if (!exists("x") || length(x) == 0) {
 
 metadata(x)
 
-#' A nicer display as data frame, which might contain gaps:
+#' A nicer display as data frame, but which might contain gaps:
 
 to_metadata(x)
 
+#' Note that a *data frame* is a kind of object frequently used in `R`. It is
+#' like a rectangular matrix, but the columns can contain data of distinct
+#' types (character, numeric, logical etc.).
+#'
 #' The set of all metadata *entries*:
 
 metadata_chars(x, values = TRUE)
@@ -50,10 +55,10 @@ metadata_chars(x, values = FALSE)
 #' Metadata are not set automatically after reading CSV files. The reason is
 #' that metainformation from CSV files is usually limited and potentially
 #' inconsistent or erroneous, depending on what has been entered at an OmniLog
-#' instrument. It is possible with one line of code, which we show below to set
-#' everything in `csv_data` as metadata, but whether this makes sense depends on
-#' the data. The default mechanism adds metadata later on. Note that LIMS format
-#' yielded more metadata from the beginning.
+#' instrument. It is possible with one line of code, which we show below, to set
+#' a selection of the `csv_data` entries as metadata, but whether this makes
+#' sense depends on your input files. The default mechanism adds metadata later
+#' on. Note that the LIMS format yielded more metadata from the beginning.
 #'
 #' *****************************************************************************
 #'
@@ -67,8 +72,8 @@ metadata_chars(x, values = FALSE)
 #' manually or computed from `csv_data` entries. We do nothing if it is already
 #' contained.
 #'
-#' This queries the metadata for the presence of a key named 'Strain'. You not
-#' normally need that in you code, but we don't know your metadata yet.
+#' This code queries the metadata for the presence of a key named 'Strain'. You
+#' not normally need that in you code, but we don't know your metadata yet.
 
 if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
   # This creates a metadata template file with selected entries.
@@ -89,6 +94,7 @@ if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
 #' program, enter the values of interest and save it again, without destroying
 #' the format. In Excel, you might need to use `Data -> Text to columns`, using
 #' tabulator as column separator and setting all columns to data type "Text".
+#' This is explained in detail with screen shots in the tutorial.
 
 if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
   # Now we add the information from that file. This has not much use as long as
@@ -105,7 +111,7 @@ if (!all(unlist("Strain" %k% x))) { # Metadata of all plates contain 'Strain'?
 #' exporting them! Potential causes for key-value mismatches mismatches are:
 #'
 #' * Excel etc. re-interpreting date-time entries; you must set the data type of
-#'   all columns to text in Excel to prevent this.
+#'   all columns to text in Excel to prevent this. See the tutorial for details.
 #' * Leading spaces in plate identifiers; the current default for the
 #'   `strip.white` has several values that are tried in turn as a remedy.
 #' * Excel etc. saving the file with another column separator; the current
@@ -169,7 +175,7 @@ if (!any(unlist(x %k% "ID"))) { # if there is no ID entry at all, we set it
 
 metadata(x)
 
-#' A nicer display as data frame, which might contain gaps:
+#' A nicer display as data frame, but which might contain gaps:
 
 to_metadata(x)
 
@@ -190,10 +196,13 @@ x %k% "ID"
 x %k% list(ID = 9)
 
 #' Note that the last query has *ignored* 9 because for `%k%` only the keys are
-#' relevant.
-#'
-#' Where do we have 'Strain' entries with a certain value? Here `%q%` stands for
-#' 'query' -- here we search for keys that have a certain value.
+#' relevant. Indeed, we have no ID with the value 9:
+
+metadata(x, "ID")
+
+#' Where do we have 'Strain' entries with a certain *value*? In the following
+#' code `%q%` stands for 'query' -- here we search for keys that have a certain
+#' value.
 
 x %q% list(Strain = "DSM 917")
 
@@ -201,7 +210,7 @@ x %q% list(Strain = "DSM 917")
 
 x %q% list(Strain = c("unknown", "DSM 1003"))
 
-#' Where do we have 'Strain' entries and certain 'ID' entries?
+#' Where do we have 'Strain' entries *and* certain 'ID' entries?
 
 x %q% list(Strain = c("unknown", "DSM 917"), ID = 5)
 

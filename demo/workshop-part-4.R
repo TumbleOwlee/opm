@@ -6,8 +6,9 @@
 #' *****************************************************************************
 #'
 #' ## 4.1
-#' Load and attach the `opm` functions. Note that if `opm` has already been
-#' loaded, this command does nothing. It thus can be called at any time.
+#' Now we load and attach the `opm` functions. Note that if a package such as
+#' `opm` has already been loaded, the `library` command does nothing. It thus
+#' can be called at any time.
 
 library(pkgutils)
 library(opm)
@@ -149,10 +150,9 @@ ci_plot.legend <- ci_plot(
 #' restriction: with a single measurement only, you can't get any idea of the
 #' variance in the data. We will meet this restriction again in part 5. However,
 #' because a respiration kinetic contains many values, confidence intervals for
-#' the parameters could be calculated without replicates. It would need to be
-#' done during aggregation, however, by bootstrapping the curves. The approach
-#' using technical or even biological replicates might be more informative,
-#' however.
+#' the parameters could be calculated without replicates. This would need to be
+#' done during aggregation by bootstrapping the curves. But the approach using
+#' technical or even biological replicates is expected to be more informative.
 #'
 #' *****************************************************************************
 #'

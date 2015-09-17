@@ -5,8 +5,9 @@
 #' *****************************************************************************
 #'
 #' ## 3.1
-#' Load and attach the `opm` functions. Note that if `opm` has already been
-#' loaded, this command does nothing. It thus can be called at any time.
+#' Now we load and attach the `opm` functions. Note that if a package such as
+#' `opm` has already been loaded, the `library` command does nothing. It thus
+#' can be called at any time.
 
 library(pkgutils)
 library(opm)
@@ -32,7 +33,7 @@ if (!exists("x") || length(x) == 0) {
 #' particularly informative plots.
 #'
 #' These functions create one plot per plate type. This avoids comparing apples
-#' and oranges. Wells from distinct plate types cannot can sensibly be compared
+#' with oranges. Wells from distinct plate types cannot can sensibly be compared
 #' in most kinds of single plots.
 
 print(xy_plot(x)) # so-called x-y plot
@@ -41,7 +42,7 @@ print(level_plot(x)) # so-called level plot
 
 #' ### Plotting only subsets
 #'
-#' Code to show the dimensions of the data for the first plate type:
+#' A command to show the dimensions of the data for the first plate type:
 
 dim(x[[1]])
 
@@ -59,7 +60,7 @@ dim(x[[1]])
 #'
 #' `print(xy_plot(x[[1]][, 1:8]))`
 #'
-#' The first 50 time points of the first plate type in `x` if it has > 1 plate
+#' The first 50 time points of the first plate type in `x` if it has > 1 plate:
 #'
 #' `print(xy_plot(x[[1]][, 1:50]))`
 #'
