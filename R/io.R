@@ -72,34 +72,42 @@ read_old_opm <- function(filename) {
     structure(c(filename, x), names = c(CSV_NAMES[["FILE"]], n))
   }
 
-  con <- file(description = filename, encoding = opm_opt("file.encoding"))
-  on.exit(close(con))
-  data <- readLines(con = con, warn = FALSE)
-  data <- strsplit(data, ",", TRUE) # fixed-string splitting most efficient
-  data <- data[vapply(data, length, 0L) > 0L]
-
-  # determine position of first field of data header, then split lines into
-  # comments and data fields accordingly
-  pos <- sub("^\\s+", "", vapply(data, `[[`, "", 1L), FALSE, TRUE)
-  if (length(pos <- which(pos == HOUR)) != 1L)
-    stop("uninterpretable header (maybe because there is not 1 plate per file)")
-  pos <- seq_len(pos - 1L)
-  comments <- prepare_comments(data[pos], filename)
-
-  data <- grep("\\S", unlist(data[-pos]), FALSE, TRUE, TRUE)
-  ncol <- 97L
-  if (length(data) %% ncol != 0L)
-    stop("wrong number of fields")
-  data <- matrix(as.numeric(data[-seq(ncol)]), ncol = ncol, byrow = TRUE,
-    dimnames = list(NULL, sub("^\\s+", "", data[seq(ncol)], FALSE, TRUE)))
-
-  # Repair OTH (this affects both data and comments)
-  if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
-    comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
-    data <- repair_oth(data)
+  prepare_opm <- function(x, pos) {
+    pos <- seq_len(match(TRUE, pos, 0L) - 1L)
+    comments <- prepare_comments(x[pos], filename)
+    x <- grep("\\S", unlist(x[-pos]), FALSE, TRUE, TRUE)
+    ncol <- 97L
+    if (length(x) %% ncol != 0L)
+      stop("data part with wrong number of fields, not organised in 97 columns")
+    x <- matrix(as.numeric(x[-seq(ncol)]), length(x) %/% ncol - 1L, ncol,
+        TRUE, list(NULL, sub("^\\s+", "", x[seq(ncol)], FALSE, TRUE)))
+    # Repair OTH (this affects both data and comments)
+    if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
+      comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
+      x <- repair_oth(x)
+    }
+    new("OPM", measurements = x, metadata = list(), csv_data = comments)
   }
 
-  new("OPM", measurements = data, metadata = list(), csv_data = comments)
+  con <- file(filename, "", TRUE, opm_opt("file.encoding"))
+  on.exit(close(con))
+  x <- readLines(con, -1L, TRUE, FALSE)
+  x <- strsplit(x[nzchar(x)], ",", TRUE) # fixed-string splitting most efficient
+
+  # determine position of first field of data header, then split lines into
+  # comments and data fields accordingly; if necessary split into plates
+  pos <- sub("^\\s+", "", vapply(x, `[[`, "", 1L), FALSE, TRUE) == HOUR
+  if (length(which(pos)) == 1L)
+    return(prepare_opm(x, pos))
+  warning("trying to read multiple-plate old-style CSV, ",
+    "result (if any) is a list")
+  if (all(duplicated.default(n <- vapply(x, length, 0L))[-1L]))
+    stop("constant number of fields -- ",
+      "multiple-plate old-style format saved from Excel?")
+  n <- kmeans(n, 2L) # split into long and short sections
+  n <- sections(n$cluster == n$cluster[[1L]], NA)
+  mapply(FUN = prepare_opm, x = split.default(x, n),
+    pos = split.default(pos, n), SIMPLIFY = FALSE, USE.NAMES = FALSE)
 }
 
 read_opm_yaml <- function(filename) {
@@ -676,7 +684,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   create_plot_from_file <- function(infile, outfile) {
     data <- read_file(infile)
     if (is.list(data))
-      data <- do.call(c, data)
+      data <- opms(data, group = TRUE)
     create_plot(data, outfile)
   }
 

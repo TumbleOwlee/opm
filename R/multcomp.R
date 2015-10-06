@@ -198,8 +198,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
 
   # necessary at this stage because otherwise glht() does not find its
   # dependencies
-  if (!suppressWarnings(suppressPackageStartupMessages(require(
-      multcomp, quietly = TRUE, warn.conflicts = FALSE))))
+  if (!suppressPackageStartupMessages(require(multcomp)))
     stop("package 'multcomp' must be available to run this function")
 
   # fit the linear model according to 'm.type', then run glht()

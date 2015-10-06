@@ -69,15 +69,17 @@
 }
 \value{
   \code{read_opm} returns an \code{\link{OPM}} object
-  (maybe \code{\link{OPMA}} in case of \acronym{YAML}
-  input), or list (\code{\link{MOPMX}} object) of such
-  objects, or \code{\link{OPMS}} object.  If \code{demo} is
-  \code{TRUE}, a character vector instead.
+  (maybe derived classes such as \code{\link{OPMA}} in case
+  of \acronym{YAML} input), or list (\code{\link{MOPMX}}
+  object) of such objects, or a single \code{\link{OPMS}}
+  object. If \code{demo} is \code{TRUE}, a character vector
+  instead.
 
   \code{read_single_opm} also returns an\code{\link{OPM}}
-  object. In the case of \acronym{YAML} input, this might
-  also be an \code{\link{OPMA}} object or a list of such
-  objects, but \strong{not} an \code{\link{OPMS}} object.
+  object. In the case of \acronym{YAML} and multiple-plate
+  \acronym{CSV} input (which yields an according warning),
+  the result might instead be a list of such objects, but
+  \strong{not} an \code{\link{OPMS}} object.
 }
 \description{
   Read OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
@@ -123,12 +125,14 @@
   generation-III or other plate type can also be forced
   later on by using \code{\link{gen_iii}}.
 
-  It is \strong{impossible} to read \acronym{CSV} files
+  It is impossible to read new-style \acronym{CSV} files
   that contain more than one plate. The data import section
   of the \pkg{opm} tutorial provides a detailed description
   of how to batch-generate many files with one plate per
-  file. For splitting old-style and new-style \acronym{CSV}
-  files into one file per plate, see the example under
+  file. Old-style multiple-plate files can usually be read
+  but the format is not recommended. For splitting
+  old-style and new-style \acronym{CSV} files into one file
+  per plate, see the example under
   \code{\link{split_files}}. In contrast, input
   \acronym{YAML} files can contain data from more than one
   plate. The format (which includes \acronym{JSON}) is
@@ -184,20 +188,28 @@ if (length(test.files) > 0) { # if the folder is found
 x <- read_opm(getwd())
 # or
 x <- read_opm(".")
+# or just
+x <- read_opm()
 }
 
 # read_single_opm()
 test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the folder is found
-  x <- read_single_opm(test.files[1]) # => 'OPM' object
+  (x <- read_single_opm(test.files[1])) # => 'OPM' object
   class(x)
   dim(x)
-  summary(x)
   stopifnot(is(x, "OPM"), identical(dim(x), c(384L, 96L)))
 } else {
   warning("test-file folder not found")
 }
-# this can be repeated for the other input test files
+test.files <- opm_files("multiple")
+if (length(test.files) > 0) { # if the folder is found
+  (x <- read_single_opm(test.files[1])) # => list
+  class(x)
+  stopifnot(is.list(x), length(x) > 1, sapply(x, is, "OPM"))
+} else {
+  warning("test-file folder not found")
+}
 }
 \references{
   \url{http://www.yaml.org/}
