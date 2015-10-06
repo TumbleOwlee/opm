@@ -523,11 +523,13 @@ test_that("OPM metadata can be queried with %k% and a formula", {
   got <- OPM.1 %k% f
   expect_false(got)
   # this should work but does not because of test_that():
-  #Organism <- 'Elephas maximus'
-  #got <- f %k% OPM.1
-  #expect_true(got)
-  #got <- OPM.1 %k% f
-  #expect_true(got)
+  if (FALSE) {
+    Organism <- 'Elephas maximus'
+    got <- f %k% OPM.1
+    expect_true(got)
+    got <- OPM.1 %k% f
+    expect_true(got)
+  }
   got <- f %k% OPM.WITH.MD
   expect_true(got)
   got <- OPM.WITH.MD %k% f
@@ -578,12 +580,14 @@ test_that("OPMS metadata can be queried with %k% and formula/expression #2", {
     got <- OPMS.INPUT %k% f
     expect_equal(c(FALSE, FALSE), got)
     # this should work but does not because of test_that():
-    #not.there <- 42L
-    #got <- f %k% OPMS.INPUT
-    #expect_equal(c(TRUE, TRUE), got)
-    #got <- OPMS.INPUT %k% f
-    #expect_equal(c(TRUE, TRUE), got)
-    #rm(not.there)
+    if (FALSE) {
+      not.there <- 42L
+      got <- f %k% OPMS.INPUT
+      expect_equal(c(TRUE, TRUE), got)
+      got <- OPMS.INPUT %k% f
+      expect_equal(c(TRUE, TRUE), got)
+      rm(not.there)
+    }
     got <- f %k% OPMS.INPUT
     expect_equal(c(FALSE, FALSE), got)
     got <- OPMS.INPUT %k% f

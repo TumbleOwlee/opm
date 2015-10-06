@@ -1,3 +1,12 @@
+- fixed bug that caused errors of infix operators at least in conjunction
+  with 'knitR'
+- dead links to foreign packages in the HTML online documentation are now
+  fixed; some internal dead links might still occur
+
+
+################################################################################
+
+
 2015-09-01
 
 - fixed some ambiguities in method dispatch of MOPMX infix operators

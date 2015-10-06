@@ -3,7 +3,7 @@
 \alias{read_single_opm}
 \title{Read multiple \acronym{PM} files at once or read single \acronym{PM} file}
 \usage{
-  read_opm(names,
+  read_opm(names = getwd(),
     convert = c("try", "no", "yes", "sep", "grp"),
     gen.iii = opm_opt("gen.iii"), include = list(), ...,
     force = FALSE, demo = FALSE)

@@ -340,9 +340,9 @@ glob_to_regex.factor <- function(object) {
   object
 }
 
-read_opm <- function(names, convert = c("try", "no", "yes", "sep", "grp"),
-    gen.iii = opm_opt("gen.iii"), include = list(), ..., force = FALSE,
-    demo = FALSE) {
+read_opm <- function(names = getwd(),
+    convert = c("try", "no", "yes", "sep", "grp"), gen.iii = opm_opt("gen.iii"),
+    include = list(), ..., force = FALSE, demo = FALSE) {
   do_split <- function(x) split(x, vapply(x, plate_type, ""))
   do_opms <- function(x) case(length(x), , x[[1L]], new("OPMS", plates = x))
   convert <- match.arg(convert)
