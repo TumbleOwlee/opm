@@ -81,18 +81,22 @@
 
   \item{output}{Character scalar determining the main
   output mode. \describe{ \item{clean}{Apply
-  \code{\link{clean_filenames}}.} \item{csv}{Create
-  \acronym{CSV} files, by default one per input file.}
-  \item{json}{Create \acronym{JSON} files, by default one
-  per input file.} \item{levelplot}{Create graphics files,
-  by default one per input file, containing the output of
-  \code{\link{level_plot}}.} \item{split}{Split
-  multiple-plate new style or old style \acronym{CSV} files
-  with \code{\link{split_files}}.} \item{yaml}{Create
-  \acronym{YAML} files, by default one per input file.}
-  \item{xyplot}{Create graphics files, by default one per
-  input file, containing the output of
-  \code{\link{xy_plot}}.} }}
+  \code{clean_filenames} from the \pkg{pkgutils} package.}
+  \item{csv}{Create \acronym{CSV} files, by default one per
+  input file.} \item{json}{Create \acronym{JSON} files, by
+  default one per input file.} \item{levelplot}{Create
+  graphics files, by default one per input file, containing
+  the output of \code{\link{level_plot}}.}
+  \item{split}{Split multiple-plate new style or old style
+  \acronym{CSV} files with \code{\link{split_files}}.}
+  \item{yaml}{Create \acronym{YAML} files, by default one
+  per input file.} \item{xyplot}{Create graphics files, by
+  default one per input file, containing the output of
+  \code{\link{xy_plot}}.} } The \code{clean} mode might be
+  useful for managing
+  OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
+  \acronym{CSV} files, which can contain a lot of special
+  characters.}
 
   \item{combine.into}{Empty or character scalar modifying
   the output mode unless it is \sQuote{clean} or
@@ -131,8 +135,8 @@
   \code{\link{do_aggr}} for details.}
 
   \item{outdir}{Character vector. Directories in which to
-  place the output files. If \code{NULL} or only containing
-  empty strings, the directory of each input file is used.}
+  place the output files. If empty or only containing empty
+  strings, the directory of each input file is used.}
 
   \item{overwrite}{Character scalar. If \sQuote{yes},
   conversion is always tried if \code{infile} exists and is
@@ -282,7 +286,6 @@ if (length(test.files) > 0) { # if the files are found
 
   Other io-functions: \code{\link{batch_collect}},
   \code{\link{batch_process}},
-  \code{\link{clean_filenames}},
   \code{\link{collect_template}},
   \code{\link{explode_dir}}, \code{\link{file_pattern}},
   \code{\link{glob_to_regex}},

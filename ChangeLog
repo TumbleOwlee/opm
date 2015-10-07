@@ -4,6 +4,8 @@
   fixed; some internal dead links might still occur
 
 - 'multcomp' is now a dependency of 'opm'
+- clean_filenames() has been moved from 'opm' to 'pkgutils'
+- the RODBC methods have been moved from 'opm' to 'opmextra'
 
 - read_single_opm() and read_opm() can now read CSV with multiple plates per
   file

@@ -1,5 +1,3 @@
-setOldClass("RODBC")
-
 setGeneric("opm_dbput",
   function(object, conn, ...) standardGeneric("opm_dbput"))
 
@@ -9,21 +7,6 @@ setMethod("opm_dbput", c("DBTABLES", "DBIConnection"), function(object, conn,
   by(data = object, INDICES = TRUE, FUN = dbWriteTable, conn = conn,
     append = TRUE, row.names = FALSE, do_quote = function(x)
       make.db.names(conn, x), do_map = map.tables)
-  slot(object, slotNames(object)[[1L]])[, "id"]
-}, sealed = SEALED)
-
-setMethod("opm_dbput", c("DBTABLES", "RODBC"), function(object, conn,
-    map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) {
-  if (!suppressPackageStartupMessages(require(RODBC)))
-    stop("package 'RODBC' must be available to run this function")
-  object <- update(object, start, TRUE)
-  by(data = object, INDICES = TRUE, FUN = function(n, x, ...)
-    sqlSave(dat = x, tablename = n, ...), channel = conn, append = TRUE,
-    test = FALSE, rownames = FALSE, fast = TRUE, verbose = FALSE,
-    do_quote = if (attr(conn, "isMySQL"))
-      "`"
-    else
-      "\"", do_map = map.tables, simplify = FALSE)
   slot(object, slotNames(object)[[1L]])[, "id"]
 }, sealed = SEALED)
 
@@ -65,24 +48,6 @@ setMethod("opm_dbfind", c("character", "DBIConnection"), function(object, conn,
     integer()
 }, sealed = SEALED)
 
-setMethod("opm_dbfind", c("character", "RODBC"), function(object, conn,
-    map.tables = NULL, klass = "OPM_DB") {
-  if (!suppressPackageStartupMessages(require(RODBC)))
-    stop("package 'RODBC' must be available to run this function")
-  pk <- pkeys(new(klass))[1L] # names are needed, hence not [[
-  char <- if (attr(conn, "isMySQL"))
-      "`"
-    else
-      "\""
-  sql <- sprintf("SELECT %s FROM %s WHERE %s;", quote_protected(pk, char),
-    quote_protected(map_values(names(pk), map.tables), char), object)
-  ids <- sqlQuery(conn, sql)
-  if (ncol(ids))
-    as.integer(ids[, 1L])
-  else
-    integer()
-}, sealed = SEALED)
-
 setGeneric("opm_dbget",
   function(object, conn, ...) standardGeneric("opm_dbget"))
 
@@ -91,18 +56,6 @@ setMethod("opm_dbget", c("integer", "DBIConnection"), function(object, conn,
   as(by(data = new(klass[[1L]]), INDICES = object, FUN = dbGetQuery,
     conn = conn, do_map = map.tables, do_inline = TRUE, simplify = TRUE,
     do_quote = function(x) make.db.names(conn, x)), klass[[2L]])
-}, sealed = SEALED)
-
-setMethod("opm_dbget", c("integer", "RODBC"), function(object, conn,
-    map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) {
-  if (!suppressPackageStartupMessages(require(RODBC)))
-    stop("package 'RODBC' must be available to run this function")
-  as(by(data = new(klass[[1L]]), INDICES = object, FUN = sqlQuery,
-    channel = conn, do_map = map.tables, do_inline = TRUE,
-    do_quote = if (attr(conn, "isMySQL"))
-      "`"
-    else
-      "\"", stringsAsFactors = FALSE, simplify = TRUE), klass[[2L]])
 }, sealed = SEALED)
 
 setMethod("opm_dbget", c("character", "ANY"), function(object, conn,
@@ -126,24 +79,14 @@ setMethod("opm_dbnext", c("DBTABLES", "DBIConnection"), function(object, conn,
       make.db.names(conn, tn))
     dbGetQuery(conn, sql)
   }
-  db2ids(by(data = object, INDICES = TRUE, FUN = get_last, conn = conn,
-    do_map = map.tables, do_inline = FALSE, simplify = TRUE))
-}, sealed = SEALED)
-
-setMethod("opm_dbnext", c("DBTABLES", "RODBC"), function(object, conn,
-    map.tables = NULL) {
-  if (!suppressPackageStartupMessages(require(RODBC)))
-    stop("package 'RODBC' must be available to run this function")
-  get_last <- function(tn, id, conn, char) {
-    sql <- sprintf("SELECT max(%s) FROM %s;",
-      quote_protected(id, char), quote_protected(tn, char))
-    sqlQuery(conn, sql)
+  db2ids <- function(x) {
+    x <- unlist(x, FALSE, FALSE)
+    storage.mode(x) <- "integer"
+    x[is.na(x)] <- 0L
+    x + 1L
   }
   db2ids(by(data = object, INDICES = TRUE, FUN = get_last, conn = conn,
-    char = if (attr(conn, "isMySQL"))
-      "`"
-    else
-      "\"", do_map = map.tables, do_inline = FALSE, simplify = TRUE))
+    do_map = map.tables, do_inline = FALSE, simplify = TRUE))
 }, sealed = SEALED)
 
 setGeneric("opm_dbclear",
@@ -161,21 +104,6 @@ setMethod("opm_dbclear", c("integer", "DBIConnection"), function(object, conn,
     map_values(names(pk), map.tables)),
     paste(make.db.names(conn, pk), object, sep = " = ", collapse = " OR "))
   invisible(dbGetQuery(conn, sql))
-}, sealed = SEALED)
-
-setMethod("opm_dbclear", c("integer", "RODBC"), function(object, conn,
-    map.tables = NULL, klass = "OPM_DB") {
-  if (!suppressPackageStartupMessages(require(RODBC)))
-    stop("package 'RODBC' must be available to run this function")
-  pk <- pkeys(new(klass))[1L]
-  char <- if (attr(conn, "isMySQL"))
-      "`"
-    else
-      "\""
-  sql <- sprintf("DELETE FROM %s WHERE %s;",
-    quote_protected(map_values(names(pk), map.tables), char),
-    paste(quote_protected(pk, char), object, sep = " = ", collapse = " OR "))
-  invisible(sqlQuery(conn, sql))
 }, sealed = SEALED)
 
 setGeneric("opm_dbcheck", function(conn, ...) standardGeneric("opm_dbcheck"))
@@ -317,19 +245,7 @@ backward_OPMD_to_list <- function(from) {
     discretized = disc_backward(from@discretized, from@wells)))
 }
 
-quote_protected <- function(x, s) {
-  sprintf(sprintf("%s%%s%s", s, s),
-    gsub(s, sprintf("%s%s", s, s), x, FALSE, FALSE, TRUE))
-}
-
 int2dbclass <- function(x) {
   paste0(case(x, "OPM", "OPMA", "OPMD"), "_DB")
-}
-
-db2ids <- function(x) {
-  x <- unlist(x, FALSE, FALSE)
-  storage.mode(x) <- "integer"
-  x[is.na(x)] <- 0L
-  x + 1L
 }
 

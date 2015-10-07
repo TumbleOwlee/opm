@@ -1,7 +1,6 @@
 MongoDB-IO    conduct database I/O using MongoDB
 MySQL-IO    conduct database I/O using RMySQL
 PostgreSQL-IO    conduct database I/O using RPostgreSQL
-RODBC-IO    conduct database I/O using RODBC
 SQLite-IO    conduct database I/O using RSQLite
 cluster-with-pvalues    use opm and pvclust to calculate clusterings with branch support values
 custom-PCA    use opm and BiodiversityR/vegan to draw PCA biplots of Phenotype MicroArray data

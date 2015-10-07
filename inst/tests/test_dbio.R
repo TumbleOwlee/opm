@@ -57,12 +57,5 @@ test_that("opm_dbclass finds the class", {
 ## backward_OPMD_to_list
 ## UNTESTED
 
-## quote_protected
-## UNTESTED
-
 ## int2dbclass
 ## UNTESTED
-
-## db2ids
-## UNTESTED
-

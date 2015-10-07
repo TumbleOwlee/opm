@@ -345,6 +345,46 @@ file_pattern <- function(
   make_pat(result, compressed)
 }
 
+split_files <- function(files, pattern, outdir = "", demo = FALSE,
+    single = TRUE, wildcard = FALSE, invert = FALSE, include = TRUE,
+    format = opm_opt("file.split.tmpl"), compressed = TRUE, ...) {
+
+  create_outnames <- function(files, compressed, outdir) {
+    file.pat <- file_pattern("any", compressed = compressed, literally = FALSE)
+    out.base <- sub(file.pat, "", files, TRUE, TRUE)
+    out.ext <- substr(files, nchar(out.base) + 2L, nchar(files))
+    if (compressed)
+      out.ext <- sub("\\.[^.]+$", "", out.ext, FALSE, TRUE)
+    if (length(outdir) && all(nzchar(outdir)))
+      out.base <- file.path(outdir, basename(out.base))
+    list(base = out.base, ext = out.ext)
+  }
+
+  LL(pattern, outdir, demo, single, wildcard, invert, include,
+    format, compressed)
+  files <- unique(as.character(files))
+  out <- create_outnames(files, compressed = compressed, outdir = outdir)
+  if (wildcard)
+    pattern <- glob_to_regex(pattern)
+
+  invisible(mapply(function(infile, out.base, out.ext) {
+    con <- file(description = infile, encoding = opm_opt("file.encoding"))
+    on.exit(close(con))
+    data <- readLines(con = con, warn = FALSE)
+    data <- sections(x = data, pattern = pattern, invert = invert,
+      include = include, ...)
+    if ((len <- length(data)) == 0L || (!single && len == 1L))
+      return(character())
+    outnames <- sprintf(format, out.base, seq_along(data), out.ext)
+    if (demo)
+      message(listing(structure(outnames, names = seq_along(outnames)),
+        header = infile))
+    else
+      mapply(write, data, outnames, USE.NAMES = FALSE, SIMPLIFY = FALSE)
+    outnames
+  }, files, out$base, out$ext, SIMPLIFY = FALSE))
+}
+
 glob_to_regex <- function(object) UseMethod("glob_to_regex")
 
 glob_to_regex.character <- function(object) {
@@ -800,83 +840,5 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     batch_process(names = names, out.ext = out.ext, io.fun = io.fun,
       in.ext = in.ext, compressed = TRUE, literally = FALSE, ..., proc = proc,
       overwrite = overwrite, outdir = outdir, verbose = verbose, demo = demo)
-}
-
-split_files <- function(files, pattern, outdir = "", demo = FALSE,
-    single = TRUE, wildcard = FALSE, invert = FALSE, include = TRUE,
-    format = opm_opt("file.split.tmpl"), compressed = TRUE, ...) {
-
-  create_outnames <- function(files, compressed, outdir) {
-    file.pat <- file_pattern("any", compressed = compressed, literally = FALSE)
-    out.base <- sub(file.pat, "", files, TRUE, TRUE)
-    out.ext <- substr(files, nchar(out.base) + 2L, nchar(files))
-    if (compressed)
-      out.ext <- sub("\\.[^.]+$", "", out.ext, FALSE, TRUE)
-    if (length(outdir) && all(nzchar(outdir)))
-      out.base <- file.path(outdir, basename(out.base))
-    list(base = out.base, ext = out.ext)
-  }
-
-  LL(pattern, outdir, demo, single, wildcard, invert, include,
-    format, compressed)
-  files <- unique(as.character(files))
-  out <- create_outnames(files, compressed = compressed, outdir = outdir)
-  if (wildcard)
-    pattern <- glob_to_regex(pattern)
-
-  invisible(mapply(function(infile, out.base, out.ext) {
-    con <- file(description = infile, encoding = opm_opt("file.encoding"))
-    on.exit(close(con))
-    data <- readLines(con = con, warn = FALSE)
-    data <- sections(x = data, pattern = pattern, invert = invert,
-      include = include, ...)
-    if ((len <- length(data)) == 0L || (!single && len == 1L))
-      return(character())
-    outnames <- sprintf(format, out.base, seq_along(data), out.ext)
-    if (demo)
-      message(listing(structure(outnames, names = seq_along(outnames)),
-        header = infile))
-    else
-      mapply(write, data, outnames, USE.NAMES = FALSE, SIMPLIFY = FALSE)
-    outnames
-  }, files, out$base, out$ext, SIMPLIFY = FALSE))
-}
-
-clean_filenames <- function(x, overwrite = FALSE, demo = FALSE,
-    empty.tmpl = "__EMPTY__%05i__") {
-  empty.idx <- 0L
-  clean_parts <- function(x) {
-    x <- gsub("[^\\w-]+", "_", x, FALSE, TRUE)
-    x <- gsub("_*-_*", "-", x, FALSE, TRUE)
-    x <- gsub("-+", "-", gsub("_+", "_", x, FALSE, TRUE), FALSE, TRUE)
-    x <- sub("[_-]+$", "", sub("^[_-]+", "", x, FALSE, TRUE), FALSE, TRUE)
-    x <- x[nzchar(x)]
-    if (!length(x))
-      x <- sprintf(empty.tmpl, empty.idx <<- empty.idx + 1L)
-    x
-  }
-  clean_basenames <- function(x) {
-    x <- lapply(strsplit(x, ".", TRUE), clean_parts)
-    unlist(lapply(x, paste0, collapse = "."), FALSE, FALSE)
-  }
-  LL(overwrite, demo, empty.tmpl)
-  x <- unique.default(as.character(x))
-  if (any(bad <- !nzchar(x))) {
-    warning("removing invalid empty file name")
-    x <- x[!bad]
-  }
-  result <- clean_basenames(basename(x))
-  result <- ifelse(dirname(x) == ".", result, file.path(dirname(x), result))
-  different <- result != x
-  result <- structure(result[different], names = x[different])
-  if (!overwrite) {
-    result <- result[!duplicated(result)]
-    result <- result[!file.exists(result)]
-  }
-  if (demo)
-    message(listing(result, header = "Attempted renamings:"))
-  else
-    result <- result[file.rename(names(result), result)]
-  invisible(result)
 }
 

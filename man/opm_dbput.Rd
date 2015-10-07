@@ -14,11 +14,15 @@
   character scalar containing a partial \acronym{SQL} query
   (the part after the \sQuote{WHERE} keyword).}
 
-  \item{conn}{Database connection object. Currently
-  \code{DBIConnection} objects from one of the reverse
-  dependencies of \pkg{DBI} (recommended) and \code{RODBC}
-  objects as created by the \pkg{RODBC} package are
-  supported.}
+  \item{conn}{Database connection object. Currently only
+  \code{DBIConnection} objects from the \pkg{DBI} package
+  are supported, but they allow for using any of the
+  reverse dependencies of \pkg{DBI} in conjunction with
+  \pkg{opm} and thus the majority of open \acronym{SQL}
+  databases.
+
+  For using \code{RODBC} objects as created by the
+  \pkg{RODBC} package see the \pkg{opmextra} package.}
 
   \item{map.tables}{Passed as \code{do_map} argument to
   \code{by} from the \pkg{pkgutils} package. Necessary if
@@ -97,8 +101,7 @@
   package or its dependencies before including them into
   \acronym{SQL} queries, if any. As dictated by \code{by}
   from the \pkg{pkgutils} packages, this is done after
-  applying \code{map.tables}. The \code{RODBC} methods use
-  a simple quoting scheme.
+  applying \code{map.tables}.
 
   \code{opm_dbcheck} attempts to insert, query and delete
   the first two plates from the object \code{vaas_4} into
@@ -142,25 +145,20 @@ if (interactive())
 \alias{opm_dbclear,character,ANY-method}
 \alias{opm_dbclear,character-method}
 \alias{opm_dbclear,integer,DBIConnection-method}
-\alias{opm_dbclear,integer,RODBC-method}
 \alias{opm_dbfind-methods}
 \alias{opm_dbfind,character,DBIConnection-method}
-\alias{opm_dbfind,character,RODBC-method}
 \alias{opm_dbget-methods}
 \alias{opm_dbget,character,ANY-method}
 \alias{opm_dbget,character-method}
 \alias{opm_dbget,integer,DBIConnection-method}
-\alias{opm_dbget,integer,RODBC-method}
 \alias{opm_dbnext-methods}
 \alias{opm_dbnext,ANY,ANY-method}
 \alias{opm_dbnext,ANY-method}
 \alias{opm_dbnext,DBTABLES,DBIConnection-method}
-\alias{opm_dbnext,DBTABLES,RODBC-method}
 \alias{opm_dbput-methods}
 \alias{opm_dbput,ANY,ANY-method}
 \alias{opm_dbput,ANY-method}
 \alias{opm_dbput,DBTABLES,DBIConnection-method}
-\alias{opm_dbput,DBTABLES,RODBC-method}
 \usage{
   \S4method{opm_dbcheck}{ANY}(conn, metadata = NULL,
     time.points = TRUE, wells = TRUE) 
@@ -172,26 +170,19 @@ if (interactive())
 
   \S4method{opm_dbclear}{character,ANY}(object, conn, map.tables = NULL, klass = "OPM_DB")
   \S4method{opm_dbclear}{integer,DBIConnection}(object, conn, map.tables = NULL, klass = "OPM_DB")
-  \S4method{opm_dbclear}{integer,RODBC}(object, conn, map.tables = NULL, klass = "OPM_DB")
 
   \S4method{opm_dbfind}{character,DBIConnection}(object, conn, map.tables = NULL, klass = "OPM_DB")
-  \S4method{opm_dbfind}{character,RODBC}(object, conn, map.tables = NULL, klass = "OPM_DB")
 
   \S4method{opm_dbget}{character,ANY}(object, conn,
     map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
   \S4method{opm_dbget}{integer,DBIConnection}(object, conn,
     map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
-  \S4method{opm_dbget}{integer,RODBC}(object, conn,
-    map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) 
 
   \S4method{opm_dbnext}{ANY,ANY}(object, conn, map.tables = NULL)
   \S4method{opm_dbnext}{DBTABLES,DBIConnection}(object, conn, map.tables = NULL)
-  \S4method{opm_dbnext}{DBTABLES,RODBC}(object, conn, map.tables = NULL)
 
   \S4method{opm_dbput}{ANY,ANY}(object, conn, ...) 
   \S4method{opm_dbput}{DBTABLES,DBIConnection}(object, conn,
-    map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) 
-  \S4method{opm_dbput}{DBTABLES,RODBC}(object, conn,
     map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) 
 }
 %% END INSERTION BY repair_S4_docu.rb

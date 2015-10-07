@@ -93,6 +93,10 @@ for (name in c("growth", "single", "multiple", "omnilog")) {
 # invisible(sapply(paste("Rscript", opm_files()), system))
 # ...and get the usage messages of all scripts.
 
+# Check the names of the example files: they should be ok
+(x <- pkgutils::clean_filenames(opm_files("testdata"), demo = TRUE))
+stopifnot(length(x) == 0)
+
 ## colours
 (x <- select_colors("nora"))
 (y <- select_colors("nora.i")) # same in reverse order
