@@ -230,8 +230,6 @@ stopifnot(is.data.frame(x), dim(x) == c(384, 5))
   output = "model"))
 stopifnot(inherits(x, "formula")) # left side is set automatically
 
-if (require("multcomp")) {
-
 # watch the converted 'linfct' argument
 (x <- opm_mcp(vaas_4, model = list("Species", "Strain"),
   linfct = c(Dunnett = 1), output = "linfct"))
@@ -335,8 +333,6 @@ if (do.plot)
 stopifnot(inherits(y, "glht"), length(coef(y)) == 1)
 if (do.plot)
   plot_with_margin(y, c(3, 15, 3, 2), main = "Dunnett (from data frame)")
-
-}
 }
 \author{
   Lea A.I. Vaas, Markus Goeker

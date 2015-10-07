@@ -1,25 +1,33 @@
 read_new_opm <- function(filename) {
-  data <- scan(file = filename, sep = ",", what = "character", quiet = TRUE,
-    comment.char = "#", strip.white = TRUE,
-    fileEncoding = opm_opt("file.encoding"))
-  pos <- which(data == HOUR)
-  if (length(pos) != 1L)
-    stop("uninterpretable header (maybe there is not 1 plate per file)")
-  ncol <- pos + 96L
-  if (length(data) %% ncol != 0L)
-    stop("wrong number of fields")
-  data <- matrix(data[-seq_len(ncol)], ncol = ncol, byrow = TRUE,
-    dimnames = list(NULL, data[seq_len(ncol)]))
-  pos <- seq_len(pos - 1L)
-  comments <- structure(c(filename, data[1L, pos]),
-    names = c(CSV_NAMES[["FILE"]], colnames(data)[pos]))
-  data <- data[, -pos, drop = FALSE]
-  storage.mode(data) <- "double"
-  if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
-    comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
-    data <- repair_oth(data)
+  prepare_opm <- function(allx, pos, col, filename) {
+    x <- allx[pos, , drop = FALSE]
+    cn <- x[1L, ]
+    comments <- c(filename, x[2L, col])
+    names(comments) <- c(CSV_NAMES[["FILE"]], cn[col])
+    x <- x[-1L, -col, drop = FALSE]
+    storage.mode(x) <- "double"
+    colnames(x) <- cn[-col]
+    if (comments[CSV_NAMES[["PLATE_TYPE"]]] == "OTH") {
+      comments[CSV_NAMES[["PLATE_TYPE"]]] <- SPECIAL_PLATES[["gen.iii"]]
+      x <- repair_oth(x)
+    }
+    new("OPM", measurements = x, metadata = list(), csv_data = comments)
   }
-  new("OPM", measurements = data, metadata = list(), csv_data = comments)
+  x <- as.matrix(read.table(file = filename, colClasses = "character",
+    sep = ",", fileEncoding = opm_opt("file.encoding")))
+  colnames(x) <- rownames(x) <- NULL
+  if (!length(col <- which(x[1L, ] == HOUR)))
+    stop("uninterpretable header, probably not a new-style OmniLog CSV file")
+  pos <- x[, col <- max(col)] == HOUR
+  col <- seq_len(col - 1L)
+  if (length(which(pos)) < 2L)
+    return(prepare_opm(x, TRUE, col, filename))
+  if (opm_opt("warn.mult"))
+    warning("trying to read multiple-plate new-style CSV, ",
+      "result (if any) is a list")
+  pos <- split.default(seq_len(nrow(x)), sections(pos, NA))
+  mapply(FUN = prepare_opm, pos = pos, USE.NAMES = FALSE, SIMPLIFY = FALSE,
+    MoreArgs = list(filename = filename, col = col, allx = x))
 }
 
 read_lims_opm <- function(filename) {
@@ -97,15 +105,18 @@ read_old_opm <- function(filename) {
   # determine position of first field of data header, then split lines into
   # comments and data fields accordingly; if necessary split into plates
   pos <- sub("^\\s+", "", vapply(x, `[[`, "", 1L), FALSE, TRUE) == HOUR
-  if (length(which(pos)) == 1L)
+  if (!any(pos))
+    stop("uninterpretable header, probably not an old-style OmniLog CSV file")
+  if (length(which(pos)) < 2L)
     return(prepare_opm(x, pos))
-  warning("trying to read multiple-plate old-style CSV, ",
-    "result (if any) is a list")
+  if (opm_opt("warn.mult"))
+    warning("trying to read multiple-plate old-style CSV, ",
+      "result (if any) is a list")
   if (all(duplicated.default(n <- vapply(x, length, 0L))[-1L]))
     stop("constant number of fields -- ",
       "multiple-plate old-style format saved from Excel?")
-  n <- kmeans(n, 2L) # split into long and short sections
-  n <- sections(n$cluster == n$cluster[[1L]], NA)
+  n <- kmeans(n, 2L)$cluster # split into long and short sections
+  n <- sections(n == n[[1L]], NA)
   mapply(FUN = prepare_opm, x = split.default(x, n),
     pos = split.default(pos, n), SIMPLIFY = FALSE, USE.NAMES = FALSE)
 }

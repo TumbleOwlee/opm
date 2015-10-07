@@ -196,11 +196,6 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
   object <- convert_data(object, split.at, model, sep)
   linfct <- convert_hypothesis_spec(linfct, model, object, rhs, alternative)
 
-  # necessary at this stage because otherwise glht() does not find its
-  # dependencies
-  if (!suppressPackageStartupMessages(require(multcomp)))
-    stop("package 'multcomp' must be available to run this function")
-
   # fit the linear model according to 'm.type', then run glht()
   model <- do.call(match.arg(m.type), list(formula = model, data = object))
   glht.args <- c(list(model = model, linfct = linfct, rhs = rhs),

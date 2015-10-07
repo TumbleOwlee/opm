@@ -3,6 +3,11 @@
 - dead links to foreign packages in the HTML online documentation are now
   fixed; some internal dead links might still occur
 
+- 'multcomp' is now a dependency of 'opm'
+
+- read_single_opm() and read_opm() can now read CSV with multiple plates per
+  file
+
 
 ################################################################################
 

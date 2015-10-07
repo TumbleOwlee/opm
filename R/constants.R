@@ -85,6 +85,7 @@ OPM_OPTIONS$threshold <- 0
 OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
   "%d.%m.%Y %H:%M:%S", "%b %d %Y %H:%M")
 OPM_OPTIONS$time.zone <- ""
+OPM_OPTIONS$warn.mult <- FALSE
 
 CHARACTER_STATES <- c(0L:9L, LETTERS)[1L:32L]
 MISSING_CHAR <- "?"

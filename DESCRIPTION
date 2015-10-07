@@ -1,6 +1,6 @@
 Package: opm
-Version: 1.3.8
-Date: 2015-10-06
+Version: 1.3.9
+Date: 2015-10-07
 Title: Analysing Phenotype Microarray and Growth Curve Data
 Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Maria del Carmen Montero Calasanz,
@@ -16,20 +16,20 @@ Imports:
     hwriter,
     plotrix,
     Ckmeans.1d.dp,
-    pkgutils (>= 0.6.0),
+    pkgutils (>= 0.7.4),
     yaml (>= 2.1.7),
     splines,
     mgcv,
     grofit (>= 1.1),
     rjson (>= 0.2.12),
     nlme,
-    DBI
+    DBI,
+    multcomp
 Suggests:
     optparse,
     gplots,
     opmdata (>= 0.4.0),
     testthat,
-    multcomp,
     KEGGREST,
     pathview,
     mboost (>= 2.3.0),

@@ -6,8 +6,9 @@ setGeneric("opm_dbput",
 setMethod("opm_dbput", c("DBTABLES", "DBIConnection"), function(object, conn,
     map.tables = NULL, start = opm_dbnext(object, conn, map.tables)) {
   object <- update(object, start, TRUE)
-  by(object, TRUE, dbWriteTable, conn = conn, append = TRUE, row.names = FALSE,
-    do_quote = function(x) make.db.names(conn, x), do_map = map.tables)
+  by(data = object, INDICES = TRUE, FUN = dbWriteTable, conn = conn,
+    append = TRUE, row.names = FALSE, do_quote = function(x)
+      make.db.names(conn, x), do_map = map.tables)
   slot(object, slotNames(object)[[1L]])[, "id"]
 }, sealed = SEALED)
 
@@ -16,9 +17,10 @@ setMethod("opm_dbput", c("DBTABLES", "RODBC"), function(object, conn,
   if (!suppressPackageStartupMessages(require(RODBC)))
     stop("package 'RODBC' must be available to run this function")
   object <- update(object, start, TRUE)
-  by(object, TRUE, function(n, x, ...) sqlSave(dat = x, tablename = n, ...),
-    channel = conn, append = TRUE, test = FALSE, rownames = FALSE, fast = TRUE,
-    verbose = FALSE, do_quote = if (attr(conn, "isMySQL"))
+  by(data = object, INDICES = TRUE, FUN = function(n, x, ...)
+    sqlSave(dat = x, tablename = n, ...), channel = conn, append = TRUE,
+    test = FALSE, rownames = FALSE, fast = TRUE, verbose = FALSE,
+    do_quote = if (attr(conn, "isMySQL"))
       "`"
     else
       "\"", do_map = map.tables, simplify = FALSE)
@@ -86,8 +88,8 @@ setGeneric("opm_dbget",
 
 setMethod("opm_dbget", c("integer", "DBIConnection"), function(object, conn,
     map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) {
-  as(by(new(klass[[1L]]), object, dbGetQuery, conn = conn,
-    do_map = map.tables, do_inline = TRUE, simplify = TRUE,
+  as(by(data = new(klass[[1L]]), INDICES = object, FUN = dbGetQuery,
+    conn = conn, do_map = map.tables, do_inline = TRUE, simplify = TRUE,
     do_quote = function(x) make.db.names(conn, x)), klass[[2L]])
 }, sealed = SEALED)
 
@@ -95,8 +97,9 @@ setMethod("opm_dbget", c("integer", "RODBC"), function(object, conn,
     map.tables = NULL, include = 2L, klass = c(opm_dbclass(include), "MOPMX")) {
   if (!suppressPackageStartupMessages(require(RODBC)))
     stop("package 'RODBC' must be available to run this function")
-  as(by(new(klass[[1L]]), object, sqlQuery, channel = conn,
-    do_map = map.tables, do_inline = TRUE, do_quote = if (attr(conn, "isMySQL"))
+  as(by(data = new(klass[[1L]]), INDICES = object, FUN = sqlQuery,
+    channel = conn, do_map = map.tables, do_inline = TRUE,
+    do_quote = if (attr(conn, "isMySQL"))
       "`"
     else
       "\"", stringsAsFactors = FALSE, simplify = TRUE), klass[[2L]])
@@ -123,8 +126,8 @@ setMethod("opm_dbnext", c("DBTABLES", "DBIConnection"), function(object, conn,
       make.db.names(conn, tn))
     dbGetQuery(conn, sql)
   }
-  db2ids(by(object, TRUE, get_last, conn = conn, do_map = map.tables,
-    do_inline = FALSE, simplify = TRUE))
+  db2ids(by(data = object, INDICES = TRUE, FUN = get_last, conn = conn,
+    do_map = map.tables, do_inline = FALSE, simplify = TRUE))
 }, sealed = SEALED)
 
 setMethod("opm_dbnext", c("DBTABLES", "RODBC"), function(object, conn,
@@ -136,7 +139,7 @@ setMethod("opm_dbnext", c("DBTABLES", "RODBC"), function(object, conn,
       quote_protected(id, char), quote_protected(tn, char))
     sqlQuery(conn, sql)
   }
-  db2ids(by(object, TRUE, get_last, conn = conn,
+  db2ids(by(data = object, INDICES = TRUE, FUN = get_last, conn = conn,
     char = if (attr(conn, "isMySQL"))
       "`"
     else
@@ -179,6 +182,7 @@ setGeneric("opm_dbcheck", function(conn, ...) standardGeneric("opm_dbcheck"))
 
 setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     time.points = TRUE, wells = TRUE) {
+
   slots_equal <- function(a, b) {
     fmt <- "%Y-%m-%d %H:%M:%S"
     old <- opm_opt("time.fmt")
@@ -192,18 +196,22 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     c(unlist(result), csv_data = all.equal(csv_data(a, normalize = TRUE),
       csv_data(b, normalize = TRUE)))
   }
-  # data(list = "vaas_4", package = opm_string())
-  x <- vaas_4[1L:2L, time.points, wells]
+
+  data(list = "vaas_4", package = opm_string(), envir = environment())
+  # the get() call avoids a NOTE issued by R CMD check (vaas_4 not found)
+  x <- get("vaas_4", , environment())[1L:2L, time.points, wells]
   metadata(x) <- structure(list(), names = character())
   if (length(metadata))
     if (is.data.frame(metadata))
       metadata(x) <- metadata
     else
       stop("'metadata' must be empty or a data frame")
+
   result <- c(last1 = NA, insert = NA, receive = NA, clear = NA, object = NA,
     compare = NA, last2 = NA, samelast = NA)
   storage.mode(result) <- "character"
   step <- 0L
+
   tryCatch({
     last1 <- opm_dbnext(2L, conn)
     result[[step <- step + 1L]] <- "ok"
@@ -227,6 +235,7 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
     stopifnot(last1 == last2, last1 == last3)
     result[[step <- step + 1L]] <- "ok"
   }, error = function(e) result[[step + 1L]] <<- conditionMessage(e))
+
   result
 }, sealed = SEALED)
 

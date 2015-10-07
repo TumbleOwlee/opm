@@ -77,9 +77,10 @@
 
   \code{read_single_opm} also returns an\code{\link{OPM}}
   object. In the case of \acronym{YAML} and multiple-plate
-  \acronym{CSV} input (which yields an according warning),
-  the result might instead be a list of such objects, but
-  \strong{not} an \code{\link{OPMS}} object.
+  \acronym{CSV} input, the result might instead be a list
+  of such objects, but \strong{not} an \code{\link{OPMS}}
+  object. Use \code{\link{opm_opt}(warn.mult = TRUE)} if
+  you want to be warned in such cases.
 }
 \description{
   Read OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
@@ -125,18 +126,15 @@
   generation-III or other plate type can also be forced
   later on by using \code{\link{gen_iii}}.
 
-  It is impossible to read new-style \acronym{CSV} files
-  that contain more than one plate. The data import section
-  of the \pkg{opm} tutorial provides a detailed description
-  of how to batch-generate many files with one plate per
-  file. Old-style multiple-plate files can usually be read
-  but the format is not recommended. For splitting
-  old-style and new-style \acronym{CSV} files into one file
-  per plate, see the example under
-  \code{\link{split_files}}. In contrast, input
-  \acronym{YAML} files can contain data from more than one
-  plate. The format (which includes \acronym{JSON}) is
-  described in detail under \code{\link{batch_opm}}.
+  It is possible, but not recommended, to read
+  \acronym{CSV} files that contain more than one plate. The
+  data import section of the \pkg{opm} tutorial provides a
+  detailed description of how to batch-generate many files
+  with one plate per file. In contrast, input
+  \acronym{YAML} files can always contain data from more
+  than one plate. The format (which includes
+  \acronym{JSON}) is described in detail under
+  \code{\link{batch_opm}}.
 
   For splitting lists of \code{\link{OPM}} objects
   according to the plate type, see
