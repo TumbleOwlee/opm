@@ -36,15 +36,20 @@ test_that("OPMS has all methods of OPM/OPMA/OPMD and some of its own", {
       vapply(m, existsMethod, NA, "OPMD") |
       vapply(m, existsMethod, NA, "OPMA") |
       vapply(m, existsMethod, NA, "OPM") |
-      vapply(m, existsMethod, NA, "WMD")
+      vapply(m, existsMethod, NA, "WMD") |
+      vapply(m, existsMethod, NA, "OPMX") |
+      vapply(m, existsMethod, NA, "XOPMX")
     ]
     opms.methods <- m[
       vapply(m, existsMethod, NA, "OPMS") |
       vapply(m, existsMethod, NA, "WMDS") |
-      vapply(m, existsMethod, NA, "XOPMX")
+      vapply(m, existsMethod, NA, "XOPMX") |
+      vapply(m, existsMethod, NA, "OPMX")
     ]
     expect_equal(character(), setdiff(opm.methods, opms.methods))
     expect_true(length(setdiff(opms.methods, opm.methods)) > 0L)
+  } else {
+    cat("NOTE: cannot count the OPM and OPMS methods\n")
   }
 })
 

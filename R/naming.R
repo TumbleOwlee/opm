@@ -569,8 +569,6 @@ setMethod("wells", "missing", function(object, ...) {
   wells(object = TRUE, ...)
 }, sealed = SEALED)
 
-setGeneric("listing")
-
 setOldClass("well_coords_map")
 
 setClass("well_coords_listing", contains = "print_easy")
@@ -605,7 +603,25 @@ setMethod("listing", "OPMD", function(x, as.groups,
   res
 }, sealed = SEALED)
 
-setMethod("listing", "XOPMX", function(x, as.groups,
+setMethod("listing", "MOPMX", function(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) {
+  create_listing(x = x, as.groups = as.groups, cutoff = cutoff,
+    downcase = downcase, full = full, in.parens = in.parens, html = html,
+    sep = sep, ..., exact = exact, strict = strict)
+}, sealed = SEALED)
+
+setMethod("listing", "OPMX", function(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) {
+  create_listing(x = x, as.groups = as.groups, cutoff = cutoff,
+    downcase = downcase, full = full, in.parens = in.parens, html = html,
+    sep = sep, ..., exact = exact, strict = strict)
+}, sealed = SEALED)
+
+create_listing <- function(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) {
@@ -631,7 +647,7 @@ setMethod("listing", "XOPMX", function(x, as.groups,
     function(idx) to_sentence(reduce_to_mode.matrix(res[idx, , drop = FALSE],
       cutoff, TRUE), html), character(3L))
   add_stuff(t(res), html, cutoff)
-}, sealed = SEALED)
+}
 
 setGeneric("find_substrate",
   function(object, ...) standardGeneric("find_substrate"))

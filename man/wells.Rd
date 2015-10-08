@@ -237,8 +237,9 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
 \alias{listing-methods}
+\alias{listing,MOPMX-method}
 \alias{listing,OPMD-method}
-\alias{listing,XOPMX-method}
+\alias{listing,OPMX-method}
 \alias{listing,well_coords_map-method}
 \alias{wells-methods}
 \alias{wells,ANY-method}
@@ -247,11 +248,15 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
 \alias{wells,OPMS-method}
 \alias{wells,missing-method}
 \usage{
+  \S4method{listing}{MOPMX}(x, as.groups,
+    cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
+    in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
+    strict = TRUE) 
   \S4method{listing}{OPMD}(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 
-  \S4method{listing}{XOPMX}(x, as.groups,
+  \S4method{listing}{OPMX}(x, as.groups,
     cutoff = opm_opt("min.mode"), downcase = TRUE, full = TRUE,
     in.parens = FALSE, html = FALSE, sep = " ", ..., exact = TRUE,
     strict = TRUE) 

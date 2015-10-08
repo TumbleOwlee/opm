@@ -360,6 +360,9 @@ test_that("listings can be obtained from MOPMX objects", {
 
 })
 
+## create_listing
+## UNTESTED
+
 
 ################################################################################
 

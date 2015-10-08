@@ -18,17 +18,17 @@
 \details{
   The data set is identical to the supplement of Boccuto
   \emph{et al.} (2013) except for the following
-  differences:\itemize{ \item The measurements are not
-  logarithmised.  \item The negative controls are
-  contained, hence the plates are complete.  \item The
-  individuals N1 to N15 are missing, hence the data set is
-  reduced to autism-spectrum disorder patients and control
-  group.  } The data are point measurements, so a call to
-  \code{\link{do_aggr}} would just copy the data. Two of
-  the metadata entries are important, \sQuote{individual}
-  for identifying the cell culture and \sQuote{group} for
-  assigning the individuals to patients and control group,
-  respectively.
+  differences:\itemize{ \item The measurements are the
+  original, not yet log-transformed ones.  \item The
+  negative controls are contained, hence the plates are
+  complete.  \item The individuals N1 to N15 are missing,
+  hence the data set is reduced to autism-spectrum disorder
+  patients and control group.  } The data are point
+  measurements, so a call to \code{\link{do_aggr}} would
+  just copy the data. Two of the metadata entries are
+  important, \sQuote{individual} for identifying the cell
+  culture and \sQuote{group} for assigning the individuals
+  to patients and control group, respectively.
 }
 \note{
   Information provided by C.E. Schwartz and colleagues
