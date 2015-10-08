@@ -154,10 +154,6 @@
   matrix method.
 }
 \examples{
-# temporarily disabled until a Windows-specific error is identified
-# needs not affect user code, Windows users should try heat_map()
-if (!grepl("windows", Sys.info()[["sysname"]], TRUE, TRUE)) {
-
 # Matrix method (usually unnecessary, see below)
 x <- extract(vaas_4, as.labels = list("Strain"),
   as.groups = list("Species"))
@@ -172,8 +168,6 @@ stopifnot(identical(hm[-3], hm.2[-3]))
 x <- extract(vaas_4, as.labels = list("Species", "Strain"), dataframe = TRUE)
 hm <- heat_map(x, as.labels = "Strain", as.groups = "Species")
 stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
-
-}
 }
 \seealso{
   stats::heatmap gplots::heatmap.2
