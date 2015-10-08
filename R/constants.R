@@ -92,6 +92,8 @@ MISSING_CHAR <- "?"
 
 PHYLO_FORMATS <- c("epf", "nexus", "phylip", "hennig", "html")
 
+`_GROUPING` <- "?"
+
 AMINO_ACIDS <- c(
   # proteinogenic amino acids
   Alanine = "Ala", Cysteine = "Cys", Glycine = "Gly", Isoleucine = "Ile",

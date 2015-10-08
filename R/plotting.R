@@ -866,21 +866,40 @@ setMethod("radial_plot", "MOPMX", function(object, ...) {
   sapply(X = object, FUN = radial_plot, ..., simplify = FALSE, USE.NAMES = TRUE)
 }, sealed = SEALED)
 
+setGeneric("parallel_plot",
+  function(x, data, ...) standardGeneric("parallel_plot"))
+
 setGeneric("parallelplot")
 
 setMethod("parallelplot", c("missing", "XOPMX"), function(x, data, ...) {
-  parallelplot(data, NULL, ...)
+  parallel_plot(data, NULL, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("missing", "XOPMX"), function(x, data, ...) {
+  parallel_plot(data, NULL, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("NULL", "XOPMX"), function(x, data, ...) {
-  parallelplot(data, x, ...)
+  parallel_plot(data, x, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("NULL", "XOPMX"), function(x, data, ...) {
+  parallel_plot(data, x, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("vector", "XOPMX"), function(x, data, ...) {
-  parallelplot(data, x, ...)
+  parallel_plot(data, x, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("vector", "XOPMX"), function(x, data, ...) {
+  parallel_plot(data, x, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("MOPMX", "XOPMX"), function(x, data, ...) {
+  stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("MOPMX", "XOPMX"), function(x, data, ...) {
   stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
 }, sealed = SEALED)
 
@@ -888,24 +907,49 @@ setMethod("parallelplot", c("OPMX", "XOPMX"), function(x, data, ...) {
   stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
 }, sealed = SEALED)
 
+setMethod("parallel_plot", c("OPMX", "XOPMX"), function(x, data, ...) {
+  stop("cannot use 'XOPMX' object as both 'x' and 'data' argument")
+}, sealed = SEALED)
+
 setMethod("parallelplot", c("formula", "XOPMX"), function(x, data, ...) {
-  parallelplot(data, x, ...)
+  parallel_plot(data, x, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("formula", "XOPMX"), function(x, data, ...) {
+  parallel_plot(data, x, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("OPMX", "missing"), function(x, data, ...) {
-  parallelplot(x, NULL, ...)
+  parallel_plot(x, NULL, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("OPMX", "missing"), function(x, data, ...) {
+  parallel_plot(x, NULL, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("MOPMX", "missing"), function(x, data, ...) {
-  parallelplot(x, NULL, ...)
+  parallel_plot(x, NULL, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("MOPMX", "missing"), function(x, data, ...) {
+  parallel_plot(x, NULL, ...)
 }, sealed = SEALED)
 
 setMethod("parallelplot", c("MOPMX", "ANY"), function(x, data, ...) {
-  sapply(X = x, FUN = parallelplot, data = data, ..., simplify = FALSE,
+  sapply(X = x, FUN = parallel_plot, data = data, ..., simplify = FALSE,
     USE.NAMES = TRUE)
 }, sealed = SEALED)
 
-setMethod("parallelplot", c("OPMX", "ANY"), function(x, data, groups = 1L,
+setMethod("parallel_plot", c("MOPMX", "ANY"), function(x, data, ...) {
+  sapply(X = x, FUN = parallel_plot, data = data, ..., simplify = FALSE,
+    USE.NAMES = TRUE)
+}, sealed = SEALED)
+
+setMethod("parallelplot", c("OPMX", "ANY"), function(x, data, ...) {
+  parallel_plot(x = x, data = data, ...)
+}, sealed = SEALED)
+
+setMethod("parallel_plot", c("OPMX", "ANY"), function(x, data, groups = 1L,
   panel.var = NULL, pnames = param_names(), col = opm_opt("colors"),
   strip.fmt = list(), striptext.fmt = list(), legend.fmt = list(),
   legend.sep = " ", draw.legend = TRUE, space = "top", ...) {

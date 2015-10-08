@@ -1,9 +1,10 @@
-\name{parallelplot}
+\name{parallel_plot}
+\alias{parallel_plot}
 \alias{parallelplot}
 \title{Parallel plot}
 \arguments{
   \item{x}{An \code{\link{OPMA}}, \code{\link{OPMS}} or
-  \code{\link{MOPMX} }object with aggregated data. This and
+  \code{\link{MOPMX}} object with aggregated data. This and
   the following argument can swap their places.}
 
   \item{data}{Any kind of object that can be used for
@@ -83,6 +84,7 @@
   \code{parallelplot} from the \pkg{lattice} package with
   some adaptations likely to be useful for
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)} data.
+  \code{parallelplot} is an alias of \code{parallel_plot}.
 }
 \details{
   The main application of this function is to include all
@@ -192,6 +194,19 @@ stopifnot(inherits(x, "try-error"))
 
 %% BEGIN INSERTION BY repair_S4_docu.rb
 \docType{methods}
+\alias{parallel_plot-methods}
+\alias{parallel_plot,MOPMX,ANY-method}
+\alias{parallel_plot,MOPMX-method}
+\alias{parallel_plot,MOPMX,XOPMX-method}
+\alias{parallel_plot,MOPMX,missing-method}
+\alias{parallel_plot,NULL,XOPMX-method}
+\alias{parallel_plot,OPMX,ANY-method}
+\alias{parallel_plot,OPMX-method}
+\alias{parallel_plot,OPMX,XOPMX-method}
+\alias{parallel_plot,OPMX,missing-method}
+\alias{parallel_plot,formula,XOPMX-method}
+\alias{parallel_plot,missing,XOPMX-method}
+\alias{parallel_plot,vector,XOPMX-method}
 \alias{parallelplot-methods}
 \alias{parallelplot,MOPMX,ANY-method}
 \alias{parallelplot,MOPMX-method}
@@ -206,14 +221,25 @@ stopifnot(inherits(x, "try-error"))
 \alias{parallelplot,missing,XOPMX-method}
 \alias{parallelplot,vector,XOPMX-method}
 \usage{
+  \S4method{parallel_plot}{MOPMX,ANY}(x, data, ...) 
+  \S4method{parallel_plot}{MOPMX,XOPMX}(x, data, ...) 
+  \S4method{parallel_plot}{MOPMX,missing}(x, data, ...) 
+  \S4method{parallel_plot}{NULL,XOPMX}(x, data, ...) 
+  \S4method{parallel_plot}{OPMX,ANY}(x, data, groups = 1L,
+  panel.var = NULL, pnames = param_names(), col = opm_opt("colors"),
+  strip.fmt = list(), striptext.fmt = list(), legend.fmt = list(),
+  legend.sep = " ", draw.legend = TRUE, space = "top", ...) 
+  \S4method{parallel_plot}{OPMX,XOPMX}(x, data, ...) 
+  \S4method{parallel_plot}{OPMX,missing}(x, data, ...) 
+  \S4method{parallel_plot}{formula,XOPMX}(x, data, ...) 
+  \S4method{parallel_plot}{missing,XOPMX}(x, data, ...) 
+  \S4method{parallel_plot}{vector,XOPMX}(x, data, ...) 
+
   \S4method{parallelplot}{MOPMX,ANY}(x, data, ...) 
   \S4method{parallelplot}{MOPMX,XOPMX}(x, data, ...) 
   \S4method{parallelplot}{MOPMX,missing}(x, data, ...) 
   \S4method{parallelplot}{NULL,XOPMX}(x, data, ...) 
-  \S4method{parallelplot}{OPMX,ANY}(x, data, groups = 1L,
-  panel.var = NULL, pnames = param_names(), col = opm_opt("colors"),
-  strip.fmt = list(), striptext.fmt = list(), legend.fmt = list(),
-  legend.sep = " ", draw.legend = TRUE, space = "top", ...) 
+  \S4method{parallelplot}{OPMX,ANY}(x, data, ...) 
   \S4method{parallelplot}{OPMX,XOPMX}(x, data, ...) 
   \S4method{parallelplot}{OPMX,missing}(x, data, ...) 
   \S4method{parallelplot}{formula,XOPMX}(x, data, ...) 

@@ -59,7 +59,7 @@ has_aggr(x)
 #' The first kind of plot is a parallel plot, which shows all curve parameters
 #' together.
 
-parallelplot(
+parallel_plot(
   x = x, # the data object
   data = "Strain" # the metadata to use for colouring
 )
@@ -68,7 +68,7 @@ parallelplot(
 #' selected with `data`. If no metadata were selected (the default), only 'Well'
 #' would be available as grouping variable.
 
-parallelplot(
+parallel_plot(
   x = x, # the data object as above
   data = "Strain", # selected metadata as above
   panel.var = "Strain", # create subpanels according to 'Strain'

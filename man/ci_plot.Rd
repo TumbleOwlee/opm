@@ -121,9 +121,9 @@ stopifnot(is.character(x), identical(length(x), 4L))
   graphics::plot
 
   Other plotting-functions: \code{\link{heat_map}},
-  \code{\link{level_plot}}, \code{\link{parallelplot}},
-  \code{\link{radial_plot}}, \code{\link{summary}},
-  \code{\link{xy_plot}}
+  \code{\link{level_plot}}, \code{\link{parallel_plot}},
+  \code{\link{parallelplot}}, \code{\link{radial_plot}},
+  \code{\link{summary}}, \code{\link{xy_plot}}
 }
 \keyword{hplot}
 
