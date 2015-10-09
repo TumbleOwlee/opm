@@ -23,14 +23,21 @@
   the examples).  Otherwise a shortcut for one of the more
   important \acronym{CSV} entries.}
 
-  \item{normalize}{Logical scalar indicating whether plate
-  position and setup time entries (if selected) should be
-  normalised. This should always work for the plate
-  positions, but for the setup times it depends on the
-  values for the \code{\link{opm_opt}} keys \code{time.fmt}
-  and \code{time.zone} (see also \code{\link{merge}}). For
-  other entries, normalisation means replacing backslashes
-  by slashes.}
+  \item{normalize}{Logical or integer scalar indicating
+  whether plate position and setup time entries (if
+  selected) should be normalised. This should always work
+  for the plate positions, but for the setup times it
+  depends on the values for the \code{\link{opm_opt}} keys
+  \code{time.fmt} and \code{time.zone} (see also
+  \code{\link{merge}}). For other entries, normalisation
+  means replacing backslashes by slashes.
+
+  For \code{what = "select"}, a negative integer value is
+  special and causes spaces to be replaced by underscores.
+  This kind of \sQuote{normalisation} is not suitable for
+  creating more beautiful labels but useful in conjunction
+  with \code{\link{collect_template}} and
+  \code{\link{include_metadata}}.}
 
   \item{...}{Optional arguments passed between the
   methods.}

@@ -115,8 +115,8 @@ read_old_opm <- function(filename) {
   if (all(duplicated.default(n <- vapply(x, length, 0L))[-1L]))
     stop("constant number of fields -- ",
       "multiple-plate old-style format saved from Excel?")
-  n <- kmeans(n, 2L)$cluster # split into long and short sections
-  n <- sections(n == n[[1L]], NA)
+  n <- Ckmeans.1d.dp(n, 2L)$cluster
+  n <- sections(n == n[[1L]], NA) # split into long and short sections
   mapply(FUN = prepare_opm, x = split.default(x, n),
     pos = split.default(pos, n), SIMPLIFY = FALSE, USE.NAMES = FALSE)
 }
@@ -510,20 +510,20 @@ setGeneric("collect_template",
 
 setMethod("collect_template", "character", function(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, include = list(), ..., demo = FALSE) {
-  result <- batch_collect(object, fun = function(infile) {
-    opm.data <- read_single_opm(infile)
-    if (is.list(opm.data)) # possible in case of YAML input
-      do.call(rbind, lapply(opm.data, FUN = collect_template,
+  do_collect <- function(infile)
+    if (is.list(x <- read_single_opm(infile))) # possible in case of YAML input
+      do.call(rbind, lapply(X = x, FUN = collect_template,
         selection = selection, normalize = normalize, add.cols = add.cols,
         instrument = instrument, outfile = NULL, previous = NULL, sep = sep,
         md.args = md.args))
     else
-      collect_template(opm.data, selection = selection, normalize = normalize,
+      collect_template(object = x, selection = selection, normalize = normalize,
         add.cols = add.cols, instrument = instrument, outfile = NULL,
         previous = NULL, sep = sep, md.args = md.args)
-  }, include = include, ..., simplify = FALSE, demo = demo)
+  result <- batch_collect(names = object, fun = do_collect, include = include,
+    ..., simplify = FALSE, demo = demo)
   if (!demo)
     result <- do.call(rbind, result)
   rownames(result) <- NULL # if 'previous' was given, row names lacked anyway
@@ -532,39 +532,40 @@ setMethod("collect_template", "character", function(object, outfile = NULL,
 
 setMethod("collect_template", "OPM", function(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, ..., demo = FALSE) {
-  result <- as.list(csv_data(object, selection, normalize = normalize))
+  result <- csv_data(object = object, keys = selection, normalize = normalize)
+  result <- as.list(result)
   if (length(instrument)) {
     if (!is.logical(L(instrument)))
       result[[INSTRUMENT]] <- must(as.integer(instrument))
     else if (instrument)
       result[[INSTRUMENT]] <- L(get("machine.id", OPM_OPTIONS))
   }
-  result <- as.data.frame(result, stringsAsFactors = FALSE, optional = TRUE)
+  result <- as.data.frame(x = result, stringsAsFactors = FALSE, optional = TRUE)
   if (length(add.cols)) {
-    to.add <- matrix(NA_character_, nrow(result), length(add.cols), FALSE,
+    add.cols <- matrix(NA_character_, nrow(result), length(add.cols), FALSE,
       list(NULL, add.cols))
-    result <- cbind(result, to.add, stringsAsFactors = FALSE)
+    result <- cbind(result, add.cols, stringsAsFactors = FALSE)
   }
   finish_template(result, outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
 setMethod("collect_template", "OPMS", function(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, ..., demo = FALSE) {
-  result <- lapply(object@plates, collect_template, selection = selection,
-    add.cols = add.cols, normalize = normalize, instrument = instrument,
-    outfile = NULL, previous = NULL, sep = sep, md.args = md.args)
+  result <- lapply(X = object@plates, FUN = collect_template, md.args = md.args,
+    add.cols = add.cols, sep = sep, selection = selection, previous = NULL,
+    normalize = normalize, instrument = instrument, outfile = NULL)
   finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
-setMethod("collect_template", "MOPMX", function(object, outfile = NULL,
-    sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL, ..., demo = FALSE) {
-  result <- lapply(object, collect_template, selection = selection,
+setMethod("collect_template", "MOPMX", function(object,
+    outfile = NULL, sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL,
+    normalize = -1L, instrument = NULL, ..., demo = FALSE) {
+  result <- lapply(X = object, FUN = collect_template, selection = selection,
     add.cols = add.cols, normalize = normalize, instrument = instrument,
     outfile = NULL, previous = NULL, sep = sep, md.args = md.args)
   finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
@@ -574,17 +575,24 @@ setGeneric("to_metadata",
   function(object, ...) standardGeneric("to_metadata"))
 
 setMethod("to_metadata", "character", function(object, stringsAsFactors = FALSE,
-    optional = TRUE, sep = "\t", strip.white = NA, ...) {
+    optional = TRUE, sep = c("\t", ",", ";"), strip.white = NA, ...) {
   if (length(object) > 1L && !is.null(names(object))) {
     if (is.na(L(strip.white)))
       strip.white <- FALSE
     return(to_metadata(object = vector2row(object), strip.white = strip.white,
       sep = sep, stringsAsFactors = stringsAsFactors, optional = optional, ...))
   }
+  if (!length(sep))
+    stop("empty 'sep' argument")
   if (is.na(L(strip.white)))
     strip.white <- TRUE
-  read.delim(file = L(object), sep = sep, check.names = !optional,
-    strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
+  for (char in sep) {
+    x <- read.delim(file = object, sep = char, check.names = !optional,
+      strip.white = strip.white, stringsAsFactors = stringsAsFactors, ...)
+    if (ncol(x) > 1L)
+      break
+  }
+  x
 }, sealed = SEALED)
 
 setMethod("to_metadata", "ANY", function(object, stringsAsFactors = FALSE,

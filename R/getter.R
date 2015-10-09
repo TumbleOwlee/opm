@@ -242,7 +242,7 @@ setMethod("csv_data", "OPM", function(object,
     what = c("select", "filename", "setup_time", "position", "other"),
     normalize = FALSE) {
   no_backslash <- function(x) gsub("\\",
-    "/", x, FALSE, FALSE, TRUE)
+    "/", x, FALSE, FALSE, TRUE) # break necessary, otherwise style complaint
   LL(strict, normalize)
   result <- case(match.arg(what),
       select = NULL,
@@ -272,15 +272,18 @@ setMethod("csv_data", "OPM", function(object,
       else
         names(result)[isna] <- keys[isna]
   }
-  if (normalize) {
-    pos <- match(CSV_NAMES[c("SETUP", "POS")], names(result), 0L)
-    if (pos[1L])
-      result[pos[1L]] <- as.character(parse_time(result[pos[1L]]))
-    if (pos[2L])
-      result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
-    pos <- setdiff(seq_along(result), pos)
-    result[pos] <- no_backslash(result[pos])
-  }
+  if (normalize)
+    if (normalize > 0L) {
+      pos <- match(CSV_NAMES[c("SETUP", "POS")], names(result), 0L)
+      if (pos[1L])
+        result[pos[1L]] <- as.character(parse_time(result[pos[1L]]))
+      if (pos[2L])
+        result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
+      pos <- setdiff(seq_along(result), pos)
+      result[pos] <- no_backslash(result[pos])
+    } else {
+      result <- chartr(" ", "_", result)
+    }
   result
 }, sealed = SEALED)
 

@@ -38,10 +38,13 @@
   distinct names for novel and old files; see
   \code{previous}.}
 
-  \item{sep}{Character scalar. \acronym{CSV} field
-  separator for \code{outfile} and for the input file of
-  \code{to_metadata} (which ignores the argument unless
-  \code{object} is interpreted as input file).}
+  \item{sep}{Character scalar used for output
+  (\acronym{CSV} field separator for \code{outfile}). For
+  the input file of \code{to_metadata} (which ignores the
+  argument unless \code{object} is interpreted as input
+  file) a non-empty character vector. Each element is used
+  as \acronym{CSV} field separator in turn, and the first
+  one yielding more than as single column succeeds.}
 
   \item{previous}{Ignored if empty. Otherwise passed to
   \code{\link{to_metadata}}. If it is a file name different
@@ -61,7 +64,9 @@
   vector passed to \code{\link{csv_data}}.}
 
   \item{normalize}{Logical scalar also passed to
-  \code{\link{csv_data}}.}
+  \code{\link{csv_data}}. The same value must be chosen for
+  subsequent calls of \code{\link{collect_template}} and
+  \code{include_metadata}.}
 
   \item{instrument}{Logical scalar or scalar convertible to
   integer, or empty.  Ignored if empty. If logical and
@@ -249,21 +254,21 @@ stopifnot(identical(copy, vaas_4))
 \alias{to_metadata,WMDS-method}
 \alias{to_metadata,character-method}
 \usage{
-  \S4method{collect_template}{MOPMX}(object, outfile = NULL,
-    sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
-    instrument = NULL, ..., demo = FALSE) 
+  \S4method{collect_template}{MOPMX}(object,
+    outfile = NULL, sep = "\t", previous = outfile, md.args = list(),
+    selection = opm_opt("csv.selection"), add.cols = NULL,
+    normalize = -1L, instrument = NULL, ..., demo = FALSE) 
   \S4method{collect_template}{OPM}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, ..., demo = FALSE) 
   \S4method{collect_template}{OPMS}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, ..., demo = FALSE) 
   \S4method{collect_template}{character}(object, outfile = NULL,
     sep = "\t", previous = outfile, md.args = list(),
-    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = FALSE,
+    selection = opm_opt("csv.selection"), add.cols = NULL, normalize = -1L,
     instrument = NULL, include = list(), ..., demo = FALSE) 
 
   \S4method{to_metadata}{ANY}(object, stringsAsFactors = FALSE,
@@ -275,6 +280,6 @@ stopifnot(identical(copy, vaas_4))
   \S4method{to_metadata}{WMDS}(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) 
   \S4method{to_metadata}{character}(object, stringsAsFactors = FALSE,
-    optional = TRUE, sep = "\t", strip.white = NA, ...) 
+    optional = TRUE, sep = c("\t", ",", ";"), strip.white = NA, ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb

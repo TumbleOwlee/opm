@@ -6,6 +6,10 @@
 - 'multcomp' is now a dependency of 'opm'
 - clean_filenames() has been moved from 'opm' to 'pkgutils'
 - the RODBC methods have been moved from 'opm' to 'opmextra'
+- default 'normalize' arguments of collect_template() and include_metadata()
+  have been changed; user code might need adaptations in the case of already
+  existing CSV files with metadata (but all in all metadata input should run
+  more smoothly now)
 
 - read_single_opm() and read_opm() can now read CSV with multiple plates per
   file

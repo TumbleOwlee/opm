@@ -17,7 +17,9 @@
   name of file from which to read the data frame. Handled
   by \code{\link{to_metadata}}.}
 
-  \item{keys}{Character vector.}
+  \item{keys}{Character vector. Corresponds to the
+  \code{selection} argument of
+  \code{\link{collect_template}}.}
 
   \item{replace}{Logical scalar indicating whether the
   previous metadata, if any, shall be replaced by the novel
@@ -31,21 +33,10 @@
   \code{md} in the metadata, discard the \code{keys}
   columns?}
 
-  \item{sep}{Passed to \code{\link{to_metadata}}. If empty,
-  the default values are inserted, depending on the
-  \code{md} object. If several values are present and if
-  \code{md} is a file name, the values will be tried in
-  turn until all \code{keys} are found in the resulting
-  column names.}
-
-  \item{strip.white}{Passed to \code{\link{to_metadata}}.
-  If empty, the default values are inserted, depending on
-  the \code{md} object. If several values are present and
-  \code{skip.failure} is \code{FALSE}, the values will be
-  tried in turn until all key-value pairs are found in the
-  resulting data frame with metadata. If
-  \code{skip.failure} is \code{TRUE}, only the first value
-  is tried.}
+  \item{normalize}{Passed to \code{\link{csv_data}}. The
+  same value must be chosen for subsequent calls of
+  \code{\link{collect_template}} and
+  \code{include_metadata}.}
 
   \item{mapping}{In most cases passed to \code{map_values}.
   \itemize{ \item If a function, this is just a wrapper for
@@ -303,8 +294,7 @@ stopifnot(identical(z, y))
   \S4method{include_metadata}{MOPMX}(object, ...) 
   \S4method{include_metadata}{OPM}(object, md, keys = opm_opt("csv.keys"), ...)
   \S4method{include_metadata}{WMD}(object, md, keys, replace = FALSE,
-    skip.failure = FALSE, remove.keys = TRUE, sep = NULL, strip.white = NULL,
-    ...) 
+    skip.failure = FALSE, remove.keys = TRUE, normalize = -1L, ...) 
   \S4method{include_metadata}{WMDS}(object, ...) 
 
   \S4method{map_metadata}{MOPMX,ANY}(object, mapping, ...) 

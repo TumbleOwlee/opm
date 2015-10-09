@@ -44,10 +44,10 @@ objects_for_testing <- function() {
   x$OPM.2 <- read_single_opm(x$INFILES[2L])
   x$OPM.3 <- read_single_opm(x$FILE.OLD.STYLE)
   x$ORGN <- "Bacillus simplex"
-  x$MD <- data.frame(File = csv_data(x$OPM.1, what = "filename"),
-    Position = csv_data(x$OPM.1, what = "position"),
-    `Setup Time` = csv_data(x$OPM.1, what = "setup_time"), Organism = x$ORGN,
-    check.names = FALSE, stringsAsFactors = FALSE)
+  x$MD <- vector2row(csv_data(object = x$OPM.1, keys = opm_opt("csv.selection"),
+    normalize = -1L))
+  x$MD <- as.data.frame(x = x$MD, check.names = FALSE, stringsAsFactors = FALSE)
+  x$MD[, "Organism"] <- x$ORGN
   x$OPM.WITH.MD <- include_metadata(x$OPM.1, x$MD, remove.csv.data = FALSE)
   x$OPMS.INPUT <- opms(x$OPM.1, x$OPM.2)
   x$SMALL.WITH.MD <- x$OPM.WITH.MD[, 1L:10L]
