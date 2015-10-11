@@ -355,9 +355,9 @@ setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
   found <- as.list(found[, wanted, drop = FALSE])
   result <- object
   result@metadata <- if (replace)
-    found
-  else
-    c(metadata(result), found)
+      found
+    else
+      c(metadata(result), found)
 
   result
 

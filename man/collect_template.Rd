@@ -102,12 +102,12 @@
   \code{FALSE} if \code{NA}.}
 }
 \value{
-  \code{to_metadata} yields a data frame. Regarding
+  \code{to_metadata} yields a data frame. The output of
   \code{collect_template}, in the case of the character
-  method, a data frame, returned invisibly if
+  method, is a data frame, returned invisibly if
   \code{outfile} is given; if \code{demo} is \code{TRUE}, a
   character vector of file names instead, returned
-  invisibly. The \code{\link{OPM}} method returns a data
+  invisibly.  The \code{\link{OPM}} method returns a data
   frame with one row and the number of columns equal to the
   sum of the lengths of \code{selection} and
   \code{add.cols}. The \code{\link{OPM}} method returns
@@ -117,25 +117,26 @@
   Either collect a metadata template from
   OmniLog\eqn{\textsuperscript{\textregistered}}{(R)}
   \acronym{CSV} comments assisting in later on adding
-  metadata using \code{\link{include_metadata}} or create a
-  data frame holding potential \code{\link{OPM}} or
+  metadata using \code{\link{include_metadata}}, or create
+  a data frame containing potential \code{\link{OPM}} or
   \code{\link{OPMS}} object metadata.
 }
 \details{
-  The character method batch-collects templates for
-  meta-information from files and optionally add these data
-  as novel rows to previously collected data. It writes the
-  collected template to a file for use with an external
-  editor, and/or creates a data frame for editing the data
-  directly in \R with the \code{edit} function.
+  The \code{collect_template} character method
+  batch-collects templates for meta-information from files
+  and optionally adds these data as novel rows to
+  previously collected data. It writes the collected
+  template to a file for use with an external editor,
+  and/or creates a data frame for editing the data directly
+  in \R with the \code{edit} function.
 
   The \code{to_metadata} character method reads metadata
   from an input file and is only a thin wrapper for
   \code{read.delim} but contains some useful adaptations
-  (such as \strong{not} converting strings to factors, and
-  not modifying column names). The default method reads
-  metadata from an object convertible to a data frame and
-  is only a thin wrapper of \code{as.data.frame} but
+  (such as \emph{not} converting strings to factors, and
+  \emph{not} modifying column names). The default method
+  reads metadata from an object convertible to a data frame
+  and is only a thin wrapper of \code{as.data.frame} but
   contains the same useful adaptations as the file-name
   method.
 

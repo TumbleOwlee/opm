@@ -557,7 +557,7 @@ setMethod("collect_template", "OPMS", function(object, outfile = NULL,
     instrument = NULL, ..., demo = FALSE) {
   result <- lapply(X = object@plates, FUN = collect_template, md.args = md.args,
     add.cols = add.cols, sep = sep, selection = selection, previous = NULL,
-    normalize = normalize, instrument = instrument, outfile = NULL)
+    normalize = normalize, instrument = instrument, outfile = NULL, ...)
   finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
@@ -567,7 +567,7 @@ setMethod("collect_template", "MOPMX", function(object,
     normalize = -1L, instrument = NULL, ..., demo = FALSE) {
   result <- lapply(X = object, FUN = collect_template, selection = selection,
     add.cols = add.cols, normalize = normalize, instrument = instrument,
-    outfile = NULL, previous = NULL, sep = sep, md.args = md.args)
+    outfile = NULL, previous = NULL, sep = sep, md.args = md.args, ...)
   finish_template(do.call(rbind, result), outfile, sep, previous, md.args, demo)
 }, sealed = SEALED)
 
@@ -627,7 +627,7 @@ setMethod("to_metadata", "WMDS", function(object, stringsAsFactors = FALSE,
 setMethod("to_metadata", "MOPMX", function(object, stringsAsFactors = FALSE,
     optional = TRUE, sep = "\t", strip.white = FALSE, ...) {
   collect_rows(lapply(X = object, FUN = to_metadata, optional = optional,
-    sep = "\t", stringsAsFactors = stringsAsFactors, strip.white = FALSE, ...))
+    sep = sep, stringsAsFactors = stringsAsFactors, strip.white = FALSE, ...))
 }, sealed = SEALED)
 
 batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
