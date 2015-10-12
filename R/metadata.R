@@ -505,20 +505,35 @@ setGeneric("metadata_chars",
   function(object, ...) standardGeneric("metadata_chars"))
 
 setMethod("metadata_chars", "WMD", function(object, values = TRUE,
-    classes = "factor") {
-  if (L(values))
-    map_values(object@metadata, coerce = classes)
-  else
-    map_names(object@metadata)
+    classes = "factor", max.dist = -1, ...) {
+  result <- if (L(values))
+      map_values(object = object@metadata, coerce = classes)
+    else
+      map_names(object@metadata)
+  if (is.na(L(max.dist)) || max.dist < 0)
+    return(result)
+  map_values(object = result, mapping = max.dist, ...)
 }, sealed = SEALED)
 
-setMethod("metadata_chars", "WMDS", function(object, ...) {
-  # 2nd call of map_values unifies the vector but keeps the names
-  map_values(unlist(lapply(object@plates, FUN = metadata_chars, ...)))
+setMethod("metadata_chars", "WMDS", function(object, values = TRUE,
+    classes = "factor", max.dist = -1, ...) {
+  result <- unlist(lapply(object@plates, FUN = metadata_chars,
+    values = values, classes = classes, max.dist = NA_real_, ...))
+  if (is.na(L(max.dist)))
+    return(result)
+  else if (max.dist < 0) # 2nd call of map_values unifies the
+    return(map_values(result)) # vector but keeps the names
+  map_values(object = result, mapping = max.dist, ...)
 }, sealed = SEALED)
 
-setMethod("metadata_chars", "MOPMX", function(object, ...) {
-  # 3rd call of map_values unifies the vector but keeps the names
-  map_values(unlist(lapply(object@.Data, FUN = metadata_chars, ...)))
+setMethod("metadata_chars", "MOPMX", function(object, values = TRUE,
+    classes = "factor", max.dist = -1, ...) {
+  result <- unlist(lapply(object@.Data, FUN = metadata_chars,
+    values = values, classes = classes, max.dist = NA_real_, ...))
+  if (is.na(L(max.dist)))
+    return(result)
+  else if (max.dist < 0) # 2nd call of map_values unifies the
+    return(map_values(result)) # vector but keeps the names
+  map_values(object = result, mapping = max.dist, ...)
 }, sealed = SEALED)
 

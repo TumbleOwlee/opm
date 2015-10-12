@@ -40,19 +40,35 @@
   See the \code{coerce} argument of \code{map_values} for
   details.}
 
-  \item{...}{Optional argument passed from the
-  \code{\link{WMDS}} to the \code{\link{WMD}} method.}
+  \item{max.dist}{Numeric scalar. If non-negative, causes
+  the construction of a mapping from potential misspellings
+  to the putative correct spelling, based on string
+  similarity. \code{max.dist} then gives the maximum string
+  distance allowed for regarding two strings as synonyms.
+  This boundary must not be set too high; otherwise strings
+  with distinct meanings might be regarded as misspellings
+  (see the example below). The resulting vector should
+  always be inspected before passing it to
+  \code{\link{map_values}}.  See the \code{map_values}
+  method for character vectors as \code{object} and numeric
+  vectors as \code{mapping} argument in the \pkg{pkgutils}
+  package for further details on such string matching.}
+
+  \item{...}{Optional arguments passed between the methods
+  or to \code{\link{map_values}}.}
 }
 \value{
   \code{metadata} generates a list (empty if metadata were
   not set or if partial selection using \code{key} did not
   result).
 
-  \code{metadata_chars} yields a character vector, sorted
-  and made unique.  Original \code{names} attributes, if
-  any, are dropped and replaced by the character vector
-  itself. (This might be convenient regarding its use with
-  \code{\link{map_metadata}}.)
+  Under default settings \code{metadata_chars} yields a
+  character vector, sorted and made unique. Original
+  \code{names} attributes, if any, are dropped and replaced
+  by the character vector itself. (This might be convenient
+  regarding its use with \code{\link{map_metadata}}.) If
+  \code{max.distance} is non-negative, the result is
+  distinct; see above for details.
 }
 \description{
   Get meta-information stored together with the data or
@@ -131,6 +147,13 @@ stopifnot(identical(x, y))
 (x <- metadata_chars(vaas_4, values = TRUE)) # the values
 (y <- metadata_chars(vaas_4, values = FALSE)) # the keys
 stopifnot(length(x) > length(y))
+
+# detecting misspellings
+(x <- metadata_chars(vaas_4, max.dist = 0.1))
+stopifnot(length(x) == 0) # no misspellings
+(x <- metadata_chars(vaas_4, max.dist = 0.5)) # wrong result!
+# distance too high => non-synonyms thought to be misspellings
+stopifnot(length(x) == 2, !is.null(names(x)))
 }
 \seealso{
   Other metadata-functions: \code{\link{edit}},
@@ -154,8 +177,11 @@ stopifnot(length(x) > length(y))
   \S4method{metadata}{WMD}(object, key = NULL, exact = TRUE, strict = FALSE)
   \S4method{metadata}{WMDS}(object, ...) 
 
-  \S4method{metadata_chars}{MOPMX}(object, ...) 
-  \S4method{metadata_chars}{WMD}(object, values = TRUE, classes = "factor")
-  \S4method{metadata_chars}{WMDS}(object, ...) 
+  \S4method{metadata_chars}{MOPMX}(object, values = TRUE,
+    classes = "factor", max.dist = -1, ...) 
+  \S4method{metadata_chars}{WMD}(object, values = TRUE,
+    classes = "factor", max.dist = -1, ...) 
+  \S4method{metadata_chars}{WMDS}(object, values = TRUE,
+    classes = "factor", max.dist = -1, ...) 
 }
 %% END INSERTION BY repair_S4_docu.rb

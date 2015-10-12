@@ -16,7 +16,7 @@ Imports:
     hwriter,
     plotrix,
     Ckmeans.1d.dp,
-    pkgutils (>= 0.7.5),
+    pkgutils (>= 0.7.7),
     yaml (>= 2.1.7),
     splines,
     mgcv,

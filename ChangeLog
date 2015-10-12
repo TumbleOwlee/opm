@@ -14,6 +14,8 @@
 - read_single_opm() and read_opm() can now read CSV with multiple plates per
   file
 - parallel_plot() is now available as alias for parallelplot()
+- metadata_chars() gets a new option that allows for creating mappings from
+  misspellings to correct spellings
 
 
 ################################################################################
