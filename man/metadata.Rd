@@ -154,6 +154,8 @@ stopifnot(length(x) == 0) # no misspellings
 (x <- metadata_chars(vaas_4, max.dist = 0.5)) # wrong result!
 # distance too high => non-synonyms thought to be misspellings
 stopifnot(length(x) == 2, !is.null(names(x)))
+(x <- metadata_chars(vaas_4, max.dist = 0.5, exclude = "\\\d"))
+stopifnot(length(x) == 0) # strings with numbers excluded
 }
 \seealso{
   Other metadata-functions: \code{\link{edit}},
