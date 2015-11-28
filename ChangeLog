@@ -3,6 +3,7 @@
 - dead links to foreign packages in the HTML online documentation are now
   fixed; some internal dead links might still occur
 
+- the default 'convert' argument of read_opm() is now 'grp' instead of 'try'
 - 'multcomp' is now a dependency of 'opm'
 - clean_filenames() has been moved from 'opm' to 'pkgutils'
 - the RODBC methods have been moved from 'opm' to 'opmextra'
@@ -16,6 +17,8 @@
 - parallel_plot() is now available as alias for parallelplot()
 - metadata_chars() gets a new option that allows for creating mappings from
   misspellings to correct spellings
+- `metadata<-`() can include the overall running time in the metadata
+- subset() gets a 'common' argument
 
 
 ################################################################################

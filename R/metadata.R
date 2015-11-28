@@ -43,6 +43,15 @@ setMethod("metadata<-", c("WMD", "missing", "character"), function(object, key,
   object
 }, sealed = SEALED)
 
+setMethod("metadata<-", c("OPM", "missing", "character"), function(object, key,
+    value) {
+  if (found <- match(opm_opt("md.duration"), value, 0L)) {
+    object@metadata[[value[[found]]]] <- max(object@measurements[, HOUR])
+    value <- value[!found]
+  }
+  callNextMethod(object = object, value = value)
+}, sealed = SEALED)
+
 setMethod("metadata<-", c("WMD", "missing", "logical"), function(object, key,
     value) {
   if (L(value))
@@ -188,18 +197,8 @@ setMethod("metadata<-", c("WMDS", "missing", "WMDS"), function(object, key,
 
 setMethod("metadata<-", c("WMDS", "missing", "character"), function(object, key,
     value) {
-  if (found <- match(opm_opt("md.id.name"), value, 0L)) {
-    key <- value[[found]]
-    this <- opm_opt("md.id.start")
-    for (i in seq_along(object@plates)) {
-      object@plates[[i]]@metadata[[key]] <- this
-      this <- this + 1L
-    }
-    OPM_OPTIONS$md.id.start <- this
-    value <- value[!found]
-  }
-  if (length(value))
-    stop("value '", value[[1L]], "' not understood")
+  for (i in seq_along(object@plates))
+    metadata(object@plates[[i]]) <- value
   object
 }, sealed = SEALED)
 

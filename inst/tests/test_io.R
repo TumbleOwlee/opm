@@ -141,7 +141,7 @@ test_that("the ID-run example file can be read", {
 ## read_opm
 test_that("the ECO-run example file can be read", {
   example.file.eco <- file.path(TEST.DIR, "Example_Ecoplate.csv.xz")
-  x <- read_opm(example.file.eco)
+  x <- read_opm(names = example.file.eco, convert = "try")
   expect_is(x, "OPMS")
   expect_equal(unique(csv_data(x, what = "filename")), example.file.eco)
   expect_equal(plate_type(x), SPECIAL_PLATES[["eco"]])
@@ -154,8 +154,6 @@ test_that("the ECO-run example file can be read", {
 ## read_opm
 test_that("read_opm can read a single file", {
   files <- INFILES.2[1L]
-  opm.1 <- read_opm(files)
-  expect_is(opm.1, "OPM")
   opm.1 <- read_opm(files, convert = "try")
   expect_is(opm.1, "OPM")
   opm.1 <- read_opm(files, convert = "yes")
@@ -168,15 +166,13 @@ test_that("read_opm can read a single file", {
 ## read_opm
 test_that("read_opm can read two compatible files", {
   files <- INFILES.2[1L:2L]
-  opm.1 <- read_opm(files)
-  expect_is(opm.1, "OPMS")
-  opm.1 <- read_opm(files, convert = "try")
+  opm.1 <- read_opm(names = files, convert = "try")
   expect_is(opm.1, "OPMS")
   expect_equal(NULL, names(plates(opm.1)))
-  opm.1 <- read_opm(files, convert = "yes")
+  opm.1 <- read_opm(names = files, convert = "yes")
   expect_is(opm.1, "OPMS")
   expect_equal(NULL, names(plates(opm.1)))
-  opm.1 <- read_opm(files, convert = "no")
+  opm.1 <- read_opm(names = files, convert = "no")
   expect_is(opm.1, "MOPMX")
   expect_equal(2L, length(opm.1))
 })
@@ -187,11 +183,7 @@ test_that("read_opm can read three partially incompatible files", {
   files <- testfile_dir(files = c("Example_1.csv.xz", "Example_2.csv.xz",
     "Example_Old_Style_1.csv.xz"))
 
-  expect_warning(opm.1 <- read_opm(files))
-  expect_is(opm.1, "MOPMX")
-  expect_equal(3L, length(opm.1))
-
-  expect_warning(opm.1 <- read_opm(files, convert = "try"))
+  expect_warning(opm.1 <- read_opm(names = files, convert = "try"))
   expect_is(opm.1, "MOPMX")
   expect_equal(3L, length(opm.1))
 

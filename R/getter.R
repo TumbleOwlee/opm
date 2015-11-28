@@ -435,11 +435,15 @@ setMethod("subset", "OPMX", function(x, query, values = TRUE,
     invert = FALSE, exact = FALSE, time = FALSE,
     positive = c("ignore", "any", "all"),
     negative = c("ignore", "any", "all"),
-    use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T")) {
+    common = FALSE,
+    use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T",
+      "c", "C")) {
   if (missing(use))
-    LL(values, invert, exact, time)
+    LL(values, invert, exact, time, common)
   else
     reassign_args_using(match.arg(use))
+  if (common)
+    return(x)
   case(negative <- match.arg(negative),
     ignore = NULL,
     any =,
@@ -469,8 +473,30 @@ setMethod("subset", "OPMX", function(x, query, values = TRUE,
   do_select(x, query)
 }, sealed = SEALED)
 
-setMethod("subset", "MOPMX", function(x, query, ...) {
-  x@.Data <- lapply(X = x@.Data, FUN = subset, query = query, ...)
+setMethod("subset", "MOPMX", function(x, query, values = TRUE,
+    invert = FALSE, exact = FALSE, time = FALSE, positive = "ignore",
+    negative = "ignore", common = FALSE, use = "i", ...) {
+  reduce_to_common_subset <- function(x, what, ...) {
+    common_subset <- function(x, what, ...) {
+      md <- lapply(X = x, FUN = extract_columns, what = what, join = TRUE, ...)
+      ok <- table(do.call(c, lapply(md, unique.default)))
+      lapply(md, `%in%`, names(ok)[ok == length(md)])
+    }
+    wanted <- common_subset(x = x, what = what, ...)
+    some <- which(vapply(wanted, any, NA))
+    for (i in some)
+      x@.Data[[i]] <- x@.Data[[i]][wanted[[i]]]
+    x[some]
+  }
+  if (missing(use))
+    LL(common)
+  else
+    common <- all(match(use, c("c", "C"), 0L))
+  if (common)
+    return(reduce_to_common_subset(x = x, what = query, ...))
+  x@.Data <- lapply(X = x@.Data, FUN = subset, query = query, values = values,
+    invert = invert, exact = exact, time = time, positive = positive,
+    negative = negative, common = common, use = use)
   x@.Data <- close_index_gaps(x@.Data)
   x
 }, sealed = SEALED)

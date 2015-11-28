@@ -74,6 +74,7 @@ OPM_OPTIONS$input.try.order <- c(1L, 2L, 3L)
 OPM_OPTIONS$key.join <- "."
 OPM_OPTIONS$machine.id <- 1L
 OPM_OPTIONS$max.chars <- 100L
+OPM_OPTIONS$md.duration <- "Duration"
 OPM_OPTIONS$md.id.name <- "ID"
 OPM_OPTIONS$md.id.start <- 1L
 OPM_OPTIONS$min.mode <- 0.5

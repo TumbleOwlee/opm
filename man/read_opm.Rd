@@ -4,7 +4,7 @@
 \title{Read multiple \acronym{PM} files at once or read single \acronym{PM} file}
 \usage{
   read_opm(names = getwd(),
-    convert = c("try", "no", "yes", "sep", "grp"),
+    convert = c("grp", "try", "no", "yes", "sep"),
     gen.iii = opm_opt("gen.iii"), include = list(), ...,
     force = FALSE, demo = FALSE)
 
@@ -166,9 +166,11 @@
 \examples{
 test.files <- opm_files("omnilog")
 if (length(test.files) > 0) { # if the folder is found
-  x <- read_opm(test.files, demo = TRUE) # check first what you would get
+  # check first what you *would* get
+  x <- read_opm(names = test.files, demo = TRUE)
   stopifnot(identical(test.files, x))
-  x <- read_opm(test.files[1:2]) # these two have the same plate type
+  # these two have the same plate type
+  x <- read_opm(names = test.files[1:2], convert = "try")
   class(x)
   dim(x)
   summary(x)

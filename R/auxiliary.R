@@ -509,7 +509,8 @@ reassign_args_using <- function(use) {
       assign("values", TRUE, parent.frame())
       assign("exact", TRUE, parent.frame())
     },
-    t =, T = assign("time", TRUE, parent.frame())
+    t =, T = assign("time", TRUE, parent.frame()),
+    c =, C = assign("common", TRUE, parent.frame())
   )
   invisible(NULL)
 }

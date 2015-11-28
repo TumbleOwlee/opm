@@ -60,6 +60,14 @@
   but returns the negative reactions. Using \code{invert}
   means selecting all positive or weak reactions.}
 
+  \item{common}{Logical scalar. If \code{TRUE}, this causes
+  \code{query} to be used to construct plate identifiers
+  from the metadata; these plate identifiers are used to
+  reduce a \code{\link{MOPMX}} object to the plates whose
+  identifiers occur throughout all plate types. If applied
+  to an \code{\link{OPMX}} object this means returning
+  \code{x} unmodified.}
+
   \item{use}{Character scalar. An alternative way to
   specify the settings.
 
@@ -68,7 +76,8 @@
   \sQuote{p} or \sQuote{P}, \code{positive} is set to
   \sQuote{any} or \sQuote{all}, respectively. If \sQuote{n}
   or \sQuote{N}, \code{negative} is set to \sQuote{any} or
-  \sQuote{all}, respectively.
+  \sQuote{all}, respectively. If \sQuote{c} or \sQuote{C},
+  \code{common} is set to \code{TRUE}.
 
   Otherwise, \code{use} is taken directly as the one-latter
   name of the infix operators to use for plate selection,
@@ -210,12 +219,16 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
 \alias{thin_out,OPM-method}
 \alias{thin_out,OPMS-method}
 \usage{
-  \S4method{subset}{MOPMX}(x, query, ...) 
+  \S4method{subset}{MOPMX}(x, query, values = TRUE,
+    invert = FALSE, exact = FALSE, time = FALSE, positive = "ignore",
+    negative = "ignore", common = FALSE, use = "i", ...) 
   \S4method{subset}{OPMX}(x, query, values = TRUE,
     invert = FALSE, exact = FALSE, time = FALSE,
     positive = c("ignore", "any", "all"),
     negative = c("ignore", "any", "all"),
-    use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T")) 
+    common = FALSE,
+    use = c("i", "I", "k", "K", "n", "N", "p", "P", "q", "Q", "t", "T",
+      "c", "C")) 
 
   \S4method{thin_out}{MOPMX}(object, ...) 
   \S4method{thin_out}{OPM}(object, factor, drop = FALSE) 

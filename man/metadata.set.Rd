@@ -35,27 +35,35 @@
   included in the metadata (if \code{NULL}, this metadata
   entry is deleted).  \item If \code{key} is missing and
   \code{value} is a list but not a data frame, all metadata
-  are replaced by it. If \code{value} is of mode
-  \sQuote{logical}, \code{TRUE} causes all
-  \code{\link{csv_data}} entries that are \emph{not}
-  included in \code{\link{opm_opt}("csv.selection")} to be
-  included in the metadata; \code{FALSE} causes these
-  entries, if any, to be removed. If \code{value} is a
-  character vector and it contains the value given by
-  \code{\link{opm_opt}("md.id.name")}, then by default a
-  globally unique \acronym{ID} identifying each plate is
-  included in the metadata. Uniqueness only holds per
-  session and can be circumvented by modifying
-  \code{\link{opm_opt}("md.id.start")}. Other elements of a
-  character vector are not currently supported (they may
-  get a special meaning later on).  \item If \code{key} is
-  otherwise, \code{value} must be list of values to be
-  prepended, appended or set as metadata, either entirely
-  or specifically, depending on \code{key}.  \item Formulae
-  can also be used as \code{value}. In that case, the
-  formula can specify the key to be replaced. See the
-  examples below and \code{\link{map_values}} for details.
-  \item If \code{object} is of class \code{\link{WMDS}},
+  are replaced by it.  \item If \code{key} is missing and
+  \code{value} is of mode \sQuote{logical}, \code{TRUE}
+  causes all \code{\link{csv_data}} entries that are
+  \emph{not} included in
+  \code{\link{opm_opt}("csv.selection")} to be included in
+  the metadata; \code{FALSE} causes these entries, if any,
+  to be removed.  \item If \code{key} is missing and
+  \code{value} is a character vector and it contains the
+  value given by \code{\link{opm_opt}("md.id.name")}, then
+  by default a globally unique \acronym{ID} identifying
+  each plate is included in the metadata. Uniqueness only
+  holds per session and can be circumvented by modifying
+  \code{\link{opm_opt}("md.id.start")}. If \code{value}
+  contains the value given by
+  \code{\link{opm_opt}("md.duration")}, then the overall
+  running time of each plate is included in the metadata.
+  This is useful to select plates based on the total
+  running time, or to include the overall measurement
+  duration as explanatory variable in a model. Other
+  elements of a character vector are not currently
+  supported (they may get a special meaning later on).
+  \item If \code{key} is otherwise, \code{value} must be
+  list of values to be prepended, appended or set as
+  metadata, either entirely or specifically, depending on
+  \code{key}.  \item Formulae can also be used as
+  \code{value}. In that case, the formula can specify the
+  key to be replaced. See the examples below and
+  \code{\link{map_values}} for details.  \item If
+  \code{object} is of class \code{\link{WMDS}},
   \code{value} can be a data frame whose number of rows
   must be equal to the number of plates.  Metadata to be
   set will then be selected from each individual row in
@@ -199,6 +207,11 @@ metadata(copy, opm_opt("md.id.name")) # get these IDs
 stopifnot(is.integer(metadata(copy, opm_opt("md.id.name"))))
 # to reset the start point to the number n, use opm_opt(md.id.start = n)
 
+# WMDS/missing/character method: setting the running time
+metadata(copy) <- opm_opt("md.duration") # set it
+metadata(copy, opm_opt("md.duration")) # receive it
+stopifnot(is.double(metadata(copy, opm_opt("md.duration"))))
+
 # WMDS/missing/logical method: storing or deleting csv_data() entries
 copy <- vaas_4
 metadata(copy) <- TRUE # store them
@@ -233,6 +246,8 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
 \alias{metadata<-,MOPMX,missing,data.frame-method}
 \alias{metadata.set,MOPMX,missing,logical-method}
 \alias{metadata<-,MOPMX,missing,logical-method}
+\alias{metadata.set,OPM,missing,character-method}
+\alias{metadata<-,OPM,missing,character-method}
 \alias{metadata.set,WMD,ANY,ANY-method}
 \alias{metadata.set,WMD-method}
 \alias{metadata<-,WMD,ANY,ANY-method}
@@ -312,6 +327,7 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
   \S4method{metadata}{MOPMX,missing,character}(object, key) <- value
   \S4method{metadata}{MOPMX,missing,data.frame}(object, key) <- value
   \S4method{metadata}{MOPMX,missing,logical}(object, key) <- value
+  \S4method{metadata}{OPM,missing,character}(object, key) <- value
   \S4method{metadata}{WMD,ANY,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,WMD}(object, key) <- value
