@@ -325,7 +325,7 @@ setMethod("do_aggr", "matrix", function(object, what = c("AUC", "A"),
   object.colnames <- colnames(object)
   ## i arguments are required by boot
   case(what <- match.arg(what),
-    A = boot_fun <- function(x, i) apply(x[i, ], 2L, max),
+    A = boot_fun <- function(x, i) apply(x[i, , drop = FALSE], 2L, max),
     AUC = {
       n.obs <- nrow(object)
       y <- y[-1L] - y[-n.obs]
