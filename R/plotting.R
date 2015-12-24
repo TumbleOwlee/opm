@@ -229,8 +229,10 @@ setMethod("improved_max", "numeric", function(object, by = 10) {
 }, sealed = SEALED)
 
 setMethod("improved_max", "OPMX", function(object, theor.max = TRUE, by = 10) {
-  if (L(theor.max))
-    return(THEOR_RANGE[2L])
+  if (is.double(L(theor.max)))
+    return(theor.max)
+  if (theor.max)
+    return(THEOR_RANGE[[2L]])
   improved_max(max(object), by)
 }, sealed = SEALED)
 
@@ -249,11 +251,11 @@ setMethod("draw_ci", "numeric", function(object, col = "blue", cex = 1,
   }
   if (is.na(y <- object[4L]))
     stop("position on y axis must be provided")
-  segments(left, y, right, y, lwd = cex, col = col)
-  text(left, y, "(", col = col, cex = cex)
-  text(right, y, ")", col = col, cex = cex)
+  segments(x0 = left, y0 = y, x1 = right, y1 = y, lwd = cex, col = col)
+  text(x = left, y = y, labels = "(", col = col, cex = cex)
+  text(x = right, y = y, labels = ")", col = col, cex = cex)
   if (!is.na(point <- object[2L]))
-    points(point, y, col = col, lwd = cex, pch = 19L, cex = cex)
+    points(x = point, y = y, col = col, lwd = cex, pch = 19L, cex = cex)
   invisible(object)
 }, sealed = SEALED)
 

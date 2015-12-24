@@ -65,7 +65,9 @@
 
   \item{theor.max}{Logical scalar. Use the theoretical
   maximum as maximum of the y-axis? If \code{FALSE}, use
-  the empirical maximum with a small offset.}
+  the empirical maximum with a small offset.  Can
+  alternatively be a scalar of mode \code{double}, which is
+  then directly used to set the upper limit of the y-axis.}
 
   \item{draw.grid}{Logical scalar. Insert background grid?}
 
