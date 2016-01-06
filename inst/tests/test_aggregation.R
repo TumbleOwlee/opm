@@ -11,29 +11,6 @@ if (!exists("TEST.DIR"))
 ################################################################################
 
 
-## to_grofit_time
-## UNTESTED
-
-
-## to_grofit_data
-## UNTESTED
-
-
-## extract_curve_params
-## UNTESTED
-
-
-## summary
-## UNTESTED
-
-
-## pe_and_ci
-## UNTESTED
-
-
-################################################################################
-
-
 ## do_aggr
 test_that("OPM objects can be aggregated using the fast method", {
 
@@ -116,4 +93,8 @@ test_that("MOPMX object can be agregated using the fast method", {
 
 
 ################################################################################
+
+
+## set_spline_options
+## UNTESTED
 

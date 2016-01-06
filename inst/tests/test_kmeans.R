@@ -4,6 +4,13 @@ library(testthat)
 context("Testing the k-means related functions of the OPM package")
 
 
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
+################################################################################
+
+
 ## to_kmeans
 test_that("conversion to 'kmeans' objects works", {
   x <- c(1, 2, 4, 5, 7, 8)
@@ -36,9 +43,6 @@ test_that("conversion to 'kmeans' objects works", {
 ## UNTESTED
 
 ## hist
-## UNTESTED
-
-## prepare_k
 ## UNTESTED
 
 ## run_kmeans

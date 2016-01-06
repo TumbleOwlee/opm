@@ -1,12 +1,12 @@
 
 
 library(testthat)
-context("Testing the multiple-testing functions of the OPM package")
+context("Testing the multiple-testing (multcomp) functions of the OPM package")
 
 
-# get example objects
 if (!exists("TEST.DIR"))
   attach(objects_for_testing())
+
 
 EXPL.OPMS <- c(THIN.AGG, THIN.AGG)
 EXPL.DF <- extract(EXPL.OPMS,
@@ -14,10 +14,6 @@ EXPL.DF <- extract(EXPL.OPMS,
 
 
 ################################################################################
-
-
-## check_mcp_sep
-## UNTESTED
 
 
 ## opm_mcp
@@ -87,9 +83,6 @@ test_that("opm_mcp converts 'model' arguments", {
     list(`foo-foo.bar.?baz.Well` = c("foo-foo", "bar.?baz", "Well")))
 })
 
-
-if (suppressWarnings(suppressPackageStartupMessages(
-  require(multcomp, quietly = TRUE, warn.conflicts = FALSE)))) {
 
 ## opm_mcp
 test_that("opm_mcp converts numeric 'linfct' arguments", {
@@ -463,19 +456,5 @@ test_that("'Pairs' contrast type can be combined with non-syntactic names", {
   expect_equal(length(y), 9)
   expect_equal(length(coef(y)), 7)
 })
-
-
-}
-
-
-################################################################################
-
-
-## convert_annotation_vector
-## UNTESTED
-
-
-
-
 
 

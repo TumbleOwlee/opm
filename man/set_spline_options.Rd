@@ -68,5 +68,8 @@
 \author{
   Benjamin Hofner
 }
+\seealso{
+  Other aggregation-functions: \code{\link{do_aggr}}
+}
 \keyword{misc}
 

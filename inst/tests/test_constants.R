@@ -4,6 +4,10 @@ library(testthat)
 context("Testing the constants of the OPM package for consistency")
 
 
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
 expect_length <- function(actual, expected) {
   expect_equal(length(actual), expected)
 }

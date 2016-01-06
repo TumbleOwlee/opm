@@ -8,6 +8,9 @@ if (!exists("TEST.DIR"))
   attach(objects_for_testing())
 
 
+################################################################################
+
+
 # Test whether or not object 'x' could be submitted to ci_plot.
 #
 is_ci_plottable <- function(x) {
@@ -210,10 +213,6 @@ test_that("MOPMX objects can be flattened", {
     c(RESERVED_NAMES[["plate"]], CSV_NAMES[["PLATE_TYPE"]])], drop = TRUE)
   expect_equal(length(levels(got)), length(plates(MOPMX.1)))
 })
-
-
-## flattened_to_factor
-## UNTESTED
 
 
 ################################################################################

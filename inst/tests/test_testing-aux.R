@@ -1,12 +1,14 @@
 
 
+library(testthat)
+context("Testing the testing helper functions of the OPM package")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
 ################################################################################
-#
-# NOTHING TO TEST
-#
-# 'testing.R' should only contain helper functions that are invoked during
-# testing anyway
-#
 
 
 ## source_location

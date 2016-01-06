@@ -70,37 +70,6 @@ fit_spline <- function (y, x = "Hour", data, options = set_spline_options(),
   return(mod)
 }
 
-set_spline_options <- function(type = c("tp.spline",
-    "p.spline", "smooth.spline"),
-    knots = NULL, gamma = 1, est.method = c("REML", "ML", "GCV"), s.par = NULL,
-    correlation = NULL, save.models = FALSE, filename = NULL, ...) {
-
-  if (!missing(...))
-    warning(sQuote("..."), " currently not passed to fitting functions")
-  type <- match.arg(type)
-  class <- ifelse(type == "tp.spline", "tp",
-    ifelse(type == "p.spline", "psp", "smooth.spline"))
-
-  method <- match.arg(est.method)
-  if (est.method == "ML" && is.null(correlation))
-    stop(sQuote(paste0("est.method = ", dQuote("ML"))), " can only be used if ",
-      sQuote("correlation"), " is specified")
-  if (est.method == "GCV" && !is.null(correlation))
-    stop(sQuote(paste0("est.method = ", dQuote("GCV"))),
-      " can only be used if no ", sQuote("correlation"), " is specified")
-  if (type == "smoothing-splines" && !is.null(s.par))
-    warning(sQuote("s.par"), " ignored if ",
-      sQuote('type = "smoothing-splines"'))
-  if (!is.null(filename) && !save.models) {
-    save.models <- TRUE
-    warning(sQuote("filename"), " specified, ", sQuote("save.models"),
-      " set to TRUE")
-  }
-  list(type = type, knots = knots, gamma = gamma, est.method = method,
-    s.par = s.par, correlation = correlation, save.models = save.models,
-    filename = filename, class = class, ...)
-}
-
 predict.smooth.spline_model <- function(object, newdata = NULL, ...) {
   if (is.null(newdata)) {
     ## get data from fitted model

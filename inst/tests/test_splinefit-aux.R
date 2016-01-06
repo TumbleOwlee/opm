@@ -1,7 +1,15 @@
+
+
+library(testthat)
+context("Testing the spline-fitting helper functions of the OPM package")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
 ################################################################################
-#
-# CURRENTLY NO TESTS
-#
+
 
 ## fit_spline
 ## UNTESTED
@@ -24,9 +32,6 @@
 ## smooth
 ## UNTESTED
 
-## set_spline_options
-## UNTESTED
-
 ## predict
 ## UNTESTED
 
@@ -44,3 +49,4 @@
 
 ## n_knots
 ## UNTESTED
+

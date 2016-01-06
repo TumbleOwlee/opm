@@ -1,6 +1,14 @@
 
+
 library(testthat)
-context("Testing the substrate mapping of the OPM package for consistency")
+context("Testing the substrate-information content of the OPM package")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
+################################################################################
 
 
 ## SUBSTRATE_INFO
@@ -21,4 +29,5 @@ test_that("CAS numbers and other IDs are OK", {
   na_or_match(SUBSTRATE_INFO[, "MESH"], "^[^\\s].*[^\\s]$", "MeSH")
   na_or_match(SUBSTRATE_INFO[, "SEED"], "^cpd\\d+$", "SEED")
 })
+
 

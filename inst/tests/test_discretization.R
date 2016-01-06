@@ -1,7 +1,11 @@
 
 
 library(testthat)
-context("Testing the functions of the OPM package for discretizing characters")
+context("Testing the discretization functions of the OPM package")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
 
 
 ################################################################################

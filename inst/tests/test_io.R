@@ -1,11 +1,12 @@
 
 
 library(testthat)
-context("Testing the IO functions of the opm package")
+context("Testing the I/O functions of the opm package")
 
 
 if (!exists("TEST.DIR"))
   attach(objects_for_testing())
+
 
 # This file does not exist, hence testfile_dir() would not return it
 INFILES.2 <- c(INFILES, sub("Example_3.csv.xz", "Example_4.csv.xz", INFILES[3L],
@@ -47,7 +48,7 @@ expect_path_equal <- function(actual, expected) {
 
 ################################################################################
 #
-# IO helpers
+# I/O helpers
 #
 
 
@@ -81,30 +82,6 @@ test_that("file patterns can be constructed", {
 # Input of single OPM files
 #
 
-
-## repair_oth
-## UNTESTED
-
-## read_old_opm
-## UNTESTED
-
-## read_new_opm
-## UNTESTED
-
-## read_lims_opm
-## UNTESTED
-
-## read_microstation_opm
-## UNTESTED
-
-## read_opm_yaml
-## UNTESTED
-
-## FILE_NOT_CSV
-## UNTESTED
-
-## FILE_LIMS
-## UNTESTED
 
 ## read_single_opm
 test_that("the example file in old style can be read", {
@@ -273,12 +250,8 @@ test_that("explode_dir deals with non-existing files", {
 
 ################################################################################
 #
-# Metadata IO
+# Metadata I/O
 #
-
-
-## finish_template
-## UNTESTED
 
 
 ## to_metadata
@@ -469,9 +442,6 @@ test_that("templates can be collected from MOPMX objects", {
 #
 
 
-## process_io
-## UNTESTED
-
 ## batch_process
 test_that("batch conversion works in demo mode", {
 
@@ -550,7 +520,7 @@ test_that("batch conversion works", {
 
 ################################################################################
 #
-# Batch IO with OPM objects
+# Batch I/O with OPM objects
 #
 
 ## batch_opm
@@ -611,4 +581,10 @@ test_that("files can be split", {
   unlink(tmp)
 
 })
+
+## FILE_NOT_CSV
+## UNTESTED
+
+## FILE_LIMS
+## UNTESTED
 

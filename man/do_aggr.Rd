@@ -226,6 +226,9 @@ stopifnot(identical(dim(x), c(3L, 96L)))
 }
 \seealso{
   grofit::grofit parallel::detectCores
+
+  Other aggregation-functions:
+  \code{\link{set_spline_options}}
 }
 \keyword{smooth}
 

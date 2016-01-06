@@ -1,7 +1,14 @@
 
 
 library(testthat)
-context("Testing the well mapping of the OPM package for consistency")
+context("Testing the well-mapping content of the OPM package for consistency")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
+################################################################################
 
 
 ## WELL_MAP

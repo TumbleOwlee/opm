@@ -1,7 +1,14 @@
 
 
 library(testthat)
-context("Testing the plate mapping of the OPM package for consistency")
+context("Testing the plate-mapping content of the OPM package for consistency")
+
+
+if (!exists("TEST.DIR"))
+  attach(objects_for_testing())
+
+
+################################################################################
 
 
 ## PLATE_MAP

@@ -1,6 +1,6 @@
 Package: opm
-Version: 1.3.20
-Date: 2015-12-23
+Version: 1.3.23
+Date: 2016-01-06
 Title: Analysing Phenotype Microarray and Growth Curve Data
 Author: Markus Goeker, with contributions by Benjamin Hofner, Lea A.I.
     Vaas, Johannes Sikorski, Maria del Carmen Montero Calasanz,
@@ -58,22 +58,34 @@ Collate:
     'package.R'
     'constants.R'
     'classes.R'
+    'classes-aux.R'
+    'auxiliary-aux.R'
     'auxiliary.R'
+    'kmeans-aux.R'
     'kmeans.R'
+    'naming-aux.R'
     'naming.R'
     'metadata.R'
     'getter.R'
+    'conversion-aux.R'
     'conversion.R'
+    'combination-aux.R'
     'combination.R'
+    'aggregation-aux.R'
     'aggregation.R'
     'discretization.R'
+    'plotting-aux.R'
     'plotting.R'
+    'io-aux.R'
     'io.R'
+    'phylogeny-aux.R'
     'phylogeny.R'
     'data.R'
-    'testing.R'
+    'testing-aux.R'
+    'multcomp-aux.R'
     'multcomp.R'
-    'splinefit.R'
+    'splinefit-aux.R'
+    'dbio-aux.R'
     'dbio.R'
 LazyData: yes
 LazyDataCompression: bzip2

@@ -2,6 +2,8 @@
 
 library(testthat)
 context("Testing the phylogeny-related functions of the OPM package")
+
+
 if (!exists("TEST.DIR"))
   attach(objects_for_testing())
 
@@ -43,10 +45,6 @@ test_that("cleaning names correctly converts string starts and ends", {
   got <- safe_labels(x, format = "nexus", enclose = FALSE)
   expect_equal(got, c("ab_cd", "ab_cd"))
 })
-
-
-## format
-## UNTESTED
 
 
 ## html_args

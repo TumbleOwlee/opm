@@ -11,12 +11,6 @@ if (!exists("TEST.DIR"))
 ################################################################################
 
 
-## to_opm_list
-## UNTESTED
-
-## try_opms
-## UNTESTED
-
 ## [<-
 test_that("MOPMX objects are restricted (bracket operator)", {
   x <- new("MOPMX")
