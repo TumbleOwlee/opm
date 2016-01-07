@@ -278,6 +278,15 @@ if (length(test.files) > 0) { # if the files are found
   \url{http://www.json.org/}
 
   \url{http://www.biolog.com/}
+
+  Caspi, R., Billington, R., Ferrer, L., Foerster, H.,
+  Fulcher, C.  A., Keseler, I. M., Kothari, A.,
+  Krummenacker, M., Latendresse, M., Mueller, L. A., Ong,
+  Q., Paley, S., Subhraveti, P., Weaver, D. S., Karp, P.
+  D. 2016 The MetaCyc database of metabolic pathways and
+  enzymes and the BioCyc collection of pathway/genome
+  databases. \emph{Nucleic Acids Research} \strong{44},
+  D471--D480 [opm YAML usage example].
 }
 \seealso{
   utils::read.csv yaml::yaml.load_file grDevices::Devices
