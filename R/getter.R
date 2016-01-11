@@ -429,6 +429,24 @@ setMethod("disc_settings", "MOPMX", function(object, join = NULL) {
     result
 }, sealed = SEALED)
 
+setMethod("disc_settings", "character", function(object, ...) {
+  result <- c(list(object, list(...)), opm_string(TRUE))
+  names(result) <- c(METHOD, OPTIONS, SOFTWARE, VERSION)
+  result
+}, sealed = SEALED)
+
+setMethod("disc_settings", "NULL", function(object, ...) {
+  disc_settings(object = "best-cutoff", ...)
+}, sealed = SEALED)
+
+setMethod("disc_settings", "numeric", function(object, ...) {
+  disc_settings(object = "direct", ...)
+}, sealed = SEALED)
+
+setMethod("disc_settings", "logical", function(object, ...) {
+  disc_settings(object = "kmeans", ...)
+}, sealed = SEALED)
+
 setGeneric("subset")
 
 setMethod("subset", "OPMX", function(x, query, values = TRUE,

@@ -6,13 +6,13 @@
   \code{\link{MOPMX}} object.}
 
   \item{cutoff}{Determines the discretisation approach. If
-  non-empty, passed as \code{range} argument to
+  not \code{NULL}, passed as \code{range} argument to
   \code{discrete} (with \code{gap} set to \code{TRUE}),
   thus triggering discretisation using either k-means
   partitioning or one or two predefined thresholds. If
-  empty (e.g., \code{NULL}), a discretisation cutoff is
-  determined using \code{\link{best_cutoff}}, which is only
-  possible for \code{\link{OPMS}} objects.}
+  \code{NULL}, a discretisation cutoff is determined using
+  \code{\link{best_cutoff}}, which is only possible for
+  \code{\link{OPMS}} objects.}
 
   \item{groups}{List, \code{NULL} or character vector
   passed as \sQuote{as.labels} argument to

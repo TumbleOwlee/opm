@@ -14,6 +14,8 @@
 
 - read_single_opm() and read_opm() can now read CSV with multiple plates per
   file
+- the 'theor.max' argument of xy_plot() can now be used to explicitly set the
+  upper boundary of the y-axis
 - parallel_plot() is now available as alias for parallelplot()
 - metadata_chars() gets a new option that allows for creating mappings from
   misspellings to correct spellings

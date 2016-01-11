@@ -4,7 +4,9 @@
 \title{Get discretised data}
 \arguments{
   \item{object}{\code{\link{OPMD}}, \code{\link{OPMS}} or
-  \code{\link{MOPMX}} object.}
+  \code{\link{MOPMX}} object. \code{disc_settings} methods
+  for other classes are helpers for generating raw settings
+  lists.}
 
   \item{full}{Logical scalar passed to \code{\link{wells}}.
   This and the following arguments affect the names of the
@@ -75,16 +77,24 @@ stopifnot(is.matrix(x), is.character(x), nrow(x) == 4)
 \docType{methods}
 \alias{disc_settings-methods}
 \alias{disc_settings,MOPMX-method}
+\alias{disc_settings,NULL-method}
 \alias{disc_settings,OPMD-method}
 \alias{disc_settings,OPMS-method}
+\alias{disc_settings,character-method}
+\alias{disc_settings,logical-method}
+\alias{disc_settings,numeric-method}
 \alias{discretized-methods}
 \alias{discretized,MOPMX-method}
 \alias{discretized,OPMD-method}
 \alias{discretized,OPMS-method}
 \usage{
   \S4method{disc_settings}{MOPMX}(object, join = NULL) 
+  \S4method{disc_settings}{NULL}(object, ...) 
   \S4method{disc_settings}{OPMD}(object, join = NULL) 
   \S4method{disc_settings}{OPMS}(object, join = NULL) 
+  \S4method{disc_settings}{character}(object, ...) 
+  \S4method{disc_settings}{logical}(object, ...) 
+  \S4method{disc_settings}{numeric}(object, ...) 
 
   \S4method{discretized}{MOPMX}(object, ...) 
   \S4method{discretized}{OPMD}(object, full = FALSE,
