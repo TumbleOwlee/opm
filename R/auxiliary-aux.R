@@ -137,7 +137,7 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
     storage.mode(x) <- "character"
     x
   }
-  how <- tryCatch(match.arg(how), error = function(e) how)
+  how <- tryCatch(expr = match.arg(how), error = function(e) how)
   switch(how,
     yaml = unlist_matrix(x, to_yaml, json = FALSE, listify = TRUE),
     json = unlist_matrix(x, to_yaml, json = TRUE, listify = TRUE),
@@ -723,7 +723,7 @@ repair_na_strings.list <- function(object,
   mapfun <- if (type == "character")
     repair_na_strings.character
   else
-    function(x) tryCatch({
+    function(x) tryCatch(expr = {
       x <- repair_na_strings.character(x)
       storage.mode(x) <- type
       x

@@ -89,7 +89,7 @@ opm_string <- function(version = FALSE) {
     y <- MEMOIZED$opm.version
   else
     MEMOIZED$opm.version <- y <- tryCatch(
-      as.character(packageVersion(x)), error = function(e) {
+      expr = as.character(packageVersion(x)), error = function(e) {
         warning(sprintf("cannot find %s version", x))
         UNKNOWN_VERSION
       })

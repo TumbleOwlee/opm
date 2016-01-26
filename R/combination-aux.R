@@ -48,8 +48,8 @@ to_opm_list.list <- function(object, precomputed = TRUE, skip = FALSE,
 try_opms <- function(object, ...) UseMethod("try_opms")
 
 try_opms.list <- function(object, precomputed = TRUE, skip = FALSE) {
-  tryCatch(
-    new("OPMS", plates = to_opm_list.list(object, precomputed, skip, FALSE)),
+  tryCatch(expr = new(Class = "OPMS",
+    plates = to_opm_list.list(object, precomputed, skip, FALSE)),
     error = function(e) object)
 }
 

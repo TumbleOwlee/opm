@@ -182,7 +182,7 @@ setMethod("negative_control", "OPMX", function(object, neg.ctrl) {
     neg.ctrl
   else if (is.character(neg.ctrl)) {
     result <- vapply(neg.ctrl, function(x)
-      tryCatch(minmax(object, neg.ctrl), error = function(e) {
+      tryCatch(expr = minmax(object, neg.ctrl), error = function(e) {
         warning("cannot get negative control from selected position ",
         "(deleted?); error was: ", conditionMessage(e), call. = FALSE)
         -1
@@ -222,7 +222,7 @@ setMethod("main_title", "OPMX", function(object, settings) {
 }, sealed = SEALED)
 
 try_select_colors <- function(set) {
-  tryCatch(select_colors(set), error = function(e) set)
+  tryCatch(expr = select_colors(set), error = function(e) set)
 }
 
 default_color_regions <- function(colors, space, bias, n) {

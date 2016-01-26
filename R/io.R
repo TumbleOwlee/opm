@@ -171,7 +171,8 @@ read_opm <- function(names = getwd(),
     convert = c("grp", "try", "no", "yes", "sep"), gen.iii = opm_opt("gen.iii"),
     include = list(), ..., force = FALSE, demo = FALSE) {
   do_split <- function(x) split(x, vapply(x, plate_type, ""))
-  do_opms <- function(x) case(length(x), , x[[1L]], new("OPMS", plates = x))
+  do_opms <- function(x) case(length(x), , x[[1L]],
+    new(Class = "OPMS", plates = x))
   convert <- match.arg(convert)
   LL(gen.iii, demo)
   names <- explode_dir(names = names, include = include, ...)
@@ -207,14 +208,15 @@ read_opm <- function(names = getwd(),
     ),
     case(convert,
       no = new("MOPMX", result),
-      yes = new("OPMS", plates = result),
+      yes = new(Class = "OPMS", plates = result),
       grp = new("MOPMX", lapply(do_split(result), do_opms)),
       sep = lapply(X = do_split(result), FUN = new, Class = "MOPMX"),
-      try = tryCatch(new("OPMS", plates = result), error = function(e) {
-        warning("the data from distinct files could not be converted to a ",
-          "single OPMS object and will be returned as a list")
-        new("MOPMX", result)
-      })
+      try = tryCatch(expr = new(Class = "OPMS", plates = result),
+        error = function(e) {
+          warning("the data from distinct files could not be converted to a ",
+            "single OPMS object and will be returned as a list")
+          new("MOPMX", result)
+        })
     )
   )
 }
@@ -237,7 +239,7 @@ read_single_opm <- function(filename) {
         `LIMS CSV` = read_lims_opm, YAML = read_opm_yaml)
   errs <- character(length(routines))
   for (i in seq_along(routines)) {
-    result <- tryCatch(routines[[i]](filename), error = conditionMessage)
+    result <- tryCatch(expr = routines[[i]](filename), error = conditionMessage)
     if (!is.character(result))
       return(result)
     errs[i] <- result

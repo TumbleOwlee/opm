@@ -5,18 +5,18 @@ setMethod("[<-", c("OPMS", "ANY", "missing", "NULL"), function(x, i, j,
 }, sealed = SEALED)
 
 setMethod("[<-", c("OPMS", "ANY", "missing", "OPM"), function(x, i, j, value) {
-  x@plates[i] <- value
-  new("OPMS", plates = close_index_gaps(x@plates)) # checks and unnaming needed
+  x@plates[i] <- value # checks and unnaming needed
+  new(Class = "OPMS", plates = close_index_gaps(x@plates))
 }, sealed = SEALED)
 
 setMethod("[<-", c("OPMS", "ANY", "missing", "OPMS"), function(x, i, j, value) {
-  x@plates[i] <- value@plates
-  new("OPMS", plates = close_index_gaps(x@plates)) # checks and unnaming needed
+  x@plates[i] <- value@plates # checks and unnaming needed
+  new(Class = "OPMS", plates = close_index_gaps(x@plates))
 }, sealed = SEALED)
 
 setMethod("[<-", c("OPMS", "ANY", "missing", "list"), function(x, i, j, value) {
-  x@plates[i] <- value
-  new("OPMS", plates = close_index_gaps(x@plates)) # checks and unnaming needed
+  x@plates[i] <- value # checks and unnaming needed
+  new(Class = "OPMS", plates = close_index_gaps(x@plates))
 }, sealed = SEALED)
 
 setMethod("[<-", c("MOPMX", "ANY", "missing", "ANY"), function(x, i, ...,
@@ -56,11 +56,11 @@ setMethod("c", "MOPMX", function(x, ..., recursive = FALSE) {
   if (missing(..1))
     return(x)
   y <- as.list(c(x@.Data, ..., recursive = recursive))
-  tryCatch(new(class(x), y), error = function(e) y)
+  tryCatch(expr = new(class(x), y), error = function(e) y)
 }, sealed = SEALED)
 
 setMethod("+", c("OPM", "OPM"), function(e1, e2) {
-  new("OPMS", plates = list(e1, e2))
+  new(Class = "OPMS", plates = list(e1, e2))
 }, sealed = SEALED)
 
 setMethod("+", c("OPM", "OPMS"), function(e1, e2) {
@@ -75,7 +75,7 @@ setMethod("+", c("OPM", "MOPMX"), function(e1, e2) {
 }, sealed = SEALED)
 
 setMethod("+", c("OPM", "list"), function(e1, e2) {
-  new("OPMS", plates = c(list(e1), e2))
+  new(Class = "OPMS", plates = c(list(e1), e2))
 }, sealed = SEALED)
 
 setMethod("+", c("OPMS", "OPMS"), function(e1, e2) {
@@ -96,7 +96,7 @@ setMethod("+", c("OPMS", "MOPMX"), function(e1, e2) {
 }, sealed = SEALED)
 
 setMethod("+", c("OPMS", "list"), function(e1, e2) {
-  new("OPMS", plates = c(e1@plates, e2)) # unnaming also needed
+  new(Class = "OPMS", plates = c(e1@plates, e2)) # unnaming also needed
 }, sealed = SEALED)
 
 setMethod("+", c("MOPMX", "OPMX"), function(e1, e2) {
@@ -116,7 +116,7 @@ setMethod("+", c("ANY", "MOPMX"), function(e1, e2) {
 
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {
   opms_or_first_or_NULL <- function(x) case(length(x), NULL, x[[1L]],
-    new("OPMS", plates = x))
+    new(Class = "OPMS", plates = x))
   if (is.character(group)) {
     wanted <- plate_type(group) # for normalization
     group <- TRUE

@@ -180,7 +180,7 @@ setMethod("do_disc", "OPMA", function(object, cutoff, groups = FALSE,
     datasets = 1L, parameter = subset, unified = -1)
   if (L(plain))
     return(structure(.Data = c(x), settings = settings))
-  new("OPMD", measurements = measurements(object),
+  new(Class = "OPMD", measurements = measurements(object),
     metadata = metadata(object), csv_data = csv_data(object),
     aggregated = aggregated(object), aggr_settings = aggr_settings(object),
     discretized = c(x), disc_settings = settings)
@@ -200,7 +200,7 @@ setMethod("do_disc", "OPMS", function(object, cutoff = TRUE, groups = FALSE,
   }
 
   create_opmd <- function(x, discretized, settings) {
-    new("OPMD", measurements = measurements(x),
+    new(Class = "OPMD", measurements = measurements(x),
       metadata = metadata(x), csv_data = csv_data(x),
       aggregated = aggregated(x), aggr_settings = aggr_settings(x),
       discretized = discretized, disc_settings = settings)

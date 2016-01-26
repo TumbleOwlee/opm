@@ -140,7 +140,7 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
   storage.mode(result) <- "character"
   step <- 0L
 
-  tryCatch({
+  tryCatch(expr = {
     last1 <- opm_dbnext(2L, conn)
     result[[step <- step + 1L]] <- "ok"
     ids <- opm_dbput(x, conn)

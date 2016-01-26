@@ -238,7 +238,7 @@ setMethod("oapply", "MOPMX", function(object, fun, ...,
   result <- sapply(X = object, FUN = fun, ..., simplify = simplify,
     USE.NAMES = TRUE) # using object@.Data would lose the names
   if (simplify && is.list(result))
-    tryCatch(new(class(object), result[!vapply(result, is.null, NA)]),
+    tryCatch(expr = new(class(object), result[!vapply(result, is.null, NA)]),
       error = function(e) result)
   else
     result
@@ -294,7 +294,7 @@ setMethod("sort", c("MOPMX", "ANY"), function(x, decreasing,
     na.last = TRUE, ...) {
   if (length(x) < 2L)
     return(x)
-  selection <- tryCatch(match.arg(by), error = function(e) "other")
+  selection <- tryCatch(expr = match.arg(by), error = function(e) "other")
   case(selection,
     length = criterion <- vapply(x, length, 0L),
     plate.type = criterion <- plate_type(x),

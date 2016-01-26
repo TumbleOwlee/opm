@@ -43,7 +43,7 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
     settings <- attributes(result)[items]
     for (item in items)
       attr(result, item) <- NULL
-    new("OPMA", measurements = measurements(object),
+    new(Class = "OPMA", measurements = measurements(object),
       metadata = metadata(object), csv_data = csv_data(object),
       aggregated = result, aggr_settings = settings)
   }
