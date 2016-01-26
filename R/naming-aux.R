@@ -110,7 +110,7 @@ is_cas <- function(x) {
   f <- attr(m, "match.length") > 0L
   ok <- f & !is.na(x)
   f[ok] <- cmp(paste0(ms(x, m, 1L)[ok], ms(x, m, 2L)[ok]), ms(x, m, 3L)[ok])
-  structure(f, names = x)
+  structure(.Data = f, names = x)
 }
 
 map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
@@ -155,7 +155,8 @@ well_index <- function(x, names) {
   else if (is.character(x))
     clean_coords(x)
   else if (inherits(x, "formula"))
-    eval(x[[length(x)]], structure(as.list(seq_along(names)), names = names))
+    eval(x[[length(x)]],
+      structure(.Data = as.list(seq_along(names)), names = names))
   else
     x
 }
@@ -221,7 +222,7 @@ well_to_substrate <- function(x, plate) {
     plate <- as.factor(substr(x, 5L, nchar(x)))
     pos <- split.default(seq_along(x), plate)
     x <- split.default(substr(x, 1L, 3L), plate)
-    x <- mapply(get_name, x, names(x), SIMPLIFY = FALSE)
+    x <- mapply(FUN = get_name, x = x, plate = names(x), SIMPLIFY = FALSE)
     result <- character(length(plate))
     for (i in seq_along(x))
       result[pos[[i]]] <- x[[i]]
@@ -276,12 +277,13 @@ web_query <- function(ids, what = c("kegg", "drug")) {
       found <- match(names(result), x, 0L)
       if (!all(found > 0L))
         stop("KEGG request yielded entries that do not match the query")
-      structure(result[found], names = x)
+      structure(.Data = result[found], names = x)
     }
     prepend <- paste0(match.arg(prepend, c("cpd", "drug")), ":")
     got <- get_and_remember(x = x, prefix = "KEGG.", getfun = run_keggrest,
       default = compound_object(list()), prepend = prepend)
-    structure(got, names = names(x), class = c("kegg_compounds", "print_easy"))
+    structure(.Data = got, names = names(x),
+      class = c("kegg_compounds", "print_easy"))
   }
   case(match.arg(what),
     kegg = get_kegg(ids, "cpd"),

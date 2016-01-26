@@ -22,7 +22,7 @@ setMethod("initialize", "CMAT", function(.Object, ...) {
     list = {
       if (length(.Object) && typeof(.Object[[1L]]) == "character")
         .Object[] <- lapply(.Object, map2int)
-      .Object[] <- lapply(.Object, sort.int, na.last = TRUE)
+      .Object[] <- lapply(.Object, sort.int, NULL, TRUE)
     },
     logical = .Object[] <- .Object + 1L
   )

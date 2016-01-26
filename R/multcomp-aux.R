@@ -10,13 +10,13 @@ convert_annotation_vector <- function(x, how, what, conc) {
       x <- cbind(x,
         Concentration = substrate_info(rownames(x), "concentration"))
     switch(what,
-      peptide = structure(cbind(x, collect(ids)),
+      peptide = structure(.Data = cbind(x, collect(ids)),
         comment = peptides2vector(ids)),
-      structure(cbind(x, collect(web_query(ids, what))), comment = ids)
+      structure(.Data = cbind(x, collect(web_query(ids, what))), comment = ids)
     )
   }
   create_dataframe <- function(x) {
-    x <- structure(as.data.frame(x), comment = comment(x))
+    x <- structure(.Data = as.data.frame(x), comment = comment(x))
     names(x) <- make.names(names(x))
     for (i in seq_along(x))
       if (all(x[, i] %in% c(0, 1, NA_real_)))
@@ -28,7 +28,7 @@ convert_annotation_vector <- function(x, how, what, conc) {
     data.frame = create_dataframe(create_matrix(x, ids, what, conc)),
     ids = {
       switch(what, peptide = ids <- peptides2vector(ids))
-      structure(x, names = ids, concentration = if (L(conc))
+      structure(.Data = x, names = ids, concentration = if (L(conc))
         unname(substrate_info(names(x), "concentration"))
       else
         NULL, comment = names(x))

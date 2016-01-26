@@ -127,13 +127,14 @@ COMPOUND_NAME_HTML_MAP <- c(
 )
 
 COMPOUND_NAME_HTML_MAP <- (function(x)
-    structure(sprintf("<%s>%s</%s>", x, names(x), x), names = names(x))
+    structure(.Data = sprintf("<%s>%s</%s>", x, names(x), x), names = names(x))
   )(COMPOUND_NAME_HTML_MAP)
 
 COMPOUND_NAME_HTML_MAP <- c(
   COMPOUND_NAME_HTML_MAP,
-  structure(sprintf("&%s;", GREEK_LETTERS), names = names(GREEK_LETTERS)),
-  structure(sprintf("&%s;", GREEK_LETTERS), names = GREEK_LETTERS)
+  structure(.Data = sprintf("&%s;", GREEK_LETTERS),
+    names = names(GREEK_LETTERS)),
+  structure(.Data = sprintf("&%s;", GREEK_LETTERS), names = GREEK_LETTERS)
 )
 
 SUBSTRATE_PATTERN <- (function() {
@@ -144,6 +145,6 @@ SUBSTRATE_PATTERN <- (function() {
   x <- c(x, any = paste0("(?:\\s*(?:", x[1L], "|", x[2L], "))?", collapse = ""))
   x[1L:2L] <- sprintf("\\s*%s", x[1L:2L])
   x <- c(x, plain = "")
-  structure(sprintf("^[A-Z]\\d{2}%s$", x), names = names(x))
+  structure(.Data = sprintf("^[A-Z]\\d{2}%s$", x), names = names(x))
 })()
 

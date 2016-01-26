@@ -160,7 +160,8 @@ setMethod("gen_iii", "OPM", function(object, to = "gen.iii", force = FALSE) {
     custom_plate_assert(to, colnames(object@measurements)[-1L])
   } else {
     to <- get(to, if (L(force))
-      structure(names(PLATE_MAP), names = make.names(tolower(names(PLATE_MAP))))
+      structure(.Data = names(PLATE_MAP),
+        names = make.names(tolower(names(PLATE_MAP))))
     else
       SPECIAL_PLATES)
   }
@@ -183,8 +184,8 @@ setGeneric("register_plate",
   function(object, ...) standardGeneric("register_plate"))
 
 setMethod("register_plate", "character", function(object, ...) {
-  x <- do.call(c, lapply(object, function(file) tryCatch(yaml.load_file(file),
-    error = function(e) readRDS(file))))
+  x <- do.call(c, lapply(object, function(file)
+    tryCatch(expr = yaml.load_file(file), error = function(e) readRDS(file))))
   x <- mapply(FUN = function(d, n) {
       names(d) <- rep.int(n, length(d))
       d
@@ -210,7 +211,7 @@ setMethod("register_plate", "list", function(object, ...) {
     if (!length(i <- rownames(x)))
       i <- rep(LETTERS, length.out = nrow(x))
     n <- vapply(i, sprintf, character(length(j)), fmt = "%s%02i", j)
-    structure(c(t(x)), names = c(n))
+    structure(.Data = c(t(x)), names = c(n))
   }
   prepare_well_map <- function(x) {
     if (inherits(x, "well_coords_map")) {
@@ -253,7 +254,7 @@ setMethod("register_plate", "list", function(object, ...) {
   nonempty <- vapply(object, length, 0L) > 0L
   insert_plate_types(object[nonempty])
   remove_plate_types(names(object)[!nonempty])
-  structure(nonempty, names = custom_plate_prepend(names(object)))
+  structure(.Data = nonempty, names = custom_plate_prepend(names(object)))
 }, sealed = SEALED)
 
 setGeneric("wells", function(object, ...) standardGeneric("wells"))
@@ -270,7 +271,7 @@ setMethod("wells", "OPM", function(object, full = FALSE, in.parens = TRUE,
     else
       normalize_predefined_plate(plate)
   if (full)
-    x <- structure(map_well_names(x, plate, in.parens = in.parens,
+    x <- structure(.Data = map_well_names(x, plate, in.parens = in.parens,
       max = max, brackets = brackets, clean = clean, word.wise = word.wise,
       paren.sep = paren.sep, downcase = downcase, rm.num = rm.num), names = x)
   if (simplify)
@@ -315,7 +316,8 @@ setClass("well_coords_listing", contains = "print_easy")
 
 setMethod("listing", "well_coords_map", function(x) {
   x <- x[!apply(is.na(x), 1L, all), , drop = FALSE]
-  result <- structure(vector("list", ncol(x)), names = plate <- colnames(x))
+  result <- structure(.Data = vector("list", ncol(x)),
+    names = plate <- colnames(x))
   full <- ifelse(custom_plate_is(plate),
     mget(custom_plate_prepend_full(custom_plate_proper(plate)), MEMOIZED,
     "character", rep.int(list(NA_character_), length(plate))), PLATE_MAP[plate])
@@ -384,7 +386,7 @@ setMethod("find_substrate", "character", function(object,
   }
   result <- case(match.arg(search),
     exact = find_name(object, fixed = TRUE),
-    glob = find_name(structure(glob_to_regex(object), names = object),
+    glob = find_name(structure(.Data = glob_to_regex(object), names = object),
       ignore.case = TRUE, perl = TRUE),
     regex = find_name(object, ignore.case = TRUE, perl = TRUE),
     approx = find_approx(object, max.distance = max.dev),
@@ -403,10 +405,10 @@ setGeneric("find_positions",
 setMethod("find_positions", "character", function(object, type = NULL, ...) {
   if (length(type) && !identical(type, FALSE)) {
     x <- WELL_MAP[, plate_type(type)[1L], "name"]
-    return(structure(names(x)[match(object, x)], names = object))
+    return(structure(.Data = names(x)[match(object, x)], names = object))
   }
   plates <- colnames(WELL_MAP)
-  sapply(object, FUN = function(name) {
+  sapply(X = object, FUN = function(name) {
     result <- which(WELL_MAP[, , "name"] == name, arr.ind = TRUE)
     matrix(c(plates[result[, 2L]], rownames(result)), ncol = 2L,
       dimnames = list(NULL, RESERVED_NAMES[c("plate", "well")]))
@@ -414,18 +416,18 @@ setMethod("find_positions", "character", function(object, type = NULL, ...) {
 }, sealed = SEALED)
 
 setMethod("find_positions", "substrate_match", function(object, ...) {
-  rapply(object, f = find_positions, "character", how = "list", ...)
+  rapply(object = object, f = find_positions, "character", how = "list", ...)
 }, sealed = SEALED)
 
 setMethod("find_positions", "list", function(object, ...) {
-  rapply(object, f = find_positions, classes = c("character", "factor"),
-    how = "list", ...)
+  rapply(object = object, f = find_positions,
+    classes = c("character", "factor"), how = "list", ...)
 }, sealed = SEALED)
 
 setMethod("find_positions", "OPM", function(object, type = NULL, ...) {
   object <- wells(object, full = TRUE, in.parens = FALSE)
   if (isTRUE(type))
-    structure(names(object), names = object)
+    structure(.Data = names(object), names = object)
   else
     find_positions(object, ...)
 }, sealed = SEALED)
@@ -441,7 +443,7 @@ setMethod("substrate_info", "character", function(object,
 
   find_substrate_id <- function(x) {
     result <- WELL_MAP[, , "substrate_id"][match(x, WELL_MAP[, , "name"])]
-    structure(as.integer(result), names = x)
+    structure(.Data = as.integer(result), names = x)
   }
 
   create_url <- function(x, how) {
@@ -468,7 +470,7 @@ setMethod("substrate_info", "character", function(object,
     bad <- vapply(x, length, 0L) < vapply(y, length, 0L)
     x[bad] <- lapply(x[bad], function(value) c(value, ""))
     x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
-    mapply(paste0, y, x, MoreArgs = list(collapse = ""))
+    mapply(FUN = paste0, x = y, y = x, MoreArgs = list(collapse = ""))
   }
 
   expand_greek_letters <- function(x) {
@@ -518,7 +520,7 @@ setMethod("substrate_info", "character", function(object,
       result[!ok] <- list(character())
       result
     }
-    result <- structure(vector("list", length(x)), names = x)
+    result <- structure(.Data = vector("list", length(x)), names = x)
     x <- remove_concentration(x)
     pat <- "(([A-Za-z][,-])*[A-Za-z]-)?[A-Z][a-z]{2}"
     pat <- sprintf("^%s(-%s)*$", pat, pat)
@@ -526,8 +528,8 @@ setMethod("substrate_info", "character", function(object,
     result[ok] <- strsplit(x[ok], "(?<!\\b\\w)-", FALSE, TRUE)
     result[!ok] <- recognize_full_names(x[!ok])
     if (remove.L)
-      result <- lapply(result, sub, pattern = "^L-", replacement = "",
-        ignore.case = FALSE, perl = TRUE)
+      result <- lapply(X = result, FUN = sub, pattern = "^L-",
+        replacement = "", ignore.case = FALSE, perl = TRUE)
     result
   }
 
@@ -612,7 +614,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, "MOPMX", function(object, ...) {
-    lapply(object@.Data, FUN = func_, ...)
+    lapply(X = object@.Data, FUN = func_, ...)
   }, sealed = SEALED)
 })
 

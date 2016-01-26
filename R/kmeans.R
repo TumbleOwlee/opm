@@ -67,15 +67,15 @@ borders.Ckmeans.1d.dp <- function(x, y, ...) {
 }
 
 borders.kmeanss <- function(x, ...) {
-  sapply(x, FUN = borders, y = attr(x, "input"), ..., simplify = FALSE)
+  sapply(X = x, FUN = borders, y = attr(x, "input"), ..., simplify = FALSE)
 }
 
 hist.kmeans <- function(x, y, col = "black", lwd = 1L, lty = 1L, main = NULL,
     xlab = "Clustered values", ...) {
   b <- borders(x, y)
   result <- hist(y, main = main, xlab = xlab, ...)
-  mapply(abline, v = b, col = col, lwd = lwd, lty = lty, SIMPLIFY = FALSE,
-    USE.NAMES = FALSE)
+  mapply(FUN = abline, v = b, col = col, lwd = lwd, lty = lty,
+    SIMPLIFY = FALSE, USE.NAMES = FALSE)
   invisible(result)
 }
 
@@ -93,8 +93,8 @@ hist.kmeanss <- function(x, k = NULL, col = "black", lwd = 1L, lty = 1L,
   if (!length(k) && !length(k <- smallest_k(x)))
     return(invisible(result))
   b <- lapply(as.character(k), function(key) borders(x[[key]], y))
-  mapply(abline, v = b, col = col, lwd = lwd, lty = lty, SIMPLIFY = FALSE,
-    USE.NAMES = FALSE)
+  mapply(FUN = abline, v = b, col = col, lwd = lwd, lty = lty,
+    SIMPLIFY = FALSE, USE.NAMES = FALSE)
   invisible(result)
 }
 
@@ -103,10 +103,10 @@ setGeneric("run_kmeans",
 
 setMethod("run_kmeans", c("numeric", "numeric"), function(object, k,
     cores = 1L) {
-  result <- mclapply(prepare_k(k), Ckmeans.1d.dp, x = object,
+  result <- mclapply(X = prepare_k(k), FUN = Ckmeans.1d.dp, x = object,
     mc.cores = cores)
-  structure(lapply(result, to_kmeans, y = object), class = "kmeanss",
-    input = object)
+  structure(.Data = lapply(X = result, FUN = to_kmeans, y = object),
+    class = "kmeanss", input = object)
 }, sealed = SEALED)
 
 setMethod("run_kmeans", c("matrix", "numeric"), function(object, k,
@@ -114,7 +114,7 @@ setMethod("run_kmeans", c("matrix", "numeric"), function(object, k,
   result <- if (ncol(object) < 2L)
     run_kmeans(as.vector(object), k, cores)
   else
-    structure(mclapply(prepare_k(k), function(centers) {
+    structure(.Data = mclapply(prepare_k(k), function(centers) {
       kmeans(x = object, centers = centers, nstart = nstart, ...)
     }, mc.cores = cores), class = "kmeanss")
   attr(result, "input") <- object

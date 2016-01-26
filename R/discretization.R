@@ -70,7 +70,7 @@ setMethod("discrete", "numeric", function(x, range, gap = FALSE,
           logical = stop("one cannot combine 'logical' and 'middle.na'"),
           factor = ordered(c(0L, 1L, 2L))
         )
-    structure(map[ints], cutoffs = range, names = names(x))
+    structure(.Data = map[ints], cutoffs = range, names = names(x))
 
   } else { # binary- to multiple-state mode without a gap
 
@@ -85,7 +85,7 @@ setMethod("discrete", "numeric", function(x, range, gap = FALSE,
           labels = FALSE)[-1L:-2L]
       else
         rep.int(1L, length(x))
-    structure(case(output,
+    structure(.Data = case(output,
       character = states[ints],
       integer = ints,
       logical = as.logical(ints - 1L),
@@ -117,7 +117,8 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
 
   indexes <- function(x) {
     y <- as.character(x)
-    sapply(levels(x), function(level) which(y == level), simplify = FALSE)
+    sapply(X = levels(x), FUN = function(level) which(y == level),
+      simplify = FALSE)
   }
 
   all_cutoffs <- function(x) {
@@ -154,7 +155,7 @@ setMethod("best_cutoff", c("matrix", "factor"), function(x, y,
     lapply(y, function(i) {
       cutoffs <- all_cutoffs(m <- x[i, , drop = FALSE])
       cbind(cutoff = cutoffs,
-        score = vapply(cutoffs, opt_fun_2, 1, x = m))
+        score = vapply(cutoffs, opt_fun_2, 0, m))
     })
   } else {
     do.call(rbind, lapply(y, function(i) {

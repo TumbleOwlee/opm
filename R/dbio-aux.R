@@ -61,7 +61,8 @@ backward_OPMA_to_list <- function(from) {
   aggr_backward <- function(a, w) {
     a[, "well_id"] <- w[match(a[, "well_id"], w[, "id"]), "coordinate"]
     a <- split.data.frame(a, a[, "well_id"])
-    lapply(a, function(x) structure(x[, "value"], names = x[, "parameter"]))
+    lapply(a, function(x) structure(.Data = x[, "value"],
+      names = x[, "parameter"]))
   }
   c(backward_OPM_to_list(from), list(
     aggr_settings = settings_backward(from@aggr_settings),
@@ -69,8 +70,8 @@ backward_OPMA_to_list <- function(from) {
 }
 
 backward_OPMD_to_list <- function(from) {
-  disc_backward <- function(d, w) as.list(structure(as.logical(d[, "value"]),
-    names = w[match(d[, "well_id"], w[, "id"]), "coordinate"]))
+  disc_backward <- function(d, w) as.list(structure(.Data = as.logical(d[,
+    "value"]), names = w[match(d[, "well_id"], w[, "id"]), "coordinate"]))
   c(backward_OPMA_to_list(from), list(
     disc_settings = settings_backward(from@disc_settings),
     discretized = disc_backward(from@discretized, from@wells)))

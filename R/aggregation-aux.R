@@ -28,7 +28,7 @@ extract_curve_params.grofit <- function(x, ...) {
   settings <- c(x$control)
   x <- summary(x$gcFit)
   map <- map_param_names()
-  structure(t(as.matrix(x[, names(map)])),
+  structure(.Data = t(as.matrix(x[, names(map)])),
     dimnames = list(map, x[, "TestId"]), settings = settings)
 }
 
@@ -105,11 +105,11 @@ pe_and_ci.boot <- function(x, ci = 0.95, as.pe = c("median", "mean", "pe"),
   as.pe <- match.arg(as.pe)
   type <- match.arg(type)
   if (nrow(x$t)) {
-    cis <- lapply(seq_along(x$t0), FUN = boot.ci, boot.out = x, conf = ci,
+    cis <- lapply(X = seq_along(x$t0), FUN = boot.ci, boot.out = x, conf = ci,
       type = type, ...)
     ok <- !vapply(cis, is.null, NA)
     cis[!ok] <- list(c(NA_real_, NA_real_))
-    cis[ok] <- lapply(cis[ok], `[[`, type, exact = FALSE)
+    cis[ok] <- lapply(X = cis[ok], FUN = `[[`, i = type, exact = FALSE)
     cis[ok] <- lapply(lapply(cis[ok], c), tail, 2L)
     cis <- do.call(cbind, cis)
   } else {

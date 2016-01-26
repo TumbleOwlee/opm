@@ -97,13 +97,13 @@ setMethod("[", c("OPMS", "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   if (missing(j) || identical(j, TRUE)) {
     # no call of OPM method if j and k are missing/TRUE and drop is FALSE
     if (!identical(k, TRUE) || drop)
-      y <- mapply(`[`, x = y, MoreArgs = list(j = k, drop = drop),
+      y <- mapply(FUN = `[`, x = y, MoreArgs = list(j = k, drop = drop),
         SIMPLIFY = FALSE, USE.NAMES = FALSE)
   } else if (is.list(j)) {
-    y <- mapply(`[`, x = y, i = j, MoreArgs = list(j = k, drop = drop),
+    y <- mapply(FUN = `[`, x = y, i = j, MoreArgs = list(j = k, drop = drop),
       SIMPLIFY = FALSE, USE.NAMES = FALSE)
   } else
-    y <- mapply(`[`, x = y, MoreArgs = list(i = j, j = k, drop = drop),
+    y <- mapply(FUN = `[`, x = y, MoreArgs = list(i = j, j = k, drop = drop),
       SIMPLIFY = FALSE, USE.NAMES = FALSE)
   if (length(y) == 1L)
     return(y[[1L]])
@@ -160,13 +160,13 @@ setMethod("[", c("MOPMX", "formula", "missing", "ANY"), function(x, i, j,
 
 setMethod("[", c("MOPMX", "list", "missing", "missing"), function(x, i, j,
     drop) {
-  x@.Data <- mapply(do_select, x@.Data, i, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+  x@.Data <- mapply(FUN = do_select, x = x@.Data, query = i, SIMPLIFY = FALSE)
   x@.Data <- close_index_gaps(x@.Data)
   x
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "list", "missing", "ANY"), function(x, i, j, drop) {
-  x@.Data <- mapply(do_select, x@.Data, i, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+  x@.Data <- mapply(FUN = do_select, x = x@.Data, query = i, SIMPLIFY = FALSE)
   if (drop)
     return(x@.Data)
   x@.Data <- close_index_gaps(x@.Data)
@@ -333,7 +333,7 @@ setMethod("aggregated", "OPMA", function(object, subset = NULL, ci = TRUE,
     x
   }
   trim_mat_into_hours <- function(x, hours, trim) {
-    structure(trim_into_hours(x, hours, trim), dim = dim(x),
+    structure(.Data = trim_into_hours(x, hours, trim), dim = dim(x),
       dimnames = dimnames(x))
   }
   trim_lambda <- function(x, hours, trim) {
@@ -530,7 +530,7 @@ setMethod("thin_out", "OPM", function(object, factor, drop = FALSE) {
 }, sealed = SEALED)
 
 setMethod("thin_out", "OPMS", function(object, ...) {
-  new("OPMS", plates = lapply(X = object@plates, FUN = thin_out, ...))
+  new(Class = "OPMS", plates = lapply(X = object@plates, FUN = thin_out, ...))
 }, sealed = SEALED)
 
 setMethod("thin_out", "MOPMX", function(object, ...) {
@@ -631,7 +631,7 @@ setMethod("contains", c("OPMS", "OPMS"), function(object, other, ...) {
 }, sealed = SEALED)
 
 setMethod("contains", c("OPM", "OPMS"), function(object, other, ...) {
-  mapply(identical, y = other@plates, MoreArgs = list(x = object, ...),
+  mapply(FUN = identical, y = other@plates, MoreArgs = list(x = object, ...),
     SIMPLIFY = TRUE, USE.NAMES = FALSE)
 }, sealed = SEALED)
 
@@ -683,7 +683,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, "MOPMX", function(object, ...) {
-    simplify_conditionally(lapply(object@.Data, FUN = func_, ...))
+    simplify_conditionally(lapply(X = object@.Data, FUN = func_, ...))
   }, sealed = SEALED)
 })
 
@@ -804,7 +804,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("factor", "WMD"), function(x, table) {
-    func_(structure(as.character(x), names = names(x)), table)
+    func_(structure(.Data = as.character(x), names = names(x)), table)
   }, sealed = SEALED)
 })
 
@@ -817,7 +817,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("list", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -830,7 +831,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("WMD", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -843,7 +845,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("character", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -856,7 +859,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("factor", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -869,7 +873,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("formula", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -882,7 +887,8 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("expression", "WMDS"), function(x, table) {
-    vapply(table@plates, func_, NA, x = x, USE.NAMES = FALSE)
+    vapply(X = table@plates, FUN = func_, FUN.VALUE = NA, x = x,
+      USE.NAMES = FALSE)
   }, sealed = SEALED)
 })
 
@@ -960,7 +966,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("ANY", "MOPMX"), function(x, table) {
-    lapply(table@.Data, func_, x = x)
+    lapply(X = table@.Data, FUN = func_, x = x)
   }, sealed = SEALED)
 })
 
@@ -973,7 +979,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("WMD", "MOPMX"), function(x, table) {
-    lapply(table@.Data, func_, x = x)
+    lapply(X = table@.Data, FUN = func_, x = x)
   }, sealed = SEALED)
 })
 
@@ -986,7 +992,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("WMDS", "MOPMX"), function(x, table) {
-    lapply(table@.Data, func_, x = x)
+    lapply(X = table@.Data, FUN = func_, x = x)
   }, sealed = SEALED)
 })
 
@@ -999,7 +1005,7 @@ lapply(c(
     #-
   ), FUN = function(func_) {
   setMethod(func_, c("MOPMX", "MOPMX"), function(x, table) {
-    lapply(table@.Data, func_, x = x)
+    lapply(X = table@.Data, FUN = func_, x = x)
   }, sealed = SEALED)
 })
 

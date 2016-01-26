@@ -104,7 +104,7 @@ plot.opm_models <- function(x, which = NULL, plot.data = TRUE,
 
   if (is.null(which))
     which <- 1:length(x)
-  lapply(x[which], plot, plot.data = plot.data,
+  lapply(X = x[which], FUN = plot, plot.data = plot.data,
     plot.spline = plot.spline, add.parameters = add.parameters,
     confint = confint, level = level, col = col,
     pch = pch, col.spline = col.spline, lty.spline = lty.spline,
@@ -147,7 +147,7 @@ lines.opm_models <- function(x, which = NULL, add.parameters = FALSE,
   if (is.null(which))
     which <- 1:length(x)
 
-  invisible(lapply(x[which], lines, add.parameters = add.parameters,
+  invisible(lapply(X = x[which], FUN = lines, add.parameters = add.parameters,
     confint = confint, level = level, col = col, lty = lty, lwd = lwd,
     lty.confint = lty.confint, lwd.confint = lwd.confint, ...))
 }

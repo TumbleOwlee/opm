@@ -312,8 +312,8 @@ setMethod("include_metadata", "WMD", function(object, md, keys, replace = FALSE,
     skip.failure = FALSE, remove.keys = TRUE, normalize = -1L, ...) {
 
   pick_from <- function(object, selection) {
-    matches <- lapply(names(selection), FUN = function(name) {
-      m <- lapply(selection[[name]], `==`, y = object[, name])
+    matches <- lapply(names(selection), function(name) {
+      m <- lapply(selection[[name]], `==`, object[, name])
       apply(do.call(cbind, m), 1L, any)
     })
     matches <- apply(do.call(cbind, matches), 1L, all)
@@ -491,7 +491,7 @@ setMethod("metadata", "WMD", function(object, key = NULL, exact = TRUE,
   else
     function(key) object@metadata[[key, exact = exact]]
   if (is.list(key))
-    sapply(key, fetch_fun, simplify = FALSE)
+    sapply(X = key, FUN = fetch_fun, simplify = FALSE)
   else # should be a (character) vector
     fetch_fun(key)
 }, sealed = SEALED)
@@ -516,7 +516,7 @@ setMethod("metadata_chars", "WMD", function(object, values = TRUE,
 
 setMethod("metadata_chars", "WMDS", function(object, values = TRUE,
     classes = "factor", max.dist = -1, ...) {
-  result <- unlist(lapply(object@plates, FUN = metadata_chars,
+  result <- unlist(lapply(X = object@plates, FUN = metadata_chars,
     values = values, classes = classes, max.dist = NA_real_, ...))
   if (is.na(L(max.dist)))
     return(result)
@@ -527,7 +527,7 @@ setMethod("metadata_chars", "WMDS", function(object, values = TRUE,
 
 setMethod("metadata_chars", "MOPMX", function(object, values = TRUE,
     classes = "factor", max.dist = -1, ...) {
-  result <- unlist(lapply(object@.Data, FUN = metadata_chars,
+  result <- unlist(lapply(X = object@.Data, FUN = metadata_chars,
     values = values, classes = classes, max.dist = NA_real_, ...))
   if (is.na(L(max.dist)))
     return(result)

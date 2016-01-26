@@ -78,7 +78,6 @@ setClass("MOPMX",
   contains = "list",
   slots = c(names = "character"),
   prototype = prototype(names = character()),
-  #prototype = structure(list(), names = character()),
   validity = function(object) {
     if (all(vapply(object@.Data, is, NA, "OPMX")))
       TRUE
@@ -164,7 +163,7 @@ setAs("list", "OPM", function(from) {
     mat[, sorted.names, drop = FALSE]
   }
   md <- repair_na_strings.list(as.list(from$metadata), "character")
-  new("OPM", csv_data = map_names(unlist(from$csv_data), rescue_dots),
+  new(Class = "OPM", csv_data = map_names(unlist(from$csv_data), rescue_dots),
     metadata = map_names(md, rescue_dots),
     measurements = convert_measurements(from$measurements))
 })
@@ -179,7 +178,7 @@ setAs("OPMA", "data.frame", function(from) {
 
 setAs("OPMA", "list", function(from) {
   result <- as(as(from, "OPM"), "list")
-  result$aggregated <- apply(aggregated(from), MARGIN = 2L, FUN = as.list)
+  result$aggregated <- apply(aggregated(from), 2L, as.list)
   result$aggr_settings <- aggr_settings(from)
   result
 })
@@ -192,7 +191,7 @@ setAs("list", "OPMA", function(from) {
     x # should now be matrix, reduced to the known wells, parameters and CIs
   }
   x <- as(from, "OPM")
-  new("OPMA", measurements = measurements(x),
+  new(Class = "OPMA", measurements = measurements(x),
     csv_data = csv_data(x), metadata = metadata(x),
     aggregated = select_aggr(from$aggregated, colnames(x@measurements)[-1L]),
     aggr_settings = update_settings_list(as.list(from$aggr_settings)))
@@ -230,20 +229,20 @@ setAs("list", "OPMD", function(from) {
   settings <- repair_missing_parameter(settings)
   discretized <- from$discretized[colnames(x@aggregated)]
   discretized <- unlist(repair_na_strings(discretized, "logical"))
-  new("OPMD", csv_data = csv_data(x), measurements = measurements(x),
+  new(Class = "OPMD", csv_data = csv_data(x), measurements = measurements(x),
     metadata = metadata(x), aggr_settings = aggr_settings(x),
     aggregated = aggregated(x), discretized = discretized,
     disc_settings = settings)
 })
 
 setAs("OPMS", "list", function(from) {
-  lapply(from@plates, as, Class = "list")
+  lapply(from@plates, as, "list")
 })
 
 setAs("list", "OPMS", function(from) {
   opmd.slots <- setdiff(slotNames("OPMD"), opma.slots <- slotNames("OPMA"))
   opma.slots <- setdiff(opma.slots, slotNames("OPM"))
-  new("OPMS", plates = lapply(from, function(x) {
+  new(Class = "OPMS", plates = lapply(from, function(x) {
     as(x, if (all(opma.slots %in% names(x)))
       if (all(opmd.slots %in% names(x)))
         "OPMD"
@@ -335,7 +334,7 @@ setAs("OPMA", "OPMD", function(from) {
 
 setAs("OPM", "OPM_DB", function(from) {
   x <- forward_OPM_to_list(from)
-  new("OPM_DB", plates = x$plates, wells = x$wells,
+  new(Class = "OPM_DB", plates = x$plates, wells = x$wells,
     measurements = x$measurements)
 })
 
@@ -345,7 +344,7 @@ setAs("OPM_DB", "OPM", function(from) {
 
 setAs("OPMA", "OPMA_DB", function(from) {
   x <- forward_OPMA_to_list(from)
-  new("OPMA_DB", plates = x$plates, wells = x$wells,
+  new(Class = "OPMA_DB", plates = x$plates, wells = x$wells,
     measurements = x$measurements, aggr_settings = x$aggr_settings,
     aggregated = x$aggregated)
 })
@@ -362,7 +361,7 @@ setAs("OPMD", "OPMD_DB", function(from) {
   d.data <- data.frame(id = seq_along(d.data), stringsAsFactors = FALSE,
     well_id = match(names(d.data), x$wells[, "coordinate"]),
     disc_setting_id = 1L, value = unname(d.data), check.names = FALSE)
-  new("OPMD_DB", plates = x$plates, wells = x$wells,
+  new(Class = "OPMD_DB", plates = x$plates, wells = x$wells,
     measurements = x$measurements, aggr_settings = x$aggr_settings,
     aggregated = x$aggregated, disc_settings = d.sets, discretized = d.data)
 })

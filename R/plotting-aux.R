@@ -15,7 +15,7 @@ print.OPMS_Listing <- function(x, ...) {
 }
 
 print.OPM_Summary <- function(x, ...) {
-  lapply(formatDL(x = names(x), y = unlist(x), ...), FUN = cat, sep = "\n")
+  lapply(X = formatDL(x = names(x), y = unlist(x), ...), FUN = cat, sep = "\n")
   invisible(x)
 }
 
@@ -63,14 +63,16 @@ setMethod("ranging", "numeric", function(object, extended = !zscores,
     if (extended) {
       center <- median(object, na.rm = na.rm)
       (object - center) / mad(object, center = center, na.rm = na.rm)
-    } else
+    } else {
       (object - mean(object, na.rm = na.rm)) / sd(object, na.rm = na.rm)
+    }
   } else {
     if (extended) {
       min.object <- min(object, na.rm = na.rm)
       (object - min.object) / (max(object, na.rm = na.rm) - min.object)
-    } else
+    } else {
       object / max(abs(object), na.rm = na.rm)
+    }
   }
   must(result * fac)
 }, sealed = SEALED)
@@ -184,16 +186,17 @@ setMethod("negative_control", "OPMX", function(object, neg.ctrl) {
         warning("cannot get negative control from selected position ",
         "(deleted?); error was: ", conditionMessage(e), call. = FALSE)
         -1
-      }), numeric(1L))
+      }), 0)
     result[result >= 0]
   } else if (is.logical(neg.ctrl)) {
     if (L(neg.ctrl))
       minmax(object)
     else
       NULL
-  } else
+  } else {
     stop("object 'neg.ctrl' must be either empty or a 'character', 'logical' ",
       "or 'numeric' vector")
+  }
 }, sealed = SEALED)
 
 setGeneric("main_title", function(object, ...) standardGeneric("main_title"))
@@ -213,8 +216,9 @@ setMethod("main_title", "OPMX", function(object, settings) {
   if (settings$use) {
     settings$use <- NULL
     do.call(plate_type, c(list(object = object), settings))
-  } else
+  } else {
     NULL
+  }
 }, sealed = SEALED)
 
 try_select_colors <- function(set) {

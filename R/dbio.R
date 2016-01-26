@@ -128,7 +128,7 @@ setMethod("opm_dbcheck", "ANY", function(conn, metadata = NULL,
   data(list = "vaas_4", package = opm_string(), envir = environment())
   # the get() call avoids a NOTE issued by R CMD check (vaas_4 not found)
   x <- get("vaas_4", , environment())[1L:2L, time.points, wells]
-  metadata(x) <- structure(list(), names = character())
+  metadata(x) <- structure(.Data = list(), names = character())
   if (length(metadata))
     if (is.data.frame(metadata))
       metadata(x) <- metadata

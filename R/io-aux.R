@@ -37,7 +37,7 @@ read_lims_opm <- function(filename) {
   to_csv_data <- function(x) {
     x <- strsplit(x, "=", TRUE)
     x <- do.call(rbind, x[vapply(x, length, 0L) == 2L])
-    structure(x[, 2L], names = x[, 1L])
+    structure(.Data = x[, 2L], names = x[, 1L])
   }
   to_measurements <- function(x) {
     x <- do.call(rbind, strsplit(chartr('"', " ", x), ",", TRUE))
@@ -77,7 +77,7 @@ read_old_opm <- function(filename) {
       x[bad] <- sub("^\\s+", "", x[bad], FALSE, TRUE)
     if (any(bad <- grepl(",$", x, FALSE, TRUE)))
       x[bad] <- sub(",+$", "", x[bad], FALSE, TRUE)
-    structure(c(filename, x), names = c(CSV_NAMES[["FILE"]], n))
+    structure(.Data = c(filename, x), names = c(CSV_NAMES[["FILE"]], n))
   }
 
   prepare_opm <- function(x, pos) {
@@ -226,7 +226,7 @@ process_io <- function(files, io.fun, fun.args = list(),
     result$after <- conduct_conversion(files[1L], files[2L], io.fun, fun.args)
   }
   if (verbose) {
-    lapply(formatDL(unlist(result), style = "list"), message)
+    lapply(formatDL(x = unlist(result), style = "list"), message)
     message("")
   }
   unlist(result)

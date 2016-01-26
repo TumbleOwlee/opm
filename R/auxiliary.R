@@ -71,7 +71,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
     x <- strsplit(x, sprintf("[%s]", p0(split)), FALSE, TRUE)
     if (strip.white)
       x <- lapply(x, strip_white)
-    chars <- unlist(x, recursive = FALSE)
+    chars <- unlist(x, FALSE)
     chars <- unique.default(chars[!is.na(chars)])
     result <- matrix(FALSE, length(x), length(chars))
     colnames(result) <- sort.int(chars)

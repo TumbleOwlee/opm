@@ -59,7 +59,7 @@ setMethod("show", "MOPMX", function(object) {
 
 setMethod("show", "CMAT", function(object) {
   if (typeof(object) == "list") {
-    object[] <- lapply(object, paste0, collapse = "/")
+    object[] <- lapply(X = object, FUN = paste0, collapse = "/")
     storage.mode(object) <- "character"
   }
   callNextMethod()
@@ -313,9 +313,9 @@ setMethod("level_plot", "OPMS", function(x, main = list(),
   if (is.null(cex))
     cex <- guess_cex(dims[3L])
   data <- flatten(x, ...)
-  if (is.null(panel.headers) || (is.logical(panel.headers) && !panel.headers))
+  if (is.null(panel.headers) || (is.logical(panel.headers) && !panel.headers)) {
     strip.fmt <- FALSE
-  else {
+  } else {
     if (is.logical(panel.headers))
       panel.headers <- flattened_to_factor(object = data, sep = legend.sep)
     if (!is.expression(panel.headers))
@@ -350,7 +350,7 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     if (length(vline))
       abline(v = vline, lty = 2L, col = "gray60")
     axis(2L, at = chunk.pos, labels = row.names)
-    vapply(chunk.pos, FUN = function(pos) {
+    vapply(chunk.pos, function(pos) {
       pe <- object[pos, col.pos]
       left <- object[pos + 1L, col.pos]
       right <- object[pos + 2L, col.pos]
@@ -374,26 +374,29 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
     ordering <- do.call(order, as.list(object[, factor.pos, drop = FALSE]))
     object <- object[ordering, , drop = FALSE]
     legend <- as.matrix(object[chunk.pos, factor.pos, drop = FALSE])
-    legend <- apply(legend, 1L, paste, collapse = rowname.sep)
+    legend <- apply(X = legend, MARGIN = 1L, FUN = paste,
+      collapse = rowname.sep)
     legend <- paste(row.names, legend, sep = ": ")
-  } else
+  } else {
     legend <- NULL
+  }
 
   # Reduce to the numeric part of matrix
   object <- as.matrix(object[, seq.int(param.pos + 1L, ncol(object)),
     drop = FALSE])
 
   # Determine field range (which is set to be uniform)
-  ranges <- apply(object, 2L, range, na.rm = TRUE)
-  max.range <- max(apply(ranges, 2L, FUN = function(x) x[2L] - x[1L]))
-  ranges <- apply(ranges, 2L, FUN = best_range, target = max.range,
-    align = align, prop.offset = prop.offset)
-  ylim <- best_range(chunk.pos, target = NULL, prop.offset = prop.offset)
+  ranges <- apply(X = object, MARGIN = 2L, FUN = range, na.rm = TRUE)
+  max.range <- max(apply(ranges, 2L, function(x) x[2L] - x[1L]))
+  ranges <- apply(X = ranges, MARGIN = 2L, FUN = best_range,
+    target = max.range, align = align, prop.offset = prop.offset)
+  ylim <- best_range(object = chunk.pos, target = NULL,
+    prop.offset = prop.offset)
 
   # Panel layout and plotting of individual panels
   old.par <- par(mfcol = best_layout(ncol(object), crr))
   on.exit(par(old.par))
-  lapply(seq_len(ncol(object)), FUN = single_plot)
+  lapply(seq_len(ncol(object)), single_plot)
 
   # Legend
   if (draw.legend && !is.null(legend)) {
@@ -466,13 +469,14 @@ setMethod("heat_map", "matrix", function(object,
         if (is.null(groups))
           return(NULL)
       }
-    } else
+    } else {
       groups <- as.character(groups)
+    }
     colors <- try_select_colors(colors)
     groups <- as.factor(groups)
     if (length(colors) < length(levels(groups)))
       stop("more groups than colours given")
-    structure(colors[groups], names = as.character(groups))
+    structure(.Data = colors[groups], names = as.character(groups))
   }
 
   do_asqr <- function(x, percent) {
@@ -510,8 +514,8 @@ setMethod("heat_map", "matrix", function(object,
 
   case(match.arg(use.fun),
     gplots = {
-      if (suppressMessages(suppressWarnings(require(gplots, quietly = TRUE,
-          warn.conflicts = FALSE)))) {
+      if (suppressMessages(suppressWarnings(require(package = gplots,
+          quietly = TRUE, warn.conflicts = FALSE)))) {
         arg.list <- insert(arg.list, trace = "none", .force = FALSE)
         heatmap_fun <- gplots::heatmap.2
       } else {
@@ -533,8 +537,9 @@ setMethod("heat_map", "matrix", function(object,
     if (log1)
       stop("log and asrq transformation cannot both be chosen")
     object[] <- do_asqr(object, is.na(asqr))
-  } else if (log1)
+  } else if (log1) {
     object[] <- log1p(object)
+  }
 
   result <- do.call(heatmap_fun, c(list(x = object), arg.list))
   result$colColMap <- col.side.colors
@@ -581,7 +586,7 @@ setMethod("radial_plot", "matrix", function(object, as.labels = NULL,
   adapt_colors <- function(x, colors) {
     if (length(colors) < length(levels(f <- as.factor(x))))
       stop("not enough colours provided")
-    structure(colors[f], names = x)
+    structure(.Data = colors[f], names = x)
   }
 
   LL(radlab, show.centroid, show.grid.labels, draw.legend, xpd, pch, group.col)
@@ -766,12 +771,12 @@ setMethod("parallel_plot", c("OPMX", "ANY"), function(x, data, groups = 1L,
   x <- as.data.frame(x = x, include = data, sep = NULL, settings = FALSE)
 
   # Process the 'param' argument
-  if (missing(pnames))
+  if (missing(pnames)) {
     if (length(tmp <- extract_left_side(data)))
       pnames <- tmp
     else
       pnames <- match.arg(pnames, several.ok = TRUE)
-  else {
+  } else {
     if (is.language(pnames))
       pnames <- all.vars(pnames)
     pnames <- match.arg(pnames, param_names(), TRUE)

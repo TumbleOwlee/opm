@@ -21,8 +21,8 @@ explode_dir <- function(names,
     }
     is.dir <- is.dir[!no.info]
     names <- as.list(names[!no.info]) # use of a list ensures input order
-    names[is.dir] <- lapply(names[is.dir], FUN = list.files, full.names = TRUE,
-      recursive = recursive)
+    names[is.dir] <- lapply(X = names[is.dir], FUN = list.files,
+      full.names = TRUE, recursive = recursive)
     unlist(names)
   }
   select_files <- function(data, pattern, invert) {
@@ -48,8 +48,8 @@ batch_collect <- function(names, fun, fun.args = list(), proc = 1L, ...,
     return(invisible(names))
   }
   fun.args <- as.list(fun.args)
-  mcmapply(FUN = fun, names, MoreArgs = as.list(fun.args), SIMPLIFY = simplify,
-    USE.NAMES = use.names, mc.cores = proc)
+  mcmapply(MoreArgs = as.list(fun.args), names, # this arg should not be named
+    FUN = fun, SIMPLIFY = simplify, USE.NAMES = use.names, mc.cores = proc)
 }
 
 batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
@@ -73,7 +73,8 @@ batch_process <- function(names, out.ext, io.fun, fun.args = list(), proc = 1L,
     return(invisible(cbind(infiles, outfiles)))
   }
   fun.args <- as.list(fun.args)
-  data <- mapply(c, infiles, outfiles, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  data <- mapply(FUN = c, infiles, outfiles, # do not name these two arguments
+    SIMPLIFY = FALSE, USE.NAMES = FALSE)
   result <- mclapply(X = data, FUN = process_io, mc.cores = proc,
     io.fun = io.fun, fun.args = fun.args, overwrite = overwrite,
     verbose = verbose)
@@ -143,10 +144,11 @@ split_files <- function(files, pattern, outdir = "", demo = FALSE,
       return(character())
     outnames <- sprintf(format, out.base, seq_along(data), out.ext)
     if (demo)
-      message(listing(structure(outnames, names = seq_along(outnames)),
+      message(listing(structure(.Data = outnames, names = seq_along(outnames)),
         header = infile))
     else
-      mapply(write, data, outnames, USE.NAMES = FALSE, SIMPLIFY = FALSE)
+      mapply(FUN = write, x = data, file = outnames, USE.NAMES = FALSE,
+        SIMPLIFY = FALSE)
     outnames
   }, files, out$base, out$ext, SIMPLIFY = FALSE))
 }
@@ -183,7 +185,7 @@ read_opm <- function(names = getwd(),
     logical = if (gen.iii)
       result <- lapply(result, gen_iii),
     character = if (nzchar(gen.iii))
-      result <- lapply(result, gen_iii, to = gen.iii, force = force),
+      result <- lapply(X = result, FUN = gen_iii, to = gen.iii, force = force),
     stop("'gen.iii' must either be logical or character scalar")
   )
   case(length(result),
@@ -196,8 +198,9 @@ read_opm <- function(names = getwd(),
     ),
     case(convert,
       no = new("MOPMX", result),
-      grp = new("MOPMX", structure(result, names = plate_type(result[[1L]]))),
-      sep = structure(list(new("MOPMX", result)),
+      grp = new("MOPMX", structure(.Data = result,
+        names = plate_type(result[[1L]]))),
+      sep = structure(.Data = list(new("MOPMX", result)),
         names = plate_type(result[[1L]])),
       yes =,
       try = result[[1L]]
@@ -206,7 +209,7 @@ read_opm <- function(names = getwd(),
       no = new("MOPMX", result),
       yes = new("OPMS", plates = result),
       grp = new("MOPMX", lapply(do_split(result), do_opms)),
-      sep = lapply(do_split(result), new, Class = "MOPMX"),
+      sep = lapply(X = do_split(result), FUN = new, Class = "MOPMX"),
       try = tryCatch(new("OPMS", plates = result), error = function(e) {
         warning("the data from distinct files could not be converted to a ",
           "single OPMS object and will be returned as a list")
@@ -495,8 +498,9 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
     }
     out.names <- gsub(" ", "-", names(x), FALSE, FALSE, TRUE)
     out.names <- paste(sprintf(outfile.template, out.names), out.ext, sep = ".")
-    x <- mclapply(x, convert_dataset, mc.cores = proc)
-    mcmapply(create_single_file, x, out.names, mc.cores = proc)
+    x <- mclapply(X = x, FUN = convert_dataset, mc.cores = proc)
+    mcmapply(FUN = create_single_file, infile = x, outfile = out.names,
+      mc.cores = proc)
     names(out.names) <- names(x)
     if (verbose)
       message(listing(out.names))

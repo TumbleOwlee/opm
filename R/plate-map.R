@@ -1,5 +1,5 @@
 PLATE_MAP <-
-structure(c("Anaerobe Identification", "Microbial Community Analysis",
+structure(.Data = c("Anaerobe Identification", "Microbial Community Analysis",
 "Fungi Identification", "Identification", "Chemical Sensitivity",
 "Carbon and Energy Sources", "Carbon and Energy Sources / Nitrogen Sources",
 "Carbon and Energy Sources / Nitrogen Sources", "Carbon and Energy Sources / Nitrogen Sources",

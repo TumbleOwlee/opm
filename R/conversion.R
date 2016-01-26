@@ -12,7 +12,7 @@ setMethod("merge", c("OPM", "numeric"), function(x, y, sort.first = TRUE,
 
 setMethod("merge", c("OPM", "OPM"), function(x, y, sort.first = TRUE,
     parse = TRUE) {
-  merge(new("OPMS", plates = list(x, y)), 0.25, sort.first, parse)
+  merge(new(Class = "OPMS", plates = list(x, y)), 0.25, sort.first, parse)
 }, sealed = SEALED)
 
 setMethod("merge", c("OPMS", "numeric"), function(x, y, sort.first = TRUE,
@@ -27,12 +27,12 @@ setMethod("merge", c("OPMS", "numeric"), function(x, y, sort.first = TRUE,
     m[, 1L] <- as.vector(t(tp + to.add))
   } else if (is.list(tp)) {
     to.add <- c(0, must(cumsum(vapply(tp[-length(tp)], tail, 1, 1L) + y)))
-    m[, 1L] <- unlist(mapply(`+`, tp, to.add, SIMPLIFY = FALSE,
+    m[, 1L] <- unlist(mapply(FUN = `+`, x = tp, y = to.add, SIMPLIFY = FALSE,
       USE.NAMES = FALSE), FALSE, FALSE)
   } else {
     stop(BUG_MSG)
   }
-  new("OPM", measurements = m, csv_data = csv_data(x[1L]),
+  new(Class = "OPM", measurements = m, csv_data = csv_data(x[1L]),
     metadata = metadata(x[1L]))
 }, sealed = SEALED)
 
@@ -43,7 +43,7 @@ setMethod("merge", c("OPMS", "missing"), function(x, y, sort.first = TRUE,
 
 setMethod("merge", c("MOPMX", "missing"), function(x, y) {
   combine <- function(x) if (length(x <- plates(x)) > 1L)
-      new("OPMS", plates = x)
+      new(Class = "OPMS", plates = x)
     else
       x[[1L]]
   if (!anyDuplicated.default(pt <- plate_type(x)))
@@ -78,7 +78,7 @@ setMethod("merge", c("CMAT", "factor"), function(x, y) {
   x <- aggregate(as.data.frame(x, stringsAsFactors = FALSE), by = list(y),
     FUN = c, recursive = TRUE, simplify = FALSE)
   x <- as.matrix(x[, -1L, drop = FALSE])
-  x[] <- lapply(x, sort.int, na.last = TRUE)
+  x[] <- lapply(x, sort.int, NULL, TRUE)
   rownames(x) <- levels(y)
   colnames(x) <- cn
   new("CMAT", x)
@@ -99,7 +99,8 @@ setMethod("split", c("OPM", "missing", "ANY"), function(x, f, drop) {
     m <- regexpr("(?<=#)\\s*\\d+\\s*$", x, FALSE, TRUE)
     conc <- as.integer(substr(x, m, m + attr(m, "match.length") - 1L))
     regmatches(x, m) <- "1"
-    list(Concentration = conc, Standardized = structure(names(x), names = x))
+    list(Concentration = conc,
+      Standardized = structure(.Data = names(x), names = x))
   }
   regular_size <- function(x) {
     counts <- tabulate(x$Concentration)
@@ -124,13 +125,14 @@ setMethod("split", c("OPM", "missing", "ANY"), function(x, f, drop) {
   }
   for (i in seq_along(w)[-1L])
     w[[i]] <- w[[i]][names(w[[1L]])]
-  new("OPMS", plates = mapply(get_and_rename, conc = as.integer(names(w)),
-    w1 = w, SIMPLIFY = FALSE, USE.NAMES = FALSE, MoreArgs = list(x = x,
-      w2 = w[[1L]], drop = drop, key = get("series.key", OPM_OPTIONS))))
+  new(Class = "OPMS", plates = mapply(FUN = get_and_rename,
+    conc = as.integer(names(w)), w1 = w, SIMPLIFY = FALSE, USE.NAMES = FALSE,
+    MoreArgs = list(x = x, w2 = w[[1L]], drop = drop,
+      key = get("series.key", OPM_OPTIONS))))
 }, sealed = SEALED)
 
 setMethod("split", c("OPMS", "missing", "ANY"), function(x, f, drop) {
-  x@plates <- lapply(x@plates, split, drop = drop)
+  x@plates <- lapply(X = x@plates, FUN = split, drop = drop)
   x@plates <- unlist(lapply(x@plates, slot, "plates"), FALSE, FALSE)
   x
 }, sealed = SEALED)
@@ -180,12 +182,12 @@ setMethod("split", c("MOPMX", "list", "missing"), function(x, f, drop) {
 setMethod("split", c("MOPMX", "list", "ANY"), function(x, f, drop) {
   if (!all(vapply(f, is.factor, NA)))
     f <- metadata2factorlist(x, f)
-  x <- mapply(split, x = x, f = f, MoreArgs = list(drop = drop),
+  x <- mapply(FUN = split, x = x, f = f, MoreArgs = list(drop = drop),
     SIMPLIFY = FALSE)
   f <- sort.int(unique.default(unlist(lapply(f, levels), FALSE, FALSE)))
-  result <- structure(vector("list", length(f)), names = f)
+  result <- structure(.Data = vector("list", length(f)), names = f)
   for (level in f)
-    result[[level]] <- lapply(x, `[[`, i = level)
+    result[[level]] <- lapply(x, `[[`, level)
   lapply(lapply(result, close_index_gaps), as, "MOPMX")
 }, sealed = SEALED)
 
@@ -298,7 +300,7 @@ setMethod("sort", c("MOPMX", "ANY"), function(x, decreasing,
     plate.type = criterion <- plate_type(x),
     other = {
       m <- metadata(object = x, key = by, exact = exact, strict = strict)
-      criterion <- sapply(m, max, na.rm = TRUE, USE.NAMES = FALSE)
+      criterion <- sapply(X = m, FUN = max, na.rm = TRUE, USE.NAMES = FALSE)
     }
   )
   x[sort.list(x = criterion, decreasing = decreasing, na.last = na.last, ...)]
@@ -345,12 +347,12 @@ setGeneric("rep")
 
 setMethod("rep", "OPM", function(x, ...) {
   x <- rep(list(x), ...)
-  case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
+  case(length(x), NULL, x[[1L]], new(Class = "OPMS", plates = x))
 }, sealed = SEALED)
 
 setMethod("rep", "OPMS", function(x, ...) {
   x <- rep(x@plates, ...)
-  case(length(x), NULL, x[[1L]], new("OPMS", plates = x))
+  case(length(x), NULL, x[[1L]], new(Class = "OPMS", plates = x))
 }, sealed = SEALED)
 
 setGeneric("extract", function(object, ...) standardGeneric("extract"))
@@ -362,7 +364,7 @@ setMethod("extract", "MOPMX", function(object, as.labels,
   convert_row_groups <- function(x) { # for generated matrices only
     result <- unlist(lapply(x, rownames), FALSE, FALSE)
     result <- sort.int(unique.default(result))
-    result <- structure(character(length(result)), names = result)
+    result <- structure(.Data = character(length(result)), names = result)
     for (mat in x) # last one wins, as in collect()
       result[rownames(mat)] <- as.character(attr(mat, "row.groups"))
     as.factor(unname(result))
@@ -386,8 +388,8 @@ setMethod("extract", "MOPMX", function(object, as.labels,
       for (i in seq_along(x))
         rownames(x[[i]]) <- paste(base[[i]], seq_len(nrow(x[[i]])), sep = ".")
     }
-    return(structure(collect(x, "datasets"), row.groups = if (length(as.groups))
-        convert_row_groups(x)
+    return(structure(.Data = collect(x, "datasets"),
+      row.groups = if (length(as.groups)) convert_row_groups(x)
       else
         NULL))
   }
@@ -429,7 +431,7 @@ setMethod("extract", "OPMS", function(object, as.labels,
     ci <- FALSE
     result <- discretized(object, full = full, max = max, ...)
   } else {
-    result <- do.call(rbind, lapply(object@plates, FUN = aggregated,
+    result <- do.call(rbind, lapply(X = object@plates, FUN = aggregated,
       subset = subset, ci = ci, trim = trim, full = full, max = max, ...))
   }
 
@@ -609,11 +611,11 @@ setMethod("extract_columns", "WMDS", function(object, what, join = FALSE,
   }
   result <- metadata(object, what, exact, strict)
   result <- if (is.list(result))
-    lapply(result, rapply, f = as.character)
+    lapply(result, rapply, as.character)
   else
     as.list(as.character(result))
   if (L(join)) {
-    result <- unlist(lapply(result, FUN = paste0, collapse = sep))
+    result <- unlist(lapply(X = result, FUN = paste0, collapse = sep))
     msg <- if (is.dup <- anyDuplicated(result))
       paste("duplicated label:", result[is.dup])
     else
@@ -756,9 +758,9 @@ setMethod("as.data.frame", "OPMS", function(x, row.names = NULL,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   if (!length(row.names))
     row.names <- vector("list", length(x@plates))
-  do.call(rbind, mapply(as.data.frame, x = x@plates, row.names = row.names,
-    MoreArgs = list(optional = optional, sep = sep, csv.data = csv.data,
-      settings = settings, include = include, ...,
+  do.call(rbind, mapply(FUN = as.data.frame, x = x@plates,
+    row.names = row.names, MoreArgs = list(optional = optional, sep = sep,
+      csv.data = csv.data, settings = settings, include = include, ...,
       stringsAsFactors = stringsAsFactors),
     SIMPLIFY = FALSE, USE.NAMES = FALSE))
 }, sealed = SEALED)
@@ -768,9 +770,9 @@ setMethod("as.data.frame", "MOPMX", function(x, row.names = NULL,
     include = FALSE, ..., stringsAsFactors = default.stringsAsFactors()) {
   if (!length(row.names))
     row.names <- vector("list", length(x@.Data))
-  do.call(rbind, mapply(as.data.frame, x = x@.Data, row.names = row.names,
-    MoreArgs = list(optional = optional, sep = sep, csv.data = csv.data,
-      settings = settings, include = include, ...,
+  do.call(rbind, mapply(FUN = as.data.frame, x = x@.Data,
+    row.names = row.names, MoreArgs = list(optional = optional, sep = sep,
+      csv.data = csv.data, settings = settings, include = include, ...,
       stringsAsFactors = stringsAsFactors),
     SIMPLIFY = FALSE, USE.NAMES = FALSE))
 }, sealed = SEALED)
@@ -781,7 +783,7 @@ setMethod("as.data.frame", "kegg_compounds", function(x, row.names = NULL,
     optional = TRUE, ..., stringsAsFactors = FALSE) {
   result <- lapply(x, as.data.frame, row.names, optional, ...,
     stringsAsFactors = stringsAsFactors)
-  do.call(rbind, structure(result, names = names(x)))
+  do.call(rbind, structure(.Data = result, names = names(x)))
 }, sealed = SEALED)
 
 setOldClass("kegg_compound")
@@ -791,11 +793,11 @@ setMethod("as.data.frame", "kegg_compound", function(x, row.names = NULL,
   # store database links for later
   links <- strsplit(as.character(x$DBLINKS), "\\s*:\\s*", FALSE, TRUE)
   links <- do.call(rbind, links)
-  links <- structure(links[, 2L], names = links[, 1L])
+  links <- structure(.Data = links[, 2L], names = links[, 1L])
   # get non-link components
   wanted <- c("ENTRY", "NAME", "FORMULA", "SEEALSO", "BRITE", "ACTIVITY",
     "EXACT_MASS")
-  x <- structure(x[wanted], names = wanted)
+  x <- structure(.Data = x[wanted], names = wanted)
   x$EXACT_MASS <- must(as.numeric(x$EXACT_MASS))
   # 'ACTIVITY' is actually only present in KEGG 'drug' descriptions
   x$ACTIVITY <- paste0(x$ACTIVITY, collapse = " ")
@@ -864,24 +866,24 @@ setMethod("flatten", "OPM", function(object, include = NULL, fixed = list(),
 setMethod("flatten", "OPMS", function(object, include = NULL, fixed = list(),
     ...) {
   nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
-  nums <- lapply(as.list(nums), `names<-`, value = RESERVED_NAMES[["plate"]])
+  nums <- lapply(as.list(nums), `names<-`, RESERVED_NAMES[["plate"]])
   nums <- lapply(nums, c, fixed, recursive = FALSE)
-  do.call(rbind, mapply(flatten, object = object@plates, fixed = nums,
+  do.call(rbind, mapply(FUN = flatten, object = object@plates, fixed = nums,
     MoreArgs = list(include = include, ...), SIMPLIFY = FALSE))
 }, sealed = SEALED)
 
 setMethod("flatten", "MOPMX", function(object, include = NULL, fixed = list(),
     factors = FALSE, ...) {
   pt <- vapply(object@.Data, plate_type, "")
-  pt <- lapply(as.list(pt), `names<-`, value = CSV_NAMES[["PLATE_TYPE"]])
+  pt <- lapply(as.list(pt), `names<-`, CSV_NAMES[["PLATE_TYPE"]])
   pt <- lapply(pt, c, fixed, recursive = FALSE)
-  x <- mapply(flatten, object = object@.Data, fixed = pt,
+  x <- mapply(FUN = flatten, object = object@.Data, fixed = pt,
     MoreArgs = list(include = include, factors = factors, ...),
     SIMPLIFY = FALSE, USE.NAMES = FALSE)
   nr <- vapply(x, ncol, 0L)
   if (any(bad <- nr < max(nr))) {
     pn <- RESERVED_NAMES[["plate"]]
-    pn <- structure(list(paste(pn, 1L)), names = pn)
+    pn <- structure(.Data = list(paste(pn, 1L)), names = pn)
     for (i in seq_along(which(bad)))
       x[[i]] <- data.frame(x[[i]], pn, stringsAsFactors = factors,
         check.names = FALSE)
@@ -1106,7 +1108,8 @@ setMethod("opmx", "data.frame", function(object,
     }
     y <- c(L(filename), plate.type, position, L(setup.time))
     names(y) <- CSV_NAMES
-    new("OPM", measurements = filter_times(x), csv_data = y, metadata = list())
+    new(Class = "OPM", measurements = filter_times(x), csv_data = y,
+      metadata = list())
   }
 
   # 'plate.type' and 'full.name' must already be normalized at this stage.
@@ -1114,16 +1117,16 @@ setMethod("opmx", "data.frame", function(object,
   register_substrates <- function(wells, plate.type, full.name) {
     wn <- unique.default(wells) # already sorted at this stage
     if (all(grepl("^\\s*[A-Za-z]\\s*\\d+\\s*$", wn, FALSE, TRUE))) {
-      map <- structure(clean_coords(wn), names = wn)
+      map <- structure(.Data = clean_coords(wn), names = wn)
     } else if (custom_plate_exists(plate.type)) {
       map <- custom_plate_get(plate.type)
       if (any(bad <- !wn %in% map))
         stop("plate type '", plate.type, "' already exists but lacks ",
           "substrate '", wn[bad][1L], "'")
-      map <- structure(names(map), names = map)
+      map <- structure(.Data = names(map), names = map)
     } else {
-      map <- structure(rownames(WELL_MAP)[seq_along(wn)], names = wn)
-      custom_plate_set(plate.type, structure(names(map), names = map))
+      map <- structure(.Data = rownames(WELL_MAP)[seq_along(wn)], names = wn)
+      custom_plate_set(plate.type, structure(.Data = names(map), names = map))
     }
     if (!is.na(full <- full.name[plate.type]))
       custom_plate_set_full(plate.type, full)
@@ -1137,7 +1140,7 @@ setMethod("opmx", "data.frame", function(object,
       filename) {
     repair_csv_data <- function(x, full.name, setup.time, filename) {
       map <- c(CSV_NAMES, RESERVED_NAMES[["well"]])
-      map <- structure(map, names = chartr(" ", ".", map))
+      map <- structure(.Data = map, names = chartr(" ", ".", map))
       names(x) <- map_values(names(x), map)
       n <- CSV_NAMES[["PLATE_TYPE"]]
       if (pos <- match(n, colnames(x), 0L))
@@ -1178,12 +1181,13 @@ setMethod("opmx", "data.frame", function(object,
       result <- vector("list", length(indexes))
       for (i in seq_along(indexes)) {
         val <- x[, idx <- indexes[[i]], drop = FALSE]
-        result[[i]] <- new("OPM", csv_data = cd[idx[1L], ],
+        result[[i]] <- new(Class = "OPM", csv_data = cd[idx[1L], ],
           metadata = lapply(md[idx, , drop = FALSE], unique.default),
           measurements = filter_times(cbind(tp,
             val[, order(colnames(val)), drop = FALSE])))
       }
-      case(length(result), NULL, result[[1L]], new("OPMS", plates = result))
+      case(length(result), NULL, result[[1L]],
+        new(Class = "OPMS", plates = result))
     }
     traverse_plate_types <- function(cd, tp, x, md, full.name) {
       indexes <- split.default(seq_len(ncol(x)),
@@ -1225,7 +1229,7 @@ setMethod("opmx", "data.frame", function(object,
     map[[CSV_NAMES[["PLATE_TYPE"]]]] <- plate.type
     map[[RESERVED_NAMES[["well"]]]] <- well
     if (length(map)) {
-      map <- structure(names(map), names = unlist(map, TRUE, FALSE))
+      map <- structure(.Data = names(map), names = unlist(map, TRUE, FALSE))
       names(x) <- map_values(names(x), map)
     }
     if (length(position)) {
@@ -1241,7 +1245,7 @@ setMethod("opmx", "data.frame", function(object,
 
   prepare_full_name <- function(x) {
     if (!length(x))
-      return(structure(character(), names = character()))
+      return(structure(.Data = character(), names = character()))
     names(x) <- custom_plate_normalize_all(names(x))
     x
   }

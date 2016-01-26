@@ -286,7 +286,7 @@ setMethod("format", "CMAT", function(x, how, enclose, digits, indent,
       if (from.integer)
         if (length(m <- html.args$character.states)) {
           m <- span_class(m, sprintf("state-%i", seq_along(m)))
-          m <- structure(span_class(names(html.args$character.states),
+          m <- structure(.Data = span_class(names(html.args$character.states),
             "character-state-name"), names = m)
           m <- listing(m, style = style, collapse = collapse)
           start <- html.args$states.start

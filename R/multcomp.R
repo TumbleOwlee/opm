@@ -56,7 +56,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
       if (!all(grepl("^\\d+$", spec, FALSE, TRUE)))
         return(spec)
       if (is.null(joined)) # this would never yield pairs at the moment
-        joined <- as.list(structure(column, names = column))
+        joined <- as.list(structure(.Data = column, names = column))
       joined[[column]][as.integer(spec)]
     }
     pair_indices <- function(x) {
@@ -125,7 +125,7 @@ setMethod("opm_mcp", "data.frame", function(object, model, linfct = 1L,
     # At this stage we have a character vector with contrast types as names and
     # column names as values. Names and values are now swapped and then passed
     # as list to multcomp::mcp().
-    result <- as.list(structure(names(result), names = result))
+    result <- as.list(structure(.Data = names(result), names = result))
     # Special treatments for special contrast types must be done here.
     if (any(convert <- grepl("^Pairs", result, FALSE, TRUE)))
       result[convert] <- mapply(FUN = level_pairs, spec = result[convert],
@@ -348,7 +348,7 @@ setMethod("annotated", "opm_glht", function(object, what = "kegg", how = "ids",
       stop("expected matrix, got ", class(x))
     if (how == "numeric")
       return(x[, "Estimate"])
-    structure(map_values(case(how,
+    structure(.Data = map_values(case(how,
       downwards = ifelse(x[, "lwr"] > cutoff, FALSE, ifelse(x[, "upr"] < cutoff,
         TRUE, NA)),
       upwards = ifelse(x[, "lwr"] > cutoff, TRUE, ifelse(x[, "upr"] < cutoff,
