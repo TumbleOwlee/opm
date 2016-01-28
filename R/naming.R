@@ -237,7 +237,7 @@ setMethod("register_plate", "list", function(object, ...) {
   insert_plate_types <- function(x) {
     named <- vapply(lapply(x, names), valid_names, NA) |
       vapply(x, is.data.frame, NA) | vapply(x, is.matrix, NA)
-    if (any(vapply(x, length, 0L) > 1L & !named))
+    if (any(lengths(x, FALSE) > 1L & !named))
       stop("element unnamed but not of length 1")
     x[named] <- lapply(x[named], prepare_well_map)
     names(x) <- ifelse(named, custom_plate_prepend(names(x)),
@@ -251,7 +251,7 @@ setMethod("register_plate", "list", function(object, ...) {
   if (!missing(...))
     warning("arguments other than 'object' are ignored")
   names(object) <- prepare_names(names(object))
-  nonempty <- vapply(object, length, 0L) > 0L
+  nonempty <- lengths(object, FALSE) > 0L
   insert_plate_types(object[nonempty])
   remove_plate_types(names(object)[!nonempty])
   structure(.Data = nonempty, names = custom_plate_prepend(names(object)))
@@ -467,19 +467,19 @@ setMethod("substrate_info", "character", function(object,
     x <- strsplit(x, "\\W+", FALSE, TRUE)
     bad <- !vapply(x, function(value) nzchar(value[1L]), NA)
     x[bad] <- lapply(x[bad], `[`, i = -1L)
-    bad <- vapply(x, length, 0L) < vapply(y, length, 0L)
+    bad <- lengths(x, FALSE) < lengths(y, FALSE)
     x[bad] <- lapply(x[bad], function(value) c(value, ""))
     x <- lapply(X = x, FUN = fun, ...) # fun() must keep the length!
     mapply(FUN = paste0, x = y, y = x, MoreArgs = list(collapse = ""))
   }
 
   expand_greek_letters <- function(x) {
-    map_words(x, fun = map_values, mapping = GREEK_LETTERS)
+    map_words(x = x, fun = map_values, mapping = GREEK_LETTERS)
   }
 
   compound_name_to_html <- function(x) {
     x <- gsub("'", "&prime;", safe_labels(x, "html"), FALSE, FALSE, TRUE)
-    map_words(x, fun = map_values, mapping = COMPOUND_NAME_HTML_MAP)
+    map_words(x = x, fun = map_values, mapping = COMPOUND_NAME_HTML_MAP)
   }
 
   safe_downcase <- function(x) {
@@ -578,7 +578,7 @@ setMethod("substrate_info", "list", function(object, ...) {
 }, sealed = SEALED)
 
 setMethod("substrate_info", "OPM", function(object, ...) {
-  substrate_info(wells(object, full = TRUE, in.parens = FALSE), ...)
+  substrate_info(wells(object = object, full = TRUE, in.parens = FALSE), ...)
 }, sealed = SEALED)
 
 lapply(c(

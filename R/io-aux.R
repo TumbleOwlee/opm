@@ -36,7 +36,7 @@ read_lims_opm <- function(filename) {
   }
   to_csv_data <- function(x) {
     x <- strsplit(x, "=", TRUE)
-    x <- do.call(rbind, x[vapply(x, length, 0L) == 2L])
+    x <- do.call(rbind, x[lengths(x, FALSE) == 2L])
     structure(.Data = x[, 2L], names = x[, 1L])
   }
   to_measurements <- function(x) {
@@ -113,7 +113,7 @@ read_old_opm <- function(filename) {
   if (opm_opt("warn.mult"))
     warning("trying to read multiple-plate old-style CSV, ",
       "result (if any) is a list")
-  if (all(duplicated.default(n <- vapply(x, length, 0L))[-1L]))
+  if (all(duplicated.default(n <- lengths(x, FALSE))[-1L]))
     stop("constant number of fields -- ",
       "multiple-plate old-style format saved from Excel?")
   n <- Ckmeans.1d.dp(n, 2L)$cluster

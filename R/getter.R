@@ -289,7 +289,7 @@ setMethod("csv_data", "OPM", function(object,
 
 setMethod("csv_data", "OPMS", function(object, ...) {
   x <- lapply(X = object@plates, FUN = csv_data, ...)
-  if (all(vapply(x, length, 0L) == 1L))
+  if (all(lengths(x, FALSE) == 1L))
     return(unlist(x, FALSE, TRUE))
   collect_rows(lapply(x, vector2row))
 }, sealed = SEALED)

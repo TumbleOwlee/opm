@@ -128,7 +128,7 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
     if (typeof(x) != "list")
       return(x)
     if (!missing(fun)) {
-      max.len <- apply(x, 2L, vapply, length, 0L)
+      max.len <- apply(x, 2L, lengths, FALSE)
       if (is.matrix(max.len))
         max.len <- apply(max.len, 2L, max)
       for (i in which(max.len > 1L))
@@ -148,7 +148,7 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
 }
 
 sub_indexes <- function(x) {
-  x <- vapply(x, length, 0L)
+  x <- lengths(x, TRUE)
   add <- c(0L, cumsum(x))
   x <- lapply(x, seq_len)
   for (i in seq_along(x)[-1L])
@@ -162,7 +162,7 @@ simplify_conditionally <- function(x) {
     return(NULL)
   if (any(vapply(x, is.list, NA)) || any(vapply(x, is.matrix, NA)))
     return(x)
-  if (length(n <- unique.default(vapply(x, length, 0L))) > 1L)
+  if (length(n <- unique.default(lengths(x, FALSE))) > 1L)
     return(x)
   if (n > 1L)
     do.call(rbind, x)
@@ -239,7 +239,7 @@ setMethod("is_constant", "CMAT", function(x, strict, digits = opm_opt("digits"),
   zero_sd <- function(y) !identical(!sd(y, na.rm = na.rm), FALSE)
   list_remove_na <- function(y) {
     y <- lapply(y, na.exclude)
-    y[!!vapply(y, length, 0L)]
+    y[!!lengths(y, FALSE)]
   }
   uniq_list_const <- function(y) {
     if (na.rm)
@@ -662,8 +662,9 @@ html_head <- function(title, css, meta, embed) {
       do.call(single_tag, c(list(x = "meta"), as.list(y)))
     }, "")
     meta <- c(html_comment("user-defined metadata"), unname(meta))
-  } else
+  } else {
     meta <- NULL
+  }
 
   c("<head>", title, generator, time, meta, css, "</head>")
 }

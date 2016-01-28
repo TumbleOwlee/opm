@@ -370,7 +370,7 @@ test_that("substrate_info() can extract amino acids from peptides", {
   got <- substrate_info(x, "peptide")
   expect_is(got, "list")
   expect_equal(names(got), x)
-  n <- vapply(got, length, 0L)
+  n <- lengths(got, FALSE)
   expect_equivalent(n, c(2L, 0L, 1L, 0L, 1L, 1L, 2L, 2L))
   x <- "D,L-Diamino-Pimelic Acid"
   got <- substrate_info(x, "peptide")

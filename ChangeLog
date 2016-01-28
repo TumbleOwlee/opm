@@ -3,6 +3,7 @@
 - dead links to foreign packages in the HTML online documentation are now
   fixed; some internal dead links might still occur
 
+- dependency on R >= 3.2.0
 - the default 'convert' argument of read_opm() is now 'grp' instead of 'try'
 - 'multcomp' is now a dependency of 'opm'
 - clean_filenames() has been moved from 'opm' to 'pkgutils'

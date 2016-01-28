@@ -17,7 +17,7 @@ if (!exists("TEST.DIR"))
 
 ## opm_problems (this actually only tests inheritance relationships)
 test_that("WMDS has all methods of WMD, and vice versa", {
-  m <- tryCatch(as.character(getGenerics("package:opm")),
+  m <- tryCatch(expr = as.character(getGenerics("package:opm")),
     error = function(e) character())
   if (length(m)) {
     wmd.methods <- m[vapply(m, existsMethod, NA, "WMD")]
@@ -29,7 +29,7 @@ test_that("WMDS has all methods of WMD, and vice versa", {
 
 ## opm_problems (this actually only tests inheritance relationships)
 test_that("OPMS has all methods of OPM/OPMA/OPMD and some of its own", {
-  m <- tryCatch(as.character(getGenerics("package:opm")),
+  m <- tryCatch(expr = as.character(getGenerics("package:opm")),
     error = function(e) character())
   if (length(m)) {
     opm.methods <- m[
@@ -73,7 +73,7 @@ test_that("OPMS has all methods of OPM/OPMA/OPMD and some of its own", {
 ## opms_problems
 test_that("new() can be used to put plates together", {
   x <- list(a = OPM.1, b = OPM.2)
-  x.opms <- new("OPMS", plates = x)
+  x.opms <- new(Class = "OPMS", plates = x)
   expect_is(x.opms, "OPMS")
   expect_equal(length(x.opms), 2L)
   expect_equal(NULL, names(plates(x.opms)))

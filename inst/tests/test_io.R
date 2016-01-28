@@ -123,7 +123,7 @@ test_that("the ECO-run example file can be read", {
   expect_equal(unique(csv_data(x, what = "filename")), example.file.eco)
   expect_equal(plate_type(x), SPECIAL_PLATES[["eco"]])
   expect_equal(dim(x), c(11, 1, 96))
-  md.len <- unique(vapply(metadata(x), length, integer(1L)))
+  md.len <- unique.default(lengths(metadata(x), FALSE))
   expect_equal(md.len, 106L)
 })
 
@@ -295,7 +295,7 @@ test_that("to_metadata converts OPMS objects in the right way", {
 test_that("to_metadata converts MOPMX objects in the right way", {
   expect_warning(got <- to_metadata(MOPMX.1))
   expect_is(got, "data.frame")
-  expect_equal(nrow(got), sum(vapply(MOPMX.1, length, 0L)))
+  expect_equal(nrow(got), sum(lengths(MOPMX.1, FALSE)))
   expect_false(all(complete.cases(got)))
   expect_equal(ncol(got), 2L)
   expect_true(all(got[-1L, ] == to_metadata(MOPMX.1[2L])))
@@ -303,7 +303,7 @@ test_that("to_metadata converts MOPMX objects in the right way", {
   metadata(MOPMX.1[[1]]) <- list(run = 17)
   got <- to_metadata(MOPMX.1)
   expect_is(got, "data.frame")
-  expect_equal(nrow(got), sum(vapply(MOPMX.1, length, 0L)))
+  expect_equal(nrow(got), sum(lengths(MOPMX.1, FALSE)))
   expect_false(all(complete.cases(got)))
   expect_equal(ncol(got), 2L)
   expect_true(all(got[-1L, ] == to_metadata(MOPMX.1[2L])))
@@ -329,7 +329,7 @@ test_that("batch collection works as expected", {
   expect_is(got, "list")
   expect_equal(files, names(got))
   expect_true(all(vapply(got, is.character, NA)))
-  expect_true(all(vapply(got, length, 0L) == 5L))
+  expect_true(all(lengths(got) == 5L))
   expect_that(got <- batch_collect(files, readLines, fun.arg = list(n = 5L),
     demo = TRUE), shows_message())
   expect_path_equal(got, files)

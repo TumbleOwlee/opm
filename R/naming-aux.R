@@ -326,7 +326,7 @@ collect.kegg_compounds <- function(x,
   what <- toupper(match.arg(what, several.ok = TRUE))
   result <- do.call(cbind, lapply(what, partial_matrix, x))
   if (L(missing.na))
-    result[!vapply(x, length, 0L), ] <- as(NA, typeof(result))
+    result[!lengths(x, FALSE), ] <- as(NA, typeof(result))
   result
 }
 

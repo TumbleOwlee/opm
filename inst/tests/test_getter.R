@@ -335,7 +335,7 @@ test_that("aggregation settings can be queried", {
   settings <- aggr_settings(THIN.AGG)
   expect_is(settings, "list")
   expect_true(all(vapply(settings, is.list, logical(1L))))
-  expect_true(all(vapply(settings, length, integer(1L)) == 4L))
+  expect_true(all(lengths(settings, FALSE) == 4L))
 })
 
 ## aggr_settings

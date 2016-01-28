@@ -208,7 +208,7 @@ test_that("MOPMX objects can be flattened", {
   got <- flatten(MOPMX.1)
   expect_true(setequal(got[, CSV_NAMES[["PLATE_TYPE"]]], plate_type(MOPMX.1)))
   expect_equal(length(unique.default(got[, RESERVED_NAMES[["plate"]]])),
-    max(vapply(MOPMX.1, length, 0L)))
+    max(lengths(MOPMX.1, FALSE)))
   got <- interaction(got[,
     c(RESERVED_NAMES[["plate"]], CSV_NAMES[["PLATE_TYPE"]])], drop = TRUE)
   expect_equal(length(levels(got)), length(plates(MOPMX.1)))
@@ -759,17 +759,16 @@ test_that("extract() can be applied to MOPMX objects", {
   expect_equal(mode(got), "numeric")
   expect_true(setequal(to_metadata(MOPMX.2)$run, rownames(got)))
   expect_false(all(to_metadata(MOPMX.2)$run == rownames(got)))
-  expect_equal(nrow(got), sum(vapply(MOPMX.2, length, 0L)))
+  expect_equal(nrow(got), sum(lengths(MOPMX.2, FALSE)))
   expect_equal(sum(complete.cases(got)), 2L)
-  expect_equal(length(attr(got, "row.groups")),
-    sum(vapply(MOPMX.2, length, 0L)))
+  expect_equal(length(attr(got, "row.groups")), sum(lengths(MOPMX.2, FALSE)))
 
   # data frames
   got <- extract(MOPMX.2, ~ run, dataframe = TRUE, as.groups = "organism")
   expect_is(got, "data.frame")
   expect_equal(colnames(got)[ncol(got)], "organism")
   expect_equal(sum(complete.cases(got)), 2L)
-  expect_equal(nrow(got), sum(vapply(MOPMX.2, length, 0L)))
+  expect_equal(nrow(got), sum(lengths(MOPMX.2, FALSE)))
   expect_true(all(to_metadata(MOPMX.2)$run == got$run))
 
 })

@@ -126,7 +126,7 @@ setClass("CMAT",
       mode <- unique.default(vapply(object, typeof, ""))
       if (length(mode) > 1L)
         errs <- c(errs, "non-uniform list elements contained")
-      if (any(vapply(object, length, 0L) < 1L))
+      if (any(lengths(object, FALSE) < 1L))
         errs <- c(errs, "empty list elements contained")
     }
     mode <- setdiff(mode, c("character", "integer", "double", "logical"))

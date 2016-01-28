@@ -39,7 +39,8 @@ test_that("the OPM/OPMA example data can be converted to a list and back", {
   opm.list$aggregated <- c(opm.list$aggregated[-change],
     opm.list$aggregated[change])
   opm.list$aggregated[change] <- lapply(opm.list$aggregated[change], rev)
-  opm.list$aggregated[-change] <- lapply(opm.list$aggregated[-change], c, Z = 7)
+  opm.list$aggregated[-change] <- lapply(X = opm.list$aggregated[-change],
+    FUN = c, Z = 7)
   opm.back <- as(opm.list, "OPMA")
   expect_equal(SMALL.AGG, opm.back)
 

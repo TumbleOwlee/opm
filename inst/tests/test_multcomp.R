@@ -54,7 +54,7 @@ test_that("opm_mcp converts MOPMX objects", {
   expect_is(got, "data.frame")
   expect_true(all(complete.cases(got)))
   expect_true(all(c("run", "organism") %in% colnames(got)))
-  w <- unlist(lapply(MOPMX.2, wells, full = TRUE), FALSE, FALSE)
+  w <- unlist(lapply(X = MOPMX.2, FUN = wells, full = TRUE), FALSE, FALSE)
   expect_true(setequal(w, got[, RESERVED_NAMES[["well"]]]))
   expect_true(all(RESERVED_NAMES[c("parameter", "value")] %in% colnames(got)))
 })

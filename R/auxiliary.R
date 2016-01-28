@@ -46,7 +46,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
   split_fixed <- function(x) {
     ws <- c(" ", "\t", "\v", "\r", "\n", "\b", "\a", "\f")
     x <- strsplit(x, "", TRUE)
-    max.len <- max(vapply(x, length, 0L))
+    max.len <- max(lengths(x, FALSE))
     x <- lapply(x, function(y) c(y, rep.int(" ", max.len - length(y))))
     x <- do.call(rbind, x)
     groups <- sections(apply(x, 2L, function(y) all(y %in% ws)))
@@ -57,7 +57,7 @@ setMethod("separate", "character", function(object, split = opm_opt("split"),
 
   yields_constant <- function(char, x) {
     splits_constant <- function(char, x, ...)
-      is_constant(vapply(strsplit(x, char, ...), length, 0L))
+      is_constant(lengths(strsplit(x, char, ...), FALSE))
     if (splits_constant(sprintf("[%s]+", char), x, FALSE, TRUE))
       2L
     else if (splits_constant(char, x, TRUE))

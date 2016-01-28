@@ -296,7 +296,7 @@ setMethod("sort", c("MOPMX", "ANY"), function(x, decreasing,
     return(x)
   selection <- tryCatch(expr = match.arg(by), error = function(e) "other")
   case(selection,
-    length = criterion <- vapply(x, length, 0L),
+    length = criterion <- lengths(x, FALSE),
     plate.type = criterion <- plate_type(x),
     other = {
       m <- metadata(object = x, key = by, exact = exact, strict = strict)
