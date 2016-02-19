@@ -35,7 +35,7 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
     cores = 1L, options = if (identical(method, "splines"))
       set_spline_options()
     else
-      list(), method = "splines", plain = FALSE) {
+      list(), method = "splines", plain = FALSE, logt0 = FALSE) {
 
   # Convert to OPMA
   integrate_in_opma <- function(object, result) {
@@ -104,7 +104,8 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
 
     result <- copy_A_param(well(object))
     attr(result, METHOD) <- "shortcut"
-    attr(result, OPTIONS) <- list(boot = boot)
+    attr(result, OPTIONS) <- list(boot = boot,
+      preceding_transformation = "none")
 
   } else {
 
@@ -113,7 +114,7 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
       grofit = {
         control <- make_grofit_control(verbose, boot, add = options)
         grofit.time <- to_grofit_time(object)
-        grofit.data <- to_grofit_data(object)
+        grofit.data <- to_grofit_data(object, logt0)
         result <- mclapply(X = as.list(seq_len(nrow(grofit.data))),
           FUN = function(row) {
             run_grofit(grofit.time[row, , drop = FALSE],
@@ -125,7 +126,7 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
 
       `opm-fast` = {
         options <- insert(as.list(options), boot = boot, .force = FALSE)
-        mat <- measurements(object)
+        mat <- measurements(object, , logt0)
         result <- rbind(
           do.call(do_aggr, c(list(object = mat, what = "AUC"), options)),
           do.call(do_aggr, c(list(object = mat, what = "A"), options)),
@@ -143,7 +144,7 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
 
       splines = {
         ## extract data
-        data <- as.data.frame(measurements(object))
+        data <- as.data.frame(measurements(object, , logt0))
         ## get well names
         wells <- wells(object)
         indx <- as.list(seq_len(length(wells)))
@@ -188,6 +189,10 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
     )
 
     attr(result, METHOD) <- method
+    attr(result, OPTIONS)$preceding_transformation <- if (logt0)
+        "logt0"
+      else
+        "none"
 
   }
 

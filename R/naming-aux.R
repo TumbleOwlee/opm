@@ -102,15 +102,16 @@ is_cas <- function(x) {
     substr(x, start, start + attr(m, "capture.length")[, i] - 1L)
   }
   cmp <- function(digits, check) { # compare check digits
-    sum_up <- function(x) sum(seq.int(length(x), 1L) * as.numeric(x)) / 10
+    sum_up <- function(x) 0.1 * sum(seq.int(length(x), 1L) * as.numeric(x))
     s <- vapply(strsplit(digits, "", TRUE), sum_up, 0)
-    abs(s - floor(s) - as.numeric(check) / 10) < .Machine$double.eps ^ 0.5
+    abs(s - floor(s) - 0.1 * as.numeric(check)) < .Machine$double.eps ^ 0.5
   }
   m <- regexpr("^(?:CAS\\s+)?(\\d{2,7})-(\\d{2})-(\\d)$", x, TRUE, TRUE)
   f <- attr(m, "match.length") > 0L
-  ok <- f & !is.na(x)
+  ok <- f & !is.na(x) # NA values in 'x' should yield NA values in 'f'
   f[ok] <- cmp(paste0(ms(x, m, 1L)[ok], ms(x, m, 2L)[ok]), ms(x, m, 3L)[ok])
-  structure(.Data = f, names = x)
+  names(f) <- x
+  f
 }
 
 map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,

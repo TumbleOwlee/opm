@@ -3,14 +3,14 @@ setGeneric("to_grofit_time",
 
 setMethod("to_grofit_time", "OPM", function(object) {
   tp <- hours(object, "all")
-  as.data.frame(matrix(rep.int(tp, length(wells(object))), ncol = length(tp),
-    byrow = TRUE))
+  as.data.frame(matrix(data = rep.int(tp, length(wells(object))),
+    ncol = length(tp), byrow = TRUE))
 }, sealed = SEALED)
 
 setGeneric("to_grofit_data",
   function(object, ...) standardGeneric("to_grofit_data"))
 
-setMethod("to_grofit_data", "OPM", function(object) {
+setMethod("to_grofit_data", "OPM", function(object, logt0) {
   w <- wells(object)
   names <- matrix(nrow = length(w), ncol = 3L,
     dimnames = list(well = w, value = c("well", "plate_id", "concentration")))
@@ -19,7 +19,8 @@ setMethod("to_grofit_data", "OPM", function(object) {
     csv_data(object, what = "position"), collapse = "-")
   names <- as.data.frame(names, stringsAsFactors = FALSE)
   names[, 3L] <- 1L # dummy concentration
-  cbind(names, as.data.frame(t(measurements(object)[, -1L, drop = FALSE])))
+  cbind(names,
+    as.data.frame(t(measurements(object, , logt0)[, -1L, drop = FALSE])))
 }, sealed = SEALED)
 
 extract_curve_params <- function(x, ...) UseMethod("extract_curve_params")

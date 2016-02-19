@@ -447,12 +447,16 @@ setMethod("heat_map", "matrix", function(object,
   }
 
   get_fun <- function(infun, usefun) {
+    usefun <- match.fun(usefun)
     if (is.character(infun))
       function(x) usefun(x, method = infun)
     else if (is.list(infun))
       function(x) do.call(usefun, c(list(x), infun))
-    else
+    else if (is.function(infun))
       infun
+    else
+      stop("expected character vector, list or function, got '", class(infun),
+        "'")
   }
 
   get_side_colors <- function(groups, colors, for.rows) {

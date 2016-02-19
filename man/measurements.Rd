@@ -14,6 +14,11 @@
   allowing for sequences of well coordinates. See the
   examples.}
 
+  \item{logt0}{Logical scalar. Treat the data like cell
+  counts and calculate \code{log(N/N0)}? This is useful to
+  let the estimated slope represent the specific growth
+  rate.}
+
   \item{drop}{Logical scalar. If only a single well was
   selected, simplify it to a vector?}
 
@@ -141,7 +146,7 @@ stopifnot(length(x) == 4, x == 95.75)
   \S4method{hours}{OPMS}(object, ...) 
 
   \S4method{measurements}{MOPMX}(object, ...) 
-  \S4method{measurements}{OPM}(object, i) 
+  \S4method{measurements}{OPM}(object, i, logt0 = FALSE) 
   \S4method{measurements}{OPMS}(object, ...) 
 
   \S4method{well}{MOPMX}(object, ...) 
