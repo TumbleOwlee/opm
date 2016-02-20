@@ -9,8 +9,8 @@ setMethod("measurements", "OPM", function(object, i, logt0 = FALSE) {
         object@measurements[, -1L, drop = FALSE][,
           well_index(i, colnames(object@measurements)[-1L]), drop = FALSE])
   if (L(logt0)) {
-    result[, -1L] <- log(result[, -1L])
-    result[, -1L] <- sweep(result[, -1L], 2L,
+    result[, -1L] <- log(result[, -1L, drop = FALSE])
+    result[, -1L] <- sweep(result[, -1L, drop = FALSE], 2L,
       result[which.min(result[, 1L]), -1L], `-`)
   }
   result
