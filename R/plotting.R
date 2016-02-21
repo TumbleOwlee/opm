@@ -401,9 +401,9 @@ setMethod("ci_plot", "data.frame", function(object, rowname.sep = " ",
   # Legend
   if (draw.legend && !is.null(legend)) {
     if (length(legend.field) > 1L)
-      par(mfg = legend.field[1L:2L])
+      old.par <- c(par(mfg = legend.field[1L:2L]), old.par)
     else
-      par(mfcol = c(1L, 1L))
+      old.par <- c(par(mfcol = c(1L, 1L)), old.par)
     legend(x = x, legend = legend, xpd = xpd, ...)
   }
   invisible(legend)
