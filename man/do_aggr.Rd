@@ -38,7 +38,7 @@
   \code{boot} and \code{verbose} settings, as the most
   important ones, are added separately (see above). The
   verbose mode is not very useful in parallel processing.
-  With \code{method} \dQuote{spline.fit}, options can be
+  With \code{method} \code{"splines"}, options can be
   specified using the function
   \code{\link{set_spline_options}}.}
 
