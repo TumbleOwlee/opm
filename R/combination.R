@@ -5,7 +5,7 @@ setMethod("[<-", c("OPMS", "ANY", "missing", "NULL"), function(x, i, j,
 }, sealed = SEALED)
 
 setMethod("[<-", c("OPMS", "ANY", "missing", "OPM"), function(x, i, j, value) {
-  x@plates[i] <- value # checks and unnaming needed
+  x@plates[i] <- list(value) # checks and unnaming needed
   new(Class = "OPMS", plates = close_index_gaps(x@plates))
 }, sealed = SEALED)
 
@@ -18,6 +18,12 @@ setMethod("[<-", c("OPMS", "ANY", "missing", "list"), function(x, i, j, value) {
   x@plates[i] <- value # checks and unnaming needed
   new(Class = "OPMS", plates = close_index_gaps(x@plates))
 }, sealed = SEALED)
+
+setMethod("[<-", c("MOPMX", "ANY", "missing", "OPMX"), function(x, i, ...,
+    value) {
+  x[i] <- list(value)
+  x
+})
 
 setMethod("[<-", c("MOPMX", "ANY", "missing", "ANY"), function(x, i, ...,
     value) {

@@ -69,6 +69,8 @@ stopifnot(length(copy) == 5) # not 6
 \alias{bracket.set,MOPMX,ANY,missing-method}
 \alias{[<-,MOPMX,ANY,missing,ANY-method}
 \alias{[<-,MOPMX,ANY,missing-method}
+\alias{bracket.set,MOPMX,ANY,missing,OPMX-method}
+\alias{[<-,MOPMX,ANY,missing,OPMX-method}
 \alias{bracket.set,OPMS,ANY,missing,NULL-method}
 \alias{[<-,OPMS,ANY,missing,NULL-method}
 \alias{bracket.set,OPMS,ANY,missing,OPM-method}
@@ -86,6 +88,7 @@ stopifnot(length(copy) == 5) # not 6
   \S4method{$}{MOPMX,ANY}(x, name) <- value
 
   \S4method{[}{MOPMX,ANY,missing,ANY}(x, i, ...) <- value
+  \S4method{[}{MOPMX,ANY,missing,OPMX}(x, i, ...) <- value
   \S4method{[}{OPMS,ANY,missing,NULL}(x, i, j) <- value
   \S4method{[}{OPMS,ANY,missing,OPM}(x, i, j) <- value
   \S4method{[}{OPMS,ANY,missing,OPMS}(x, i, j) <- value
