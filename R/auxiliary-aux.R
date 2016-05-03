@@ -552,7 +552,7 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
     }
     result
   }
-  long <- nchar(str) > max
+  long <- nchar(x = str, keepNA = FALSE) > max
   str[long] <- do_trim(str[long])
   if (clean)
     long <- long & nzchar(str)
