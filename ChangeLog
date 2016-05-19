@@ -13,6 +13,7 @@
   existing CSV files with metadata (but all in all metadata input should run
   more smoothly now)
 
+- new method cor.test()
 - read_single_opm() and read_opm() can now read CSV with multiple plates per
   file
 - the 'theor.max' argument of xy_plot() can now be used to explicitly set the
@@ -22,6 +23,7 @@
   misspellings to correct spellings
 - `metadata<-`() can include the overall running time in the metadata
 - subset() gets a 'common' argument
+- sort() can sort according to the overall running time
 
 
 ################################################################################

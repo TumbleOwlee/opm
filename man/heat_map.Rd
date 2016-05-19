@@ -180,9 +180,10 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
   stats::heatmap gplots::heatmap.2
 
   Other plotting-functions: \code{\link{ci_plot}},
-  \code{\link{level_plot}}, \code{\link{parallel_plot}},
-  \code{\link{parallelplot}}, \code{\link{radial_plot}},
-  \code{\link{summary}}, \code{\link{xy_plot}}
+  \code{\link{cor.test}}, \code{\link{level_plot}},
+  \code{\link{parallel_plot}}, \code{\link{parallelplot}},
+  \code{\link{radial_plot}}, \code{\link{summary}},
+  \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

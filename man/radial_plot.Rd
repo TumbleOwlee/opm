@@ -153,9 +153,10 @@ stopifnot(is.character(yy), names(yy) == rownames(x))
   plotrix::radial.plot graphics::legend
 
   Other plotting-functions: \code{\link{ci_plot}},
-  \code{\link{heat_map}}, \code{\link{level_plot}},
-  \code{\link{parallel_plot}}, \code{\link{parallelplot}},
-  \code{\link{summary}}, \code{\link{xy_plot}}
+  \code{\link{cor.test}}, \code{\link{heat_map}},
+  \code{\link{level_plot}}, \code{\link{parallel_plot}},
+  \code{\link{parallelplot}}, \code{\link{summary}},
+  \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

@@ -259,27 +259,33 @@ setMethod("sort", c("OPMS", "missing"), function(x, decreasing, ...) {
 }, sealed = SEALED)
 
 setMethod("sort", c("OPMS", "ANY"), function(x, decreasing, by = "setup_time",
-    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) {
+    parse = identical(by, "setup_time"), exact = TRUE, strict = TRUE,
+    na.last = TRUE) {
   if (is.list(by)) {
     keys <- lapply(X = by, FUN = metadata, object = x, exact = exact,
       strict = strict)
     if (!strict)
       if (!length(keys <- keys[!vapply(keys, is.null, NA)]))
         return(x)
-  } else if (is.character(by))
+  } else if (is.character(by)) {
     case(length(by),
       stop("if a character scalar, 'by' must not be empty"),
-      {
-        keys <- csv_data(x, what = by)
-        if (L(parse))
-          keys <- must(parse_time(keys))
-        keys <- list(keys)
-      },
+      switch(by,
+        hours = keys <- list(hours(x, "max")),
+        {
+          keys <- csv_data(object = x, what = by)
+          if (L(parse))
+            keys <- must(parse_time(keys))
+          keys <- list(keys)
+        }
+      ),
+      # note that this works via the 'keys' argument, not the 'by' argument
       keys <- lapply(X = by, FUN = csv_data, object = x)
     )
-  else
+  } else {
     stop("'by' must be a list or a character vector")
-  keys <- insert(keys, decreasing = decreasing, na.last = na.last,
+  }
+  keys <- insert(object = keys, decreasing = decreasing, na.last = na.last,
     .force = TRUE)
   x@plates <- x@plates[do.call(order, keys)]
   x

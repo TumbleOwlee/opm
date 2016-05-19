@@ -17,7 +17,9 @@
   \code{\link{metadata}}. If a character vector of length
   one, \code{by} is passed as \sQuote{what} argument to
   \code{\link{csv_data}}. If longer, passed step-by-step to
-  \code{\link{csv_data}} as \code{keys} argument.
+  \code{\link{csv_data}} as \code{keys} argument.  When
+  identical to \sQuote{hours}, \code{by} triggers sorting
+  according to the overall measurement time.
 
   For \code{\link{MOPMX}} objects, either
   \sQuote{plate.type}, which sorts according to the plate
@@ -120,6 +122,10 @@ csv_data(copy, what = "position")
 stopifnot(!is.unsorted(csv_data(copy, what = "position")))
 stopifnot(is.unsorted(csv_data(vaas_4, what = "position")))
 
+# sorting accoring to overall measurement duration
+stopifnot(identical(sort(vaas_4, TRUE, "hours"), vaas_4))
+# (uniform measurements durations in this object)
+
 # making OPMS objects unique
 dim(x <- unique(vaas_4))
 stopifnot(identical(x, vaas_4))
@@ -216,7 +222,8 @@ stopifnot(is.null(rep(vaas_4, 0)))
   \S4method{sort}{OPM,ANY}(x, decreasing, ...) 
   \S4method{sort}{OPM,missing}(x, decreasing, ...) 
   \S4method{sort}{OPMS,ANY}(x, decreasing, by = "setup_time",
-    parse = by == "setup_time", exact = TRUE, strict = TRUE, na.last = TRUE) 
+    parse = identical(by, "setup_time"), exact = TRUE, strict = TRUE,
+    na.last = TRUE) 
   \S4method{sort}{OPMS,missing}(x, decreasing, ...) 
 
   \S4method{unique}{MOPMX,ANY}(x, incomparables, ...) 

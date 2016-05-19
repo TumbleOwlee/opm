@@ -186,9 +186,9 @@ stopifnot(inherits(x, "try-error"))
   lattice::xyplot lattice::parallelplot
 
   Other plotting-functions: \code{\link{ci_plot}},
-  \code{\link{heat_map}}, \code{\link{level_plot}},
-  \code{\link{radial_plot}}, \code{\link{summary}},
-  \code{\link{xy_plot}}
+  \code{\link{cor.test}}, \code{\link{heat_map}},
+  \code{\link{level_plot}}, \code{\link{radial_plot}},
+  \code{\link{summary}}, \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

@@ -281,9 +281,9 @@ setMethod("csv_data", "OPM", function(object,
   if (normalize)
     if (normalize > 0L) {
       pos <- match(CSV_NAMES[c("SETUP", "POS")], names(result), 0L)
-      if (pos[1L])
+      if (pos[[1L]])
         result[pos[1L]] <- as.character(parse_time(result[pos[1L]]))
-      if (pos[2L])
+      if (pos[[2L]])
         result[pos[2L]] <- clean_plate_positions(result[pos[2L]])
       pos <- setdiff(seq_along(result), pos)
       result[pos] <- no_backslash(result[pos])

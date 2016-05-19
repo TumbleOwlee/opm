@@ -148,3 +148,6 @@ test_that("a radial plot can be drawn", {
 ## parallel_plot
 ## UNTESTED
 
+## cor.test
+## UNTESTED
+

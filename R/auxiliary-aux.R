@@ -528,7 +528,7 @@ setMethod("parse_time", c("character", "missing"), function(object, format,
 setMethod("parse_time", c("character", "character"), function(object, format,
     tz = opm_opt("time.zone")) {
   if (!length(format))
-    stop("need non-empty object 'format'")
+    stop("need non-empty 'format' object")
   result <- strptime(object, format[1L], tz)
   for (fmt in format[-1L])
     result[isna] <- strptime(object[isna <- is.na(result)], fmt, tz)
