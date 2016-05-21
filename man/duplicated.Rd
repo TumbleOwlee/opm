@@ -108,14 +108,14 @@ stopifnot(!contains(vaas_4[3], vaas_4[2])) # non-identical OPM objects
   base::duplicated base::anyDuplicated base::identical
 
   Other getter-functions: \code{\link{aggr_settings}},
-  \code{\link{aggregated}}, \code{\link{csv_data}},
-  \code{\link{dim}}, \code{\link{disc_settings}},
-  \code{\link{discretized}}, \code{\link{has_aggr}},
-  \code{\link{has_disc}}, \code{\link{hours}},
-  \code{\link{max}}, \code{\link{measurements}},
-  \code{\link{minmax}}, \code{\link{seq}},
-  \code{\link{subset}}, \code{\link{thin_out}},
-  \code{\link{well}}
+  \code{\link{aggregated}}, \code{\link{anyNA}},
+  \code{\link{csv_data}}, \code{\link{dim}},
+  \code{\link{disc_settings}}, \code{\link{discretized}},
+  \code{\link{has_aggr}}, \code{\link{has_disc}},
+  \code{\link{hours}}, \code{\link{max}},
+  \code{\link{measurements}}, \code{\link{minmax}},
+  \code{\link{seq}}, \code{\link{subset}},
+  \code{\link{thin_out}}, \code{\link{well}}
 }
 \keyword{attribute}
 

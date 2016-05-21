@@ -199,13 +199,14 @@ stopifnot(identical(x, c(4L, 38L, 96L)))
 
   Other getter-functions: \code{\link{aggr_settings}},
   \code{\link{aggregated}}, \code{\link{anyDuplicated}},
-  \code{\link{contains}}, \code{\link{csv_data}},
-  \code{\link{dim}}, \code{\link{disc_settings}},
-  \code{\link{discretized}}, \code{\link{duplicated}},
-  \code{\link{has_aggr}}, \code{\link{has_disc}},
-  \code{\link{hours}}, \code{\link{max}},
-  \code{\link{measurements}}, \code{\link{minmax}},
-  \code{\link{seq}}, \code{\link{well}}
+  \code{\link{anyNA}}, \code{\link{contains}},
+  \code{\link{csv_data}}, \code{\link{dim}},
+  \code{\link{disc_settings}}, \code{\link{discretized}},
+  \code{\link{duplicated}}, \code{\link{has_aggr}},
+  \code{\link{has_disc}}, \code{\link{hours}},
+  \code{\link{max}}, \code{\link{measurements}},
+  \code{\link{minmax}}, \code{\link{seq}},
+  \code{\link{well}}
 }
 \keyword{manip}
 

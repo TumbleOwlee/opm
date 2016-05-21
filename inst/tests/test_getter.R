@@ -286,6 +286,10 @@ test_that("information on presense of discretised values can be obtained", {
 })
 
 
+## anyNA
+## UNTESTED
+
+
 ################################################################################
 
 

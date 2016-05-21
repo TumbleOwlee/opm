@@ -320,6 +320,39 @@ setMethod("has_disc", "OPM", function(object) {
   .hasSlot(object, "discretized")
 }, sealed = SEALED)
 
+setMethod("anyNA", "OPM", function(x, recursive = TRUE) {
+  if (L(recursive))
+    return(anyNA(x@metadata, TRUE))
+  FALSE
+})
+
+setMethod("anyNA", "OPMA", function(x, recursive = TRUE) {
+  if (L(recursive))
+    return(anyNA(x@metadata, TRUE))
+  anyNA(x@measurements[CURVE_PARAMS, , drop = FALSE], FALSE)
+})
+
+setMethod("anyNA", "OPMD", function(x, recursive = TRUE) {
+  if (L(recursive))
+    return(anyNA(x@metadata, TRUE))
+  anyNA(x@measurements[CURVE_PARAMS, , drop = FALSE], FALSE) ||
+    anyNA(x@discretized, FALSE)
+})
+
+setMethod("anyNA", "OPMS", function(x, recursive = TRUE) {
+  for (plate in x@plates)
+    if (anyNA(plate, recursive))
+      return(TRUE)
+  FALSE
+})
+
+setMethod("anyNA", "MOPMX", function(x, recursive = TRUE) {
+  for (item in x@.Data)
+    if (anyNA(item, recursive))
+      return(TRUE)
+  FALSE
+})
+
 setGeneric("aggregated", function(object, ...) standardGeneric("aggregated"))
 
 setMethod("aggregated", "OPMA", function(object, subset = NULL, ci = TRUE,
