@@ -115,6 +115,10 @@ test_that("measurement column map is consitent with reserved metadata names", {
 ## UNTESTED
 
 
+## COLORS
+## UNTESTED
+
+
 ## KNOWN_METHODS
 test_that("the known method names are OK", {
   expect_is(KNOWN_METHODS, "list")

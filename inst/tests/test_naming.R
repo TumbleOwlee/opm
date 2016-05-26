@@ -21,6 +21,7 @@ test_that("predefined color sets can be obtained", {
     got <- select_colors(arg)
     expect_is(got, "character")
     expect_true(length(got) >= 10L)
+    expect_false(anyNA(got))
   }
 })
 

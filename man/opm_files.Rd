@@ -6,8 +6,9 @@
   opm_files(what = c("scripts", "testdata", "auxiliary", "demo", "doc", "css", "sql",
     "omnilog", "single", "multiple", "growth"))
 
-  select_colors(set = c("w3c", "w3c.i", "nora", "nora.i", "brewer", "brewer.i", "roseo",
-    "roseo.i"))
+  select_colors(set = c("w3c", "w3c.i", "w3c.r", "nora", "nora.i", "nora.r", "brewer",
+    "brewer.i", "brewer.r", "roseo", "roseo.i", "roseo.r", "ssnot", "ssnot.i", "ssnot.r",
+    "phrogz", "phrogz.i", "phrogz.r", "groups", "groups.i", "groups.r"))
 }
 \arguments{
   \item{what}{Character scalar indicating the subdirectory
@@ -46,7 +47,9 @@
   using \code{max_rgb_contrast} from the \pkg{pkgutils}
   package.  Names ending in \sQuote{.i} indicate vectors in
   inverse order (compared to the vector with the same name
-  except \sQuote{.i}).}
+  except \sQuote{.i}). Names ending in \sQuote{.i} indicate
+  vectors in random order. For credits regarding the
+  vectors see the code.}
 }
 \value{
   Character vector of file names or reserved parameter

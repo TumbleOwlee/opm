@@ -11,7 +11,7 @@
   \code{\link{MOPMX}} object.}
 
   \item{recursive}{Logical scalar. When \code{FALSE}, the
-  aggregated and discretized values, if available, are
+  aggregated and discretised values, if available, are
   checked for \code{NA} values (except for the confidence
   intervals); \code{\link{OPM}} objects yield \code{FALSE}
   in that case. When \code{TRUE}, the metadata are checked

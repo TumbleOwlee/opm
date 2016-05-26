@@ -18,42 +18,20 @@ opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
 }
 
 select_colors <- function(
-    set = c("w3c", "w3c.i", "nora", "nora.i", "brewer", "brewer.i",
-      "roseo", "roseo.i")) {
-  # Basic colour keywords from http://www.w3.org/TR/css3-color/ (accessed on
-  # 29-8-2011), sorted darkest-first.
-  w3c_colors <- function() c(black = "#000000", navy = "#000080",
-    green = "#008000", maroon = "#800000", blue = "#0000FF", lime = "#00FF00",
-    red = "#FF0000", teal = "#008080", purple = "#800080", olive = "#808000",
-    gray = "#808080", aqua = "#00FFFF", fuchsia = "#FF00FF",
-    yellow = "#FFFF00", silver = "#C0C0C0", white = "#FFFFFF")
-  # Names of W3c colors (except white) sorted so as to maximize contrast
-  # between adjacent colors. See pkgutils::max_rgb_contrast().
-  sorted_w3c_colors <- function() w3c_colors()[c("teal", "purple", "olive",
-    "black", "silver", "blue", "lime", "red", "aqua", "fuchsia", "yellow",
-    "navy", "green", "maroon", "gray")]
-  # Colours manually selected and sorted by Nora Buddruhs for maximum contrast.
-  noras_colors <- function() c("midnightblue", "darkred", "darkgreen", "orange",
-    "lightslateblue", "seashell4", "saddlebrown", "firebrick2",
-    "palevioletred3", "purple4")
-  # Shades of pink...
-  roseo_colors <- function() c("maroon1", "palevioletred3", "hotpink1",
-    "mediumvioletred", "violetred3", "deeppink3", "lightcoral", "pink1",
-    "indianred3", "magenta1")
-  # Colours from two ColorBrewer palettes, sorted so as to maximize contrast
-  # between adjacent colors.
-  brewer_colors <- function() c(
-    "#CAB2D6", "#A6CEE3", "#80B1D3", "#CCEBC5", "#FDB462", "#8DD3C7",
-    "#33A02C", "#B3DE69", "#B15928", "#FF7F00", "#1F78B4", "#B2DF8A",
-    "#6A3D9A", "#E31A1C", "#FFED6F", "#FFFF99", "#FB8072", "#FFFFB3",
-    "#FDBF6F", "#D9D9D9", "#FB9A99", "#FCCDE5", "#BC80BD", "#BEBADA"
-  )
-  case(match.arg(set),
-    w3c = sorted_w3c_colors(), w3c.i = rev.default(sorted_w3c_colors()),
-    nora = noras_colors(), nora.i = rev.default(noras_colors()),
-    brewer = brewer_colors(), brewer.i = rev.default(brewer_colors()),
-    roseo = roseo_colors(), roseo.i = rev.default(roseo_colors())
-  )
+    set = c("w3c", "w3c.i", "w3c.r", "nora", "nora.i", "nora.r", "brewer",
+      "brewer.i", "brewer.r", "roseo", "roseo.i", "roseo.r", "ssnot",
+      "ssnot.i", "ssnot.r", "phrogz", "phrogz.i", "phrogz.r", "groups",
+      "groups.i", "groups.r")) {
+  fetch <- function(x) get(x, NULL, COLORS, "character", FALSE)
+  m <- regexpr(".", set <- match.arg(set), FALSE, FALSE, TRUE)
+  if (m > 0L) {
+    suffix <- substr(set, m + 1L, nchar(set))
+    set <- substr(set, 1L, m - 1L)
+  } else {
+    suffix <- "n"
+  }
+  result <- fetch(toupper(set))
+  switch(suffix, n = result, i = rev.default(result), r = sample(result))
 }
 
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))

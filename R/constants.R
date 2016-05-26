@@ -88,6 +88,87 @@ OPM_OPTIONS$time.fmt <- c("%m/%d/%Y %I:%M:%S %p", "%b %d %Y %I:%M %p",
 OPM_OPTIONS$time.zone <- ""
 OPM_OPTIONS$warn.mult <- FALSE
 
+COLORS <- list(
+  # Basic colour keywords from http://www.w3.org/TR/css3-color/ (accessed on
+  # 29-8-2011), sorted darkest-first.
+  W3C = c(
+    black = "#000000", navy = "#000080",
+    green = "#008000", maroon = "#800000", blue = "#0000FF", lime = "#00FF00",
+    red = "#FF0000", teal = "#008080", purple = "#800080", olive = "#808000",
+    gray = "#808080", aqua = "#00FFFF", fuchsia = "#FF00FF",
+    yellow = "#FFFF00", silver = "#C0C0C0", white = "#FFFFFF"
+    ),
+  # Colours manually selected and sorted by Nora Buddruhs for maximum contrast.
+  NORA = c(
+    "midnightblue", "darkred", "darkgreen", "orange",
+    "lightslateblue", "seashell4", "saddlebrown", "firebrick2",
+    "palevioletred3", "purple4"
+    ),
+  # Shades of pink...
+  ROSEO = c(
+    "maroon1", "palevioletred3", "hotpink1",
+    "mediumvioletred", "violetred3", "deeppink3", "lightcoral", "pink1",
+    "indianred3", "magenta1"
+    ),
+  # Colours from the two qualitative ColorBrewer (http://colorbrewer2.org/)
+  # palettes, in order.
+  BREWER = c(
+    "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C",
+    "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#FFFF99", "#B15928",
+    "#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462",
+    "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F"
+  ),
+  # from http://godsnotwheregodsnot.blogspot.de/2012/09/
+  # color-distribution-methodology.html (converted from RGB)
+  SSNOT = c(
+    "#000000", "#010067", "#D5FF00", "#FF0056", "#9E008E", "#0E4CA1",
+    "#FFE502", "#005F39", "#00FF00", "#95003A", "#FF937E", "#A42400",
+    "#001544", "#91D0CB", "#620E00", "#6B6882", "#0000FF", "#007DB5",
+    "#6A826C", "#00AE7E", "#C28C9F", "#BE9970", "#008F9C", "#5FAD4E",
+    "#FF0000", "#FF00F6", "#FF029D", "#683D3B", "#FF74A3", "#968AE8",
+    "#98FF52", "#A75740", "#01FFFE", "#FFEEE8", "#FE8900", "#BDC6FF",
+    "#01D0FF", "#BB8800", "#7544B1", "#A5FFD2", "#FFA6FE", "#774D00",
+    "#7A4782", "#263400", "#004754", "#43002C", "#B500FF", "#FFB167",
+    "#FFDB66", "#90FB92", "#7E2DD2", "#BDD393", "#E56FFE", "#DEFF74",
+    "#00FF78", "#009BFF", "#006401", "#0076FF", "#85A900", "#00B917",
+    "#788231", "#00FFC6", "#FF6E41", "#E85EBE"
+  ),
+  # from http://phrogz.net/css/distinct-colors.html
+  # selected by Jan Meier-Kolthoff, 2016-05-24
+  PHROGZ = c(
+    "#c10000", "#81ba67", "#0085ff", "#f056ff", "#e60000", "#005000",
+    "#81aee5", "#7d006d", "#ff706e", "#00cf00", "#005ddb", "#ff78e6",
+    "#f2936b", "#00791a", "#0031a2", "#d20095", "#984624", "#00a43f",
+    "#003bdb", "#a4006e", "#6d2200", "#005137", "#989dff", "#ff0084",
+    "#ff6f28", "#007a59", "#6f60ff", "#b80d5e", "#9c4600", "#00a57e",
+    "#a487ff", "#8b003b", "#ca6b00", "#00a7b9", "#5b00dc", "#ff73aa",
+    "#bfaa69", "#007c91", "#5c00a3", "#662439", "#6d5d21", "#00daff",
+    "#b355f8", "#ff004d", "#473b00", "#00536b", "#51296c", "#8f485c",
+    "#9d8200", "#00c2ff", "#784c93", "#e395a9", "#ababa7", "#00afff",
+    "#c999e5", "#bf0128", "#5e5f5b", "#0080cb", "#c013ff", "#ff1730",
+    "#3b3c38", "#003f6c", "#e07fff", "#900007", "#669100", "#0057a1",
+    "#8e00a3"
+  ),
+  # From six ColorBrewer palettes.
+  GROUPS = c(
+    "#c6dbef", "#c7e9c0", "#d9d9d9", "#fdd0a2", "#dadaeb", "#fcbba1",
+    "#2171b5", "#238b45", "#525252", "#d94801", "#6a51a3", "#cb181d",
+    "#6baed6", "#74c476", "#969696", "#fd8d3c", "#9e9ac8", "#fb6a4a",
+    "#4292c6", "#41ab5d", "#737373", "#f16913", "#807dba", "#ef3b2c",
+    "#9ecae1", "#a1d99b", "#bdbdbd", "#fdae6b", "#bcbddc", "#fc9272",
+    "#deebf7", "#e5f5e0", "#f0f0f0", "#fee6ce", "#efedf5", "#fee0d2",
+    "#08519c", "#006d2c", "#252525", "#a63603", "#54278f", "#a50f15",
+    "#f7fbff", "#f7fcf5", "#fffffe", "#fff5eb", "#fcfbfd", "#fff5f0",
+    "#08306b", "#00441b", "#000000", "#7f2704", "#3f007d", "#67000d"
+  )
+)
+
+COLORS$W3C <- COLORS$W3C[c("teal", "purple", "olive", "black", "silver",
+  "blue", "lime", "red", "aqua", "fuchsia", "yellow", "navy", "green",
+  "maroon", "gray")]
+
+COLORS <- as.environment(COLORS)
+
 CHARACTER_STATES <- c(0L:9L, LETTERS)[1L:32L]
 MISSING_CHAR <- "?"
 
