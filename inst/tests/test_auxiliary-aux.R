@@ -61,6 +61,10 @@ test_that("we can memoize queries", {
 ## UNTESTED
 
 
+## no_gaps
+## UNTESTED
+
+
 ## metadata2factorlist
 ## UNTESTED
 
@@ -160,9 +164,6 @@ test_that("rows can be picked", {
 ## UNTESTED
 
 ## vector2row
-## UNTESTED
-
-## collect_rows
 ## UNTESTED
 
 

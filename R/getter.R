@@ -132,21 +132,19 @@ setMethod("[", c("MOPMX", "missing", "missing", "ANY"), function(x, i, j,
 
 setMethod("[", c("MOPMX", "character", "missing", "missing"), function(x, i, j,
     drop) {
-  x@.Data <- close_index_gaps(x@.Data[match(i, names(x))])
-  x
+  no_gaps(x, match(i, names(x)))
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "character", "missing", "ANY"), function(x, i, j,
     drop) {
   if (drop) # remove the class, return a list
     return(x@.Data[match(i, names(x))])
-  x@.Data <- close_index_gaps(x@.Data[match(i, names(x))]) # keeps the class
-  x
+  no_gaps(x, match(i, names(x)))
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "expression", "missing", "missing"), function(x, i, j,
     drop) {
-  x[i %q% x]
+  x[i %q% x, drop = FALSE]
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "expression", "missing", "ANY"), function(x, i, j,
@@ -156,7 +154,7 @@ setMethod("[", c("MOPMX", "expression", "missing", "ANY"), function(x, i, j,
 
 setMethod("[", c("MOPMX", "formula", "missing", "missing"), function(x, i, j,
     drop) {
-  x[do.call(formula2infix(i), list(i, x))]
+  x[do.call(formula2infix(i), list(i, x)), drop = FALSE]
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "formula", "missing", "ANY"), function(x, i, j,
@@ -166,30 +164,25 @@ setMethod("[", c("MOPMX", "formula", "missing", "ANY"), function(x, i, j,
 
 setMethod("[", c("MOPMX", "list", "missing", "missing"), function(x, i, j,
     drop) {
-  x@.Data <- mapply(FUN = do_select, x = x@.Data, query = i, SIMPLIFY = FALSE)
-  x@.Data <- close_index_gaps(x@.Data)
-  x
+  x[i, drop = FALSE]
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "list", "missing", "ANY"), function(x, i, j, drop) {
   x@.Data <- mapply(FUN = do_select, x = x@.Data, query = i, SIMPLIFY = FALSE)
   if (drop)
     return(x@.Data)
-  x@.Data <- close_index_gaps(x@.Data)
-  x
+  no_gaps(x, TRUE)
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "ANY", "missing", "missing"), function(x, i, j,
     drop) {
-  x@.Data <- close_index_gaps(x@.Data[i])
-  x
+  no_gaps(x, i)
 }, sealed = SEALED)
 
 setMethod("[", c("MOPMX", "ANY", "missing", "ANY"), function(x, i, j, drop) {
   if (drop) # remove the class, return a list
     return(x@.Data[i])
-  x@.Data <- close_index_gaps(x@.Data[i]) # keeps the class
-  x
+  no_gaps(x, i) # keeps the class
 }, sealed = SEALED)
 
 setMethod("max", "OPM", function(x, ..., na.rm = FALSE) {
@@ -297,7 +290,8 @@ setMethod("csv_data", "OPMS", function(object, ...) {
   x <- lapply(X = object@plates, FUN = csv_data, ...)
   if (all(lengths(x, FALSE) == 1L))
     return(unlist(x, FALSE, TRUE))
-  collect_rows(lapply(x, vector2row))
+  x <- lapply(x, vector2row)
+  collect(x = x, what = "rows", dataframe = FALSE, keep.unnamed = TRUE)
 }, sealed = SEALED)
 
 setMethod("csv_data", "MOPMX", function(object, ...) {
@@ -305,7 +299,7 @@ setMethod("csv_data", "MOPMX", function(object, ...) {
   if (all(is.vec <- !vapply(x, is.matrix, 0L)))
     return(unlist(x, FALSE, TRUE))
   x[is.vec] <- lapply(x[is.vec], vector2row)
-  collect_rows(x)
+  collect(x = x, what = "rows", dataframe = FALSE, keep.unnamed = TRUE)
 }, sealed = SEALED)
 
 setGeneric("has_aggr", function(object, ...) standardGeneric("has_aggr"))
@@ -554,8 +548,7 @@ setMethod("subset", "MOPMX", function(x, query, values = TRUE,
   x@.Data <- lapply(X = x@.Data, FUN = subset, query = query, values = values,
     invert = invert, exact = exact, time = time, positive = positive,
     negative = negative, common = common, use = use)
-  x@.Data <- close_index_gaps(x@.Data)
-  x
+  no_gaps(x, TRUE)
 }, sealed = SEALED)
 
 setGeneric("thin_out", function(object, ...) standardGeneric("thin_out"))

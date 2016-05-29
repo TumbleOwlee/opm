@@ -178,6 +178,19 @@ close_index_gaps <- function(x) {
   x
 }
 
+no_gaps <- function(x, i) {
+  dat <- x@.Data[i]
+  nam <- x@names[i]
+  if (any(bad <- vapply(dat, is.null, NA))) {
+    warning("closing gaps in indexes", call. = FALSE)
+    dat <- dat[!bad]
+    nam <- nam[!bad]
+  }
+  x@.Data <- dat
+  x@names <- nam
+  x
+}
+
 metadata2factorlist <- function(x, f) {
   replace_null <- function(x) {
     x[vapply(x, is.null, NA)] <- NA
@@ -308,21 +321,6 @@ strip_whitespace <- function(x) {
 }
 
 vector2row <- function(x) matrix(x, 1L, length(x), FALSE, list(NULL, names(x)))
-
-collect_rows <- function(x) {
-  #sortable_indexes <- function(x) {
-  #  n <- seq_along(x)
-  #  sprintf(sprintf("%%0%ii", ceiling(log(n[length(n)], 10))), n)
-  #}
-  add_cols <- function(x, cols) {
-    if (length(cols <- setdiff(cols, colnames(x))))
-      cbind(x, matrix(NA, nrow(x), length(cols), FALSE, list(NULL, cols)))
-    else
-      x
-  }
-  cn <- unique.default(unlist(lapply(x, colnames), FALSE, FALSE))
-  do.call(rbind, lapply(x, add_cols, cn))
-}
 
 metadata_key <- function(x, to.formula, ...) UseMethod("metadata_key")
 

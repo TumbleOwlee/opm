@@ -4,7 +4,7 @@ setGeneric("opm_mcp",
 setMethod("opm_mcp", "MOPMX", function(object, model, linfct = 1L,
     m.type = "glm", rhs = 0, alternative = "two.sided", glht.args = list(),
     ops = "+", output = "mcp", sep = opm_opt("comb.value.join"), ...) {
-  object <- extract(object = object, dataframe = TRUE, sep = sep, ...,
+  object <- extract(object = object, dataframe = NA, sep = sep, ...,
     as.labels = metadata_key(model, FALSE, ops = ops, syntactic = FALSE,
       remove = RESERVED_NAMES[c("well", "value", "parameter")]))
   attr(object, opm_string()) <- list(plate.type = NULL)
@@ -256,12 +256,14 @@ setMethod("annotated", "MOPMX", function(object, what = "kegg", how = "ids",
     result <- discretized(object, full = TRUE, in.parens = FALSE, max = 10000L)
     is.vec <- !vapply(result, is.matrix, 0L)
     result[is.vec] <- lapply(result[is.vec], vector2row)
-    result <- collect_rows(result)
+    result <- collect(x = result, what = "rows", dataframe = FALSE,
+      keep.unnamed = TRUE)
     result <- map_values(reduce_to_mode.matrix(result, L(sep), TRUE), lmap)
   } else {
     result <- aggregated(object, subset = output, ci = FALSE, full = TRUE,
       in.parens = FALSE, max = 10000L)
-    result <- colMeans(collect_rows(unlist(result, FALSE, FALSE)), na.rm = TRUE)
+    result <- colMeans(collect(x = unlist(result, FALSE, FALSE), what = "rows",
+      dataframe = FALSE, keep.unnamed = TRUE), na.rm = TRUE)
   }
   convert_annotation_vector(result, how, what, conc)
 }, sealed = SEALED)

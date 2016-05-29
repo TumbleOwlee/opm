@@ -1,3 +1,4 @@
+- fixed bug in the MOPMX getter method that caused wrong names to be used
 - fixed bug that caused errors of infix operators at least in conjunction
   with 'knitR'
 - dead links to foreign packages in the HTML online documentation are now

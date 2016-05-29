@@ -322,7 +322,7 @@ collect.kegg_compounds <- function(x,
     if (name == "EXACT_MASS")
       matrix(unlist(result), ncol = 1L, dimnames = list(NULL, tolower(name)))
     else
-      pkgutils::collect(result, "occurrences")
+      collect(result, "occurrences")
   }
   what <- toupper(match.arg(what, several.ok = TRUE))
   result <- do.call(cbind, lapply(what, partial_matrix, x))

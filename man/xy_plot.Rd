@@ -201,10 +201,9 @@ xy_plot(vaas_4, include = c("Species", "Strain"),
   lattice::xyplot
 
   Other plotting-functions: \code{\link{ci_plot}},
-  \code{\link{cor.test}}, \code{\link{heat_map}},
-  \code{\link{level_plot}}, \code{\link{parallel_plot}},
-  \code{\link{parallelplot}}, \code{\link{radial_plot}},
-  \code{\link{summary}}
+  \code{\link{heat_map}}, \code{\link{level_plot}},
+  \code{\link{parallel_plot}}, \code{\link{parallelplot}},
+  \code{\link{radial_plot}}, \code{\link{summary}}
 }
 \keyword{hplot}
 

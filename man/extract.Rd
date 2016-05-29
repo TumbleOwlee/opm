@@ -37,7 +37,9 @@
   \code{\link{aggregated}} for details.}
 
   \item{dataframe}{Logical scalar. Return data frame or
-  matrix?}
+  matrix? In the case of the \code{\link{MOPMX}} method
+  this can also be \code{NA} and then behaves like
+  \code{TRUE} but ensures that all rows are kept.}
 
   \item{as.groups}{For the \code{\link{OPMS}} method, a
   list, character vector or formula indicating the metadata
@@ -375,7 +377,7 @@ stopifnot(identical(attr(y, "row.groups"), x$c))
 \usage{
   \S4method{extract}{MOPMX}(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
-    dataframe = FALSE, as.groups = NULL, ...) 
+    dataframe = FALSE, as.groups = NULL, sep = " ", ...) 
   \S4method{extract}{OPMS}(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
     dataframe = FALSE, as.groups = NULL, sep = " ", dups = "warn",

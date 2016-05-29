@@ -365,7 +365,7 @@ setGeneric("extract", function(object, ...) standardGeneric("extract"))
 
 setMethod("extract", "MOPMX", function(object, as.labels,
     subset = opm_opt("curve.param"), ci = FALSE, trim = "full",
-    dataframe = FALSE, as.groups = NULL, ...) {
+    dataframe = FALSE, as.groups = NULL, sep = " ", ...) {
 
   convert_row_groups <- function(x) { # for generated matrices only
     result <- unlist(lapply(x, rownames), FALSE, FALSE)
@@ -383,9 +383,12 @@ setMethod("extract", "MOPMX", function(object, as.labels,
     setdiff(c(unlist(x, FALSE, FALSE), names(attr(x, "combine"))), other)
   }
 
+  if (all.rows <- is.na(L(dataframe)))
+    dataframe <- TRUE
+
   x <- lapply(X = object, FUN = extract, as.labels = as.labels,
     subset = subset, ci = ci, trim = trim, dataframe = dataframe,
-    as.groups = as.groups, ...)
+    as.groups = as.groups, sep = sep, ...)
 
   if (!dataframe) {
     if (!length(as.labels)) { # create potentially unique row names
@@ -395,17 +398,26 @@ setMethod("extract", "MOPMX", function(object, as.labels,
         rownames(x[[i]]) <- paste(base[[i]], seq_len(nrow(x[[i]])), sep = ".")
     }
     return(structure(.Data = collect(x, "datasets"),
-      row.groups = if (length(as.groups)) convert_row_groups(x)
-      else
-        NULL))
+      row.groups = if (length(as.groups)) convert_row_groups(x) else NULL))
   }
 
-  x <- collect_rows(x)
-  rownames(x) <- NULL
-  if (!length(as.groups))
-    return(x)
-  p.col <- protected(colnames(x))
+  p.col <- protected(colnames(x[[1L]]))
   g.col <- group_columns(as.groups, p.col)
+  if (length(as.labels) && !all.rows) {
+    l.col <- setdiff(p.col, g.col)
+    if (is.null(base <- names(object)))
+      base <- plate_type(object)
+    for (i in seq_along(x))
+      rownames(x[[i]]) <- make.unique(do.call(paste, c(x[[i]][, l.col,
+        drop = FALSE], list(X = base[[i]], sep = sep))))
+    x <- collect(x = x, what = "datasets", dataframe = TRUE,
+      stringsAsFactors = TRUE)
+  } else {
+    x <- collect(x = x, what = "rows", dataframe = TRUE,
+      stringsAsFactors = TRUE)
+  }
+  rownames(x) <- NULL
+
   x[, c(p.col, setdiff(colnames(x), c(p.col, g.col)), g.col), drop = FALSE]
 
 }, sealed = SEALED)

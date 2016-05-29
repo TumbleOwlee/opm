@@ -99,10 +99,9 @@ level_plot(vaas_4, include = c("Species", "Strain"))
   lattice::levelplot grDevices::colorRampPalette
 
   Other plotting-functions: \code{\link{ci_plot}},
-  \code{\link{cor.test}}, \code{\link{heat_map}},
-  \code{\link{parallel_plot}}, \code{\link{parallelplot}},
-  \code{\link{radial_plot}}, \code{\link{summary}},
-  \code{\link{xy_plot}}
+  \code{\link{heat_map}}, \code{\link{parallel_plot}},
+  \code{\link{parallelplot}}, \code{\link{radial_plot}},
+  \code{\link{summary}}, \code{\link{xy_plot}}
 }
 \keyword{hplot}
 

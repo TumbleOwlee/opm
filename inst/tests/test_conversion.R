@@ -769,7 +769,7 @@ test_that("extract() can be applied to MOPMX objects", {
   expect_equal(colnames(got)[ncol(got)], "organism")
   expect_equal(sum(complete.cases(got)), 2L)
   expect_equal(nrow(got), sum(lengths(MOPMX.2, FALSE)))
-  expect_true(all(to_metadata(MOPMX.2)$run == got$run))
+  expect_true(setequal(to_metadata(MOPMX.2)$run, got$run))
 
 })
 
