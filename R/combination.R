@@ -84,6 +84,13 @@ setMethod("+", c("OPM", "list"), function(e1, e2) {
   new(Class = "OPMS", plates = c(list(e1), e2))
 }, sealed = SEALED)
 
+setMethod("+", c("OPM", "numeric"), function(e1, e2) {
+  idx <- seq_len(nrow(e1@measurements))
+  e2 <- e2 * (idx - 1L)
+  e1@measurements[, HOUR] <- e2[idx]
+  e1
+}, sealed = SEALED)
+
 setMethod("+", c("OPMS", "OPMS"), function(e1, e2) {
   e1@plates[seq_along(e2@plates) + length(e1@plates)] <- e2@plates
   validObject(e1)
@@ -105,6 +112,11 @@ setMethod("+", c("OPMS", "list"), function(e1, e2) {
   new(Class = "OPMS", plates = c(e1@plates, e2)) # unnaming also needed
 }, sealed = SEALED)
 
+setMethod("+", c("OPMS", "numeric"), function(e1, e2) {
+  e1@plates <- lapply(e1@plates, "+", e2)
+  e1
+}, sealed = SEALED)
+
 setMethod("+", c("MOPMX", "OPMX"), function(e1, e2) {
   e1@.Data <- c(e1@.Data, list(e2))
   e1
@@ -115,9 +127,26 @@ setMethod("+", c("MOPMX", "ANY"), function(e1, e2) {
   e1
 }, sealed = SEALED)
 
+setMethod("+", c("MOPMX", "numeric"), function(e1, e2) {
+  e1@.Data <- lapply(e1@.Data, "+", e2)
+  e1
+}, sealed = SEALED)
+
 setMethod("+", c("ANY", "MOPMX"), function(e1, e2) {
   e2@.Data <- c(as(e1, class(e2))@.Data, e2@.Data)
   e2
+}, sealed = SEALED)
+
+setMethod("+", c("numeric", "OPM"), function(e1, e2) {
+  e2 + e1
+}, sealed = SEALED)
+
+setMethod("+", c("numeric", "OPMS"), function(e1, e2) {
+  e2 + e1
+}, sealed = SEALED)
+
+setMethod("+", c("numeric", "MOPMX"), function(e1, e2) {
+  e2 + e1
 }, sealed = SEALED)
 
 opms <- function(..., precomputed = TRUE, skip = FALSE, group = FALSE) {

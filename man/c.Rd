@@ -15,9 +15,14 @@
   \code{\link{MOPMX}} object, anything that can be
   converted with \code{as} to that class.}
 
-  \item{e2}{\code{\link{OPMX}} object, or list. If
-  \code{e1} is a \code{\link{MOPMX}} object, anything that
-  can be converted with \code{as} to that class.}
+  \item{e2}{\code{\link{OPMX}} object, list or numeric
+  scalar. If \code{e1} is a \code{\link{MOPMX}} object,
+  anything that can be converted with \code{as} to that
+  class. If \code{e2} is a numeric scalar, the time points
+  are modified to yield this as interval (and zero as first
+  time point, irrespective of the previous value). This is
+  only needed in the case of recording artefacts and should
+  be used with caution.}
 }
 \value{
   The \code{\link{OPMX}} method of \code{c} creates an
@@ -99,6 +104,8 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \alias{+,MOPMX-method}
 \alias{plus,MOPMX,OPMX-method}
 \alias{+,MOPMX,OPMX-method}
+\alias{plus,MOPMX,numeric-method}
+\alias{+,MOPMX,numeric-method}
 \alias{plus,OPM,MOPMX-method}
 \alias{+,OPM,MOPMX-method}
 \alias{plus,OPM,OPM-method}
@@ -107,6 +114,8 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \alias{+,OPM,OPMS-method}
 \alias{plus,OPM,list-method}
 \alias{+,OPM,list-method}
+\alias{plus,OPM,numeric-method}
+\alias{+,OPM,numeric-method}
 \alias{plus,OPMS,MOPMX-method}
 \alias{+,OPMS,MOPMX-method}
 \alias{plus,OPMS,OPM-method}
@@ -115,6 +124,14 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
 \alias{+,OPMS,OPMS-method}
 \alias{plus,OPMS,list-method}
 \alias{+,OPMS,list-method}
+\alias{plus,OPMS,numeric-method}
+\alias{+,OPMS,numeric-method}
+\alias{plus,numeric,MOPMX-method}
+\alias{+,numeric,MOPMX-method}
+\alias{plus,numeric,OPM-method}
+\alias{+,numeric,OPM-method}
+\alias{plus,numeric,OPMS-method}
+\alias{+,numeric,OPMS-method}
 \alias{c-methods}
 \alias{c,MOPMX-method}
 \alias{c,OPMX-method}
@@ -122,14 +139,20 @@ stopifnot(identical(dim(x), c(5L, dim(vaas_1))))
   \S4method{+}{ANY,MOPMX}(e1, e2) 
   \S4method{+}{MOPMX,ANY}(e1, e2) 
   \S4method{+}{MOPMX,OPMX}(e1, e2) 
+  \S4method{+}{MOPMX,numeric}(e1, e2) 
   \S4method{+}{OPM,MOPMX}(e1, e2) 
   \S4method{+}{OPM,OPM}(e1, e2) 
   \S4method{+}{OPM,OPMS}(e1, e2) 
   \S4method{+}{OPM,list}(e1, e2) 
+  \S4method{+}{OPM,numeric}(e1, e2) 
   \S4method{+}{OPMS,MOPMX}(e1, e2) 
   \S4method{+}{OPMS,OPM}(e1, e2) 
   \S4method{+}{OPMS,OPMS}(e1, e2) 
   \S4method{+}{OPMS,list}(e1, e2) 
+  \S4method{+}{OPMS,numeric}(e1, e2) 
+  \S4method{+}{numeric,MOPMX}(e1, e2) 
+  \S4method{+}{numeric,OPM}(e1, e2) 
+  \S4method{+}{numeric,OPMS}(e1, e2) 
 
   \S4method{c}{MOPMX}(x, ..., recursive = FALSE) 
   \S4method{c}{OPMX}(x, ..., recursive = FALSE) 

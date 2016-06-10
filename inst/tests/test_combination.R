@@ -102,8 +102,8 @@ test_that("`+`() can be used to put plates together", {
   expect_is(x, "OPMS")
   expect_equal(dim(x)[1L], 3L)
   expect_error(x <- x + OPM.3)
-  expect_error(x <- x + 5)
   expect_error(x <- x + "abc")
+  expect_equal(x + 5, 5 + x)
   x <- OPM.1 + OPM.1
   expect_equal(2L, dim(x)[1L])
   y <- x + OPM.1
@@ -127,8 +127,7 @@ test_that("`+`() can be used to put MOPMX objects together", {
   expect_equal(length(got), length(MOPMX.1) + 1L)
   got <- MOPMX.1 + OPMS.INPUT
   expect_equal(length(got), length(MOPMX.1) + 1L)
-  expect_error(MOPMX.1 + 5)
-  expect_error(5 + MOPMX.1)
+  expect_equal(MOPMX.1 + 5, 5 + MOPMX.1)
 })
 
 
