@@ -75,8 +75,8 @@ setMethod("merge", c("CMAT", "factor"), function(x, y) {
   if (length(levels(y)) == length(y))
     return(x)
   cn <- colnames(x) # later put back, avoiding correction of duplicate names
-  x <- aggregate(as.data.frame(x, stringsAsFactors = FALSE), by = list(y),
-    FUN = c, recursive = TRUE, simplify = FALSE)
+  x <- aggregate(x = as.data.frame(x = x, stringsAsFactors = FALSE),
+    by = list(y), FUN = c, recursive = TRUE, simplify = FALSE)
   x <- as.matrix(x[, -1L, drop = FALSE])
   x[] <- lapply(x, sort.int, NULL, TRUE)
   rownames(x) <- levels(y)

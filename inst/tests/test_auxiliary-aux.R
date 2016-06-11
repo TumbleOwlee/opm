@@ -557,7 +557,7 @@ test_that("character-matrix objects can be updated by deletion", {
   got <- update(data, "delete.ambig")
   expect_equal(got, data)
   got <- update(data, "delete.ambig", na.rm = FALSE)
-  expect_equal(dim(got), c(2, 1))
+  expect_equal(dim(got), c(2, 0))
 
   got <- update(data, "delete.const")
   expect_equal(dim(got), c(2, 0))
@@ -567,7 +567,7 @@ test_that("character-matrix objects can be updated by deletion", {
   got <- update(data, "delete.uninf")
   expect_equal(dim(got), c(2, 0))
   got <- update(data, "delete.uninf", na.rm = FALSE)
-  expect_equal(dim(got), c(2, 1))
+  expect_equal(dim(got), c(2, 0))
 
 })
 
