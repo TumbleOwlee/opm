@@ -531,43 +531,44 @@ test_that("character-matrix objects can be updated by converting NAs", {
 ## update
 test_that("character-matrix objects can be updated by deletion", {
 
-  data <- matrix(1:10, ncol = 2L)
-  rownames(data) <- paste("taxon", 1L:5L, sep = "_")
-  colnames(data) <- paste("char", 1L:2L, sep = "_")
-  data <- discrete(data, TRUE, TRUE)
-  data <- as(data, "CMAT")
+  #x <- matrix(data = 1:10, ncol = 2L)
+  x <- matrix(data = c(1L, 1L, 1L, 1L, NA, NA, NA, 2L, 2L, 2L), ncol = 2L)
+  rownames(x) <- paste("taxon", 1L:5L, sep = "_")
+  colnames(x) <- paste("char", 1L:2L, sep = "_")
+  #x <- discrete(x, TRUE, TRUE)
+  x <- as(x, "CMAT")
 
-  got <- update(data, "delete.ambig")
-  expect_equal(got, data) # no ambiguities
-  got <- update(data, "delete.ambig")
-  expect_equal(got, data, na.rm = FALSE) # na.rm no effect here
+  got <- update(x, "delete.ambig")
+  expect_equal(got, x) # no ambiguities
+  got <- update(x, "delete.ambig")
+  expect_equal(got, x, na.rm = FALSE) # na.rm no effect here
 
-  got <- update(data, "delete.const")
+  got <- update(x, "delete.const")
   expect_equal(length(got), 0L)
-  got <- update(data, "delete.const")
+  got <- update(x, "delete.const")
   expect_equal(length(got), 0L, na.rm = FALSE)
 
-  got <- update(data, "delete.uninf")
+  got <- update(x, "delete.uninf")
   expect_equal(length(got), 0L)
-  got <- update(data, "delete.uninf")
+  got <- update(x, "delete.uninf")
   expect_equal(length(got), 0L, na.rm = FALSE)
 
-  data <- merge(data, c(1, 1, 2, 2, 2))
+  y <- merge(x, c(1, 1, 2, 2, 2))
 
-  got <- update(data, "delete.ambig")
-  expect_equal(got, data)
-  got <- update(data, "delete.ambig", na.rm = FALSE)
-  expect_equal(dim(got), c(2, 0))
+  got <- update(y, "delete.ambig")
+  expect_equal(got, y)
+  got <- update(y, "delete.ambig", na.rm = FALSE)
+  expect_equal(dim(got), c(2, 1))
 
-  got <- update(data, "delete.const")
+  got <- update(y, "delete.const")
   expect_equal(dim(got), c(2, 0))
-  got <- update(data, "delete.const", na.rm = FALSE)
-  expect_equal(got, data)
+  got <- update(y, "delete.const", na.rm = FALSE)
+  expect_equal(got, y)
 
-  got <- update(data, "delete.uninf")
+  got <- update(y, "delete.uninf")
   expect_equal(dim(got), c(2, 0))
-  got <- update(data, "delete.uninf", na.rm = FALSE)
-  expect_equal(dim(got), c(2, 0))
+  got <- update(y, "delete.uninf", na.rm = FALSE)
+  expect_equal(dim(got), c(2, 1))
 
 })
 
