@@ -53,6 +53,7 @@ setMethod("hours", "OPM", function(object,
 setMethod("[", c("OPM", "ANY", "ANY", "ANY"), function(x, i, j, ...,
     drop = FALSE) {
   mat <- x@measurements[, -1L, drop = FALSE]
+  i <- time_index(i, x@measurements[, 1L])
   mat <- mat[i, well_index(j, colnames(mat)), ..., drop = FALSE]
   if (!all(dim(mat)))
     stop("selection resulted in empty matrix")
@@ -68,8 +69,8 @@ setMethod("[", c("OPMA", "ANY", "ANY", "ANY"), function(x, i, j, ...,
   if (drop)
     return(as(x, "OPM"))
   if (!missing(j))
-    x@aggregated <- x@aggregated[, well_index(j, colnames(x@aggregated)), ...,
-      drop = FALSE]
+    x@aggregated <- x@aggregated[, well_index(j, colnames(x@aggregated)),
+      ..., drop = FALSE]
   x
 }, sealed = SEALED)
 
@@ -108,9 +109,10 @@ setMethod("[", c("OPMS", "ANY", "ANY", "ANY"), function(x, i, j, k, ...,
   } else if (is.list(j)) {
     y <- mapply(FUN = `[`, x = y, i = j, MoreArgs = list(j = k, drop = drop),
       SIMPLIFY = FALSE, USE.NAMES = FALSE)
-  } else
+  } else {
     y <- mapply(FUN = `[`, x = y, MoreArgs = list(i = j, j = k, drop = drop),
       SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  }
   if (length(y) == 1L)
     return(y[[1L]])
   x@plates <- y
@@ -539,12 +541,16 @@ setMethod("subset", "MOPMX", function(x, query, values = TRUE,
       x@.Data[[i]] <- x@.Data[[i]][wanted[[i]]]
     x[some]
   }
-  if (missing(use))
-    LL(common)
-  else
+  if (missing(use)) {
+    LL(common, time)
+  } else {
+    time <- all(match(use, c("t", "T"), 0L))
     common <- all(match(use, c("c", "C"), 0L))
+  }
   if (common)
     return(reduce_to_common_subset(x = x, what = query, ...))
+  if (time)
+    return(common_times(x))
   x@.Data <- lapply(X = x@.Data, FUN = subset, query = query, values = values,
     invert = invert, exact = exact, time = time, positive = positive,
     negative = negative, common = common, use = use)

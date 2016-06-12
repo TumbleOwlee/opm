@@ -162,6 +162,15 @@ well_index <- function(x, names) {
     x
 }
 
+time_index <- function(x, times) {
+  if (missing(x))
+    TRUE
+  else if (inherits(x, "formula"))
+    times <= x[[length(x)]]
+  else
+    x
+}
+
 clean_coords <- function(x) {
   do_clean <- function(x) {
     x <- sub("\\s+$", "", sub("^\\s+", "", x, FALSE, TRUE), FALSE, TRUE)

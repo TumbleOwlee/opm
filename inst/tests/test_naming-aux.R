@@ -119,6 +119,10 @@ test_that("well indices given as formula can be mapped", {
 })
 
 
+## time_index
+## UNTESTED
+
+
 ## map_well_names
 ## UNTESTED
 

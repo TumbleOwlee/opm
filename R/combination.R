@@ -87,7 +87,7 @@ setMethod("+", c("OPM", "list"), function(e1, e2) {
 setMethod("+", c("OPM", "numeric"), function(e1, e2) {
   idx <- seq_len(nrow(e1@measurements))
   e2 <- e2 * (idx - 1L)
-  e1@measurements[, HOUR] <- e2[idx]
+  e1@measurements[, 1L] <- e2[idx]
   e1
 }, sealed = SEALED)
 

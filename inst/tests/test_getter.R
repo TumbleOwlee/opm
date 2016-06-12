@@ -440,8 +440,9 @@ test_that("the plates can be subset based on common time points", {
 
 ## subset
 test_that("MOPMX objects can be subset", {
-  got <- subset(MOPMX.1, time = TRUE)
-  expect_equal(got, MOPMX.1)
+  got <- subset(x = MOPMX.1, time = TRUE)
+  expect_equal(got[[1L]], MOPMX.1[[1L]])
+  expect_false(identical(got[[2L]], MOPMX.1[[2L]]))
   expect_warning(got <- subset(MOPMX.1, ~ organism, use = "k"))
   expect_equal(got, MOPMX.1[2L])
 })

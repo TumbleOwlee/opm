@@ -7,7 +7,9 @@
 
   \item{i}{Vector or missing. For the \code{\link{OPM}} and
   \code{\link{OPMA}} method, the indexes of one to several
-  time points.
+  time points. In that case, \code{i} can also be a formula
+  whose right side indicates an upper boundary of the
+  running time.
 
   For the \code{\link{OPMS}} method, the indexes of one to
   several plates. A warning is issued if indexing goes
@@ -39,7 +41,8 @@
   to the respective \code{\link{OPM}} object separately,
   allowing for individual choices of time points. Otherwise
   \code{j} is used as the \code{i} argument of the
-  \code{\link{OPM}} and \code{\link{OPMA}} method.  }}
+  \code{\link{OPM}} and \code{\link{OPMA}} method (and can
+  also be a formula, see above.)  }}
 
   \item{k}{Vector or missing. The \code{\link{OPMS}} method
   passes \code{k} as \code{j} argument of the

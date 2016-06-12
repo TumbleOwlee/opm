@@ -59,14 +59,20 @@ setMethod("common_times", "OPM", function(x) {
 }, sealed = SEALED)
 
 setMethod("common_times", "OPMS", function(x) {
-  tp <- hours(x, what = "all")
-  if (is.matrix(tp))
-    tp <- lapply(seq_len(nrow(tp)), function(i) tp[i, ])
-  if (length(maxs <- unique.default(vapply(tp, max, 1))) < 2L)
+  if (length(maxima <- unique.default(hours(x, "max"))) < 2L)
     return(x)
-  min.max <- min(maxs)
-  tp <- lapply(tp, function(x) which(x <= min.max))
-  x[, tp]
+  x[, formula(paste0("~", min(maxima)))]
+}, sealed = SEALED)
+
+setMethod("common_times", "MOPMX", function(x) {
+  if (is.list(maxima <- hours(x, "max")))
+    maxima <- unlist(maxima, FALSE, FALSE)
+  if (length(maxima <- unique.default(maxima)) < 2L)
+    return(x)
+  upto <- formula(paste0("~", min(maxima)))
+  x@.Data <- lapply(x@.Data, function(object) if (is(object, "OPMS"))
+    object[, upto] else object[upto])
+  x
 }, sealed = SEALED)
 
 setGeneric("select_by_disc", function(x, ...) standardGeneric("select_by_disc"))

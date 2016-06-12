@@ -38,8 +38,8 @@
 
   \item{time}{Logical scalar. If \code{TRUE}, all other
   arguments are ignored and the object is reduced to the
-  common subset of time points (measurement hours and
-  minutes).}
+  common subset of time points (usually measurement hours
+  and minutes).}
 
   \item{positive}{Character scalar. If \sQuote{ignore}, not
   used. Otherwise all previous arguments except
