@@ -28,7 +28,10 @@
   in the matrix. One of the values of
   \code{\link{param_names}()}. Alternatively, if it is
   \code{\link{param_names}("disc.name")}, discretised data
-  are returned, and \code{ci} is ignored..}
+  are returned, and \code{ci} is ignored. Can also be
+  identical to \code{\link{param_names}("hours")}, which
+  yields the overall running time (see
+  \code{\link{hours}}), also ignoring \code{ci}.}
 
   \item{ci}{Logical scalar. Also return the confidence
   intervals?}

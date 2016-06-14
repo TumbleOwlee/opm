@@ -390,6 +390,8 @@ setMethod("extract", "MOPMX", function(object, as.labels,
     subset = subset, ci = ci, trim = trim, dataframe = dataframe,
     as.groups = as.groups, sep = sep, ...)
 
+  plot.na <- unique.default(unlist(lapply(x, attr, "plot.NA"), FALSE, FALSE))
+
   if (!dataframe) {
     if (!length(as.labels)) { # create potentially unique row names
       if (is.null(base <- names(object)))
@@ -397,7 +399,7 @@ setMethod("extract", "MOPMX", function(object, as.labels,
       for (i in seq_along(x))
         rownames(x[[i]]) <- paste(base[[i]], seq_len(nrow(x[[i]])), sep = ".")
     }
-    return(structure(.Data = collect(x, "datasets"),
+    return(structure(.Data = collect(x, "datasets"), plot.NA = plot.na,
       row.groups = if (length(as.groups)) convert_row_groups(x) else NULL))
   }
 
@@ -443,11 +445,16 @@ setMethod("extract", "OPMS", function(object, as.labels,
   }
 
   # Collect parameters in a matrix
-  subset <- match.arg(subset,
-    unlist(map_param_names(plain = TRUE, disc = TRUE)))
+  subset <- match.arg(subset, c(HOUR,
+    unlist(map_param_names(plain = TRUE, disc = TRUE))))
   if (subset == DISC_PARAM) {
     ci <- FALSE
     result <- discretized(object, full = full, max = max, ...)
+  } else if (subset == HOUR) {
+    ci <- FALSE
+    result <- as.matrix(hours(object, "max"))
+    colnames(result) <- plate_type(object)
+    rownames(result) <- rep.int(HOUR, nrow(result))
   } else {
     result <- do.call(rbind, lapply(X = object@plates, FUN = aggregated,
       subset = subset, ci = ci, trim = trim, full = full, max = max, ...))
@@ -491,6 +498,8 @@ setMethod("extract", "OPMS", function(object, as.labels,
     }
     if (length(as.groups))
       attr(result, "row.groups") <- create_groups(as.groups, TRUE, ci)
+    if (subset == HOUR)
+      attr(result, "plot.NA") <- 0
   }
 
   result

@@ -66,6 +66,11 @@
   wells and with or without the time points, or only the
   time points.
 }
+\note{
+  For quickly obtaining an overview of the running times in
+  a \code{\link{MOPMX}} object see \code{\link{extract}}
+  and \code{\link{heat_map}}.
+}
 \examples{
 # 'OPM' methods
 

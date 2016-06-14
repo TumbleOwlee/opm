@@ -121,6 +121,10 @@
   with a dot, so there is no guarantee that a certain
   maximum length will be obtained.}
 
+  \item{plot.na}{Character scalar with the name of an
+  optional attribute that contains replacement values for
+  \code{NA} that are inserted prior to plotting.}
+
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
@@ -214,7 +218,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
     else
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
-    abbrev = c("none", "row", "column", "both"), ...,
-    use.fun = c("gplots", "stats")) 
+    abbrev = c("none", "row", "column", "both"), plot.na = "plot.NA",
+    ..., use.fun = c("gplots", "stats"))
 }
 %% END INSERTION BY repair_S4_docu.rb
