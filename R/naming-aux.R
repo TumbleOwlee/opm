@@ -165,8 +165,11 @@ well_index <- function(x, names) {
 time_index <- function(x, times) {
   if (missing(x))
     TRUE
-  else if (inherits(x, "formula"))
-    times <= x[[length(x)]]
+  else if (inherits(x, "formula") && is.atomic(x <- x[[length(x)]]))
+    if (anyNA(x))
+      !duplicated.default(times)
+    else
+      times <= x
   else
     x
 }

@@ -248,6 +248,8 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
 \alias{metadata<-,MOPMX,missing,logical-method}
 \alias{metadata.set,OPM,missing,character-method}
 \alias{metadata<-,OPM,missing,character-method}
+\alias{metadata.set,OPM,missing,logical-method}
+\alias{metadata<-,OPM,missing,logical-method}
 \alias{metadata.set,WMD,ANY,ANY-method}
 \alias{metadata.set,WMD-method}
 \alias{metadata<-,WMD,ANY,ANY-method}
@@ -282,8 +284,6 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
 \alias{metadata<-,WMD,missing,data.frame-method}
 \alias{metadata.set,WMD,missing,list-method}
 \alias{metadata<-,WMD,missing,list-method}
-\alias{metadata.set,WMD,missing,logical-method}
-\alias{metadata<-,WMD,missing,logical-method}
 \alias{metadata.set,WMD,numeric,WMD-method}
 \alias{metadata<-,WMD,numeric,WMD-method}
 \alias{metadata.set,WMD,numeric,WMDS-method}
@@ -328,6 +328,7 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
   \S4method{metadata}{MOPMX,missing,data.frame}(object, key) <- value
   \S4method{metadata}{MOPMX,missing,logical}(object, key) <- value
   \S4method{metadata}{OPM,missing,character}(object, key) <- value
+  \S4method{metadata}{OPM,missing,logical}(object, key) <- value
   \S4method{metadata}{WMD,ANY,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,ANY}(object, key) <- value
   \S4method{metadata}{WMD,character,WMD}(object, key) <- value
@@ -343,7 +344,6 @@ stopifnot(identical(metadata(copy), metadata(vaas_4)))
   \S4method{metadata}{WMD,missing,character}(object, key) <- value
   \S4method{metadata}{WMD,missing,data.frame}(object, key) <- value
   \S4method{metadata}{WMD,missing,list}(object, key) <- value
-  \S4method{metadata}{WMD,missing,logical}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMD}(object, key) <- value
   \S4method{metadata}{WMD,numeric,WMDS}(object, key) <- value
   \S4method{metadata}{WMD,numeric,data.frame}(object, key) <- value

@@ -52,7 +52,7 @@ setMethod("metadata<-", c("OPM", "missing", "character"), function(object, key,
   callNextMethod(object = object, value = value)
 }, sealed = SEALED)
 
-setMethod("metadata<-", c("WMD", "missing", "logical"), function(object, key,
+setMethod("metadata<-", c("OPM", "missing", "logical"), function(object, key,
     value) {
   if (L(value))
     for (key in setdiff(names(object@csv_data), opm_opt("csv.selection")))
