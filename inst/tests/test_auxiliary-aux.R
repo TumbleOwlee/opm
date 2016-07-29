@@ -320,6 +320,10 @@ test_that("annotations in parentheses can be added to a string", {
   expect_equal("A07 (Sodium Bromide)", add_in_parens(x, y)[1L])
   expect_equal("A07\n(Sodium Bromide)",
     add_in_parens(x, y, paren.sep = "\n")[1L])
+  expect_equal("ZZZ A07 (Sodium Bromide)",
+    add_in_parens(x, y, prefix = "ZZZ")[1L])
+  expect_equal("ZZZ\nA07\n(Sodium Bromide)",
+    add_in_parens(x, y, paren.sep = "\n", prefix = "ZZZ")[1L])
   expect_equal("A07 [Sodium Bromide]", add_in_parens(x, y, brackets = TRUE)[1L])
   expect_equal("B11 (Calcium Nitrate)", add_in_parens(x, y)[2L])
   expect_equal("A07 (Sodium Bromide)", add_in_parens(x, y, 100L)[1L])

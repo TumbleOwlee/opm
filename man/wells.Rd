@@ -38,16 +38,17 @@
   and removing vowels first.}
 
   \item{paren.sep}{Character scalar. What to insert before
-  the opening parenthesis (or bracket). Currently only zero
-  to many whitespace characters are allowed. The ability to
-  insert a line break is the main purpose of this argument.
-  Using the \sQuote{at sign} as value is the only
-  alternative and also special, as it causes the plate name
-  itself to be appended to the well coordinate (after an
-  \sQuote{at sign}, without parentheses or brackets). So
-  mapping is not actually done in that case but the
-  resulting names are understood by certain other \pkg{opm}
-  methods which can conduct the mapping at a later stage.}
+  the opening parenthesis (or bracket) if \code{full} is
+  chosen. Currently only zero to many whitespace characters
+  are allowed. The ability to insert a line break is the
+  main purpose of this argument. Using the \sQuote{at sign}
+  as value is the only alternative and also special, as it
+  causes the plate name itself to be appended to the well
+  coordinate (after an \sQuote{at sign}, without
+  parentheses or brackets). So mapping is not actually done
+  in that case but the resulting names are understood by
+  certain other \pkg{opm} methods which can conduct the
+  mapping at a later stage.}
 
   \item{downcase}{Logical scalar indicating whether full
   names should be (carefully) converted to lower case. This
@@ -64,6 +65,11 @@
   \code{\link{plate_type}} is applied before searching for
   the substrate names but otherwise the match must be
   exact.}
+
+  \item{prefix}{Logical scalar indicating whether the
+  (short) plate name should be prepended to the well name.
+  Only works in conjunction with \code{full} and
+  \code{in.parens}.}
 
   \item{simplify}{Logical scalar indicating whether the
   result should be simplified to a vector. This will never
@@ -265,12 +271,12 @@ stopifnot(!is.null(rownames(x)), !is.null(colnames(x)))
   \S4method{wells}{ANY}(object, full = TRUE, in.parens = FALSE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,
-    plate = "PM01", simplify = FALSE) 
+    plate = "PM01", prefix = FALSE, simplify = FALSE) 
   \S4method{wells}{MOPMX}(object, ...) 
   \S4method{wells}{OPM}(object, full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,
-    plate = plate_type(object), simplify = TRUE) 
+    plate = plate_type(object), prefix = FALSE, simplify = TRUE) 
   \S4method{wells}{OPMS}(object, ...) 
   \S4method{wells}{missing}(object, ...) 
 }

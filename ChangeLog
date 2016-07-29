@@ -31,6 +31,7 @@
 - subset() gets a 'common' argument
 - sort() can sort according to the overall running time
 - new options for select_colors()
+- new option for wells()
 
 
 ################################################################################

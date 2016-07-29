@@ -240,7 +240,7 @@ setGeneric("wells", function(object, ...) standardGeneric("wells"))
 setMethod("wells", "OPM", function(object, full = FALSE, in.parens = TRUE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,
-    plate = plate_type(object), simplify = TRUE) {
+    plate = plate_type(object), prefix = FALSE, simplify = TRUE) {
   LL(full, simplify, plate)
   x <- colnames(object@measurements)[-1L]
   if (!missing(plate))
@@ -249,9 +249,10 @@ setMethod("wells", "OPM", function(object, full = FALSE, in.parens = TRUE,
     else
       normalize_predefined_plate(plate)
   if (full)
-    x <- structure(.Data = map_well_names(x, plate, in.parens = in.parens,
-      max = max, brackets = brackets, clean = clean, word.wise = word.wise,
-      paren.sep = paren.sep, downcase = downcase, rm.num = rm.num), names = x)
+    x <- structure(.Data = map_well_names(wells = x, plate = plate,
+      in.parens = in.parens, max = max, brackets = brackets, clean = clean,
+      word.wise = word.wise, paren.sep = paren.sep, downcase = downcase,
+      rm.num = rm.num, prefix = prefix), names = x)
   if (simplify)
     return(x)
   x <- matrix(x, length(x), 1L, FALSE, list(names(x), plate))
@@ -262,7 +263,7 @@ setMethod("wells", "OPM", function(object, full = FALSE, in.parens = TRUE,
 setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
     max = opm_opt("max.chars"), brackets = FALSE, clean = TRUE,
     word.wise = FALSE, paren.sep = " ", downcase = FALSE, rm.num = FALSE,
-    plate = "PM01", simplify = FALSE) {
+    plate = "PM01", prefix = FALSE, simplify = FALSE) {
   LL(full, simplify)
   x <- well_index(object, rownames(WELL_MAP))
   if (!is.character(x))
@@ -275,9 +276,10 @@ setMethod("wells", "ANY", function(object, full = TRUE, in.parens = FALSE,
   x[, !ok] <- NA_character_
   if (full)
     for (i in which(ok))
-      x[, i] <- map_well_names(x[, i], colnames(x)[i], in.parens = in.parens,
-        max = max, brackets = brackets, clean = clean, word.wise = word.wise,
-        paren.sep = paren.sep, downcase = downcase, rm.num = rm.num)
+      x[, i] <- map_well_names(wells = x[, i], plate = colnames(x)[i],
+        in.parens = in.parens, max = max, brackets = brackets, clean = clean,
+        word.wise = word.wise, paren.sep = paren.sep, downcase = downcase,
+        rm.num = rm.num, prefix = prefix)
   if (simplify && ncol(x) == 1L)
     return(x[, 1L])
   class(x) <- "well_coords_map"

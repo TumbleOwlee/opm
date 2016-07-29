@@ -565,22 +565,26 @@ trim_string <- function(str, max, append = ".", clean = TRUE,
 }
 
 add_in_parens <- function(str.1, str.2, max = 1000L, append = ".",
-    clean = TRUE, brackets = FALSE, word.wise = FALSE, paren.sep = " ") {
+    clean = TRUE, brackets = FALSE, word.wise = FALSE, paren.sep = " ",
+    prefix = "") {
   max <- max - nchar(str.1) - 3L
   if (!grepl("^\\s*$", paren.sep))
     stop("'paren.sep' must only contain whitespace characters")
+  if (nzchar(prefix))
+    prefix <- paste0(prefix, paren.sep)
   str.2 <- trim_string(str.2, max, append = append, clean = clean,
     word.wise = word.wise)
   if (brackets) {
-    template <- "%s%s[%s]"
+    template <- "%s%s%s[%s]"
     str.2 <- chartr("[]", "()", str.2)
     remove <- " \\[\\]$"
   } else {
-    template <- "%s%s(%s)"
+    template <- "%s%s%s(%s)"
     str.2 <- chartr("()", "[]", str.2)
     remove <- " \\(\\)$"
   }
-  sub(remove, "", sprintf(template, str.1, paren.sep, str.2), FALSE, TRUE)
+  sub(remove, "", sprintf(template, prefix, str.1, paren.sep, str.2),
+    FALSE, TRUE)
 }
 
 remove_concentration <- function(x) {

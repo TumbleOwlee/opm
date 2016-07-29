@@ -194,34 +194,35 @@ clean_plate_positions <- function(x) {
 }
 
 map_well_names <- function(wells, plate, in.parens = FALSE, brackets = FALSE,
-    paren.sep = " ", downcase = FALSE, rm.num = FALSE,
+    paren.sep = " ", downcase = FALSE, rm.num = FALSE, prefix = FALSE,
     max = opm_opt("max.chars"), ...) {
   if ((L(paren.sep) == "@"))
     return(sprintf("%s@%s", wells, plate))
   if (custom_plate_is(plate)) {
     if (custom_plate_exists(plate))
-      res <- custom_plate_get(plate)[wells]
+      result <- custom_plate_get(plate)[wells]
     else
-      res <- NULL
+      result <- NULL
   } else {
     if (is.na(pos <- match(plate, colnames(WELL_MAP))))
-      res <- NULL
+      result <- NULL
     else
-      res <- WELL_MAP[wells, pos, "name"]
+      result <- WELL_MAP[wells, pos, "name"]
   }
-  if (is.null(res)) {
+  if (is.null(result)) {
     warning("cannot find plate type ", plate)
     return(trim_string(str = wells, max = max, ...))
   }
   if (rm.num)
-    res <- remove_concentration(res)
+    result <- remove_concentration(result)
   if (downcase)
-    res <- substrate_info(res, "downcase")
+    result <- substrate_info(result, "downcase")
+  prefix <- if (prefix) plate else ""
   if (in.parens)
-    add_in_parens(str.1 = wells, str.2 = res, brackets = brackets,
-      paren.sep = paren.sep, max = max, ...)
+    add_in_parens(str.1 = wells, str.2 = result, brackets = brackets,
+      paren.sep = paren.sep, max = max, prefix = prefix, ...)
   else
-    trim_string(str = res, max = max, ...)
+    trim_string(str = result, max = max, ...)
 }
 
 well_to_substrate <- function(x, plate) {
