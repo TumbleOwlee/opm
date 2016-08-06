@@ -30,8 +30,9 @@
 - `metadata<-`() can include the overall running time in the metadata
 - subset() gets a 'common' argument
 - sort() can sort according to the overall running time
-- new options for select_colors()
+- many new options for select_colors()
 - new option for wells()
+- heat_map() gets a 'reorderfun' default
 
 
 ################################################################################

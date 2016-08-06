@@ -125,6 +125,12 @@
   optional attribute that contains replacement values for
   \code{NA} that are inserted prior to plotting.}
 
+  \item{reorderfun}{Function passed to \code{heatmap} or
+  \code{heatmap.2}. The modification from their defaults is
+  intended to yield an ordering that more strongly reflects
+  row and column sums (instead of also taking cluster size
+  into consideration).}
+
   \item{...}{Optional arguments passed to \code{heatmap} or
   \code{heatmap.2}.  Note that some defaults of
   \code{heatmap.2} are overwritten even though this is not
@@ -219,6 +225,7 @@ stopifnot(identical(metadata(vaas_4, "Species"), names(hm$rowColMap)))
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
     abbrev = c("none", "row", "column", "both"), plot.na = "plot.NA",
-    ..., use.fun = c("gplots", "stats"))
+    reorderfun = function(d, w) reorder(d, w, mean), ...,
+    use.fun = c("gplots", "stats")) 
 }
 %% END INSERTION BY repair_S4_docu.rb

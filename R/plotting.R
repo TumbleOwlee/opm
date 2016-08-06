@@ -436,7 +436,7 @@ setMethod("heat_map", "matrix", function(object,
       c(5, 5),
     col = opm_opt("heatmap.colors"), asqr = FALSE, log1 = FALSE, lmap = 1L:3L,
     abbrev = c("none", "row", "column", "both"), plot.na = "plot.NA",
-    ...,
+    reorderfun = function(d, w) reorder(d, w, mean), ...,
     use.fun = c("gplots", "stats")) {
 
   shorten <- function(x, n1 = 0L, n2 = 3L) {

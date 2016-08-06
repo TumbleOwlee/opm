@@ -8,8 +8,23 @@
 
   select_colors(set = c("w3c", "w3c.i", "w3c.r", "nora", "nora.i", "nora.r", "brewer",
     "brewer.i", "brewer.r", "roseo", "roseo.i", "roseo.r", "ssnot", "ssnot.i", "ssnot.r",
-    "phrogz", "phrogz.i", "phrogz.r", "groups", "groups.i", "groups.r"))
-}
+    "phrogz", "phrogz.i", "phrogz.r", "groups", "groups.i", "groups.r", "jp01", "jp01.i",
+    "jp01.r", "jp02", "jp02.i", "jp02.r", "jp03", "jp03.i", "jp03.r", "jp04", "jp04.i",
+    "jp04.r", "jp05", "jp05.i", "jp05.r", "jp06", "jp06.i", "jp06.r", "jp07", "jp07.i",
+    "jp07.r", "jp08", "jp08.i", "jp08.r", "jp09", "jp09.i", "jp09.r", "jp10", "jp10.i",
+    "jp10.r", "jp11", 
+        "jp11.i", "jp11.r", "jp12", "jp12.i", "jp12.r", "jp13", "jp13.i", "jp13.r",
+    "jp14", "jp14.i", "jp14.r", "jp15", "jp15.i", "jp15.r", "jp16", "jp16.i", "jp16.r",
+    "jp17", "jp17.i", "jp17.r", "jp18", "jp18.i", "jp18.r", "jp19", "jp19.i", "jp19.r",
+    "jp20", "jp20.i", "jp20.r", "jp21", "jp21.i", "jp21.r", "jp22", "jp22.i", "jp22.r",
+    "jp23", "jp23.i", "jp23.r", "jp24", "jp24.i", "jp24.r", "jp25", "jp25.i", "jp25.r",
+    "jp26", "jp26.i", "jp26.r", "jp27", "jp27.i", "jp27.r", "jp28", "jp28.i", "jp28.r",
+    "jp29", 
+        "jp29.i", "jp29.r", "jp30", "jp30.i", "jp30.r", "jp31", "jp31.i", "jp31.r",
+    "jp32", "jp32.i", "jp32.r", "jp33", "jp33.i", "jp33.r", "jp34", "jp34.i", "jp34.r",
+    "jp35", "jp35.i", "jp35.r", "jp36", "jp36.i", "jp36.r", "jp37", "jp37.i", "jp37.r",
+    "jp38", "jp38.i", "jp38.r", "jp39", "jp39.i", "jp39.r", "jp40", "jp40.i", "jp40.r"))
+    }
 \arguments{
   \item{what}{Character scalar indicating the subdirectory
   to search in or the kind of names to obtain. Currently

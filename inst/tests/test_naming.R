@@ -20,7 +20,8 @@ test_that("predefined color sets can be obtained", {
   for (arg in as.character(formals(select_colors)[[1L]])[-1L]) {
     got <- select_colors(arg)
     expect_is(got, "character")
-    expect_true(length(got) >= 10L)
+    expect_true(length(got) >= 10L ||
+        grepl("^jp0\\d(\\.\\w)?$", arg, FALSE, TRUE))
     expect_false(anyNA(got))
   }
 })
