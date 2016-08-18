@@ -44,8 +44,8 @@
   objects within an \code{\link{OPMS}} object. Optionally
   it simplifies the result to an \code{\link{OPMS}} object
   if possible, or other structures simpler than a list. The
-  \code{\link{OPM}} method of simply applies \code{fun}
-  once (to \code{object}).
+  \code{\link{OPM}} method of \code{oapply} simply applies
+  \code{fun} once (to \code{object}).
 }
 \examples{
 # plates(), 'OPM' method

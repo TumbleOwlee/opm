@@ -16,6 +16,8 @@
   have been changed; user code might need adaptations in the case of already
   existing CSV files with metadata (but all in all metadata input should run
   more smoothly now)
+- indexing of wells and time points with 'NA' values now skips them (instead
+  of incorrectly yielding 'NA' measurements in some cases)
 
 - new method cor.test()
 - read_single_opm() and read_opm() can now read CSV with multiple plates per

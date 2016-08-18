@@ -152,26 +152,36 @@ map_param_names <- function(subset = NULL, ci = TRUE, plain = FALSE,
 
 well_index <- function(x, names) {
   if (missing(x))
-    TRUE
-  else if (is.character(x))
-    clean_coords(x)
-  else if (inherits(x, "formula"))
-    eval(x[[length(x)]],
-      structure(.Data = as.list(seq_along(names)), names = names))
-  else
-    x
+    return(TRUE)
+  if (is.character(x))
+    return(clean_coords(x)) # NA values yield "NANA" and according crash
+  if (inherits(x, "formula"))
+    return(eval(x[[length(x)]],
+      structure(.Data = as.list(seq_along(names)), names = names)))
+  if (is.logical(x)) {
+    x[is.na(x)] <- FALSE
+  } else {
+    storage.mode(x) <- "integer"
+    x[is.na(x)] <- 0L
+  }
+  x
 }
 
 time_index <- function(x, times) {
   if (missing(x))
-    TRUE
-  else if (inherits(x, "formula") && is.atomic(x <- x[[length(x)]]))
-    if (anyNA(x))
+    return(TRUE)
+  if (inherits(x, "formula") && is.atomic(x <- x[[length(x)]]))
+    return(if (anyNA(x))
       !duplicated.default(times)
     else
-      times <= x
-  else
-    x
+      times <= x)
+  if (is.logical(x)) {
+    x[is.na(x)] <- FALSE
+  } else {
+    storage.mode(x) <- "integer"
+    x[is.na(x)] <- 0L
+  }
+  x
 }
 
 clean_coords <- function(x) {
