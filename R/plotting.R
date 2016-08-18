@@ -509,7 +509,8 @@ setMethod("heat_map", "matrix", function(object,
   clustfun <- get_fun(hclustfun, hclust)
   dfun <- get_fun(distfun, dist)
   arg.list <- list(scale = scale, cexRow = cexRow, cexCol = cexCol,
-    hclustfun = clustfun, distfun = dfun, margins = margins, col = col, ...)
+    hclustfun = clustfun, distfun = dfun, margins = margins, col = col,
+    reorderfun = reorderfun, ...)
 
   row.side.colors <- get_side_colors(r.groups, r.col, for.rows = TRUE)
   if (!is.null(row.side.colors))
