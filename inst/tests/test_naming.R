@@ -24,6 +24,9 @@ test_that("predefined color sets can be obtained", {
         grepl("^jp0\\d(\\.\\w)?$", arg, FALSE, TRUE))
     expect_false(anyNA(got))
   }
+  got <- select_colors(8)
+  expect_is(got, "character")
+  expect_equal(length(got), 8L)
 })
 
 

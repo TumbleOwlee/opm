@@ -270,7 +270,7 @@ setMethod("sort", c("OPMS", "ANY"), function(x, decreasing, by = "setup_time",
   } else if (is.character(by)) {
     case(length(by),
       stop("if a character scalar, 'by' must not be empty"),
-      switch(by,
+      switch(EXPR = by,
         hours = keys <- list(hours(x, "max")),
         {
           keys <- csv_data(object = x, what = by)

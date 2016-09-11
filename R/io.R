@@ -182,7 +182,7 @@ read_opm <- function(names = getwd(),
   }
   # The c() call is necessary to flatten lists from YAML/JSON input.
   result <- c(lapply(names, read_single_opm), recursive = TRUE)
-  switch(mode(gen.iii),
+  switch(EXPR = mode(gen.iii),
     logical = if (gen.iii)
       result <- lapply(result, gen_iii),
     character = if (nzchar(gen.iii))
@@ -407,7 +407,7 @@ batch_opm <- function(names, md.args = NULL, aggr.args = NULL,
   }
 
   convert_dataset <- function(data) {
-    switch(mode(gen.iii),
+    switch(EXPR = mode(gen.iii),
       logical = if (gen.iii) {
         if (verbose)
           message("conversion: changing to 'Generation III'...")

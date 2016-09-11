@@ -64,7 +64,12 @@
   inverse order (compared to the vector with the same name
   except \sQuote{.i}). Names ending in \sQuote{.i} indicate
   vectors in random order. For credits regarding the
-  vectors see the code.}
+  vectors see the code.
+
+  \code{set} can also be a numeric scalar, which is then
+  used to select the set of colours thought to optimally
+  yield contrasting colours for this number of items. Up to
+  40 items are supported.}
 }
 \value{
   Character vector of file names or reserved parameter

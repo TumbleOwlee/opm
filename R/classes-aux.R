@@ -14,7 +14,7 @@ setMethod("initialize", "OPMS", function(.Object, ...) {
 setMethod("initialize", "CMAT", function(.Object, ...) {
   map2int <- function(x) match(toupper(x), CHARACTER_STATES)
   .Object <- callNextMethod()
-  switch(typeof(.Object),
+  switch(EXPR = typeof(.Object),
     character = {
       .Object[] <- map2int(.Object)
       storage.mode(.Object) <- "integer"

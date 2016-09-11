@@ -1,6 +1,7 @@
 opm_files <- function(what = c("scripts", "testdata", "auxiliary", "demo",
     "doc", "css", "sql", "omnilog", "single", "multiple", "growth")) {
-  switch(what <- match.arg(what),
+  what <- match.arg(what)
+  switch(EXPR = what,
     css = grep("\\.css$", pkg_files(opm_string(), "auxiliary"),
       TRUE, TRUE, TRUE),
     growth = grep("\\.txt(\\.[^.]+)?$",
@@ -40,7 +41,10 @@ select_colors <- function(
       "jp37.r", "jp38", "jp38.i", "jp38.r", "jp39", "jp39.i", "jp39.r",
       "jp40", "jp40.i", "jp40.r")) {
   fetch <- function(x) get(x, NULL, COLORS, "character", FALSE)
-  m <- regexpr(".", set <- match.arg(set), FALSE, FALSE, TRUE)
+  if (!missing(set) && is.numeric(set))
+    set <- sprintf("jp%02.0f", set)
+  set <- match.arg(set)
+  m <- regexpr(".", set, FALSE, FALSE, TRUE)
   if (m > 0L) {
     suffix <- substr(set, m + 1L, nchar(set))
     set <- substr(set, 1L, m - 1L)
@@ -48,7 +52,7 @@ select_colors <- function(
     suffix <- "n"
   }
   result <- fetch(toupper(set))
-  switch(suffix, n = result, i = rev.default(result), r = sample(result))
+  switch(EXPR = suffix, n = result, i = rev.default(result), r = sample(result))
 }
 
 setGeneric("plate_type", function(object, ...) standardGeneric("plate_type"))

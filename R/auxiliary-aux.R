@@ -144,7 +144,7 @@ list2matrix <- function(x, how = c("yaml", "json", "rcode")) {
     x
   }
   how <- tryCatch(expr = match.arg(how), error = function(e) how)
-  switch(how,
+  switch(EXPR = how,
     yaml = unlist_matrix(x, to_yaml, json = FALSE, listify = TRUE),
     json = unlist_matrix(x, to_yaml, json = TRUE, listify = TRUE),
     rcode = unlist_matrix(x),
@@ -383,7 +383,7 @@ metadata_key.list <- function(x, to.formula = FALSE, remove = NULL,
 
 metadata_key.formula <- function(x, to.formula = FALSE, remove = NULL,
     syntactic = FALSE, ..., full.eval = !to.formula, envir = parent.frame()) {
-  elem_type <- function(name) switch(as.character(name),
+  elem_type <- function(name) switch(EXPR = as.character(name),
     `::` =, `:::` =, `$` =, `@` = 1L, # operators with highest precedence
     `I` = 2L, # protected formula elements
     `J` = 3L, # causing on-the-fly joining of metadata elements
@@ -811,9 +811,10 @@ setMethod("update", "CMAT", function(object,
     isTRUE(sd(x, na.rm = TRUE) > .Machine$double.eps ^ 0.5)
   }
   no.transformation <- "transforming NA impossible: not two non-NA entries"
-  switch(how <- match.arg(how),
+  how <- match.arg(how)
+  switch(EXPR = how,
     NA2int = {
-      switch(typeof(object),
+      switch(EXPR = typeof(object),
         integer = if (shiftable(object))
           object[] <- shift_int(object)
         else

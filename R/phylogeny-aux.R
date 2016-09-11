@@ -185,7 +185,7 @@ setMethod("format", "CMAT", function(x, how, enclose, digits, indent,
       },
       double = {
         from.integer <- FALSE
-        switch(how,
+        switch(EXPR = how,
           hennig = x <- ranging(x, fac = 65),
           html = {
             variability <- is_constant(x, strict = TRUE, digits = digits)

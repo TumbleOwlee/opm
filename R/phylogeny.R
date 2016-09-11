@@ -87,7 +87,7 @@ setMethod("phylo_data", "matrix", function(object,
   object <- merge(x = object, y = join)
   if (is.list(object) && L(cutoff) > 0)
     object[] <- lapply(object, reduce_to_mode.default, cutoff, FALSE)
-  switch(delete, none = NULL,
+  switch(EXPR = delete, none = NULL,
     object <- update(object, how = sprintf("delete.%s", delete)))
   result <- format(x = object, how = format, enclose = enclose, digits = digits,
     indent = indent, paup.block = paup.block, comments = comments,

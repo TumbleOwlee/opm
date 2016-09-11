@@ -182,8 +182,8 @@ setMethod("param_names", "missing", function(what) {
 }, sealed = SEALED)
 
 setMethod("param_names", "character", function(what) {
-  switch(match.arg(what,
-    c("param.names", "disc.name", "reserved.md.names", "split.at", "hours")),
+  switch(EXPR = match.arg(what, c("param.names", "disc.name",
+      "reserved.md.names", "split.at", "hours")),
     param.names = CURVE_PARAMS,
     disc.name = DISC_PARAM,
     reserved.md.names = unname(RESERVED_NAMES),

@@ -12,15 +12,15 @@
   For the \code{\link{OPMS}} method, either a character
   vector with colour codes or one of the arguments of
   \code{\link{select_colors}} (for picking one of the
-  predefined colour sets).
+  predefined colour sets). When \code{col} is the empty
+  string, it is automatically replaced by the number of
+  plate grouping levels. See \code{\link{select_colors}}
+  for details.
 
   It is an error if fewer colours are chosen than the
   number of plate grouping levels (see the \code{\dots}
   argument below). For user-chosen colour sets, keep in
-  mind that the sets are not checked for duplicates, and
-  see \code{max_rgb_contrast} from the \pkg{pkgutils}
-  package as a method for optimally arranging user-defined
-  colours.}
+  mind that the sets are not checked for duplicates.}
 
   \item{lwd}{Numeric scalar determining the line width.}
 
