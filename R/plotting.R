@@ -830,7 +830,7 @@ setMethod("parallel_plot", c("OPMX", "ANY"), function(x, data, groups = 1L,
 
   # Legend text and colours
   key.text <- levels(x$`_GROUPING`)
-  if (!nzchar(col))
+  if (!all(nzchar(col)))
     col <- length(key.text)
   col <- try_select_colors(col)
   if (length(col) < length(key.text))
