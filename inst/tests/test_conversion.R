@@ -919,6 +919,8 @@ test_that("opmx can convert irregular formats", {
     plate.type = I("test"), position = 1L)
   expect_is(got2, "OPM")
   expect_equal(dim(got2), c(2L, 6L))
+  # this is the only component that might differ
+  got1@csv_data[CSV_NAMES[["SETUP"]]] <- got2@csv_data[CSV_NAMES[["SETUP"]]]
   expect_equal(got1, got2)
 
   # NA as 'sep' argument (does not work because row/column names are missing)

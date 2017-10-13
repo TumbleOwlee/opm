@@ -16,6 +16,50 @@ setMethod("measurements", "OPM", function(object, i, logt0 = FALSE) {
   result
 }, sealed = SEALED)
 
+setMethod("measurements", "matrix", function(object, wanted = NULL,
+    transposed = TRUE, col.names = 1L, row.names = NULL, check.names = TRUE,
+    stringsAsFactors = default.stringsAsFactors()) {
+  if (typeof(object) != "character")
+    stop(sprintf("expected matrix of mode 'character', got '%s'",
+      typeof(object)))
+  LL(transposed, check.names, stringsAsFactors)
+  if (transposed)
+    object <- t(object)
+  if (length(col.names)) {
+    colnames(object) <- object[col.names, ]
+    object <- object[-col.names, , drop = FALSE]
+  } else {
+    colnames(object) <- make.names(seq_len(ncol(object)))
+  }
+  if (length(row.names)) {
+    rownames(object) <- object[, row.names]
+    if (check.names)
+      rownames(object) <- make.names(rownames(object), TRUE)
+    object <- object[, -row.names, drop = FALSE]
+  }
+  if (length(wanted)) {
+    if (is.character(wanted) && length(wanted) == 1L) {
+      if (check.names > 1L) {
+        colnames(object) <- make.names(colnames(object), TRUE)
+        check.names <- FALSE
+      }
+      wanted <- grepl(wanted, colnames(object), FALSE, TRUE)
+    }
+    object <- as.data.frame(object[, wanted, drop = FALSE])
+    object[] <- lapply(object, type.convert, "NA", !stringsAsFactors)
+  } else {
+    old.opt <- options(warn = -1L)
+    on.exit(options(old.opt))
+    storage.mode(object) <- "double"
+    isna <- is.na(object)
+    object <- as.data.frame(object[!apply(isna, 1L, all),
+      !apply(isna, 2L, all), drop = FALSE])
+  }
+  if (check.names)
+    colnames(object) <- make.names(colnames(object), TRUE)
+  object
+}, sealed = SEALED)
+
 setGeneric("well", function(object, ...) standardGeneric("well"))
 
 setMethod("well", "OPM", function(object, i, drop = TRUE, use.names = TRUE) {

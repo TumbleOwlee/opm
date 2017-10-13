@@ -453,9 +453,10 @@ test_that("batch conversion works in demo mode", {
     io.fun = copy_head, outdir = OUTDIR, verbose = FALSE, demo = TRUE))
 
   # Demo run
-  expect_that(got <- batch_process(infiles, out.ext = 'txt', io.fun = copy_head,
-    outdir = OUTDIR, missing.error = FALSE, verbose = TRUE, demo = TRUE),
-    shows_message())
+  expect_warning(expect_that(
+    got <- batch_process(infiles, out.ext = 'txt', io.fun = copy_head,
+      outdir = OUTDIR, missing.error = FALSE, verbose = TRUE, demo = TRUE
+      ), shows_message()))
   expect_is(got, "matrix")
   expect_equal(got[, 1L], infiles[-4L])
   expect_equal(got[, 2L], OUTFILES[-4L])

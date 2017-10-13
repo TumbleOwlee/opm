@@ -1,7 +1,9 @@
 NOT_YET <- "not yet implemented"
 BUG_MSG <- "a bug -- this should not happen"
 
-SEALED <- TRUE #|| SEALED <- FALSE
+SEALED <- TRUE #|| # SEALED <- FALSE
+
+SEALED <- FALSE
 
 CSV_NAMES <- c(FILE = "File", PLATE_TYPE = "Plate Type", POS = "Position",
   SETUP = "Setup Time")
@@ -274,7 +276,7 @@ COLORS <- list(
     "#2e1c38", "#ca7442", "#5a558b", "#803325", "#537286", "#cc8585",
     "#314826", "#cab3cc", "#7e6136", "#618d75"),
   JP33 = c("#d64e9e", "#6cd54c", "#dd49d1", "#c8dd41",
-    "a#152dd", "#4d4040", "#5139c2", "#ceaa3b", "#432d7c", "#c6d179",
+    "#a152dd", "#4d4040", "#5139c2", "#ceaa3b", "#432d7c", "#c6d179",
     "#8f379a", "#70d68c", "#d9432f", "#6ad5be", "#d5416a", "#76c2d7",
     "#d87a71", "#6a75d5", "#836834", "#c988d1", "#598939", "#7a3260",
     "#bed3b3", "#8f372e", "#6082b3", "#d47c35", "#312749", "#d4ac8b",

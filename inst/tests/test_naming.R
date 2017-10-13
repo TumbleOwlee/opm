@@ -289,9 +289,9 @@ test_that("positions within PM plates can be found", {
   expect_is(got, "list")
   expect_equal(query, names(got))
   expect_true(all(vapply(got, is.matrix, NA)))
-  expect_true(all(dim(got[[1L]] > 0L)))
-  expect_true(all(dim(got[[2L]] > 0L)))
-  expect_true(all(dim(got[[3L]] == 0L)))
+  expect_true(all(dim(got[[1L]]) > 0L))
+  expect_true(all(dim(got[[2L]]) > 0L))
+  expect_false(all(dim(got[[3L]]) > 0L))
 
   query <- find_substrate("Fructose", search = "exact")
   got <- find_positions(query)

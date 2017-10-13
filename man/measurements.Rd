@@ -5,7 +5,8 @@
 \title{Stored measurements}
 \arguments{
   \item{object}{\code{\link{OPM}}, \code{\link{OPMS}} or
-  \code{\link{MOPMX}} object.}
+  \code{\link{MOPMX}} object; for \code{measurements}, also
+  a matrix of mode \sQuote{character}.}
 
   \item{i}{Optional character or numeric vector with
   name(s) or position(s) of well(s). Wells are originally
@@ -37,6 +38,33 @@
   \sQuote{max}.} \item{size}{Integer scalar: the number of
   time points.} \item{summary}{Display a summary.} }}
 
+  \item{wanted}{Empty or character vector used by the
+  matrix method for selecting columns. If of length one,
+  used as a regular expression in that context. If empty,
+  the methods selects the columns that can be interpreted
+  as numeric throughout.}
+
+  \item{transposed}{Logical scalar. For the matrix method,
+  indicating whether the matrix shall be transposed prior
+  to further processing.}
+
+  \item{col.names}{Used by the matrix method. Empty or
+  scalar indicating the position of the column names within
+  the matrix (which is assumed to not yet contain proper
+  column names).}
+
+  \item{row.names}{Used by the matrix method. Empty or
+  scalar indicating the position of the row names within
+  the matrix (which is assumed to not yet contain proper
+  row names).}
+
+  \item{check.names}{Logical scalar. Used by the matrix
+  method to indicate whether row and column names should be
+  treated with \code{make.names}.}
+
+  \item{stringsAsFactors}{Logical scalar used by the matrix
+  method.}
+
   \item{...}{Optional arguments passed between the
   methods.}
 }
@@ -51,6 +79,10 @@
   column (in contrast to \code{well}). The \code{i}
   argument refers only to the remaining matrix.
 
+  The matrix measurements returns a data frame containing
+  the selected rows and columns only. This is intended as a
+  helper method for inputting irregular data.
+
   Do not confuse \code{well} with \code{\link{wells}}.
   \code{well} yields a numeric matrix or vector, depending
   on \code{i} and \code{drop}. It will always ignore the
@@ -64,7 +96,8 @@
 \description{
   Return the measurements, optionally only from selected
   wells and with or without the time points, or only the
-  time points.
+  time points. Alternatively, selected measurements of
+  interest from a larger matrix of mode \sQuote{character}.
 }
 \note{
   For quickly obtaining an overview of the running times in
@@ -140,6 +173,7 @@ stopifnot(length(x) == 4, x == 95.75)
 \alias{measurements,MOPMX-method}
 \alias{measurements,OPM-method}
 \alias{measurements,OPMS-method}
+\alias{measurements,matrix-method}
 \alias{well-methods}
 \alias{well,MOPMX-method}
 \alias{well,OPM-method}
@@ -153,6 +187,9 @@ stopifnot(length(x) == 4, x == 95.75)
   \S4method{measurements}{MOPMX}(object, ...) 
   \S4method{measurements}{OPM}(object, i, logt0 = FALSE) 
   \S4method{measurements}{OPMS}(object, ...) 
+  \S4method{measurements}{matrix}(object, wanted = NULL,
+    transposed = TRUE, col.names = 1L, row.names = NULL, check.names = TRUE,
+    stringsAsFactors = default.stringsAsFactors()) 
 
   \S4method{well}{MOPMX}(object, ...) 
   \S4method{well}{OPM}(object, i, drop = TRUE, use.names = TRUE) 
