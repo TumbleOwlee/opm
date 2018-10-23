@@ -5,7 +5,7 @@
 stream
 2 0 3 67 4 542 5 1104 6 1260 7 1302 8 1436 9 1590 10 1744 11 1898 12 1949 13 2375 14 2670 15 3156 16 3552 17 4095 18 4632 19 4981 20 5290 21 5503 22 5884 23 6191 24 6682 25 7093 26 7111 27 7202 28 7601 29 7951 30 8440 31 9020 32 9198 33 9453 34 9657 35 9869 36 10078 37 10429 38 10636 39 10849 40 11064 41 11362 42 11565 43 11823 44 12025 45 12077 46 12308 47 12516 48 12724 49 12742 50 12790 51 12950 52 13104 53 13312 54 13330 55 13424 56 13632 57 13650 58 13756 59 13934 60 13952 61 14000 62 14055 63 14503 64 14857 65 15066 66 15084 67 15215 68 15393 69 15601 70 15816 71 15834 72 15929 73 16006 74 16055 75 16104 76 16188 77 16322 78 16371 79 16455 80 16631 81 16708 82 16757 83 16806 84 16855
 << /Metadata 85 0 R /Outlines 6 0 R /Pages 4 0 R /Type /Catalog >>
-<< /Author (M. Göker, B. Hofner, M.d.C. Montero Calasanz, J. Sikorski, L.A.I. Vaas) /CreationDate (D:20181023061758+02'00') /Creator (LaTeX with hyperref package) /Keywords (bootstrap, cell lines, grofit, growth curves, lattice, metadata, microbiology, respiration kinetics, splines, YAML, JSON, CSV, RDBMS) /ModDate (D:20181023061758+02'00') /Producer (GPL Ghostscript 9.25) /Subject () /Title (opm: An R package for analysing phenotype microarray and growth curve Data) >>
+<< /Author (M. Göker, B. Hofner, M.d.C. Montero Calasanz, J. Sikorski, L.A.I. Vaas) /CreationDate (D:20181023080239+02'00') /Creator (LaTeX with hyperref package) /Keywords (bootstrap, cell lines, grofit, growth curves, lattice, metadata, microbiology, respiration kinetics, splines, YAML, JSON, CSV, RDBMS) /ModDate (D:20181023080239+02'00') /Producer (GPL Ghostscript 9.25) /Subject () /Title (opm: An R package for analysing phenotype microarray and growth curve Data) >>
 << /Count 68 /Kids [ 10 0 R 5 0 R 31 0 R 51 0 R 8 0 R 58 0 R 9 0 R 67 0 R 87 0 R 102 0 R 88 0 R 109 0 R 89 0 R 90 0 R 91 0 R 92 0 R 93 0 R 139 0 R 94 0 R 95 0 R 96 0 R 155 0 R 171 0 R 187 0 R 172 0 R 173 0 R 196 0 R 200 0 R 205 0 R 209 0 R 213 0 R 174 0 R 175 0 R 221 0 R 224 0 R 176 0 R 230 0 R 177 0 R 255 0 R 267 0 R 270 0 R 273 0 R 276 0 R 280 0 R 283 0 R 256 0 R 257 0 R 290 0 R 294 0 R 298 0 R 258 0 R 259 0 R 307 0 R 260 0 R 314 0 R 317 0 R 320 0 R 261 0 R 262 0 R 263 0 R 264 0 R 384 0 R 386 0 R 399 0 R 402 0 R 405 0 R 408 0 R 412 0 R ] /Type /Pages >>
 << /Contents 419 0 R /MediaBox [ 0 0 595.28 841.89 ] /Parent 4 0 R /Resources << /ExtGState 388 0 R /Font 389 0 R /ProcSet [ /PDF /Text ] >> /Type /Page >>
 << /Count 5 /First 7 0 R /Last 387 0 R >>
@@ -96,14 +96,14 @@ stream
 <?adobe-xap-filters esc="CRLF"?>
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='XMP toolkit 2.9.1-13, framework 1.6'>
 <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:iX='http://ns.adobe.com/iX/1.0/'>
-<rdf:Description rdf:about='uuid:2bf125ba-0e97-11f4-0000-66a97e78e5ac' xmlns:pdf='http://ns.adobe.com/pdf/1.3/'><pdf:Producer>GPL Ghostscript 9.25</pdf:Producer>
+<rdf:Description rdf:about='uuid:cbb5b079-0ea5-11f4-0000-66a97e78e5ac' xmlns:pdf='http://ns.adobe.com/pdf/1.3/'><pdf:Producer>GPL Ghostscript 9.25</pdf:Producer>
 <pdf:Keywords>bootstrap, cell lines, grofit, growth curves, lattice, metadata, microbiology, respiration kinetics, splines, YAML, JSON, CSV, RDBMS</pdf:Keywords>
 </rdf:Description>
-<rdf:Description rdf:about='uuid:2bf125ba-0e97-11f4-0000-66a97e78e5ac' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2018-10-23T06:17:58+02:00</xmp:ModifyDate>
-<xmp:CreateDate>2018-10-23T06:17:58+02:00</xmp:CreateDate>
+<rdf:Description rdf:about='uuid:cbb5b079-0ea5-11f4-0000-66a97e78e5ac' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2018-10-23T08:02:39+02:00</xmp:ModifyDate>
+<xmp:CreateDate>2018-10-23T08:02:39+02:00</xmp:CreateDate>
 <xmp:CreatorTool>LaTeX with hyperref package</xmp:CreatorTool></rdf:Description>
-<rdf:Description rdf:about='uuid:2bf125ba-0e97-11f4-0000-66a97e78e5ac' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='uuid:2bf125ba-0e97-11f4-0000-66a97e78e5ac'/>
-<rdf:Description rdf:about='uuid:2bf125ba-0e97-11f4-0000-66a97e78e5ac' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>opm: An R package for analysing phenotype microarray and growth curve Data</rdf:li></rdf:Alt></dc:title><dc:creator><rdf:Seq><rdf:li>M. GÃ¶ker, B. Hofner, M.d.C. Montero Calasanz, J. Sikorski, L.A.I. Vaas</rdf:li></rdf:Seq></dc:creator><dc:description><rdf:Alt><rdf:li xml:lang='x-default'></rdf:li></rdf:Alt></dc:description></rdf:Description>
+<rdf:Description rdf:about='uuid:cbb5b079-0ea5-11f4-0000-66a97e78e5ac' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='uuid:cbb5b079-0ea5-11f4-0000-66a97e78e5ac'/>
+<rdf:Description rdf:about='uuid:cbb5b079-0ea5-11f4-0000-66a97e78e5ac' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>opm: An R package for analysing phenotype microarray and growth curve Data</rdf:li></rdf:Alt></dc:title><dc:creator><rdf:Seq><rdf:li>M. GÃ¶ker, B. Hofner, M.d.C. Montero Calasanz, J. Sikorski, L.A.I. Vaas</rdf:li></rdf:Seq></dc:creator><dc:description><rdf:Alt><rdf:li xml:lang='x-default'></rdf:li></rdf:Alt></dc:description></rdf:Description>
 </rdf:RDF>
 </x:xmpmeta>
                                                                         
@@ -7269,7 +7269,7 @@ Qîn°ÌD9ß>yªD\åtWvi´^Ò¢«ñÛª:XnûÛÂh¨Œ¸®Ô +“?!m±İ¬3œ¦Œôõ@ÚbMíÛ²èFJ,¯š¾
 !÷%}d*å‚]"Î¢çWùlB×eó4­Ìéê°ÊäLCgËÔé÷óíĞåÇŞê:_IèS4–¡şThPäÜiŠå¬Ó6ôŒ«q¨Gh­ğpÔzNğ ƒË:É‚YÚXXĞ½â“S?õ¡u¾»ZxÑ“nü*@Õ”|?£kÔ8]6 ºjË›¶|ß–÷myÛ–c[í£Ş²\O^¶äö‡¶<mxñ¶-/Ûòã$ÇÖÿÌLP”Eá†õÃK_ü¬£é£¡í™şÜÔ1½÷õµoaßŸ;&ôõıÑ {ÀÜendstream
 endobj
 592 0 obj
-<< /Type /XRef /Length 2965 /W [ 1 3 1 ] /Info 3 0 R /Root 2 0 R /Size 593 /ID [<6418eaa0ac224993848287206a7204cf><07169e361028c1e6c42634d012988507>] >>
+<< /Type /XRef /Length 2965 /W [ 1 3 1 ] /Info 3 0 R /Root 2 0 R /Size 593 /ID [<05b43abada78b53bb9499bc7f032fd76><e55e2c3f239c6a039a5fea417d4978a4>] >>
 stream
                              	  
                                                !  "  #  $  %  &  '  (  )  *  +  ,  -  .  /  0  1  2  3  4  5  6  7  8  9  :  ;  <  =  >  ?  @  A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R EM  LÉ   V   V  V  V  V  V  V  V  V  V	  V

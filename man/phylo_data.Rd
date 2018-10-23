@@ -343,7 +343,8 @@ stopifnot(is.character(x), length(x) > 2, is.null(names(x)))
   Sunderland, Mass.: Sinauer Associates [the PAUP*
   program].
 
-  \url{http://ijs.sgmjournals.org/} [IJSEM journal]
+  \url{http://ijs.microbiologyresearch.org/} [IJSEM
+  journal]
 
   \url{http://tidy.sourceforge.net/} [HTML Tidy]
 }

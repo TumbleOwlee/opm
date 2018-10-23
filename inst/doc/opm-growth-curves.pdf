@@ -5,7 +5,7 @@
 stream
 2 0 3 67 4 405 5 571 6 725 7 766 8 860 9 1014 10 1168 11 1322 12 1476 13 1630 14 1681 15 2149 16 2497 17 2660 18 2890 19 3421 20 3927 21 4298 22 4597 23 5028 24 5357 25 5523 26 5756 27 5938 28 6157 29 6365 30 6856 31 7435 32 7904 33 8416 34 8434 35 8560 36 8714 37 8732 38 8798 39 8952 40 9160 41 9178 42 9280 43 9506 44 9722 45 9740 46 9854 47 9872 48 9986 49 10194 50 10212 51 10326 52 10480 53 10751 54 10769 55 10871 56 11142 57 11160 58 11250 59 11404 60 11503 61 11594 62 11653 63 11702 64 11751 65 11917 66 11966
 << /Metadata 67 0 R /Outlines 6 0 R /Pages 4 0 R /Type /Catalog >>
-<< /Author (M. Göker) /CreationDate (D:20181023061756+02'00') /Creator (LaTeX with hyperref package) /Keywords (respiration kinetics, pathways, CAS, MeSH, ChEBI, MetaCyc, KEGG, pathview) /ModDate (D:20181023061756+02'00') /Producer (GPL Ghostscript 9.25) /Subject () /Title (Analysing growth curves and other user-defined data in opm) >>
+<< /Author (M. Göker) /CreationDate (D:20181023080237+02'00') /Creator (LaTeX with hyperref package) /Keywords (respiration kinetics, pathways, CAS, MeSH, ChEBI, MetaCyc, KEGG, pathview) /ModDate (D:20181023080237+02'00') /Producer (GPL Ghostscript 9.25) /Subject () /Title (Analysing growth curves and other user-defined data in opm) >>
 << /Count 18 /Kids [ 5 0 R 8 0 R 35 0 R 38 0 R 9 0 R 10 0 R 11 0 R 51 0 R 12 0 R 58 0 R 95 0 R 76 0 R 105 0 R 108 0 R 78 0 R 114 0 R 117 0 R 80 0 R ] /Type /Pages >>
 << /Contents 133 0 R /MediaBox [ 0 0 595.28 841.89 ] /Parent 4 0 R /Resources << /ExtGState 86 0 R /Font 87 0 R /ProcSet [ /PDF /Text ] >> /Type /Page >>
 << /Count 7 /First 7 0 R /Last 81 0 R >>
@@ -78,14 +78,14 @@ stream
 <?adobe-xap-filters esc="CRLF"?>
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='XMP toolkit 2.9.1-13, framework 1.6'>
 <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:iX='http://ns.adobe.com/iX/1.0/'>
-<rdf:Description rdf:about='uuid:2abff8ba-0e97-11f4-0000-71ddef871fd6' xmlns:pdf='http://ns.adobe.com/pdf/1.3/'><pdf:Producer>GPL Ghostscript 9.25</pdf:Producer>
+<rdf:Description rdf:about='uuid:ca848379-0ea5-11f4-0000-71ddef871fd6' xmlns:pdf='http://ns.adobe.com/pdf/1.3/'><pdf:Producer>GPL Ghostscript 9.25</pdf:Producer>
 <pdf:Keywords>respiration kinetics, pathways, CAS, MeSH, ChEBI, MetaCyc, KEGG, pathview</pdf:Keywords>
 </rdf:Description>
-<rdf:Description rdf:about='uuid:2abff8ba-0e97-11f4-0000-71ddef871fd6' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2018-10-23T06:17:56+02:00</xmp:ModifyDate>
-<xmp:CreateDate>2018-10-23T06:17:56+02:00</xmp:CreateDate>
+<rdf:Description rdf:about='uuid:ca848379-0ea5-11f4-0000-71ddef871fd6' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2018-10-23T08:02:37+02:00</xmp:ModifyDate>
+<xmp:CreateDate>2018-10-23T08:02:37+02:00</xmp:CreateDate>
 <xmp:CreatorTool>LaTeX with hyperref package</xmp:CreatorTool></rdf:Description>
-<rdf:Description rdf:about='uuid:2abff8ba-0e97-11f4-0000-71ddef871fd6' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='uuid:2abff8ba-0e97-11f4-0000-71ddef871fd6'/>
-<rdf:Description rdf:about='uuid:2abff8ba-0e97-11f4-0000-71ddef871fd6' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>Analysing growth curves and other user-defined data in opm</rdf:li></rdf:Alt></dc:title><dc:creator><rdf:Seq><rdf:li>M. GÃ¶ker</rdf:li></rdf:Seq></dc:creator><dc:description><rdf:Alt><rdf:li xml:lang='x-default'></rdf:li></rdf:Alt></dc:description></rdf:Description>
+<rdf:Description rdf:about='uuid:ca848379-0ea5-11f4-0000-71ddef871fd6' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='uuid:ca848379-0ea5-11f4-0000-71ddef871fd6'/>
+<rdf:Description rdf:about='uuid:ca848379-0ea5-11f4-0000-71ddef871fd6' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>Analysing growth curves and other user-defined data in opm</rdf:li></rdf:Alt></dc:title><dc:creator><rdf:Seq><rdf:li>M. GÃ¶ker</rdf:li></rdf:Seq></dc:creator><dc:description><rdf:Alt><rdf:li xml:lang='x-default'></rdf:li></rdf:Alt></dc:description></rdf:Description>
 </rdf:RDF>
 </x:xmpmeta>
                                                                         
@@ -1081,7 +1081,7 @@ xœ]O1ƒ0Üó
 aèïKtèp–Îw'Ÿe?\v	ä#z|QëØDZü‘`¤É±¨0ÓÁÊÄY!û›ïO Ødw~×3Égİî«z¡7´5O$ºªRµJ›?éŒöpjRM«/Å*9šKœ7×‰SiZšäé÷Lğ!§`ƒø}	T"endstream
 endobj
 180 0 obj
-<< /Type /XRef /Length 905 /W [ 1 3 1 ] /Info 3 0 R /Root 2 0 R /Size 181 /ID [<d40e6eb863df0325ccc01bc81e2b7e93><322160dec4a1939c4bcbd99a3b3c90a1>] >>
+<< /Type /XRef /Length 905 /W [ 1 3 1 ] /Info 3 0 R /Root 2 0 R /Size 181 /ID [<0ae7fa3a1390a88fa13708304fb69813><8c70d842ae87076acd0efe5333f5466b>] >>
 stream
                              	  
                                                !  "  #  $  %  &  '  (  )  *  +  ,  -  .  /  0  1  2  3  4  5  6  7  8  9  :  ;  <  =  >  ?  @ 1c  8V   D   D  D  D  D  D  D  D  D  D	  D
