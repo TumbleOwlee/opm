@@ -48,16 +48,18 @@
   splines and P-splines from \pkg{mgcv} and smoothing
   splines via \code{smooth.spline}) to \acronym{PM} data.
   Recommended.} \item{grofit}{The \code{grofit} function in
-  the eponymous package, with spline fitting as default.}
-  \item{opm-fast}{The native, faster parameter estimation
-  implemented in the matrix method. This will only yield
-  two of the four parameters, the area under the curve and
-  the maximum height. The area under the curve is estimated
-  as the sum of the areas given by the trapezoids defined
-  by each pair of adjacent time points. The maximum height
-  is just the result of \code{max}. By default the median
-  of the bootstrap values is used as point estimate. For
-  details see \code{as.pe}.} }}
+  the eponymous package, with spline fitting as default.
+  This is \strong{defunct} because the package was removed
+  from \acronym{CRAN}.} \item{opm-fast}{The native, faster
+  parameter estimation implemented in the matrix method.
+  This will only yield two of the four parameters, the area
+  under the curve and the maximum height. The area under
+  the curve is estimated as the sum of the areas given by
+  the trapezoids defined by each pair of adjacent time
+  points. The maximum height is just the result of
+  \code{max}. By default the median of the bootstrap values
+  is used as point estimate. For details see \code{as.pe}.}
+  }}
 
   \item{plain}{Logical scalar. If \code{TRUE}, only the
   aggregated values are returned (as a matrix, for details

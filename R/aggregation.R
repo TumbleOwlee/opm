@@ -49,21 +49,21 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
   }
 
   # Add our own changes of the default
-  make_grofit_control <- function(verbose, boot, add) {
-    result <- grofit.control()
-    orig.class <- class(result)
-    result <- insert(unclass(result), interactive = FALSE,
-      suppress.messages = !verbose, fit.opt = "s", nboot.gc = boot,
-      .force = TRUE)
-    result <- insert(result, as.list(add), .force = TRUE)
-    class(result) <- orig.class
-    result
-  }
+  # make_grofit_control <- function(verbose, boot, add) {
+  #   result <- grofit.control()
+  #   orig.class <- class(result)
+  #   result <- insert(unclass(result), interactive = FALSE,
+  #     suppress.messages = !verbose, fit.opt = "s", nboot.gc = boot,
+  #     .force = TRUE)
+  #   result <- insert(result, as.list(add), .force = TRUE)
+  #   class(result) <- orig.class
+  #   result
+  # }
 
-  run_grofit <- function(time, data, control) {
-    extract_curve_params(grofit(time = time, data = data,
-      ec50 = FALSE, control = control))
-  }
+  # run_grofit <- function(time, data, control) {
+  #   extract_curve_params(grofit(time = time, data = data,
+  #     ec50 = FALSE, control = control))
+  # }
 
   run_mgcv <- function(x, y, data, options, boot) {
     mod <- fit_spline(y = y, x = x, data = data, options = options)
@@ -112,16 +112,17 @@ setMethod("do_aggr", "OPM", function(object, boot = 0L, verbose = FALSE,
     case(method <- match.arg(method, KNOWN_METHODS$aggregation),
 
       grofit = {
-        control <- make_grofit_control(verbose, boot, add = options)
-        grofit.time <- to_grofit_time(object)
-        grofit.data <- to_grofit_data(object, logt0)
-        result <- mclapply(X = as.list(seq_len(nrow(grofit.data))),
-          FUN = function(row) {
-            run_grofit(grofit.time[row, , drop = FALSE],
-              grofit.data[row, , drop = FALSE], control)
-          }, mc.cores = cores)
-        result <- do.call(cbind, result)
-        attr(result, OPTIONS) <- unclass(control)
+        stop("'grofit' is not currently available")
+        # control <- make_grofit_control(verbose, boot, add = options)
+        # grofit.time <- to_grofit_time(object)
+        # grofit.data <- to_grofit_data(object, logt0)
+        # result <- mclapply(X = as.list(seq_len(nrow(grofit.data))),
+        #   FUN = function(row) {
+        #     run_grofit(grofit.time[row, , drop = FALSE],
+        #       grofit.data[row, , drop = FALSE], control)
+        #   }, mc.cores = cores)
+        # result <- do.call(cbind, result)
+        # attr(result, OPTIONS) <- unclass(control)
       },
 
       `opm-fast` = {

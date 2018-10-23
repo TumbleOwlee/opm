@@ -461,14 +461,15 @@ setMethod("extract", "OPMS", function(object, as.labels,
   }
 
   if (dataframe) {
-
+    orig.rownames <- rownames(result)
     result <- as.data.frame(result)
     if (length(as.labels)) {
       columns <- do_extract(as.labels, join = FALSE)
       if (ci)
         columns <- columns[rep(seq_len(nrow(columns)), each = 3L), ,
           drop = FALSE]
-      columns <- cbind(columns, rownames(result))
+      #columns <- cbind(columns, rownames(result))
+      columns <- cbind(columns, orig.rownames)
       colnames(columns)[ncol(columns)] <- RESERVED_NAMES[["parameter"]]
       rownames(result) <- rownames(columns) # otherwise a warning is likely
       result <- cbind(columns, result)
