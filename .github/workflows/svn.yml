@@ -1,0 +1,24 @@
+name: Merge SVN
+
+on:
+  schedule:
+    - cron: '30 5 * * 1'
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      content: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Update git with svn
+        run: |
+          git svn init -s "svn://r-forge.r-project.org/svnroot/opm" -T "pkg/opm"
+          git svn fetch
+          git svn rebase
+          git push -f
