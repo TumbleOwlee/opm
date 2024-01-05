@@ -150,28 +150,6 @@ setMethod("xy_plot", "OPMS", function(x, col = opm_opt("colors"), lwd = 1,
 
   ## BEGIN must be synchronized with xy_plot,OPM
 
-  set = c("w3c", "w3c.i", "w3c.r", "nora", "nora.i", "nora.r", "brewer",
-    "brewer.i", "brewer.r", "roseo", "roseo.i", "roseo.r", "ssnot",
-    "ssnot.i", "ssnot.r", "phrogz", "phrogz.i", "phrogz.r", "groups",
-    "groups.i", "groups.r", "jp01", "jp01.i", "jp01.r", "jp02", "jp02.i",
-    "jp02.r", "jp03", "jp03.i", "jp03.r", "jp04", "jp04.i", "jp04.r",
-    "jp05", "jp05.i", "jp05.r", "jp06", "jp06.i", "jp06.r", "jp07",
-    "jp07.i", "jp07.r", "jp08", "jp08.i", "jp08.r", "jp09", "jp09.i",
-    "jp09.r", "jp10", "jp10.i", "jp10.r", "jp11", "jp11.i", "jp11.r",
-    "jp12", "jp12.i", "jp12.r", "jp13", "jp13.i", "jp13.r", "jp14",
-    "jp14.i", "jp14.r", "jp15", "jp15.i", "jp15.r", "jp16", "jp16.i",
-    "jp16.r", "jp17", "jp17.i", "jp17.r", "jp18", "jp18.i", "jp18.r",
-    "jp19", "jp19.i", "jp19.r", "jp20", "jp20.i", "jp20.r", "jp21",
-    "jp21.i", "jp21.r", "jp22", "jp22.i", "jp22.r", "jp23", "jp23.i",
-    "jp23.r", "jp24", "jp24.i", "jp24.r", "jp25", "jp25.i", "jp25.r",
-    "jp26", "jp26.i", "jp26.r", "jp27", "jp27.i", "jp27.r", "jp28",
-    "jp28.i", "jp28.r", "jp29", "jp29.i", "jp29.r", "jp30", "jp30.i",
-    "jp30.r", "jp31", "jp31.i", "jp31.r", "jp32", "jp32.i", "jp32.r",
-    "jp33", "jp33.i", "jp33.r", "jp34", "jp34.i", "jp34.r", "jp35",
-    "jp35.i", "jp35.r", "jp36", "jp36.i", "jp36.r", "jp37", "jp37.i",
-    "jp37.r", "jp38", "jp38.i", "jp38.r", "jp39", "jp39.i", "jp39.r",
-    "jp40", "jp40.i", "jp40.r")
-
   # Setup
   layout <- best_layout(dim(x)[3L], rcr)
   y.max <- improved_max(x, theor.max)
@@ -199,7 +177,7 @@ setMethod("xy_plot", "OPMS", function(x, col = opm_opt("colors"), lwd = 1,
   if (length(col) == 1) {
     if (!nzchar(col)) { # selection of a colour set, "" is special
       col <- length(key.text)
-    } else if (!(col %in% set)) {
+    } else if (!is_colorscheme_supported(col)) {
       col <- rep(col, length(key.text))
     }
   }
@@ -277,9 +255,16 @@ setMethod("xy_plot", "data.frame", function(x, f, groups,
 
   # Assignment of colours
   key.text <- levels(x$`_GROUPING`)
-  if (!nzchar(col)) # selection of a colour set, "" is special
-    col <- length(key.text)
+  
+  if (length(col) == 1) {
+    if (!nzchar(col)) { # selection of a colour set, "" is special
+      col <- length(key.text)
+    } else if (!is_colorscheme_supported(col)) {
+      col <- rep(col, length(key.text))
+    }
+  }
   col <- try_select_colors(col)
+  
   if (length(key.text) > length(col))
     stop("number of colours (", length(col),
       ") must be at least as large as number of groups (",
@@ -511,9 +496,16 @@ setMethod("heat_map", "matrix", function(object,
       groups <- as.character(groups)
     }
     groups <- as.factor(groups)
-    if (!nzchar(colors))
-      colors <- length(levels(groups))
+  
+    if (length(colors) == 1) {
+      if (!nzchar(colors)) { # selection of a colour set, "" is special  
+        colors <- length(levels(groups))
+      } else if (!is_colorscheme_supported(colors)) {
+        colors <- rep(colors, length(levels(groups)))
+      }
+    }
     colors <- try_select_colors(colors)
+    
     if (length(colors) < length(levels(groups)))
       stop("more groups (", length(levels(groups)),
         ") than colours (", length(colors), ") given")
@@ -857,9 +849,16 @@ setMethod("parallel_plot", c("OPMX", "ANY"), function(x, data, groups = 1L,
 
   # Legend text and colours
   key.text <- levels(x$`_GROUPING`)
-  if (!all(nzchar(col)))
-    col <- length(key.text)
+
+  if (length(col) == 1) {
+    if (!nzchar(col)) { # selection of a colour set, "" is special  
+      col <- length(key.text)
+    } else if (!is_colorscheme_supported(col)) {
+      col <- rep(col, length(key.text))
+    }
+  }
   col <- try_select_colors(col)
+  
   if (length(col) < length(key.text))
     stop("colour should be by plate or metadata (", length(key.text),
       " variants), but there are too few colours (", length(col), ")")
