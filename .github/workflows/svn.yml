@@ -8,16 +8,18 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     permissions:
-      content: write
+      contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          fetch-depth: 0
 
       - name: Update git with svn
         run: |
+          sudo add-apt-repository ppa:git-core/ppa
+          sudo apt install -y git-svn
           git svn init -s "svn://r-forge.r-project.org/svnroot/opm" -T "pkg/opm"
           git svn fetch
           git svn rebase
