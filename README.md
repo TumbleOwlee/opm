@@ -1,5 +1,7 @@
 # OmniLog(R) Phenotype Microarray
 
+[![SVN](https://github.com/TumbleOwlee/opm/actions/workflows/svn.yml/badge.svg?branch=main)](https://github.com/TumbleOwlee/opm/actions/workflows/svn.yml)
+
 This repository is a fork of the R package 'opm' by Markus Göker (see [website](http://www.goeker.org/opm/)). I forked the project to test some changes and to easily share it with colleagues.
 
 Currently this repsoitory applies the following fixes:
