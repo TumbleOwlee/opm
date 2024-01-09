@@ -3,6 +3,7 @@ name: Merge SVN
 on:
   schedule:
     - cron: '30 5 * * 1'
+  workflow_dispatch:
 
 jobs:
   merge:
