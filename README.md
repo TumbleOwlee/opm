@@ -2,7 +2,7 @@
 
 [![SVN](https://github.com/TumbleOwlee/opm/actions/workflows/svn.yml/badge.svg?branch=main)](https://github.com/TumbleOwlee/opm/actions/workflows/svn.yml)
 
-This repository is a fork of the R package 'opm' by Markus Göker (see [website](http://www.goeker.org/opm/)). I forked the project to test some changes and to easily share it with colleagues.
+This repository is a fork of the R package `opm` by Markus Göker (see [website](http://www.goeker.org/opm/)). I forked the project to test some changes and to easily share it with colleagues.
 
 Currently this repsoitory applies the following fixes:
 * Allow the use of a custom color list in plots. The user can use the `col` parameter to either use the default (`col = ""`), use a single color for all curves (e.g. `col = "#5a2474"`), use a predefined color set (e.g. `col = "w3c"`) or specify a custom color vector (e.g. `col = c("#111111", "#222222", "#333333")`). Previously it would fail with a color vector because it performed the check `!nzchar(col)` on all cases.
