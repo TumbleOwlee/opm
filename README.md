@@ -9,7 +9,7 @@ Currently this repsoitory applies the following fixes:
 
 ## Quickstart
 
-If you want to use these fixes, make sure you have followed the installation instruction of the OPM suite (see [Installation](http://www.goeker.org/opm/)). This will of course also install the original `opm` package. Afterwards you can simply override it with this version using the following command.
+If you want to use these fixes, make sure you have followed the installation instruction of the OPM suite (see [Installation](http://www.goeker.org/opm/)) to install the other dependencies. If you confirm the prompt with "ALL", it will of course also install the original `opm` package. But afterwards you can also simply override it with this version by installing it using the following command.
 ```r
 remotes::install_github("tumbleowlee/opm")
 ```
