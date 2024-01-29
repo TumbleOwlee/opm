@@ -144,7 +144,7 @@ setMethod("xy_plot", "OPMS", function(x, col = opm_opt("colors"), lwd = 1,
     neg.ctrl = "A01", base.col = "black", base.lwd = lwd,
     main = list(), xlab = "Time [h]", ylab = "Value [OmniLog units]",
     theor.max = TRUE, draw.grid = TRUE, space = "top",
-    strip.fmt = list(), striptext.fmt = list(),
+    strip.fmt = list(), striptext.fmt = list(), legend.labels = list(),
     legend.fmt = list(), legend.sep = " ", draw.legend = TRUE, rcr = 0.75,
     ...) {
 
@@ -168,7 +168,7 @@ setMethod("xy_plot", "OPMS", function(x, col = opm_opt("colors"), lwd = 1,
   legend.fmt <- insert(as.list(legend.fmt), space = space, .force = FALSE)
 
   # Conversion
-  data <- flatten(x, ...)
+  data <- flatten(x, labels = legend.labels, ...)
 
   # Assignment of colours to plates
   param <- flattened_to_factor(object = data, sep = legend.sep)

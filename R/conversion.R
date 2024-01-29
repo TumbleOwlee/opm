@@ -892,8 +892,14 @@ setMethod("flatten", "OPM", function(object, include = NULL, fixed = list(),
 }, sealed = SEALED)
 
 setMethod("flatten", "OPMS", function(object, include = NULL, fixed = list(),
-    ...) {
+    labels = list(), ...) {
   nums <- paste(RESERVED_NAMES[["plate"]], seq_along(object@plates))
+  if (length(labels) > 0) {
+    if (length(labels) != length(nums)) {
+      stop("Too few labels specified. Expected: ", length(nums), ", Actual: ", length(labels))
+    }
+    nums <- labels
+  }
   nums <- lapply(as.list(nums), `names<-`, RESERVED_NAMES[["plate"]])
   nums <- lapply(nums, c, fixed, recursive = FALSE)
   do.call(rbind, mapply(FUN = flatten, object = object@plates, fixed = nums,
